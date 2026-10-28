@@ -82,7 +82,7 @@
 .bgBar { position: absolute; right: 10px; top: 10px; z-index: 4; display: flex; align-items: center; gap: 6px; }
 .timeline { display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; }
 .timeline input[type="range"] { width: 100%; }
-.anomaly { display: grid; grid-template-columns: 14px 1fr auto; gap: 6px; align-items: start; padding: 4px 6px; border-radius: 7px; border: 0; background: transparent; text-align: left; font-size: 12px; color: var(--mac-label); cursor: pointer; width: 100%; }
+.anomaly { display: grid; grid-template-columns: auto 1fr auto; gap: 6px; align-items: start; padding: 4px 6px; border-radius: 7px; border: 0; background: transparent; text-align: left; font-size: 12px; color: var(--mac-label); cursor: pointer; width: 100%; }
 .anomaly:hover { background: var(--mac-hover); }
 .anomaly[data-tone="error"] svg { color: #ff453a; }
 .anomaly[data-tone="warn"] svg { color: #ff9f0a; }

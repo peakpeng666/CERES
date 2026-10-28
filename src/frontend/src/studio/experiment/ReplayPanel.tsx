@@ -117,7 +117,8 @@ export function ReplayPanel() {
   if (!scenarioId) return <EmptyState icon={Play} title="未打开任务地图" detail="仿真回放显示在任务地图上：先打开一个多车任务地图。" />;
   const r = rp.result, d = rp.derived;
   const traffic = r ? trafficStatus(r) : null;
-  const liveHere = live?.running && live.scenario_id === scenarioId;
+  // A finished session stays open (running) until stopped; only an executing one is still missing from the list.
+  const liveHere = live?.running && ['starting', 'ready', 'running'].includes(live.phase) && live.scenario_id === scenarioId;
   const focusRun = async (runId: string) => {
     const st = useStudio.getState();
     if (!st.runs[runId]) {
