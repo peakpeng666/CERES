@@ -380,3 +380,12 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - **有界力矩**：物理版本 `urp.field-diffdrive.rigid/6`；`actuator_mode=velocity_servo` 为默认，`torque_limited` 为可选合成模型。`wheel_torque_limit_nm` 0.1–40（默认 8），`wheel_torque_kp` 0.1–40（默认 4）。力矩模式禁止 DiffDrive 共存，左右轮各一 force JointController，明确每车 `/model/{name}/joint/{joint}/cmd_vel` 话题；PID `cmd_min/max` 和 SDF joint effort 同时限幅，启动审计核对所有上限、增益、话题、双轮状态发布配置。无电机效率/电流/转速—力矩曲线标定；`limits_scope` 明确 force 模式不施加理想加速度限幅，解析工期参考不能充当其动力学预测。
 - **关节反馈**：关节发布器使用重复 joint_name 标签，经 gz Model→ROS JointState；本机官方 6.18 不支持 update_rate，采用 `ros/native/joint_state` 固定上游源码的项目内限频回补（唯一插件别名 `urp::systems::JointStatePublisher`、50 Hz 源仿真时间发布，原关节测量逻辑保留）。按需构建于 runtime，记录来源、补丁、源码与实际加载库 SHA256；ROS 最新样本队列与 ≤50 Hz 派生里程计发布避免积压，源时间缺口门槛不变。连续轮角按源时间差分并作 SE(2) 积分，不包装角增量至 ±π，不用目标轮速补数据。双轮缺失、重复、非有限、零/倒退时间不刷新就绪，源间隔>0.25 s 失效；反馈过期或 Twist 过期 0.25 s 时发布零目标（有界主动制动，并不保证立即静止）。结果 `wheel_feedback` 记录有效/拒收计数；发布 `/{vehicle}/odom`。`torque_traces` 记录目标与实际轮速，未观测指令或实际作用力矩，饱和影响由运动响应对照支持。
 - **统一验收**：力矩模式保持无滑移参考门禁（除显式摩擦/接触扰动）、足迹、完整路径、同步交通、真值停留及静止门禁；压力场景失败保留真实原因与退出码。`ground_speed` 进入正式 fieldcheck，测试脚本不能另行扩大范围。执行源码、模型、SDF、算法输入/参数/seed 随记录导出。有限工程重复不能推出真实土壤/轮胎可信度或算法学术优越性。
+
+## 9. 任务智能体（2026-10-30）
+
+接口前缀 `/lab/api/agent`：`GET /providers`、`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages`、`POST /sessions/{id}/control`（`pause|resume|cancel|retry|confirm|approve|reject|takeover`）、`PATCH /sessions/{id}/contract`。SSE 事件 `agent_session` 携带 `session_id、state、phase、updated_utc`。会话存于 `runtime/agent.sqlite3`，不改写 `lab.sqlite3` 的结构。
+
+- 任务合同 `urp.task-contract/1` 与会话 `urp.agent-session/1` 的字段、来源标签和状态机见 [agent/README](urp_lab/agent/README.md)。
+- 工具只调用本契约已有接口的同一实现（`compose`、`recommend`、`JobManager.submit`、`solvers.fleet.check`、`FieldSimManager.start`）；Gazebo 会话与改变任务本身的修复须经用户批准。
+- 报告前对本会话所有报告可行的运行重新执行 `fleet.check`，并与存档判定比对；不一致归类为软件实现错误。
+- 模型密钥只在服务端配置中；接口与导出不返回密钥。没有可用模型时 `mode=auto` 使用规则流程并在会话中注明，`mode=llm|hybrid` 返回 409 `llm_unavailable`。

@@ -431,3 +431,19 @@ def test_benchmark_scoring():
     sc = score_turn({'task_count': 8, 'vehicle_count': 3, 'objective': 'makespan'}, {'task_count': 8, 'vehicle_count': 2, 'field_size_m': [60, 40]})
     assert sc['tp'] == 1 and sc['wrong'] == ['vehicle_count'] and sc['missed'] == ['field_size_m'] and sc['extra'] == ['objective']
     assert sc['fp'] == 2 and sc['fn'] == 2 and not sc['exact']
+
+
+def test_environment_errors_fail_the_session_instead_of_reporting(gateway, monkeypatch):
+    from urp_lab.jobs import SourceChangedError
+    app, client = gateway
+    lab = app.state.lab
+
+    def refuse(*_args, **_kw):
+        raise SourceChangedError('Lab 执行源码已改变')
+    monkeypatch.setattr(lab.jobs, 'submit', refuse)
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'auto_confirm': True, 'text': SMALL}).json()['session_id']
+    s = _wait(client, sid, ('done', 'failed'))
+    assert s['state'] == 'failed' and s['error']['kind'] == 'environment' and s['report'] is None
+    solve = next(c for c in s['tool_calls'] if c['name'] == 'solve')
+    assert solve['error']['code'] == 'source_changed'
+    assert {st['kind']: st['status'] for st in s['plan']}['solve'] == 'failed'

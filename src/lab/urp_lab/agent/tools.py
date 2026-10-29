@@ -295,7 +295,13 @@ def solve(ctx: ToolContext, args: dict) -> dict:
             resolved.append((algo, resolve_params(algo, params)))
         except ValueError as exc:
             raise ToolError('invalid_params', str(exc)) from None
-    job_id, run_ids = ctx.lab.jobs.submit(sc, sc['instance'], resolved, f"智能体 {ctx.session['session_id']}")
+    from ..jobs import SourceChangedError
+    try:
+        job_id, run_ids = ctx.lab.jobs.submit(sc, sc['instance'], resolved, f"智能体 {ctx.session['session_id']}")
+    except SourceChangedError as exc:
+        raise ToolError('source_changed', f'执行环境与网关启动时不一致，求解被拒绝：{exc}') from None
+    except RuntimeError as exc:
+        raise ToolError('shutting_down', f'求解服务正在关闭：{exc}') from None
     ctx.session.setdefault('run_ids', []).extend(run_ids)
     ctx.session.setdefault('tried_algorithms', [])
     ctx.session['tried_algorithms'] = list(dict.fromkeys(ctx.session['tried_algorithms'] + [a['id'] for a, _ in resolved]))

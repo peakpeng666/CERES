@@ -47,6 +47,17 @@ class Budget(Exception):
     pass
 
 
+class ToolFailure(Exception):
+    """A tool failed for a reason the agent must not work around (environment or implementation error)."""
+
+    def __init__(self, rec: dict):
+        super().__init__(rec['error']['message'])
+        self.rec = rec
+
+
+FATAL_TOOL_ERRORS = {'source_changed', 'shutting_down', 'tool_exception'}
+
+
 class RunnerError(Exception):
     def __init__(self, status: int, code: str, message: str):
         super().__init__(message)
@@ -407,6 +418,14 @@ class AgentRunner:
                     step['status'] = 'failed'
             add_message(s, 'event', f'模型调用失败（{exc.kind}）：{str(exc)[:300]}。可重试，或改用规则流程新建会话。', 'error')
             self._save(s)
+        except ToolFailure as exc:
+            s['state'] = 'failed'
+            code = exc.rec['error']['code']
+            s['error'] = {'kind': 'environment' if code in ('source_changed', 'shutting_down') else 'implementation_error',
+                          'message': str(exc)[:500], 'where': exc.rec.get('label') or exc.rec['name']}
+            hint = '请重启网关后点击“重试当前阶段”' if code == 'source_changed' else '这是软件或环境错误，智能体不会以修改任务的方式绕过；可在调用记录中查看详情后重试'
+            add_message(s, 'event', f"「{exc.rec.get('label') or exc.rec['name']}」失败：{str(exc)[:300]}。{hint}。", 'error')
+            self._save(s)
         except Budget as exc:
             s['state'] = 'failed'
             s['error'] = {'kind': 'budget', 'message': str(exc), 'where': 'runner'}
@@ -493,7 +512,10 @@ class AgentRunner:
             if rec['status'] == 'error' and (rec.get('error') or {}).get('code') == 'cancelled':
                 self._record(s, rec, actor)
                 raise Cancelled()
-        return self._record(s, rec, actor)
+        rec = self._record(s, rec, actor)
+        if rec['status'] == 'error' and (rec.get('error') or {}).get('code') in FATAL_TOOL_ERRORS:
+            raise ToolFailure(rec)
+        return rec
 
     # -------------------------------------------------------- understand --
     def _understand(self, s, cancel, pause) -> bool:
@@ -807,7 +829,7 @@ def _template_report(e: dict) -> str:
     scale = '，'.join(x for x in (
         f"场地 {c['场地尺寸']}" if '场地尺寸' in c else '',
         f"{c['任务点数']}{c.get('作业类型', '')}任务点" if '任务点数' in c else '',
-        f"{c['车辆数']}" if '车辆数' in c else '',
+        f"{c['车辆数']}车" if '车辆数' in c else '',
         f"单车容量 {c['单车容量']}" if '单车容量' in c else '',
         f"障碍为 {c['障碍']}" if c.get('障碍') not in (None, '无') else '') if x)
     parts = [f'任务规模：{scale}。' if scale else '']
@@ -819,7 +841,7 @@ def _template_report(e: dict) -> str:
     best = e.get('best_verified')
     if best:
         parts.append(f"经复核的最优方案为 {best['algorithm']}（{best['run_id']}），总里程 {best['total_distance_m']} m，"
-                     f"最晚完成时间 {best['makespan_s']} s（规划层匀速估计，不含加减速与排队）。")
+                     f"按恒速模型计算的最晚完成时间为 {best['makespan_s']} s。")
     else:
         parts.append('目前没有通过独立复核的方案。')
     failed = [r for r in runs if r['independent_recheck'] is not True]
