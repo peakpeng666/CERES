@@ -83,9 +83,15 @@ def sealed_field(field_id: str) -> bool:
 
 
 def _finite(v) -> float:
-    if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(float(v)):
+    if isinstance(v, bool) or not isinstance(v, (int, float)):
         raise ValueError(f'应为有限数值，实际 {v!r}')
-    return float(v)
+    try:
+        number = float(v)
+    except OverflowError:
+        raise ValueError('数值超出支持范围') from None
+    if not math.isfinite(number):
+        raise ValueError(f'应为有限数值，实际 {v!r}')
+    return number
 
 
 def normalize(key: str, value):
@@ -94,7 +100,7 @@ def normalize(key: str, value):
     if spec is None:
         raise ValueError(f'未知字段 {key}')
     if spec.kind == 'enum':
-        if value not in spec.options:
+        if not isinstance(value, str) or value not in spec.options:
             raise ValueError(f'{spec.label}须为 {", ".join(spec.options)} 之一，实际 {value!r}')
         return value
     if spec.kind == 'bool':
@@ -160,8 +166,14 @@ def apply(contract: dict, values: dict, source: str, evidence: dict | None = Non
     accepted, rejected = [], []
     evidence = evidence or {}
     for key, raw in (values or {}).items():
+        if key not in FIELDS:
+            rejected.append({'key': key, 'value': raw, 'reason': f'未知字段 {key}'})
+            continue
         if raw is None:
             if key in out['fields'] and source in ('user_edit', 'llm'):
+                if source == 'llm' and out['fields'][key]['source'] in ('user_text', 'user_edit') and not evidence.get(key):
+                    rejected.append({'key': key, 'value': raw, 'reason': '保留用户已明确给出的值；如需清除请引用新的原话'})
+                    continue
                 old = out['fields'].pop(key)
                 accepted.append({'key': key, 'old': old['value'], 'new': None, 'source': source})
             continue
@@ -189,10 +201,18 @@ def apply(contract: dict, values: dict, source: str, evidence: dict | None = Non
 
 def add_unsupported(contract: dict, items: list[str]) -> dict:
     out = copy.deepcopy(contract)
+    added = []
     for item in items or []:
         text = str(item).strip()[:200]
         if text and text not in out['unsupported']:
             out['unsupported'].append(text)
+            added.append(text)
+    if added:
+        out['revision'] += 1
+        out['history'].append({'revision': out['revision'], 'source': 'llm', 'note': '记录当前模型不支持的用户要求',
+                               'changes': [], 'unsupported_added': added})
+        if out['status'] == 'confirmed':
+            out['status'] = 'draft'
     return out
 
 

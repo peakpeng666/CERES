@@ -1,0 +1,17 @@
+{
+  "runtime": "/tmp/urp-agent-browser-rule-y_84aqph",
+  "gateway_command": [
+    "/home/peakpeng/Desktop/URP/src/lab/.venv/bin/python",
+    "-m",
+    "urp_lab",
+    "serve",
+    "--no-archive",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "4100"
+  ],
+  "browser_exit_code": 0,
+  "shutdown_status": 202,
+  "gateway_exit_code": 0
+}

@@ -35,7 +35,8 @@ def new_session(mode: str, provider: dict | None, auto_confirm: bool = False, ti
             'state': 'idle', 'phase': 'understand', 'mode': mode, 'provider': provider, 'auto_confirm': bool(auto_confirm),
             'messages': [], 'llm_messages': [], 'contract': tc.empty(), 'plan': initial_plan(), 'tool_calls': [],
             'llm_calls': [], 'usage': {'input_tokens': 0, 'output_tokens': 0, 'cost': 0.0, 'currency': None, 'calls': 0,
-                                       'latency_s': 0.0}, 'scenario_id': None, 'run_ids': [], 'tried_algorithms': [],
+                                       'latency_s': 0.0}, 'scenario_id': None, 'run_ids': [], 'active_run_ids': [],
+            'active_sim_runs': [], 'tried_algorithms': [],
             'precheck': None, 'verifications': {}, 'recommendation': None, 'pending': None, 'error': None, 'turn': 0,
             'report': None}
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   CircleAlert,
   CircleCheck,
@@ -14,7 +14,7 @@ import {
   TriangleAlert,
 } from 'lucide-react';
 import { Button, Segmented, Spinner } from '../lab/ui';
-import { showRuns, useStudio } from '../studio/store';
+import { useStudio } from '../studio/store';
 import {
   SOURCE_LABEL,
   STATE_LABEL,
@@ -25,6 +25,7 @@ import {
   type Report,
 } from './api';
 import { useAgent } from './store';
+import { currentRuns, syncAgentStudio } from './studioSync';
 import s from './agent.module.css';
 
 const EXAMPLES = [
@@ -38,20 +39,22 @@ export function ModelChip({ compact = false }: { compact?: boolean }) {
   const providers = useAgent((x) => x.providers);
   const error = useAgent((x) => x.providersError);
   const session = useAgent((x) => x.session);
+  const chosen = useAgent((x) => x.newProvider);
+  const mode = useAgent((x) => x.newMode);
   const load = useAgent((x) => x.loadProviders);
   useEffect(() => {
     if (!providers && !error) void load();
   }, [providers, error, load]);
-  if (session) {
-    const label = session.provider ? session.provider.label : '规则流程（未调用大模型）';
+  if (session || mode === 'rule') {
+    const provider = session?.provider;
+    const label = provider ? provider.label : '规则流程（未调用大模型）';
     return (
-      <span className={s.chip} data-tone={session.provider ? 'ok' : 'rule'} title={session.provider ? `${session.provider.kind} · ${session.provider.model}` : '理解与执行均由确定性规则完成'}>
+      <span className={s.chip} data-tone={provider ? 'ok' : 'rule'} title={provider ? `${provider.kind} · ${provider.model}` : '理解与执行均由确定性规则完成'}>
         <span className={s.dot} />
-        {compact ? (session.provider ? session.provider.model : '规则流程') : label}
+        {compact ? (provider ? provider.model : '规则流程') : label}
       </span>
     );
   }
-  const chosen = useAgent.getState().newProvider;
   const def = providers?.providers.find((p) => p.id === (chosen ?? providers.default));
   const ready = def && def.enabled && (def.local ? def.status.reachable && def.status.model_present : def.has_credential);
   const text = error ? '模型状态未知' : !providers ? '读取模型状态…' : ready ? def!.label : `模型未就绪：${def?.status.detail ?? '未配置'}`;
@@ -69,6 +72,7 @@ function SourceTag({ source }: { source: ContractCard['source'] }) {
 
 function ConfirmationCard({ msg, session, latest }: { msg: AgentMessage; session: AgentSession; latest: boolean }) {
   const control = useAgent((x) => x.control);
+  const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   const data = msg.data as { cards: ContractCard[]; unsupported: string[]; revision: number };
   const active = latest && session.state === 'awaiting_confirmation';
   return (
@@ -93,7 +97,7 @@ function ConfirmationCard({ msg, session, latest }: { msg: AgentMessage; session
       )}
       {active && (
         <div className={s.cardActions}>
-          <Button variant="primary" size="sm" icon={CircleCheck} onClick={() => void control('confirm')}>确认并执行</Button>
+          <Button variant="primary" size="sm" icon={CircleCheck} disabled={pending} onClick={() => void control('confirm')}>确认并执行</Button>
           <span className={s.hint}>也可在右侧「任务合同」中修改后再确认</span>
         </div>
       )}
@@ -103,6 +107,7 @@ function ConfirmationCard({ msg, session, latest }: { msg: AgentMessage; session
 
 function QuestionsCard({ pending, active }: { pending: Pending; active: boolean }) {
   const send = useAgent((x) => x.send);
+  const busy = useAgent((x) => x.sending || x.pendingAction !== null);
   return (
     <div className={s.card}>
       {(pending.questions ?? []).map((q, i) => (
@@ -111,7 +116,7 @@ function QuestionsCard({ pending, active }: { pending: Pending; active: boolean 
           {q.options.length > 0 && (
             <div className={s.options}>
               {q.options.map((o) => (
-                <button key={o} type="button" className={s.option} disabled={!active} onClick={() => void send(o)}>{o}</button>
+                <button key={o} type="button" className={s.option} disabled={!active || busy} onClick={() => void send(o)}>{o}</button>
               ))}
             </div>
           )}
@@ -123,6 +128,7 @@ function QuestionsCard({ pending, active }: { pending: Pending; active: boolean 
 
 function ApprovalCard({ msg, session, latest }: { msg: AgentMessage; session: AgentSession; latest: boolean }) {
   const control = useAgent((x) => x.control);
+  const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   const active = latest && session.state === 'awaiting_approval';
   return (
     <div className={s.card} data-tone="approval">
@@ -130,8 +136,8 @@ function ApprovalCard({ msg, session, latest }: { msg: AgentMessage; session: Ag
       <div className={s.cardText}>{msg.text}</div>
       {active && (
         <div className={s.cardActions}>
-          <Button variant="primary" size="sm" onClick={() => void control('approve')}>批准</Button>
-          <Button size="sm" onClick={() => void control('reject')}>拒绝</Button>
+          <Button variant="primary" size="sm" disabled={pending} onClick={() => void control('approve')}>批准</Button>
+          <Button size="sm" disabled={pending} onClick={() => void control('reject')}>拒绝</Button>
         </div>
       )}
     </div>
@@ -140,9 +146,10 @@ function ApprovalCard({ msg, session, latest }: { msg: AgentMessage; session: Ag
 
 const fmt = (v: number | null | undefined, digits = 1) => (typeof v === 'number' ? v.toFixed(digits) : '—');
 
-function ReportCard({ report, sessionId }: { report: Report; sessionId: string }) {
+function ReportCard({ report, session }: { report: Report; session: AgentSession }) {
   const e = report.evidence;
   const best = e.best_verified;
+  const canShow = best && currentRuns(session).includes(best.run_id);
   return (
     <div className={s.card} data-tone="report">
       <div className={s.cardHead}>
@@ -185,12 +192,12 @@ function ReportCard({ report, sessionId }: { report: Report; sessionId: string }
       {e.unsupported.length > 0 && <div className={s.muted}>未纳入求解的要求：{e.unsupported.join('；')}</div>}
       {best && (
         <div className={s.cardActions}>
-          <Button size="sm" icon={MapPinned} onClick={() => { useStudio.setState({ focusRun: best.run_id, manualFocus: true }); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'map' })); }}>在地图上查看</Button>
+          <Button size="sm" icon={MapPinned} disabled={!canShow} title={canShow ? undefined : '该方案属于历史任务版本，可下载记录查看'} onClick={() => { useStudio.setState({ focusRun: best.run_id, manualFocus: true }); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'map' })); }}>在地图上查看</Button>
           <a className={s.linkButton} href={`/lab/api/runs/${encodeURIComponent(best.run_id)}/record`} download={`${best.run_id}.json`}><FileJson size={13} /> 最优方案记录</a>
         </div>
       )}
       <div className={s.cardActions}>
-        <a className={s.linkButton} href={`/lab/api/agent/sessions/${encodeURIComponent(sessionId)}/export`} download={`${sessionId}.json`}
+        <a className={s.linkButton} href={`/lab/api/agent/sessions/${encodeURIComponent(session.session_id)}/export`} download={`${session.session_id}.json`}
           title="任务合同、计划、工具与模型调用记录、任务地图及全部运行记录，附 SHA256 完整性校验"><FileJson size={13} /> 导出会话实验包</a>
       </div>
     </div>
@@ -217,32 +224,34 @@ function Message({ msg, session, latest }: { msg: AgentMessage; session: AgentSe
     );
   }
   if (msg.kind === 'approval') return <ApprovalCard msg={msg} session={session} latest={latest} />;
-  if (msg.kind === 'report') return <ReportCard report={msg.data as unknown as Report} sessionId={session.session_id} />;
+  if (msg.kind === 'report') return <ReportCard report={msg.data as unknown as Report} session={session} />;
   return <div className={s.assistant}>{msg.text}</div>;
 }
 
 function RunningLine({ session }: { session: AgentSession }) {
   const control = useAgent((x) => x.control);
+  const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   const step = session.plan.find((p) => p.status === 'running');
   const last = session.tool_calls[session.tool_calls.length - 1];
   return (
     <div className={s.running}>
       <Spinner />
       <span className={s.runningText}>{step ? `${step.title}…` : '思考下一步…'}{last && !step ? ` 上一步：${last.label ?? last.name}` : ''}</span>
-      <Button size="sm" icon={Pause} onClick={() => void control('pause')}>暂停</Button>
-      <Button size="sm" icon={Square} onClick={() => void control('cancel')}>取消</Button>
+      <Button size="sm" icon={Pause} disabled={pending} onClick={() => void control('pause')}>暂停</Button>
+      <Button size="sm" icon={Square} disabled={pending} onClick={() => void control('cancel')}>取消</Button>
     </div>
   );
 }
 
 function Resumable({ session }: { session: AgentSession }) {
   const control = useAgent((x) => x.control);
+  const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   if (!['paused', 'failed', 'cancelled', 'interrupted'].includes(session.state)) return null;
   return (
     <div className={s.resume}>
       <span>{STATE_LABEL[session.state]}{session.error ? `：${session.error.message}` : ''}</span>
-      <Button size="sm" icon={Play} onClick={() => void control('resume')}>继续</Button>
-      {session.state !== 'paused' && <Button size="sm" icon={RotateCcw} onClick={() => void control('retry')}>重试当前阶段</Button>}
+      <Button size="sm" icon={Play} disabled={pending} onClick={() => void control('resume')}>继续</Button>
+      {session.state !== 'paused' && <Button size="sm" icon={RotateCcw} disabled={pending} onClick={() => void control('retry')}>重试当前阶段</Button>}
     </div>
   );
 }
@@ -251,7 +260,9 @@ function Composer({ session }: { session: AgentSession | null }) {
   const [text, setText] = useState('');
   const send = useAgent((x) => x.send);
   const sending = useAgent((x) => x.sending);
-  const busy = session?.state === 'running';
+  const sessionId = useAgent((x) => x.sessionId);
+  const pending = useAgent((x) => x.pendingAction !== null);
+  const busy = session?.state === 'running' || Boolean(sessionId && !session) || pending;
   const placeholder = !session
     ? '描述作业任务，例如场地大小、车辆数、任务点数、容量与目标'
     : session.state === 'awaiting_user' ? '回答上面的问题，或补充其他要求'
@@ -261,8 +272,7 @@ function Composer({ session }: { session: AgentSession | null }) {
   const submit = () => {
     const t = text.trim();
     if (!t || busy || sending) return;
-    setText('');
-    void send(t);
+    void send(t).then((sent) => { if (sent) setText(''); });
   };
   return (
     <div className={s.composer}>
@@ -270,7 +280,7 @@ function Composer({ session }: { session: AgentSession | null }) {
         value={text}
         rows={2}
         placeholder={placeholder}
-        disabled={busy}
+        disabled={busy || sending}
         aria-label="给智能体的消息"
         onChange={(e) => setText(e.target.value)}
         onKeyDown={(e) => {
@@ -307,9 +317,9 @@ function ProviderPicker() {
 
 function Welcome() {
   const start = useAgent((x) => x.start);
+  const sending = useAgent((x) => x.sending);
   const mode = useAgent((x) => x.newMode);
   const setMode = useAgent((x) => x.setNewMode);
-  useAgent((x) => x.newProvider);
   return (
     <div className={s.welcome}>
       <h2>农业作业任务智能体</h2>
@@ -328,7 +338,7 @@ function Welcome() {
       </div>
       <div className={s.examples}>
         {EXAMPLES.map((ex) => (
-          <button key={ex} type="button" className={s.exampleCard} onClick={() => void start(ex)}>{ex}</button>
+          <button key={ex} type="button" className={s.exampleCard} disabled={sending} onClick={() => void start(ex)}>{ex}</button>
         ))}
       </div>
     </div>
@@ -338,23 +348,19 @@ function Welcome() {
 /** Keeps the shared map, comparison and verification panels on the agent's scenario and latest runs. */
 function useStudioSync(session: AgentSession | null) {
   const scenarioId = session?.scenario_id ?? null;
-  const batch = useMemo(() => {
-    if (!session) return [] as string[];
-    const solves = session.tool_calls.filter((c) => c.name === 'solve' && c.status === 'ok');
-    const last = solves[solves.length - 1]?.result as { runs?: { run_id: string }[] } | undefined;
-    return last?.runs?.map((r) => r.run_id) ?? session.run_ids.slice(-6);
-  }, [session]);
-  const key = batch.join(',');
+  const key = session ? currentRuns(session).join(',') : '';
+  const buildKey = `${session?.session_id ?? ''}/${scenarioId ?? ''}/${session?.built_revision ?? ''}/${session?.scenario_instance_sha256 ?? ''}`;
+  const synced = useRef<string | null>(null);
   useEffect(() => {
-    if (!scenarioId) return;
-    const st = useStudio.getState();
-    const after = () => {
-      if (batch.length) showRuns(batch);
-    };
-    if (st.scenarioId !== scenarioId) void st.open(scenarioId).then(after);
-    else after();
+    if (!session || !scenarioId) return;
+    let active = true;
+    const reload = synced.current !== buildKey && useStudio.getState().scenarioId === scenarioId;
+    void syncAgentStudio(session, () => active, reload).then((ready) => {
+      if (ready && active) synced.current = buildKey;
+    });
+    return () => { active = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scenarioId, key]);
+  }, [buildKey, key]);
 }
 
 export function AgentChatPanel() {
@@ -406,7 +412,7 @@ export function AgentChatPanel() {
         {session && <Resumable session={session} />}
       </div>
       {actionError && <div className={s.actionError}><CircleAlert size={12} /> {actionError}</div>}
-      <Composer session={session} />
+      <Composer key={sessionId ?? 'new'} session={session} />
     </div>
   );
 }

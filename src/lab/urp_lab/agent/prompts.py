@@ -5,7 +5,7 @@ import json
 
 from . import contract as tc
 
-VERSION = 'agent-prompts/2'
+VERSION = 'agent-prompts/3'
 
 RULES = """你是农业机器人路径规划工作台中的任务智能体。你通过工具调用地图、算法、验算与仿真服务；只能依据工具的真实返回值陈述结果。
 基本规则：
@@ -44,14 +44,20 @@ def execute(contract: dict, session: dict) -> str:
     execution = tc.execution(contract)
     rows = {k: v['value'] for k, v in contract['fields'].items()}
     scenario = session.get('scenario_id') or '尚未建立'
-    runs = ', '.join(session.get('run_ids', [])[-12:]) or '无'
+    runs = ', '.join(session.get('active_run_ids', session.get('run_ids', []))[-12:]) or '无'
+    decision = session.get('simulation_decision') or {}
+    decision = decision if decision.get('contract_revision') == contract['revision'] else None
     return f"""{RULES}
 
 当前阶段：执行已确认的任务合同（第 {contract['confirmed_revision']} 版）。
 合同字段：{json.dumps(rows, ensure_ascii=False)}
 执行参数：{json.dumps(execution, ensure_ascii=False)}
 未支持的要求（须在报告中如实说明）：{json.dumps(contract['unsupported'], ensure_ascii=False)}
-当前任务地图：{scenario}；本会话已有运行：{runs}
+当前任务地图：{scenario}；当前地图与合同的运行：{runs}
+当前合同的仿真决定：{json.dumps(decision, ensure_ascii=False)}
+
+执行阶段不再调用 ask_user，也不要用文字提问代替工具批准。任务修改必须调用 propose_task_change；
+仿真须通过 start_simulation 进入正式批准流程。用户已拒绝或已尝试的仿真不可重复请求。
 
 建议流程：
 1. 若没有任务地图或合同已变化，先调用 build_scenario；查看 precheck 中的不可行项。
@@ -67,4 +73,5 @@ def report(evidence: dict) -> str:
 
 当前阶段：撰写结果报告。只能使用下面“依据”中的数值与结论，不得引入其他数字。用 3–6 句学术化中文概括：
 任务规模与约束、对比了哪些方法、经独立复核的最好方案（运行编号、里程、工期）、失败方案及其原因类别、仍未支持的要求与下一步。
+合同要求仿真时须交代是否启动、用户拒绝或启动失败；已启动不代表实际轨迹验收通过。
 依据：{json.dumps(evidence, ensure_ascii=False)}"""

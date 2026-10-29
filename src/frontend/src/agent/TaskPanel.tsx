@@ -43,9 +43,11 @@ const OPTIONAL_LABEL: Record<string, string> = {
 function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value'>; onDone: () => void }) {
   const spec = EDITABLE[card.key];
   const editContract = useAgent((x) => x.editContract);
+  const busy = useAgent((x) => x.sending || x.pendingAction !== null || x.session?.state === 'running');
   const [value, setValue] = useState<string>(() => {
     if (spec.kind === 'size' && Array.isArray(card.value)) return (card.value as number[]).join(' × ');
-    return card.value === undefined || card.value === null ? '' : String(card.value);
+    if (card.value !== undefined && card.value !== null && card.value !== '') return String(card.value);
+    return spec.kind === 'enum' ? Object.keys(spec.options!)[0] : spec.kind === 'bool' ? 'false' : '';
   });
   const commit = async () => {
     let v: unknown = value;
@@ -57,19 +59,19 @@ function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value
   return (
     <span className={s.editor}>
       {spec.kind === 'enum' || spec.kind === 'bool' ? (
-        <select value={value} autoFocus onChange={(e) => setValue(e.target.value)}>
+        <select value={value} disabled={busy} autoFocus onChange={(e) => setValue(e.target.value)}>
           {spec.kind === 'bool'
             ? [<option key="true" value="true">是</option>, <option key="false" value="false">否</option>]
             : Object.entries(spec.options!).map(([k, label]) => <option key={k} value={k}>{label}</option>)}
         </select>
       ) : (
-        <input value={value} autoFocus onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => {
+        <input value={value} disabled={busy} autoFocus onChange={(e) => setValue(e.target.value)} onKeyDown={(e) => {
           if (e.key === 'Enter') void commit();
           if (e.key === 'Escape') onDone();
         }} />
       )}
       {spec.unit && <span className={s.unit}>{spec.unit}</span>}
-      <Button size="sm" variant="primary" onClick={() => void commit()}>保存</Button>
+      <Button size="sm" variant="primary" disabled={busy} onClick={() => void commit()}>保存</Button>
       <Button size="sm" variant="plain" onClick={onDone}>取消</Button>
     </span>
   );
@@ -78,6 +80,7 @@ function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value
 function ContractSection({ session }: { session: AgentSession }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState('');
+  const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   const locked = session.state === 'running';
   const c = session.contract;
   const present = new Set(session.contract_cards.map((x) => x.key));
@@ -98,7 +101,7 @@ function ContractSection({ session }: { session: AgentSession }) {
               <th>{card.label}</th>
               <td>
                 {editing === card.key ? <FieldEditor card={card} onDone={() => setEditing(null)} /> : (
-                  <button type="button" className={s.valueButton} disabled={locked || !EDITABLE[card.key]}
+                  <button type="button" className={s.valueButton} disabled={locked || pending || !EDITABLE[card.key]}
                     title={EDITABLE[card.key] ? '点击修改' : '请在地图上编辑'} onClick={() => setEditing(card.key)}>{card.text}</button>
                 )}
               </td>
@@ -113,11 +116,11 @@ function ContractSection({ session }: { session: AgentSession }) {
       {c.unsupported.length > 0 && <p className={s.warnText}>未支持的要求：{c.unsupported.join('；')}</p>}
       {!locked && addable.length > 0 && (
         <div className={s.addRow}>
-          <select value={adding} onChange={(e) => setAdding(e.target.value)} aria-label="添加字段">
+          <select value={adding} disabled={pending} onChange={(e) => setAdding(e.target.value)} aria-label="添加字段">
             <option value="">添加约束或执行参数…</option>
             {addable.map((k) => <option key={k} value={k}>{OPTIONAL_LABEL[k]}</option>)}
           </select>
-          {adding && <FieldEditor card={{ key: adding, value: adding === 'simulate' ? 'false' : '' }} onDone={() => setAdding('')} />}
+          {adding && <FieldEditor key={adding} card={{ key: adding, value: adding === 'simulate' ? 'false' : '' }} onDone={() => setAdding('')} />}
         </div>
       )}
     </section>
@@ -216,7 +219,7 @@ export function AgentTaskPanel() {
   }
   return (
     <div className={s.task}>
-      <ContractSection session={session} />
+      <ContractSection key={session.session_id} session={session} />
       <PlanSection session={session} />
       <section className={s.section}>
         <header><h3>调用记录</h3><span className={s.revision}>{session.tool_calls.length} 次</span></header>

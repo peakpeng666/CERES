@@ -1,0 +1,32 @@
+{
+  "base_commit": "afe3f024389f8db6e218b0e5eda8bf33139da00e",
+  "runner_version": "agent-runner/4",
+  "prompt_version": "agent-prompts/3",
+  "provider": {
+    "id": "local",
+    "kind": "ollama",
+    "model": "qwen3.8:27b",
+    "options": {
+      "temperature": 0.2,
+      "num_ctx": 16384,
+      "think": false,
+      "keep_alive": "10m"
+    }
+  },
+  "execution_sha256": "4209002d8f71cc7133995e1be44ea68a04d2daad8fbb9cad5306f0f59cc853f8",
+  "ollama_version": "0.40.13",
+  "model_digest": "aaee06c39dcf2437cde036998d960e1fc1494b8191be7cc9657d01e509097813",
+  "model_details": {
+    "parent_model": "qwen3.8:27b-q4_K_M",
+    "format": "gguf",
+    "family": "qwen35",
+    "families": [
+      "qwen35"
+    ],
+    "parameter_size": "27.3B",
+    "quantization_level": "Q4_K_M",
+    "context_length": 262144,
+    "embedding_length": 5120,
+    "runner": "llamacpp"
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "schema": "urp-cvrplib-result-v1",
+  "purpose": "acceptance_only",
+  "status": "NUMERIC_ERROR",
+  "algorithm": "TSR",
+  "seed": 0,
+  "budget_seconds": 5,
+  "payload_sha256": "b9595b83d7d1a2c7656f185df2b7656d1599ba753a9b2d6ae8b2d5ee3dded1a0",
+  "start_monotonic_ns": 8282988592578,
+  "deadline_monotonic_ns": 8287988592578,
+  "cpu_seconds": 0.01048,
+  "cpu_scope": "worker process including interpreter/import/model/initialization/search; wait4 RUSAGE, not solver loop",
+  "descendant_cpu_seconds": 0,
+  "budget_scope": "wall from before request serialization/process launch through checkpoint receipt; checker and cleanup excluded",
+  "maxrss_KiB": 28032,
+  "process_wall_seconds": 0.012787965,
+  "cleanup_wall_seconds": 4.4011e-05,
+  "checker_wall_seconds": 9.2444e-05,
+  "checker_cpu_seconds": 9.18180000000074e-05,
+  "exitcode": 0,
+  "reaped": true,
+  "exited_before_cleanup": true,
+  "supervision_scope": "Linux serial; process-group descendants reaped; reviewed worker prohibits Python process creation; not a hostile native-code sandbox",
+  "reaped_descendants": [],
+  "feasible": false,
+  "cost": null,
+  "routes": null,
+  "incumbent_emitted_ns": null,
+  "incumbent_received_ns": null,
+  "events": [
+    {
+      "event": "incumbent",
+      "emitted_ns": 8282998064455,
+      "routes": [
+        [
+          0,
+          1,
+          2,
+          0
+        ]
+      ],
+      "cost": 19,
+      "received_ns": 8282999883450
+    }
+  ],
+  "late_events_rejected": [],
+  "malformed_events": [],
+  "checkpoint_checks": [
+    {
+      "valid": false,
+      "feasible": true,
+      "errors": [
+        "COST_MISMATCH: recomputed 20, reported 19"
+      ],
+      "metric": "per_edge_Decimal80_sqrt_ROUND_HALF_UP",
+      "precision": 80,
+      "cost": 20,
+      "reported_cost_checked": true,
+      "reported_cost_matches": false,
+      "route_costs": [
+        20
+      ],
+      "loads": [
+        2
+      ],
+      "slot_count": 1,
+      "nonempty_routes": 1,
+      "missing_customers": [],
+      "duplicate_customers": [],
+      "n_customers": 2,
+      "capacity": 2,
+      "K": 1
+    }
+  ],
+  "worker_error": null,
+  "raw_stdout": "{\"event\": \"incumbent\", \"emitted_ns\": 8282998064455, \"routes\": [[0, 1, 2, 0]], \"cost\": 19}\n",
+  "raw_stderr": "",
+  "environment": {
+    "python": "/home/peakpeng/Desktop/URP/.venv/bin/python3",
+    "python_version": "3.12.13 (main, Mar 10 2026, 18:17:25) [Clang 21.1.4 ]",
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "threads": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1",
+      "NUMEXPR_NUM_THREADS": "1",
+      "VECLIB_MAXIMUM_THREADS": "1",
+      "BLIS_NUM_THREADS": "1"
+    }
+  },
+  "finished_utc": "2026-10-29T16:19:11.371395+00:00"
+}

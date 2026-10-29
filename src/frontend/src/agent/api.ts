@@ -161,6 +161,9 @@ export interface AgentSession {
   usage: { input_tokens: number; output_tokens: number; cost: number | null; currency: string | null; calls: number; latency_s: number; unpriced_calls?: number };
   scenario_id: string | null;
   run_ids: string[];
+  active_run_ids?: string[];
+  built_revision?: number;
+  scenario_instance_sha256?: string;
   verifications: Record<string, { valid: boolean | null; agrees: boolean | null; category: string }>;
   pending: Pending | null;
   error: { kind: string; message: string; where: string } | null;

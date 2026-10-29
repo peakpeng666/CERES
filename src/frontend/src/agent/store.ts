@@ -11,6 +11,7 @@ interface AgentStore {
   providersError: string | null;
   loadError: string | null;
   sending: boolean;
+  pendingAction: ControlAction | 'edit' | null;
   newMode: 'auto' | AgentMode;
   newProvider: string | null;
   setNewProvider: (id: string | null) => void;
@@ -18,8 +19,8 @@ interface AgentStore {
   loadSessions: () => Promise<void>;
   select: (id: string | null) => Promise<void>;
   refresh: () => Promise<void>;
-  start: (text: string) => Promise<void>;
-  send: (text: string) => Promise<void>;
+  start: (text: string) => Promise<boolean>;
+  send: (text: string) => Promise<boolean>;
   control: (action: ControlAction, payload?: Record<string, unknown>) => Promise<void>;
   editContract: (fields: Record<string, unknown>) => Promise<boolean>;
   setNewMode: (mode: 'auto' | AgentMode) => void;
@@ -30,123 +31,167 @@ const message = (e: unknown) => (e instanceof Error ? e.message : String(e));
 let refreshTimer = 0;
 let pollTimer = 0;
 let listTimer = 0;
-let loadToken = 0;
+let selection = 0;
+let requestSequence = 0;
+let appliedSequence = 0;
+let listSequence = 0;
 
-export const useAgent = create<AgentStore>((set, get) => ({
-  sessions: [],
-  sessionId: null,
-  session: null,
-  providers: null,
-  providersError: null,
-  loadError: null,
-  sending: false,
-  newMode: 'auto',
-  newProvider: null,
-  actionError: null,
+export const useAgent = create<AgentStore>((set, get) => {
+  // A session can be opened, left, and opened again before an old request returns.
+  // Its id alone is therefore not enough to decide whether a response still belongs here.
+  const request = () => ({ selection, id: get().sessionId, sequence: ++requestSequence });
+  type Request = ReturnType<typeof request>;
+  const current = (r: Request) => r.selection === selection && r.id === get().sessionId;
+  const accept = (r: Request, session: AgentSession) => {
+    if (!current(r) || session.session_id !== r.id) return false;
+    const previous = get().session;
+    if (previous && (session.updated_utc < previous.updated_utc
+      || (session.updated_utc === previous.updated_utc && r.sequence < appliedSequence))) return false;
+    appliedSequence = Math.max(appliedSequence, r.sequence);
+    set({ session, loadError: null });
+    return true;
+  };
+  const actionAvailable = () => !get().sending && !get().pendingAction;
 
-  async loadProviders() {
-    try {
-      set({ providers: await agentApi.providers(), providersError: null });
-    } catch (e) {
-      set({ providersError: message(e) });
-    }
-  },
+  return {
+    sessions: [],
+    sessionId: null,
+    session: null,
+    providers: null,
+    providersError: null,
+    loadError: null,
+    sending: false,
+    pendingAction: null,
+    newMode: 'auto',
+    newProvider: null,
+    actionError: null,
 
-  async loadSessions() {
-    try {
-      set({ sessions: (await agentApi.sessions()).sessions });
-    } catch {
-      /* list is advisory; the open session keeps working */
-    }
-  },
+    async loadProviders() {
+      try {
+        set({ providers: await agentApi.providers(), providersError: null });
+      } catch (e) {
+        set({ providersError: message(e) });
+      }
+    },
 
-  async select(id) {
-    if (!id) {
-      set({ sessionId: null, session: null, loadError: null, actionError: null });
-      return;
-    }
-    if (get().sessionId === id && get().session) return;
-    const token = ++loadToken;
-    set({ sessionId: id, session: null, loadError: null, actionError: null });
-    try {
-      const s = await agentApi.session(id);
-      if (token === loadToken) set({ session: s });
-      schedulePoll();
-    } catch (e) {
-      if (token === loadToken) set({ loadError: message(e) });
-    }
-  },
+    async loadSessions() {
+      const token = ++listSequence;
+      try {
+        const result = await agentApi.sessions();
+        if (token === listSequence) set({ sessions: result.sessions });
+      } catch {
+        /* list is advisory; the open session keeps working */
+      }
+    },
 
-  async refresh() {
-    const id = get().sessionId;
-    if (!id) return;
-    try {
-      const s = await agentApi.session(id);
-      if (get().sessionId === id) set({ session: s, loadError: null });
-    } catch (e) {
-      if (get().sessionId === id) set({ loadError: message(e) });
-    }
-    schedulePoll();
-  },
+    async select(id) {
+      if (id && get().sessionId === id && get().session) return;
+      selection++;
+      appliedSequence = 0;
+      window.clearTimeout(refreshTimer);
+      window.clearTimeout(pollTimer);
+      set({ sessionId: id, session: null, loadError: null, actionError: null, sending: false, pendingAction: null });
+      if (!id) return;
+      const r = request();
+      try {
+        accept(r, await agentApi.session(id));
+      } catch (e) {
+        if (current(r) && r.sequence >= appliedSequence) set({ loadError: message(e) });
+      }
+      if (current(r)) schedulePoll();
+    },
 
-  async start(text) {
-    set({ sending: true, actionError: null });
-    try {
-      const s = await agentApi.create({ text, mode: get().newMode, provider_id: get().newMode === 'rule' ? undefined : get().newProvider ?? undefined });
-      set({ session: s, sessionId: s.session_id, sending: false });
-      navigate(`#/agent/${encodeURIComponent(s.session_id)}`);
-      void get().loadSessions();
-      schedulePoll();
-    } catch (e) {
-      set({ sending: false, actionError: message(e) });
-    }
-  },
+    async refresh() {
+      const r = request();
+      if (!r.id) return;
+      try {
+        accept(r, await agentApi.session(r.id));
+      } catch (e) {
+        if (current(r) && r.sequence >= appliedSequence) set({ loadError: message(e) });
+      }
+      if (current(r)) schedulePoll();
+    },
 
-  async send(text) {
-    const id = get().sessionId;
-    if (!id) return get().start(text);
-    set({ sending: true, actionError: null });
-    try {
-      const s = await agentApi.message(id, text);
-      if (get().sessionId === id) set({ session: s });
-      schedulePoll();
-    } catch (e) {
-      set({ actionError: message(e) });
-    } finally {
-      set({ sending: false });
-    }
-  },
+    async start(text) {
+      if (!actionAvailable()) return false;
+      const r = request();
+      const { newMode, newProvider } = get();
+      set({ sending: true, actionError: null });
+      try {
+        const session = await agentApi.create({ text, mode: newMode, provider_id: newMode === 'rule' ? undefined : newProvider ?? undefined });
+        void get().loadSessions();
+        if (!current(r)) return false;
+        selection++;
+        appliedSequence = r.sequence;
+        set({ session, sessionId: session.session_id, sending: false, loadError: null });
+        navigate(`#/agent/${encodeURIComponent(session.session_id)}`);
+        schedulePoll();
+        return true;
+      } catch (e) {
+        if (current(r)) set({ sending: false, actionError: message(e) });
+        return false;
+      }
+    },
 
-  async control(action, payload) {
-    const id = get().sessionId;
-    if (!id) return;
-    set({ actionError: null });
-    try {
-      const s = await agentApi.control(id, action, payload);
-      if (get().sessionId === id) set({ session: s });
-      schedulePoll();
-    } catch (e) {
-      set({ actionError: message(e) });
-    }
-  },
+    async send(text) {
+      if (!actionAvailable()) return false;
+      const r = request();
+      if (!r.id) return get().start(text);
+      if (!get().session || get().session?.state === 'running') return false;
+      set({ sending: true, actionError: null });
+      try {
+        const session = await agentApi.message(r.id, text);
+        accept(r, session);
+        return current(r);
+      } catch (e) {
+        if (current(r)) set({ actionError: message(e) });
+        return false;
+      } finally {
+        if (current(r)) {
+          set({ sending: false });
+          schedulePoll();
+        }
+      }
+    },
 
-  async editContract(fields) {
-    const id = get().sessionId;
-    if (!id) return false;
-    set({ actionError: null });
-    try {
-      const s = await agentApi.editContract(id, fields);
-      if (get().sessionId === id) set({ session: s });
-      return true;
-    } catch (e) {
-      set({ actionError: message(e) });
-      return false;
-    }
-  },
+    async control(action, payload) {
+      const r = request();
+      if (!r.id || !get().session || !actionAvailable()) return;
+      set({ actionError: null, pendingAction: action });
+      try {
+        accept(r, await agentApi.control(r.id, action, payload));
+      } catch (e) {
+        if (current(r)) set({ actionError: message(e) });
+      } finally {
+        if (current(r)) {
+          set({ pendingAction: null });
+          schedulePoll();
+        }
+      }
+    },
 
-  setNewMode: (newMode) => set({ newMode }),
-  setNewProvider: (newProvider) => set({ newProvider }),
-}));
+    async editContract(fields) {
+      const r = request();
+      if (!r.id || !get().session || !actionAvailable()) return false;
+      set({ actionError: null, pendingAction: 'edit' });
+      try {
+        accept(r, await agentApi.editContract(r.id, fields));
+        return current(r);
+      } catch (e) {
+        if (current(r)) set({ actionError: message(e) });
+        return false;
+      } finally {
+        if (current(r)) {
+          set({ pendingAction: null });
+          schedulePoll();
+        }
+      }
+    },
+
+    setNewMode: (newMode) => set({ newMode }),
+    setNewProvider: (newProvider) => set({ newProvider }),
+  };
+});
 
 /** While a turn runs, poll as a fallback to the event stream (which may be closed for hidden tabs). */
 function schedulePoll() {

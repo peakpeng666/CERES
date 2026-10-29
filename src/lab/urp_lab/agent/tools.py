@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import json
+import math
 import threading
 import time
 from dataclasses import dataclass, field
@@ -57,8 +58,16 @@ def validate(schema: dict, value, path: str = '参数') -> list[str]:
     errors: list[str] = []
     t = schema.get('type')
     if t in ('integer', 'number'):
-        if isinstance(value, bool) or not isinstance(value, (int, float)) or (t == 'integer' and float(value) != int(value)):
+        if isinstance(value, bool) or not isinstance(value, (int, float)):
             return [f'{path} 须为{"整数" if t == "integer" else "数值"}']
+        try:
+            finite = math.isfinite(value)
+        except OverflowError:
+            finite = False
+        if not finite:
+            return [f'{path} 须为有限数值']
+        if t == 'integer' and value != int(value):
+            return [f'{path} 须为整数']
         if 'minimum' in schema and value < schema['minimum']:
             errors.append(f'{path} 须 ≥ {schema["minimum"]}')
         if 'maximum' in schema and value > schema['maximum']:
@@ -74,7 +83,7 @@ def validate(schema: dict, value, path: str = '参数') -> list[str]:
         if len(value) < schema.get('minItems', 0) or len(value) > schema.get('maxItems', 10_000):
             errors.append(f'{path} 元素个数须在 {schema.get("minItems", 0)}–{schema.get("maxItems", "∞")}')
         if 'items' in schema:
-            for i, item in enumerate(value[:200]):
+            for i, item in enumerate(value):
                 errors += validate(schema['items'], item, f'{path}[{i}]')
     if t == 'object':
         props = schema.get('properties', {})
@@ -97,16 +106,49 @@ def digest(result: Any, limit: int = 6000) -> str:
     return text if len(text) <= limit else text[:limit] + '…（已截断）'
 
 
+def log_arguments(value):
+    """Keep refused non-JSON numbers visible without making the session impossible to persist."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return str(value)
+    if isinstance(value, dict):
+        return {key: log_arguments(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [log_arguments(item) for item in value]
+    return copy.deepcopy(value)
+
+
 # ---------------------------------------------------------------- helpers --
 def _scenario(ctx: ToolContext) -> dict:
+    from ..planning import fingerprint
     from ..scenarios import get_scenario
     sid = ctx.session.get('scenario_id')
     if not sid:
         raise ToolError('no_scenario', '尚未建立任务地图；请先调用 build_scenario')
     try:
-        return get_scenario(sid)
+        sc = get_scenario(sid)
     except KeyError:
         raise ToolError('no_scenario', f'任务地图 {sid} 不存在') from None
+    if ctx.session.get('built_revision') is not None and ctx.session['built_revision'] != ctx.session['contract']['revision']:
+        raise ToolError('stale_scenario', '任务合同已修改；请先按当前合同重新建立任务地图')
+    expected = ctx.session.get('scenario_instance_sha256')
+    if expected and fingerprint(sc['instance']) != expected:
+        raise ToolError('stale_scenario', '任务地图已在会话外修改；请先重新建立地图，再求解和复核当前任务')
+    return sc
+
+
+def current_run_ids(session: dict) -> list[str]:
+    """Current build's runs; keep the all-time run_ids separately for history and export."""
+    if session.get('built_revision') is not None and session['built_revision'] != session['contract']['revision']:
+        return []
+    return session.get('active_run_ids', session.get('run_ids', []))
+
+
+def run_matches_current(session: dict, run: dict) -> bool:
+    from ..planning import fingerprint
+    if run.get('run_id') not in current_run_ids(session) or run.get('scenario_id') != session.get('scenario_id'):
+        return False
+    expected = session.get('scenario_instance_sha256')
+    return not expected or isinstance(run.get('instance'), dict) and fingerprint(run['instance']) == expected
 
 
 def _catalog(ctx: ToolContext) -> list[dict]:
@@ -119,15 +161,26 @@ def _run(ctx: ToolContext, run_id: str) -> dict:
     run = ctx.lab.store.get_run(run_id)
     if run is None:
         raise ToolError('unknown_run', f'没有运行记录 {run_id}')
+    if not run_matches_current(ctx.session, run):
+        raise ToolError('stale_run', f'运行 {run_id} 不属于当前任务版本；历史记录仍保留，请使用本轮重新求解的方案')
     return run
 
 
-def run_summary(run: dict, pre: dict | None = None) -> dict:
+def run_summary(run: dict, pre: dict | None = None, verification: dict | None = None) -> dict:
     m = run.get('metrics') or {}
     cause = diagnose.classify(run, pre)
+    independent_recheck = None if verification is None else bool(verification.get('valid') and verification.get('agrees'))
+    check_valid = (run.get('check') or {}).get('valid')
+    if verification is not None:
+        check_valid = bool(check_valid and independent_recheck)
+        category = verification.get('category') or ('ok' if independent_recheck else 'implementation_error')
+        if not independent_recheck and category == 'ok':
+            category = 'implementation_error'
+        cause = {'category': category}
     return {
         'run_id': run['run_id'], 'algorithm_id': run['algorithm']['id'], 'algorithm': run['algorithm'].get('name'),
-        'state': run.get('state'), 'status': run.get('status'), 'check_valid': (run.get('check') or {}).get('valid'),
+        'state': run.get('state'), 'status': run.get('status'), 'check_valid': check_valid,
+        'independent_recheck': independent_recheck,
         'objective': (run.get('objective') or {}).get('value'), 'objective_unit': (run.get('objective') or {}).get('unit'),
         'total_distance_m': m.get('total_distance_m'), 'makespan_s': m.get('makespan_s'),
         'vehicles_used': m.get('vehicles_used'), 'trips': m.get('trips'), 'wall_s': m.get('wall_s'),
@@ -138,13 +191,25 @@ def run_summary(run: dict, pre: dict | None = None) -> dict:
 
 
 GEOMETRY_FIELDS = {'task_kind', 'field_size_m', 'field_area_m2', 'field_shape', 'real_field_id', 'plot_count', 'task_count',
-                   'task_distribution', 'obstacles', 'depot_location', 'seed'}
+                   'task_distribution', 'obstacles', 'depot_location', 'vehicle_width_m', 'seed'}
 
 
 # ---------------------------------------------------------------- handlers --
 def update_task_contract(ctx: ToolContext, args: dict) -> dict:
     current = ctx.session['contract']
-    new, accepted, rejected = tc.apply(current, args.get('fields') or {}, 'llm', args.get('evidence') or {}, '模型理解')
+    values = dict(args.get('fields') or {})
+    evidence = args.get('evidence') or {}
+    rejected_evidence = []
+    latest_user = next((m.get('text', '') for m in reversed(ctx.session.get('messages', [])) if m.get('role') == 'user'), '')
+    for key, raw in list(values.items()):
+        old = current['fields'].get(key)
+        quote = evidence.get(key)
+        if (old and old['source'] in ('user_text', 'user_edit') and old['value'] != raw and quote
+                and quote not in latest_user):
+            rejected_evidence.append({'key': key, 'value': raw, 'reason': '修改已明确的用户要求须引用本轮用户原话；该片段未出现'})
+            values.pop(key)
+    new, accepted, rejected = tc.apply(current, values, 'llm', evidence, '模型理解')
+    rejected.extend(rejected_evidence)
     new = tc.add_unsupported(new, args.get('unsupported') or [])
     ctx.session['contract'] = new
     return {'accepted': accepted, 'rejected': rejected, 'missing': [tc.FIELDS[k].label for k in tc.missing(new)],
@@ -186,15 +251,18 @@ def find_real_fields(ctx: ToolContext, args: dict) -> dict:
 
 def build_scenario(ctx: ToolContext, args: dict) -> dict:
     from .. import compose
+    from ..planning import fingerprint
     from ..scenarios import get_scenario, save_user_scenario
     contract = ctx.session['contract']
     if contract['status'] != 'confirmed':
         raise ToolError('contract_not_confirmed', '任务合同尚未确认；先请用户确认')
     execution = tc.execution(contract)
-    overrides = tc.compose_overrides(contract)
+    overrides, _ = compose.fill_defaults(tc.compose_overrides(contract))
     existing = ctx.session.get('scenario_id')
     built_from = ctx.session.get('scenario_contract_fields') or {}
     geometry_changed = any(built_from.get(k) != tc.value(contract, k) for k in GEOMETRY_FIELDS)
+    # Removing an explicit demand must restore the generator's task-kind default, not retain the old value.
+    geometry_changed = geometry_changed or built_from.get('task_demand') is not None and tc.value(contract, 'task_demand') is None
     if existing and not geometry_changed:
         sc = get_scenario(existing)
         inst = sc['instance']
@@ -204,23 +272,31 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
             names = list(veh.get('names') or [])
             veh['names'] = (names + [f'车{i + 1}' for i in range(len(names), n)])[:n]
             veh['count'] = n
-        for key, target in (('vehicle_capacity', 'capacity'), ('vehicle_speed_mps', 'speed_mps')):
-            if tc.value(contract, key) is not None:
-                veh[target] = tc.value(contract, key)
+        veh['speed_mps'] = overrides['speed_mps']
         if tc.value(contract, 'task_demand') is not None:
             for t in inst['tasks']:
                 t['demand'] = int(tc.value(contract, 'task_demand'))
-        if tc.value(contract, 'objective'):
-            inst['objective'] = tc.value(contract, 'objective')
+        veh['capacity'] = tc.value(contract, 'vehicle_capacity') or max(
+            max(t['demand'] for t in inst['tasks']), math.ceil(sum(t['demand'] for t in inst['tasks']) / veh['count'] * 1.3))
+        inst['objective'] = overrides['objective']
         veh['trips'], veh['travel'] = execution['trip_mode'], execution['travel_mode']
+        sc['provenance']['agent'] = {'session_id': ctx.session['session_id'], 'contract_revision': contract['revision']}
+        sc['provenance']['params']['spec'] = overrides
+        sc['summary'] = f"{veh['count']} 台车 · " + sc['summary'].split(' · ', 1)[-1]
+        sc['compose']['cards'] = compose.describe(overrides)
         stored = save_user_scenario(sc, overwrite=True, expected_revision=sc.get('revision'))
         mode = 'updated'
     else:
         text = contract.get('request_text') or '智能体任务'
         if tc.value(contract, 'real_field_id'):
-            sc = compose.from_field(tc.value(contract, 'real_field_id'), text, tc.value(contract, 'seed'), overrides)
+            sc = compose.from_field(tc.value(contract, 'real_field_id'), '', execution['seed'], overrides)
         else:
-            sc = compose.compose(text, tc.value(contract, 'seed'), overrides)
+            sc = compose.compose('', execution['seed'], overrides)
+        # The contract is authoritative: reparsing its initial text would resurrect cleared or superseded fields.
+        sc['title'] = text[:22] + ('…' if len(text) > 22 else '')
+        sc['compose']['text'] = text
+        sc['provenance']['params']['text'] = text
+        sc['id'] += f"-{ctx.session['session_id'][-6:]}-r{contract['revision']}"
         sc['instance']['vehicles']['trips'] = execution['trip_mode']
         sc['instance']['vehicles']['travel'] = execution['travel_mode']
         sc['provenance']['agent'] = {'session_id': ctx.session['session_id'], 'contract_revision': contract['revision']}
@@ -229,9 +305,20 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
         if existing:
             ctx.session.setdefault('previous_scenarios', []).append(existing)
     ctx.session['scenario_id'] = stored['id']
-    ctx.session['scenario_contract_fields'] = {k: tc.value(contract, k) for k in GEOMETRY_FIELDS}
+    ctx.session['scenario_contract_fields'] = {k: tc.value(contract, k) for k in tc.FIELDS}
+    instance_sha256 = fingerprint(stored['instance'])
+    changed = (ctx.session.get('built_revision') != contract['revision']
+               or ctx.session.get('scenario_instance_sha256') != instance_sha256)
     ctx.session['built_revision'] = contract['revision']
-    ctx.session['solved_since_build'] = False
+    ctx.session['scenario_instance_sha256'] = instance_sha256
+    if changed:
+        ctx.session['active_run_ids'] = []
+        ctx.session['active_sim_runs'] = []
+        ctx.session.setdefault('verification_history', {}).update(ctx.session.get('verifications') or {})
+        ctx.session['verifications'] = {}
+        ctx.session['recommendation'] = None
+        ctx.session['tried_algorithms'] = []
+        ctx.session['solved_since_build'] = False
     inst = stored['instance']
     pre = diagnose.precheck(inst)
     ctx.session['precheck'] = pre
@@ -301,6 +388,7 @@ def solve(ctx: ToolContext, args: dict) -> dict:
     except RuntimeError as exc:
         raise ToolError('shutting_down', f'求解服务正在关闭：{exc}') from None
     ctx.session.setdefault('run_ids', []).extend(run_ids)
+    ctx.session.setdefault('active_run_ids', []).extend(run_ids)
     ctx.session['solved_since_build'] = True
     ctx.session.setdefault('tried_algorithms', [])
     ctx.session['tried_algorithms'] = list(dict.fromkeys(ctx.session['tried_algorithms'] + [a['id'] for a, _ in resolved]))
@@ -330,7 +418,7 @@ def verify_run(ctx: ToolContext, args: dict) -> dict:
     cause = diagnose.classify(run, ctx.session.get('precheck'))
     if result.get('performed') and not result.get('agrees'):
         cause = {'category': 'implementation_error', 'evidence': ['独立复核与存档判定不一致'] + result.get('errors', [])[:3]}
-    ctx.session.setdefault('verifications', {})[run['run_id']] = {'valid': result.get('valid'), 'agrees': result.get('agrees'),
+    ctx.session.setdefault('verifications', {})[run['run_id']] = {'valid': bool(result.get('valid') and result.get('agrees')), 'agrees': result.get('agrees'),
                                                                    'category': cause['category']}
     return {'run_id': run['run_id'], 'recheck': result, 'diagnosis': cause['category'],
             'diagnosis_label': diagnose.CATEGORY_LABEL.get(cause['category']), 'evidence': cause.get('evidence', [])}
@@ -338,14 +426,15 @@ def verify_run(ctx: ToolContext, args: dict) -> dict:
 
 def compare_runs(ctx: ToolContext, args: dict) -> dict:
     from ..planning import comparison_key
-    ids = args.get('run_ids') or ctx.session.get('run_ids', [])
+    ids = args.get('run_ids') or current_run_ids(ctx.session)
     runs = [_run(ctx, rid) for rid in ids]
     groups: dict[str, list[dict]] = {}
     for r in runs:
         groups.setdefault(comparison_key(r) if r.get('state') == 'done' else 'unfinished', []).append(r)
     tables = []
     for key, members in groups.items():
-        rows = [run_summary(r, ctx.session.get('precheck')) for r in members]
+        rows = [run_summary(r, ctx.session.get('precheck'), (ctx.session.get('verifications') or {}).get(r['run_id']))
+                for r in members]
         valid = [row for row in rows if row['status'] == 'feasible' and row['check_valid']]
         best = {}
         if key != 'unfinished' and len(valid) > 1:
@@ -370,14 +459,16 @@ def diagnose_run(ctx: ToolContext, args: dict) -> dict:
 def start_simulation(ctx: ToolContext, args: dict) -> dict:
     run = _run(ctx, args['run_id'])
     verdict = (ctx.session.get('verifications') or {}).get(run['run_id'])
-    if not verdict or not verdict.get('valid'):
+    if not verdict or not verdict.get('valid') or not verdict.get('agrees'):
         raise ToolError('unverified', '执行前须先用 verify_run 独立复核且通过')
+    _scenario(ctx)
     body = {'run_id': run['run_id'], 'real_time_factor': float(args.get('real_time_factor') or 4.0)}
     try:
         state = ctx.lab.fieldsim.start(body)
     except Exception as exc:  # noqa: BLE001 - ServiceError carries a user-facing message
         raise ToolError(getattr(exc, 'code', 'sim_failed'), getattr(exc, 'message', str(exc))) from None
     ctx.session.setdefault('sim_runs', []).append(run['run_id'])
+    ctx.session.setdefault('active_sim_runs', []).append(run['run_id'])
     return {'phase': state.get('phase'), 'session_id': state.get('session_id'), 'run_id': run['run_id'],
             'note': '已启动 Gazebo 田间会话；规划预览、实时仿真与记录回放分别显示'}
 
@@ -399,7 +490,7 @@ def run_study(ctx: ToolContext, args: dict) -> dict:
     cells = len(args['algorithms']) * len(budgets) * len(seeds)
     if cells > 60:
         raise ToolError('study_too_large', f'{cells} 个运行超过单次上限 60；请减少算法、预算或种子')
-    spec = {'name': f"智能体 {ctx.session['session_id']} 重复实验", 'scenarios': [sc['id']], 'algorithms': args['algorithms'],
+    spec = {'title': f"智能体 {ctx.session['session_id']} 重复实验", 'scenarios': [sc['id']], 'algorithms': args['algorithms'],
             'budgets': budgets, 'seeds': seeds}
     try:
         study = ctx.lab.studies.create(spec, get_scenario, ctx.lab.catalog())
@@ -407,6 +498,11 @@ def run_study(ctx: ToolContext, args: dict) -> dict:
         raise ToolError('invalid_study', str(exc)) from None
     sid = study['study_id']
     ctx.session.setdefault('study_ids', []).append(sid)
+    run_ids = [cell['run_id'] for cell in study['design']]
+    ctx.session.setdefault('run_ids', []).extend(run_ids)
+    ctx.session.setdefault('active_run_ids', []).extend(run_ids)
+    ctx.session['solved_since_build'] = bool(run_ids)
+    ctx.emit('runs', {'run_ids': run_ids, 'scenario_id': sc['id']})
     deadline = time.monotonic() + max(budgets) * cells + 120
     while time.monotonic() < deadline:
         view = ctx.lab.studies.get(sid)
@@ -431,7 +527,8 @@ def run_study(ctx: ToolContext, args: dict) -> dict:
                      'objective_min': round(min(vals), 3) if vals else None,
                      'objective_max': round(max(vals), 3) if vals else None,
                      'wall_s_mean': round(statistics.fmean([(r.get('metrics') or {}).get('wall_s') or 0 for r in runs]), 3)})
-    return {'study_id': sid, 'runs': cells, 'seeds': seeds, 'budgets': budgets, 'rows': rows,
+    return {'study_id': sid, 'runs': len(run_ids), 'requested_runs': cells, 'skipped': study.get('skipped', []),
+            'seeds': seeds, 'budgets': budgets, 'rows': rows,
             'note': '统计检验、性能剖面与临界差图见「算法实验 → 统计分析」'}
 
 
@@ -513,7 +610,7 @@ PHASE_TOOLS = {
 def execute(tools: dict[str, Tool], ctx: ToolContext, name: str, args: dict) -> dict:
     """Validate and run one call; returns the call record (status ok / error / refused / awaiting_approval)."""
     started = time.monotonic()
-    record = {'name': name, 'arguments': copy.deepcopy(args), 'started_utc': _now()}
+    record = {'name': name, 'arguments': log_arguments(args), 'started_utc': _now()}
     tool = tools.get(name)
     try:
         if tool is None:
@@ -529,7 +626,7 @@ def execute(tools: dict[str, Tool], ctx: ToolContext, name: str, args: dict) -> 
         result = tool.handler(ctx, args)
         record.update(status='ok', result=result)
     except ToolError as exc:
-        record.update(status='refused' if exc.code in ('contract_not_confirmed', 'no_scenario', 'unverified', 'question_not_needed',
+        record.update(status='refused' if exc.code in ('contract_not_confirmed', 'no_scenario', 'stale_scenario', 'stale_run', 'unverified', 'question_not_needed',
                                                          'invalid_arguments', 'unknown_tool') else 'error',
                       error={'code': exc.code, 'message': exc.message, **({'data': exc.data} if exc.data else {})})
     except Exception as exc:  # noqa: BLE001 - recorded as an implementation error of the tool itself

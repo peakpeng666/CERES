@@ -1,0 +1,7 @@
+welcome {}
+contract_ready {"seconds":0.19}
+report_ready {"seconds":3.051}
+session {"sid":"agt_20261029T162518_147802","state":"done","mode":"rule","provider":null,"runs":3,"verified":3,"unsupported":[],"unverified_numbers":[]}
+edit_done {"seconds":3.622}
+after_edit {"state":"done","vehicle_count":3,"task_count":8,"capacity":4,"scenario":"task-sampling-20261029-162519-042-147802-r1","runs":6,"verified":3}
+restored {"sid":"agt_20261029T162518_147802","active_runs":3}

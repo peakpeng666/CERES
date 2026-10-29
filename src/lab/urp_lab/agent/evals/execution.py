@@ -49,6 +49,7 @@ def run(mode: str, out: Path, provider_id: str | None = None) -> dict:
     from ...gateway import Config, Lab
     out.mkdir(parents=True, exist_ok=False)
     tmp = Path(tempfile.mkdtemp(prefix='agent-exec-'))
+    previous_scenarios = paths.USER_SCENARIOS
     paths.USER_SCENARIOS = tmp / 'scenarios'
     lab = Lab(Config(runtime=tmp, background=False))
     lab.start()
@@ -95,9 +96,17 @@ def run(mode: str, out: Path, provider_id: str | None = None) -> dict:
                 'completed': r['state'] == 'done',
             }
             r['pass'] = all(v for v in r['checks'].values() if v is not None)
+            # Save each completed case before moving on. Keep the frozen run
+            # inputs, tool trace and failure states available for independent
+            # review, rather than only a count and a temporary SQLite path.
+            session_file = f"{sc['id']}.session.json"
+            (out / session_file).write_text(json.dumps(runner.export(sid), ensure_ascii=False, indent=1), encoding='utf-8')
+            r['session_evidence'] = session_file
+            (out / 'progress.json').write_text(json.dumps(records, ensure_ascii=False, indent=1), encoding='utf-8')
     finally:
         runner.shutdown()
         lab.shutdown()
+        paths.USER_SCENARIOS = previous_scenarios
     meta = {'schema': 'urp.agent-exec-run/1', 'mode_requested': mode, 'provider_id': provider_id, 'prompt_version': prompts.VERSION, 'runner_version': RUNNER_VERSION,
             'finished_utc': datetime.now(timezone.utc).isoformat(), 'scenarios': len(records),
             'passed': sum(r['pass'] for r in records), 'modes_used': sorted({r['mode'] for r in records})}
@@ -117,7 +126,8 @@ def main():
     for r in result['records']:
         print(r['scenario'], 'PASS' if r['pass'] else 'FAIL', r['state'], r['checks'], r['refused_or_failed'][:4])
     print(json.dumps(result['meta'], ensure_ascii=False))
+    return 0 if result['meta']['passed'] == result['meta']['scenarios'] and result['meta']['scenarios'] > 0 else 1
 
 
 if __name__ == '__main__':
-    main()
+    raise SystemExit(main())

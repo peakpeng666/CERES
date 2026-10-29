@@ -1,0 +1,28 @@
+test_changed_archive_and_escaping_member_are_rejected (test_audit_archives.ArchiveBoundary.test_changed_archive_and_escaping_member_are_rejected) ... ok
+test_retry_is_bound_to_original_claim_not_same_key_in_retry_registry (test_audit_archives.ArchiveBoundary.test_retry_is_bound_to_original_claim_not_same_key_in_retry_registry) ... ok
+test_verified_archive_extracts_without_changing_source (test_audit_archives.ArchiveBoundary.test_verified_archive_extracts_without_changing_source) ... ok
+test_malformed_or_missing_schema_result_is_not_skipped (test_audit_results.AuditAccounting.test_malformed_or_missing_schema_result_is_not_skipped) ... ok
+test_valid_result_and_missing_identity_hashes (test_audit_results.AuditAccounting.test_valid_result_and_missing_identity_hashes) ... ok
+test_below_half (test_validate.IndependentChecks.test_below_half) ... ok
+test_bool_node (test_validate.IndependentChecks.test_bool_node) ... ok
+test_capacity (test_validate.IndependentChecks.test_capacity) ... ok
+test_depot (test_validate.IndependentChecks.test_depot) ... ok
+test_duplicate (test_validate.IndependentChecks.test_duplicate) ... ok
+test_empty_route (test_validate.IndependentChecks.test_empty_route) ... ok
+test_failure_kept (test_validate.IndependentChecks.test_failure_kept) ... ok
+test_fleet (test_validate.IndependentChecks.test_fleet) ... ok
+test_float_cost (test_validate.IndependentChecks.test_float_cost) ... ok
+test_invalid_budget_is_rejected_without_raising (test_validate.IndependentChecks.test_invalid_budget_is_rejected_without_raising) ... ok
+test_invalid_result_schema_still_counted (test_validate.IndependentChecks.test_invalid_result_schema_still_counted) ... ok
+test_late_incumbent_rejected (test_validate.IndependentChecks.test_late_incumbent_rejected) ... ok
+test_malformed_or_coerced_event_rejected_without_raising (test_validate.IndependentChecks.test_malformed_or_coerced_event_rejected_without_raising) ... ok
+test_missing (test_validate.IndependentChecks.test_missing) ... ok
+test_round_half_up (test_validate.IndependentChecks.test_round_half_up) ... ok
+test_timely_independent_witness (test_validate.IndependentChecks.test_timely_independent_witness) ... ok
+test_valid (test_validate.IndependentChecks.test_valid) ... ok
+test_wrong_cost (test_validate.IndependentChecks.test_wrong_cost) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.023s
+
+OK

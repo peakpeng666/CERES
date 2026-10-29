@@ -142,6 +142,27 @@ describe('serialized draft saving before solve', () => {
     expect(mocks.navigate).toHaveBeenCalledWith('#/plan/scenario-a', { replace: true });
   });
 
+  it('reloads an updated agent map even when its id is unchanged', async () => {
+    useStudio.setState({ save: 'saved' });
+    mocks.scenario.mockResolvedValue({ ...scenario, revision: 2, instance: { ...instance, vehicles: { ...instance.vehicles, count: 4 } } });
+    mocks.runs.mockResolvedValue({ runs: [] });
+    mocks.recommend.mockResolvedValue({ ranking: [], recommended: null, policy: 'rules-v1' });
+    expect(await useStudio.getState().open(scenario.id, { reload: true })).toBe(true);
+    expect(useStudio.getState().scenario?.revision).toBe(2);
+    expect((useStudio.getState().draft as unknown as FleetInstance).vehicles.count).toBe(4);
+  });
+
+  it.each(['dirty', 'saving', 'error'] as const)('preserves a %s draft when an agent asks to reload the same map', async (save) => {
+    const draft = structuredClone(instance) as unknown as Instance;
+    useStudio.setState({ draft, save });
+    expect(await useStudio.getState().open(scenario.id, { reload: true })).toBe(false);
+    expect(useStudio.getState().draft).toBe(draft);
+    expect(useStudio.getState().save).toBe(save);
+    expect(mocks.scenario).not.toHaveBeenCalled();
+    expect(mocks.saveScenario).not.toHaveBeenCalled();
+    expect(useStudio.getState().toast?.text).toContain('未保存');
+  });
+
   it('submits recommended schema parameters and explicit overrides in addition to budget and seed', async () => {
     const full = {
       id: 'f2c.full',

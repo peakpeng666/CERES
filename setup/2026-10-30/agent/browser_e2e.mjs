@@ -2,6 +2,7 @@
 // Usage: NODE_PATH=<dir containing playwright-core> [URP_CHROMIUM=<chrome binary>] node browser_e2e.mjs --out /new/absolute/dir [--url http://127.0.0.1:4100] [--mode auto|rule] [--provider <id>]
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import assert from 'node:assert/strict';
 
 const require = createRequire(import.meta.url);
 const { chromium } = require('playwright-core');
@@ -19,6 +20,20 @@ mkdirSync(out, { recursive: true });
 
 const log = { base, mode, provider, request, started: new Date().toISOString(), steps: [] };
 const step = (name, extra = {}) => { log.steps.push({ name, t: new Date().toISOString(), ...extra }); console.log(name, JSON.stringify(extra)); };
+const checkReport = (session) => {
+  assert.equal(session.state, 'done', `任务未完成：${JSON.stringify(session.error)}`);
+  assert.equal(session.contract.status, 'confirmed');
+  const active = session.active_run_ids;
+  assert.ok(active?.length > 0, '当前合同没有运行记录');
+  const evidence = session.report?.evidence;
+  assert.ok(evidence?.best_verified, '报告没有经独立复核的方案');
+  assert.ok(active.includes(evidence.best_verified.run_id), '最好方案来自旧合同');
+  assert.deepEqual(new Set(evidence.runs.map((r) => r.run_id)), new Set(active), '报告与当前合同批次不一致');
+  for (const run of evidence.runs.filter((r) => r.status === 'feasible')) {
+    assert.equal(session.verifications[run.run_id]?.valid, true, `${run.run_id} 未独立验算通过`);
+    assert.equal(session.verifications[run.run_id]?.agrees, true, `${run.run_id} 复核与存档不一致`);
+  }
+};
 
 const browser = await chromium.launch({ headless: true, executablePath: process.env.URP_CHROMIUM || undefined });
 const page = await browser.newPage({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1 });
@@ -59,7 +74,10 @@ try {
   await page.screenshot({ path: `${out}/03-report.png` });
 
   const session = await (await page.request.get(`${base}/lab/api/agent/sessions/${sid}`)).json();
-  if (session.state !== 'done') throw new Error(`第一轮未完成：${session.state} ${JSON.stringify(session.error)}`);
+  checkReport(session);
+  // Preserve the HTTP bytes: parsing/stringifying in JS changes e.g. 1.0 to 1
+  // and invalidates the Python-canonical record checksum in the export.
+  writeFileSync(`${out}/first-session.json`, await (await page.request.get(`${base}/lab/api/agent/sessions/${sid}/export`)).text());
   step('session', { sid, state: session.state, mode: session.mode, provider: session.provider?.model ?? null,
     runs: session.run_ids.length, verified: Object.values(session.verifications).filter((v) => v.valid).length,
     unsupported: session.contract.unsupported, unverified_numbers: session.report?.unverified_numbers ?? null });
@@ -75,9 +93,30 @@ try {
   await page.screenshot({ path: `${out}/04-edit-report.png` });
   const after = await (await page.request.get(`${base}/lab/api/agent/sessions/${sid}`)).json();
   const fields = Object.fromEntries(Object.entries(after.contract.fields).map(([k, v]) => [k, v.value]));
+  checkReport(after);
+  assert.equal(fields.vehicle_count, 3);
+  assert.equal(fields.task_count, session.contract.fields.task_count.value);
+  assert.equal(fields.vehicle_capacity, session.contract.fields.vehicle_capacity.value);
+  assert.equal(after.scenario_id, session.scenario_id, '仅改车队应原地更新地图');
+  assert.ok(session.run_ids.every((id) => after.run_ids.includes(id)), '历史运行丢失');
+  assert.ok(after.active_run_ids.every((id) => !session.run_ids.includes(id)), '新合同沿用了旧批次');
+  const exportedText = await (await page.request.get(`${base}/lab/api/agent/sessions/${sid}/export`)).text();
+  const exported = JSON.parse(exportedText);
+  assert.equal(exported.record.scenarios[after.scenario_id].instance.vehicles.count, 3);
+  for (const id of after.active_run_ids) assert.equal(exported.record.runs[id].instance.vehicles.count, 3);
+  writeFileSync(`${out}/edited-session.json`, exportedText);
   step('after_edit', { state: after.state, vehicle_count: fields.vehicle_count, task_count: fields.task_count,
     capacity: fields.vehicle_capacity, scenario: after.scenario_id, runs: after.run_ids.length,
     verified: Object.values(after.verifications).filter((v) => v.valid).length });
+  await page.reload();
+  await page.getByLabel('给智能体的消息').waitFor({ timeout: 30_000 });
+  assert.ok(page.url().includes(sid), '刷新后会话地址丢失');
+  const restored = await (await page.request.get(`${base}/lab/api/agent/sessions/${sid}`)).json();
+  assert.equal(restored.session_id, after.session_id);
+  assert.deepEqual(restored.active_run_ids, after.active_run_ids);
+  await page.screenshot({ path: `${out}/05-restored.png` });
+  step('restored', { sid, active_runs: restored.active_run_ids.length });
+  assert.equal(log.steps.filter((s) => s.name === 'pageerror').length, 0, '浏览器出现未处理错误');
   log.session = sid;
   log.result = 'pass';
 } catch (e) {
