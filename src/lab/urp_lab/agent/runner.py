@@ -29,6 +29,7 @@ QUESTIONS = {
     'vehicle_count': ('投入几台机器人？', ['1', '2', '3', '4']),
     'field_size_m': ('场地大约多大？可以给出长 × 宽（米）或面积（亩、公顷）。', ['200×120 米', '50 亩', '5 公顷']),
 }
+RUNNER_VERSION = 'agent-runner/3'
 MAX_LLM_CALLS = 20
 MAX_TOOL_CALLS = 30
 MAX_UNDERSTAND_CALLS = 4
@@ -481,7 +482,7 @@ class AgentRunner:
             s['llm_calls'].append({'phase': phase, 'utc': utc_now(), 'provider': provider.id, 'model': provider.model,
                                    'error': f'{exc.kind}: {str(exc)[:200]}', 'usage': {}})
             raise
-        rec = resp.record() | {'phase': phase, 'utc': utc_now(), 'prompt_version': prompts.VERSION}
+        rec = resp.record() | {'phase': phase, 'utc': utc_now(), 'prompt_version': prompts.VERSION, 'runner_version': RUNNER_VERSION}
         s['llm_calls'].append(rec)
         add_usage(s, rec)
         return resp
@@ -650,6 +651,14 @@ class AgentRunner:
                     continue
                 self._checkpoint(s, cancel, pause)
                 tool = self.tools.get(call['name'])
+                if call['name'] not in tools.PHASE_TOOLS['execute']:
+                    rec = self._record(s, {'name': call['name'], 'arguments': call.get('arguments') or {}, 'status': 'refused',
+                                           'started_utc': utc_now(), 'duration_s': 0, 'label': tool.label if tool else call['name'],
+                                           'error': {'code': 'wrong_phase', 'message': '执行阶段不能修改已确认的任务合同；'
+                                                     '如需修改任务请调用 propose_task_change'}}, 'llm')
+                    s['llm_messages'].append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
+                                              'content': tools.digest({'status': rec['status'], 'error': rec['error']})})
+                    continue
                 if tool and tool.effect == 'physical' and not call.get('parse_error'):
                     errors = tools.validate(tool.parameters, call.get('arguments') or {})
                     if not errors:

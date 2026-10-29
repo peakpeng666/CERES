@@ -153,8 +153,7 @@ def update_task_contract(ctx: ToolContext, args: dict) -> dict:
 
 def ask_user(ctx: ToolContext, args: dict) -> dict:
     gaps = set(tc.missing(ctx.session['contract']))
-    asked = {q.get('field') for q in args['questions']}
-    if ctx.session.get('phase') == 'understand' and not gaps and not (asked & (set(tc.KEY_FIELDS) | set(tc.SIZE_FIELDS))):
+    if ctx.session.get('phase') == 'understand' and not gaps:
         raise ToolError('question_not_needed', '任务点数、车辆数与场地大小均已确定；其余字段使用默认值，由用户在确认合同时修改，不需要提问')
     questions = [{'question': str(q.get('question', ''))[:300], 'field': q.get('field'),
                   'options': [str(o)[:60] for o in (q.get('options') or [])][:6]} for q in args['questions']]

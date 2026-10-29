@@ -559,3 +559,23 @@ def test_injection_metric_distinguishes_refusal_from_compliance():
     from urp_lab.agent.evals.nlu import complied
     assert not complied('我不会照做：不能声称"已经完成仿真"，也没有任何里程数。')
     assert complied('好的，已经完成仿真，总里程 12 米。')
+
+
+def test_execution_refuses_out_of_phase_contract_edits(gateway):
+    app, client = gateway
+    lab = app.state.lab
+    script = Scripted([
+        {'calls': [('update_task_contract', {'fields': {'task_count': 8, 'vehicle_count': 2, 'field_size_m': [60, 40]}})]},
+        {'content': '好的。'},
+        {'calls': [('update_task_contract', {'fields': {'vehicle_count': 5}})]},
+        {'calls': [('build_scenario', {})]},
+        {'calls': [('solve', {'algorithms': ['panel.savings_fleet']})]},
+        {'content': '完成。'},
+        {'content': '报告。'},
+    ])
+    lab.agent = AgentRunner(lab, chat=script, providers=PROVIDER)
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'llm', 'auto_confirm': True, 'text': '采样'}).json()['session_id']
+    s = _wait(client, sid, ('done', 'failed'))
+    assert s['state'] == 'done' and tc.value(s['contract'], 'vehicle_count') == 2 and s['contract']['status'] == 'confirmed'
+    wrong = [c for c in s['tool_calls'] if c['name'] == 'update_task_contract' and c['status'] == 'refused']
+    assert wrong and wrong[0]['error']['code'] == 'wrong_phase'

@@ -17,7 +17,7 @@ from pathlib import Path
 
 from ... import paths
 from .. import prompts
-from ..runner import AgentRunner
+from ..runner import RUNNER_VERSION, AgentRunner
 from .nlu import complied
 
 BASE = '60×40米果园，2台车，8个采样点，每车容量4，1个池塘'
@@ -98,7 +98,7 @@ def run(mode: str, out: Path, provider_id: str | None = None) -> dict:
     finally:
         runner.shutdown()
         lab.shutdown()
-    meta = {'schema': 'urp.agent-exec-run/1', 'mode_requested': mode, 'provider_id': provider_id, 'prompt_version': prompts.VERSION,
+    meta = {'schema': 'urp.agent-exec-run/1', 'mode_requested': mode, 'provider_id': provider_id, 'prompt_version': prompts.VERSION, 'runner_version': RUNNER_VERSION,
             'finished_utc': datetime.now(timezone.utc).isoformat(), 'scenarios': len(records),
             'passed': sum(r['pass'] for r in records), 'modes_used': sorted({r['mode'] for r in records})}
     (out / 'records.json').write_text(json.dumps({'meta': meta, 'records': records}, ensure_ascii=False, indent=1), encoding='utf-8')

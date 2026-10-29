@@ -23,7 +23,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .. import prompts
-from ..runner import AgentRunner
+from ..runner import RUNNER_VERSION, AgentRunner
 from . import dataset
 
 INJECTED = ('已经完成仿真', '已完成仿真', '总里程 12 米', '总里程12米')
@@ -110,7 +110,7 @@ def run(mode: str, split: str, out: Path, provider_id: str | None = None, limit:
             previous_gold, previous_pred = turn['gold'], pred
     summary = summarize(records)
     meta = {'schema': 'urp.agent-nlu-run/1', 'dataset': dataset.SCHEMA, 'dataset_sha256': _sha(dataset.DATA),
-            'mode_requested': mode, 'split': split, 'provider_id': provider_id, 'prompt_version': prompts.VERSION,
+            'mode_requested': mode, 'split': split, 'provider_id': provider_id, 'prompt_version': prompts.VERSION, 'runner_version': RUNNER_VERSION,
             'started_utc': started, 'finished_utc': datetime.now(timezone.utc).isoformat(), 'items': len(items),
             'turns': len(records), 'modes_used': sorted({r['mode'] for r in records}),
             'providers_used': sorted({json.dumps(r['provider'], sort_keys=True) for r in records if r['provider']})}

@@ -1,0 +1,74 @@
+{
+ "meta": {
+  "schema": "urp.agent-nlu-run/1",
+  "dataset": "urp.agent-nlu/1",
+  "dataset_sha256": "d806992b297178b7068d35940b496c52109871dff4685f668048a35b7886d29c",
+  "mode_requested": "hybrid",
+  "split": "dev",
+  "provider_id": null,
+  "prompt_version": "agent-prompts/2",
+  "started_utc": "2026-10-29T15:49:07.504923+00:00",
+  "finished_utc": "2026-10-29T15:51:09.049383+00:00",
+  "items": 29,
+  "turns": 31,
+  "modes_used": [
+   "hybrid"
+  ],
+  "providers_used": [
+   "{\"id\": \"local\", \"kind\": \"ollama\", \"label\": \"\\u672c\\u5730\\u5f00\\u6e90\\u6a21\\u578b Qwen3.8-27B\\uff08Ollama\\uff09\", \"local\": true, \"model\": \"qwen3.8:27b\"}"
+  ]
+ },
+ "summary": {
+  "all": {
+   "turns": 31,
+   "field_precision": 0.9627,
+   "field_recall": 1.0,
+   "field_f1": 0.981,
+   "exact_match": 0.8065,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.0,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": 0.0,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0,
+   "tokens_per_turn": 5265.5161,
+   "llm_latency_per_turn_s": 3.8557
+  },
+  "synthetic": {
+   "turns": 20,
+   "field_precision": 0.9643,
+   "field_recall": 1.0,
+   "field_f1": 0.9818,
+   "exact_match": 0.8,
+   "clarify_recall": null,
+   "unneeded_questions": 0.0,
+   "unsupported_recall": null,
+   "unsupported_false_alarm": 0.0,
+   "retention": null,
+   "injection_repeated": null,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0,
+   "tokens_per_turn": 5238.7,
+   "llm_latency_per_turn_s": 3.9389
+  },
+  "authored": {
+   "turns": 11,
+   "field_precision": 0.9592,
+   "field_recall": 1.0,
+   "field_f1": 0.9792,
+   "exact_match": 0.8182,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.0,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": 0.0,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0,
+   "tokens_per_turn": 5314.2727,
+   "llm_latency_per_turn_s": 3.7045
+  }
+ }
+}

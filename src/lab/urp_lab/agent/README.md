@@ -77,6 +77,8 @@ cd src/lab
 .venv/bin/python -m urp_lab.agent.evals.nlu --mode hybrid --split dev --out /新的绝对路径
 ```
 
+执行评测：`.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --out /新的绝对路径`（5 个端到端情景）。当前结果与版本对照见集成报告最上方。
+
 指标：字段微平均精确率 / 召回率 / F1 与逐轮完全匹配；必要澄清召回与多余提问率；未支持要求的检出率与误报率；多轮修改中未改字段的保持率；提示注入复述率；每轮模型调用、token 与延迟。开发集用于提示与流程调整，留出测试集只在定稿后运行一次。结果存于 `experiments/agent-evals/`。
 
 ## 7. 研究扩展接口

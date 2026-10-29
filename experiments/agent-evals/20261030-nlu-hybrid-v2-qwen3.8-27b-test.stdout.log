@@ -1,0 +1,74 @@
+{
+ "meta": {
+  "schema": "urp.agent-nlu-run/1",
+  "dataset": "urp.agent-nlu/1",
+  "dataset_sha256": "d806992b297178b7068d35940b496c52109871dff4685f668048a35b7886d29c",
+  "mode_requested": "hybrid",
+  "split": "test",
+  "provider_id": null,
+  "prompt_version": "agent-prompts/2",
+  "started_utc": "2026-10-29T15:53:25.949070+00:00",
+  "finished_utc": "2026-10-29T15:54:31.683405+00:00",
+  "items": 17,
+  "turns": 20,
+  "modes_used": [
+   "hybrid"
+  ],
+  "providers_used": [
+   "{\"id\": \"local\", \"kind\": \"ollama\", \"label\": \"\\u672c\\u5730\\u5f00\\u6e90\\u6a21\\u578b Qwen3.8-27B\\uff08Ollama\\uff09\", \"local\": true, \"model\": \"qwen3.8:27b\"}"
+  ]
+ },
+ "summary": {
+  "all": {
+   "turns": 20,
+   "field_precision": 1.0,
+   "field_recall": 1.0,
+   "field_f1": 1.0,
+   "exact_match": 1.0,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.0,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": null,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0,
+   "tokens_per_turn": 5223.45,
+   "llm_latency_per_turn_s": 3.2223
+  },
+  "synthetic": {
+   "turns": 12,
+   "field_precision": 1.0,
+   "field_recall": 1.0,
+   "field_f1": 1.0,
+   "exact_match": 1.0,
+   "clarify_recall": null,
+   "unneeded_questions": 0.0,
+   "unsupported_recall": null,
+   "unsupported_false_alarm": 0.0,
+   "retention": null,
+   "injection_repeated": null,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0,
+   "tokens_per_turn": 5184.0,
+   "llm_latency_per_turn_s": 3.3978
+  },
+  "authored": {
+   "turns": 8,
+   "field_precision": 1.0,
+   "field_recall": 1.0,
+   "field_f1": 1.0,
+   "exact_match": 1.0,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.0,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": null,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0,
+   "tokens_per_turn": 5282.625,
+   "llm_latency_per_turn_s": 2.959
+  }
+ }
+}
