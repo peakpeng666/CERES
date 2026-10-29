@@ -152,6 +152,10 @@ def update_task_contract(ctx: ToolContext, args: dict) -> dict:
 
 
 def ask_user(ctx: ToolContext, args: dict) -> dict:
+    gaps = set(tc.missing(ctx.session['contract']))
+    asked = {q.get('field') for q in args['questions']}
+    if ctx.session.get('phase') == 'understand' and not gaps and not (asked & (set(tc.KEY_FIELDS) | set(tc.SIZE_FIELDS))):
+        raise ToolError('question_not_needed', '任务点数、车辆数与场地大小均已确定；其余字段使用默认值，由用户在确认合同时修改，不需要提问')
     questions = [{'question': str(q.get('question', ''))[:300], 'field': q.get('field'),
                   'options': [str(o)[:60] for o in (q.get('options') or [])][:6]} for q in args['questions']]
     ctx.session['pending'] = {'type': 'questions', 'questions': questions, 'reason': str(args.get('reason') or '')[:300]}
@@ -227,6 +231,8 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
             ctx.session.setdefault('previous_scenarios', []).append(existing)
     ctx.session['scenario_id'] = stored['id']
     ctx.session['scenario_contract_fields'] = {k: tc.value(contract, k) for k in GEOMETRY_FIELDS}
+    ctx.session['built_revision'] = contract['revision']
+    ctx.session['solved_since_build'] = False
     inst = stored['instance']
     pre = diagnose.precheck(inst)
     ctx.session['precheck'] = pre
@@ -296,6 +302,7 @@ def solve(ctx: ToolContext, args: dict) -> dict:
     except RuntimeError as exc:
         raise ToolError('shutting_down', f'求解服务正在关闭：{exc}') from None
     ctx.session.setdefault('run_ids', []).extend(run_ids)
+    ctx.session['solved_since_build'] = True
     ctx.session.setdefault('tried_algorithms', [])
     ctx.session['tried_algorithms'] = list(dict.fromkeys(ctx.session['tried_algorithms'] + [a['id'] for a, _ in resolved]))
     ctx.emit('runs', {'run_ids': run_ids, 'scenario_id': sc['id']})
@@ -523,7 +530,7 @@ def execute(tools: dict[str, Tool], ctx: ToolContext, name: str, args: dict) -> 
         result = tool.handler(ctx, args)
         record.update(status='ok', result=result)
     except ToolError as exc:
-        record.update(status='refused' if exc.code in ('contract_not_confirmed', 'no_scenario', 'unverified',
+        record.update(status='refused' if exc.code in ('contract_not_confirmed', 'no_scenario', 'unverified', 'question_not_needed',
                                                          'invalid_arguments', 'unknown_tool') else 'error',
                       error={'code': exc.code, 'message': exc.message, **({'data': exc.data} if exc.data else {})})
     except Exception as exc:  # noqa: BLE001 - recorded as an implementation error of the tool itself

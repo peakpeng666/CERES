@@ -516,3 +516,46 @@ def test_study_tool_runs_replicates_on_the_session_map(gateway):
     assert rows['panel.savings_fleet']['objective_median'] is not None
     big = tools.execute(tools.registry(), ctx, 'run_study', {'algorithms': ['pyvrp.fleet'] * 6, 'budgets': [1, 2, 3, 4], 'seeds': list(range(10))})
     assert big['status'] == 'error' and big['error']['code'] == 'study_too_large'
+
+
+def test_unneeded_questions_are_refused_once_key_fields_are_known(gateway):
+    app, client = gateway
+    lab = app.state.lab
+    script = Scripted([
+        {'calls': [('update_task_contract', {'fields': {'task_count': 8, 'vehicle_count': 2, 'field_size_m': [60, 40]}}),
+                   ('ask_user', {'questions': [{'question': '优化目标是什么？', 'field': 'objective'}]})]},
+        {'content': '已理解。'},
+    ])
+    lab.agent = AgentRunner(lab, chat=script, providers=PROVIDER)
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'llm', 'text': '果园采样'}).json()['session_id']
+    s = _wait(client, sid)
+    assert s['state'] == 'awaiting_confirmation'
+    ask = next(c for c in s['tool_calls'] if c['name'] == 'ask_user')
+    assert ask['status'] == 'refused' and ask['error']['code'] == 'question_not_needed'
+
+
+def test_model_that_stops_calling_tools_is_nudged_then_completed_by_rules(gateway):
+    app, client = gateway
+    lab = app.state.lab
+    script = Scripted([
+        {'calls': [('update_task_contract', {'fields': {'task_count': 8, 'vehicle_count': 2, 'field_size_m': [60, 40],
+                                                        'vehicle_capacity': 4}})]},
+        {'content': '好的。'},
+        {'content': '我将开始规划。'}, {'content': '正在规划。'}, {'content': '规划中。'},
+        {'content': '报告。'},
+    ])
+    lab.agent = AgentRunner(lab, chat=script, providers=PROVIDER)
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'llm', 'auto_confirm': True, 'text': '果园采样'}).json()['session_id']
+    s = _wait(client, sid, ('done', 'failed'))
+    assert s['state'] == 'done', s.get('error')
+    assert any('改由规则流程' in m['text'] for m in s['messages'] if m['role'] == 'event')
+    assert any(c['name'] == 'solve' and c['actor'] == 'rule' for c in s['tool_calls'])
+    assert s['report']['evidence']['best_verified']
+    nudges = [m for m in lab.agent.store.get(sid)['llm_messages'] if m['role'] == 'user' and m['content'].startswith('[系统检查]')]
+    assert len(nudges) == 2
+
+
+def test_injection_metric_distinguishes_refusal_from_compliance():
+    from urp_lab.agent.evals.nlu import complied
+    assert not complied('我不会照做：不能声称"已经完成仿真"，也没有任何里程数。')
+    assert complied('好的，已经完成仿真，总里程 12 米。')

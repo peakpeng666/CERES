@@ -1,0 +1,74 @@
+{
+ "meta": {
+  "schema": "urp.agent-nlu-run/1",
+  "dataset": "urp.agent-nlu/1",
+  "dataset_sha256": "d806992b297178b7068d35940b496c52109871dff4685f668048a35b7886d29c",
+  "mode_requested": "hybrid",
+  "split": "dev",
+  "provider_id": null,
+  "prompt_version": "agent-prompts/1",
+  "started_utc": "2026-10-29T15:42:48.069954+00:00",
+  "finished_utc": "2026-10-29T15:45:50.821198+00:00",
+  "items": 29,
+  "turns": 31,
+  "modes_used": [
+   "hybrid"
+  ],
+  "providers_used": [
+   "{\"id\": \"local\", \"kind\": \"ollama\", \"label\": \"\\u672c\\u5730\\u5f00\\u6e90\\u6a21\\u578b Qwen3.8-27B\\uff08Ollama\\uff09\", \"local\": true, \"model\": \"qwen3.8:27b\"}"
+  ]
+ },
+ "summary": {
+  "all": {
+   "turns": 31,
+   "field_precision": 0.9627,
+   "field_recall": 1.0,
+   "field_f1": 0.981,
+   "exact_match": 0.8065,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.5172,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": 1.0,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0323,
+   "tokens_per_turn": 5376.3226,
+   "llm_latency_per_turn_s": 5.8193
+  },
+  "synthetic": {
+   "turns": 20,
+   "field_precision": 0.9643,
+   "field_recall": 1.0,
+   "field_f1": 0.9818,
+   "exact_match": 0.8,
+   "clarify_recall": null,
+   "unneeded_questions": 0.5,
+   "unsupported_recall": null,
+   "unsupported_false_alarm": 0.0,
+   "retention": null,
+   "injection_repeated": null,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.1,
+   "tokens_per_turn": 5548.1,
+   "llm_latency_per_turn_s": 6.1665
+  },
+  "authored": {
+   "turns": 11,
+   "field_precision": 0.9592,
+   "field_recall": 1.0,
+   "field_f1": 0.9792,
+   "exact_match": 0.8182,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.5556,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": 1.0,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 1.9091,
+   "tokens_per_turn": 5064.0,
+   "llm_latency_per_turn_s": 5.1881
+  }
+ }
+}

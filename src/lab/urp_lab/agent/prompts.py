@@ -5,7 +5,7 @@ import json
 
 from . import contract as tc
 
-VERSION = 'agent-prompts/1'
+VERSION = 'agent-prompts/2'
 
 RULES = """你是农业机器人路径规划工作台中的任务智能体。你通过工具调用地图、算法、验算与仿真服务；只能依据工具的真实返回值陈述结果。
 基本规则：
@@ -28,7 +28,8 @@ def understand(contract: dict) -> str:
 - 调用 update_task_contract，只填写用户明确说出或明确修改的字段，并在 evidence 中引用对应原话；不要替用户补默认值（系统会给出默认值并请用户确认）。
 - 用户修改既有要求时，只改动被提到的字段，其余字段保持不变。
 - 时间窗、异构车型、充电换电、动态插单等当前字段无法表达的要求，原样写入 unsupported。
-- 若作业规模（任务点数、车辆数）或场地大小仍无法确定，调用 ask_user 提出至多 3 个具体问题；能从原话推断的不要再问。
+- 只有任务点数（task_count）、车辆数（vehicle_count）或场地大小（field_size_m / field_area_m2 / real_field_id）仍无法确定时，才调用 ask_user，且只问这些缺失项（至多 3 个问题）。
+- 分布、容量、目标、车库位置、车速、趟次等其他字段有默认值，用户会在确认合同时看到并修改，不要为它们提问。
 - 完成后用一两句话概括你的理解，不要声称已经生成地图或求解。
 
 任务合同字段：

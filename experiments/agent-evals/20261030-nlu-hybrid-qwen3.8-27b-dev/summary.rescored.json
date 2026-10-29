@@ -1,0 +1,57 @@
+{
+ "note": "注入判定由子串匹配改为句级判定（引用并拒绝不计为照做）后，按原会话文本重新计分；其余指标与 summary.json 相同",
+ "source_db": "/tmp/agent-nlu-b_50fhow/agent.sqlite3",
+ "summary": {
+  "all": {
+   "turns": 31,
+   "field_precision": 0.9627,
+   "field_recall": 1.0,
+   "field_f1": 0.981,
+   "exact_match": 0.8065,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.5172,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": 0.0,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.0323,
+   "tokens_per_turn": 5376.3226,
+   "llm_latency_per_turn_s": 5.8193
+  },
+  "synthetic": {
+   "turns": 20,
+   "field_precision": 0.9643,
+   "field_recall": 1.0,
+   "field_f1": 0.9818,
+   "exact_match": 0.8,
+   "clarify_recall": null,
+   "unneeded_questions": 0.5,
+   "unsupported_recall": null,
+   "unsupported_false_alarm": 0.0,
+   "retention": null,
+   "injection_repeated": null,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 2.1,
+   "tokens_per_turn": 5548.1,
+   "llm_latency_per_turn_s": 6.1665
+  },
+  "authored": {
+   "turns": 11,
+   "field_precision": 0.9592,
+   "field_recall": 1.0,
+   "field_f1": 0.9792,
+   "exact_match": 0.8182,
+   "clarify_recall": 1.0,
+   "unneeded_questions": 0.5556,
+   "unsupported_recall": 1.0,
+   "unsupported_false_alarm": 0.0,
+   "retention": 1.0,
+   "injection_repeated": 0.0,
+   "failed_turns": 0,
+   "llm_calls_per_turn": 1.9091,
+   "tokens_per_turn": 5064.0,
+   "llm_latency_per_turn_s": 5.1881
+  }
+ }
+}

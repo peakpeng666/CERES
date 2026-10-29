@@ -611,12 +611,33 @@ class AgentRunner:
         self._guard_verification(s, cancel)
         return True
 
+    @staticmethod
+    def _unmet(s: dict) -> list[str]:
+        """Workflow steps the confirmed contract still requires before a report can be written."""
+        gaps = []
+        if not s.get('scenario_id') or s.get('built_revision') != s['contract']['revision']:
+            gaps.append('build_scenario（按当前合同建立任务地图）')
+        if not s.get('solved_since_build'):
+            gaps.append('solve（求解对比）')
+        return gaps
+
     def _execute_llm(self, s, cancel, pause) -> bool:
+        nudges = 0
         for _ in range(MAX_LLM_CALLS):
             self._checkpoint(s, cancel, pause)
             resp = self._llm(s, 'execute', prompts.execute(s['contract'], s), tools.PHASE_TOOLS['execute'], cancel)
             if not resp.tool_calls:
                 s['llm_messages'].append({'role': 'assistant', 'content': resp.content or ''})
+                gaps = self._unmet(s)
+                if gaps and nudges < 2:
+                    nudges += 1
+                    s['llm_messages'].append({'role': 'user', 'content': '[系统检查] 尚未完成：' + '；'.join(gaps)
+                                              + '。请直接调用相应工具，不要只用文字回复。'})
+                    continue
+                if gaps:
+                    add_message(s, 'event', '模型连续未调用执行工具，剩余步骤改由规则流程完成（调用记录中标为“规则”）。', 'notice')
+                    s.setdefault('rule_progress', {})
+                    return self._execute_rule(s, cancel, pause)
                 s['draft_report'] = _strip_think(resp.content or '')
                 return True
             s['llm_messages'].append({'role': 'assistant', 'content': resp.content or '',
