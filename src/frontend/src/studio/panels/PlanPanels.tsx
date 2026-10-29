@@ -836,7 +836,9 @@ export function ComparePanel() {
     return vals.length ? (c.better === 'min' ? Math.min(...vals) : Math.max(...vals)) : null;
   });
   if (!rows.length) {
-    return <EmptyState icon={CircleDashed} title="还没有方案" detail="在“推荐与求解”里勾选算法后点击对比，结果会出现在这里。" />;
+    return <EmptyState icon={CircleDashed} title="还没有方案" detail={useStudio.getState().workspace === 'agent'
+      ? '智能体求解后，各方案的指标与复核结论会出现在这里。'
+      : '在“推荐与求解”里勾选算法后点击对比，结果会出现在这里。'} />;
   }
   return (
     <div className={s.compare}>
