@@ -264,6 +264,25 @@ def _parse_arguments(raw) -> tuple[dict, str | None]:
     return (value, None) if isinstance(value, dict) else ({}, '参数须为 JSON 对象')
 
 
+INLINE_CALL = re.compile(r'<tool_call>\s*(\{.*?\})\s*</tool_call>', re.S)
+
+
+def inline_tool_calls(content: str, allowed: set[str]) -> tuple[str, list[dict]]:
+    """Recover tool calls a local model wrote as ``<tool_call>{json}</tool_call>`` text instead of structured calls."""
+    calls = []
+    for raw in INLINE_CALL.findall(content or ''):
+        try:
+            data = json.loads(raw)
+        except json.JSONDecodeError:
+            continue
+        name = data.get('name') if isinstance(data, dict) else None
+        if name in allowed:
+            args, err = _parse_arguments(data.get('arguments', {}))
+            calls.append({'id': f'call_{uuid.uuid4().hex[:10]}', 'name': name, 'arguments': args, 'parse_error': err,
+                          'recovered_from_text': True})
+    return (INLINE_CALL.sub('', content).strip() if calls else content), calls
+
+
 def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | None, tool_choice: str | None) -> tuple[dict, dict]:
     """One HTTP attempt; returns (normalized message, usage)."""
     timeout = httpx.Timeout(p.timeout_s, connect=10.0)
@@ -287,7 +306,10 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
             calls.append({'id': c.get('id') or f'call_{uuid.uuid4().hex[:10]}', 'name': fn.get('name', ''), 'arguments': args,
                           'parse_error': err})
         usage = {'input_tokens': data.get('prompt_eval_count'), 'output_tokens': data.get('eval_count')}
-        return {'content': msg.get('content') or '', 'tool_calls': calls, 'finish_reason': data.get('done_reason') or 'stop',
+        content = msg.get('content') or ''
+        if tools and not calls:
+            content, calls = inline_tool_calls(content, {t['name'] for t in tools})
+        return {'content': content, 'tool_calls': calls, 'finish_reason': data.get('done_reason') or 'stop',
                 'reasoning_chars': len(msg.get('thinking') or ''), 'model': data.get('model') or p.model}, usage
     if p.kind == 'openai':
         body = {'model': p.model, 'messages': _openai_messages(messages)}
@@ -313,7 +335,10 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
                           'parse_error': err})
         u = data.get('usage') or {}
         usage = {'input_tokens': u.get('prompt_tokens'), 'output_tokens': u.get('completion_tokens')}
-        return {'content': msg.get('content') or '', 'tool_calls': calls, 'finish_reason': choice.get('finish_reason') or 'stop',
+        content = msg.get('content') or ''
+        if tools and not calls:
+            content, calls = inline_tool_calls(content, {t['name'] for t in tools})
+        return {'content': content, 'tool_calls': calls, 'finish_reason': choice.get('finish_reason') or 'stop',
                 'reasoning_chars': len(msg.get('reasoning_content') or ''), 'model': data.get('model') or p.model}, usage
     system, conv = _anthropic_messages(messages)
     body = {'model': p.model, 'max_tokens': int(opts.get('max_tokens', 4096)), 'messages': conv}

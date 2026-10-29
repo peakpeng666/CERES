@@ -135,6 +135,24 @@ class AgentRunner:
     def list(self) -> list[dict]:
         return self.store.list()
 
+    def export(self, session_id: str) -> dict:
+        """One reproducible bundle: session (contract, plan, tool and model logs), scenario and every run record."""
+        import hashlib
+        from ..scenarios import get_scenario
+        s = self._load(session_id)
+        scenarios = {}
+        for sid in [x for x in [s.get('scenario_id'), *(s.get('previous_scenarios') or [])] if x]:
+            try:
+                scenarios[sid] = get_scenario(sid)
+            except KeyError:
+                scenarios[sid] = None
+        runs = {rid: self.lab.store.get_run(rid) for rid in s.get('run_ids', [])}
+        record = {'schema': 'urp.agent-export/1', 'session': public(s), 'scenarios': scenarios, 'runs': runs,
+                  'prompt_version': prompts.VERSION, 'exported_utc': utc_now()}
+        canonical = json.dumps(record, sort_keys=True, ensure_ascii=False, separators=(',', ':'), default=str)
+        return {'record': record, 'integrity': {'algorithm': 'sha256', 'sha256': hashlib.sha256(canonical.encode()).hexdigest(),
+                                                 'scope': 'record（规范化 JSON，键排序）；完整性校验，不是数字签名'}}
+
     def message(self, session_id: str, text: str) -> dict:
         text = (text or '').strip()
         if not text or len(text) > 2000:

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import math
+import re
 from dataclasses import dataclass, field
 
 SCHEMA = 'urp.task-contract/1'
@@ -43,7 +44,7 @@ FIELDS: dict[str, FieldDef] = {
     'field_area_m2': FieldDef('场地面积', 'number', 'm²', 25, 25_000_000, spec='area_m2',
                               describe='只给出面积时使用，平方米；1 亩 = 666.67 m²，1 公顷 = 10000 m²'),
     'field_shape': FieldDef('边界形状', 'enum', options=SHAPE_OPTIONS, spec='shape'),
-    'real_field_id': FieldDef('真实田块', 'text', describe='Fields2Benchmark 田块编号，例如 nl_field_12'),
+    'real_field_id': FieldDef('真实田块', 'text', describe='Fields2Benchmark 荷兰田块编号，例如 nl_field_12'),
     'plot_count': FieldDef('地块数', 'int', '块', 1, 40, spec='plots'),
     'task_count': FieldDef('任务点数', 'int', '个', 1, 400, spec='tasks'),
     'task_distribution': FieldDef('任务分布', 'enum', options=DIST_OPTIONS, spec='distribution'),
@@ -74,6 +75,13 @@ EXECUTION_DEFAULTS = {'trip_mode': 'multi', 'travel_mode': 'rows', 'time_limit_s
                       'simulate': False}
 
 
+OPEN_SEALED = {'ee_field_130'}  # the single Estonian development field released before the protocol freeze
+
+
+def sealed_field(field_id: str) -> bool:
+    return field_id.startswith(('ee_', 'lt_')) and field_id not in OPEN_SEALED
+
+
 def _finite(v) -> float:
     if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(float(v)):
         raise ValueError(f'应为有限数值，实际 {v!r}')
@@ -96,6 +104,13 @@ def normalize(key: str, value):
     if spec.kind == 'text':
         if not isinstance(value, str) or not value.strip() or len(value) > 80:
             raise ValueError(f'{spec.label}须为 1–80 字的字符串')
+        if key == 'real_field_id':
+            fid = value.strip().lower()
+            if not re.fullmatch(r'(nl|ee|lt)_field_\d+', fid):
+                raise ValueError('真实田块编号形如 nl_field_12')
+            if sealed_field(fid):
+                raise ValueError(f'{fid} 属于封存测试集（爱沙尼亚、立陶宛田块），评测协议冻结前不得用于规划运行；请选用荷兰田块')
+            return fid
         return value.strip()
     if spec.kind == 'counts':
         if not isinstance(value, dict):

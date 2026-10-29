@@ -62,6 +62,13 @@ def get(request: Request, session_id: str):
     return _fresh(_call(runner(request).get, session_id))
 
 
+@router.get('/agent/sessions/{session_id}/export')
+def export(request: Request, session_id: str):
+    data = _call(runner(request).export, session_id)
+    return JSONResponse(data, headers={'Cache-Control': 'no-store',
+                                       'Content-Disposition': f'attachment; filename="{session_id}.json"'})
+
+
 @router.post('/agent/sessions/{session_id}/messages', status_code=202)
 def message(request: Request, session_id: str, payload: Any = Body(None)):
     return _fresh(_call(runner(request).message, session_id, str(_body(payload).get('text') or '')), 202)

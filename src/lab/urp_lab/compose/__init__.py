@@ -65,7 +65,7 @@ def compose(text: str, seed: int | None = None, overrides: dict | None = None) -
     return scenario
 
 
-def from_field(field_id: str, text: str = '', seed: int | None = None) -> dict:
+def from_field(field_id: str, text: str = '', seed: int | None = None, overrides: dict | None = None) -> dict:
     """Use a real Fields2Benchmark boundary as the farm map; plots, obstacles and tasks are laid out inside it."""
     from ..library import fields
     base = fields.scenario(field_id)
@@ -73,7 +73,8 @@ def from_field(field_id: str, text: str = '', seed: int | None = None) -> dict:
     xs, ys = [p[0] for p in pts], [p[1] for p in pts]
     outline = [[round(x - min(xs), 2), round(y - min(ys), 2)] for x, y in pts]
     parsed = parse(text)
-    spec, defaults = fill_defaults({**parsed['spec'], 'size': [max(xs) - min(xs), max(ys) - min(ys)], 'shape': 'rect'})
+    extra = {k: v for k, v in (overrides or {}).items() if k not in ('size', 'area_m2', 'shape')}
+    spec, defaults = fill_defaults({**parsed['spec'], **extra, 'size': [max(xs) - min(xs), max(ys) - min(ys)], 'shape': 'rect'})
     seed = seed if seed is not None else int(hashlib.sha256((field_id + parsed['text']).encode()).hexdigest()[:8], 16) % 100000
     sc = compose(parsed['text'] or '真实田块任务', seed, spec)
     inst = gen.generate(spec, seed, outline)

@@ -139,7 +139,7 @@ function ApprovalCard({ msg, session, latest }: { msg: AgentMessage; session: Ag
 
 const fmt = (v: number | null | undefined, digits = 1) => (typeof v === 'number' ? v.toFixed(digits) : '—');
 
-function ReportCard({ report }: { report: Report }) {
+function ReportCard({ report, sessionId }: { report: Report; sessionId: string }) {
   const e = report.evidence;
   const best = e.best_verified;
   return (
@@ -185,9 +185,13 @@ function ReportCard({ report }: { report: Report }) {
       {best && (
         <div className={s.cardActions}>
           <Button size="sm" icon={MapPinned} onClick={() => { useStudio.setState({ focusRun: best.run_id, manualFocus: true }); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'map' })); }}>在地图上查看</Button>
-          <a className={s.linkButton} href={`/lab/api/runs/${encodeURIComponent(best.run_id)}/record`} download={`${best.run_id}.json`}><FileJson size={13} /> 导出实验记录</a>
+          <a className={s.linkButton} href={`/lab/api/runs/${encodeURIComponent(best.run_id)}/record`} download={`${best.run_id}.json`}><FileJson size={13} /> 最优方案记录</a>
         </div>
       )}
+      <div className={s.cardActions}>
+        <a className={s.linkButton} href={`/lab/api/agent/sessions/${encodeURIComponent(sessionId)}/export`} download={`${sessionId}.json`}
+          title="任务合同、计划、工具与模型调用记录、任务地图及全部运行记录，附 SHA256 完整性校验"><FileJson size={13} /> 导出会话实验包</a>
+      </div>
     </div>
   );
 }
@@ -212,7 +216,7 @@ function Message({ msg, session, latest }: { msg: AgentMessage; session: AgentSe
     );
   }
   if (msg.kind === 'approval') return <ApprovalCard msg={msg} session={session} latest={latest} />;
-  if (msg.kind === 'report') return <ReportCard report={msg.data as unknown as Report} />;
+  if (msg.kind === 'report') return <ReportCard report={msg.data as unknown as Report} sessionId={session.session_id} />;
   return <div className={s.assistant}>{msg.text}</div>;
 }
 

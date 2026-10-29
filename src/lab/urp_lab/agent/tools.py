@@ -174,11 +174,11 @@ def find_real_fields(ctx: ToolContext, args: dict) -> dict:
     from ..library import fields
     if not fields.status().get('downloaded'):
         raise ToolError('library_unavailable', '真实田块库尚未下载；可在「资料 → 真实田块」中获取')
-    items = fields.listing(args.get('country'), (args.get('query') or '').strip().lower() or None)
+    items = [f for f in fields.listing('nl', (args.get('query') or '').strip().lower() or None) if not tc.sealed_field(f['id'])]
     limit = int(args.get('limit') or 8)
     keep = ('id', 'country_name', 'area_ha', 'size_m', 'vertices', 'holes', 'convexity')
     return {'fields': [{k: f.get(k) for k in keep if k in f} for f in items[:limit]], 'total': len(items),
-            'note': '爱沙尼亚、立陶宛田块属于封存测试集，研究评测中不得用于调参'}
+            'note': '只列出荷兰田块；爱沙尼亚、立陶宛田块属于封存测试集，评测协议冻结前不用于规划运行'}
 
 
 def build_scenario(ctx: ToolContext, args: dict) -> dict:
@@ -215,14 +215,7 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
     else:
         text = contract.get('request_text') or '智能体任务'
         if tc.value(contract, 'real_field_id'):
-            sc = compose.from_field(tc.value(contract, 'real_field_id'), text, tc.value(contract, 'seed'))
-            for key in ('vehicles', 'capacity', 'speed_mps', 'objective'):
-                if key in overrides:
-                    target = {'vehicles': 'count', 'capacity': 'capacity', 'speed_mps': 'speed_mps'}.get(key)
-                    if target:
-                        sc['instance']['vehicles'][target] = overrides[key]
-                    else:
-                        sc['instance']['objective'] = overrides[key]
+            sc = compose.from_field(tc.value(contract, 'real_field_id'), text, tc.value(contract, 'seed'), overrides)
         else:
             sc = compose.compose(text, tc.value(contract, 'seed'), overrides)
         sc['instance']['vehicles']['trips'] = execution['trip_mode']
@@ -410,9 +403,8 @@ def registry() -> dict[str, Tool]:
                      'required': ['question'], 'additionalProperties': False}},
                  'reason': {'type': 'string', 'maxLength': 300}},
               'required': ['questions'], 'additionalProperties': False}, ask_user, 'session', 'understand'),
-        Tool('find_real_fields', '检索真实田块', '在 Fields2Benchmark 真实田块库中检索可用作场地边界的田块。',
+        Tool('find_real_fields', '检索真实田块', '在 Fields2Benchmark 荷兰真实田块中检索可用作场地边界的田块（按编号片段过滤）。',
              {'type': 'object', 'properties': {'query': {'type': 'string', 'maxLength': 60},
-                                               'country': {'type': 'string', 'enum': ['NL', 'EE', 'LT']},
                                                'limit': {'type': 'integer', 'minimum': 1, 'maximum': 20}},
               'additionalProperties': False}, find_real_fields, 'session', 'understand'),
         Tool('build_scenario', '建立任务地图',

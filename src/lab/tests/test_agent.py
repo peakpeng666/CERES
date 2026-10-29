@@ -447,3 +447,55 @@ def test_environment_errors_fail_the_session_instead_of_reporting(gateway, monke
     solve = next(c for c in s['tool_calls'] if c['name'] == 'solve')
     assert solve['error']['code'] == 'source_changed'
     assert {st['kind']: st['status'] for st in s['plan']}['solve'] == 'failed'
+
+
+def test_inline_tool_calls_are_recovered_only_for_offered_tools():
+    text = '好的。<tool_call>{"name": "ask_user", "arguments": {"questions": [{"question": "几台车？"}]}}</tool_call>' \
+           '<tool_call>{"name": "rm_rf", "arguments": {}}</tool_call>'
+    content, calls = llm.inline_tool_calls(text, {'ask_user'})
+    assert [c['name'] for c in calls] == ['ask_user'] and calls[0]['recovered_from_text']
+    assert calls[0]['arguments']['questions'][0]['question'] == '几台车？' and '<tool_call>' not in content
+
+
+def test_session_export_bundles_contract_runs_and_integrity(gateway):
+    import hashlib
+    app, client = gateway
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'auto_confirm': True, 'text': SMALL}).json()['session_id']
+    s = _wait(client, sid, ('done', 'failed'))
+    assert s['state'] == 'done'
+    r = client.get(f'/lab/api/agent/sessions/{sid}/export')
+    assert r.status_code == 200 and 'attachment' in r.headers['content-disposition']
+    bundle = r.json()
+    rec = bundle['record']
+    assert rec['schema'] == 'urp.agent-export/1' and set(rec['runs']) == set(s['run_ids']) and rec['scenarios'][s['scenario_id']]
+    canonical = json.dumps(rec, sort_keys=True, ensure_ascii=False, separators=(',', ':'), default=str)
+    assert hashlib.sha256(canonical.encode()).hexdigest() == bundle['integrity']['sha256']
+    assert 'api_key' not in r.text and 'llm_messages' not in rec['session']
+
+
+def test_sealed_fields_never_enter_a_contract():
+    assert tc.normalize('real_field_id', 'NL_field_12') == 'nl_field_12'
+    assert tc.normalize('real_field_id', 'ee_field_130') == 'ee_field_130'
+    for sealed in ('ee_field_5', 'lt_field_3'):
+        with pytest.raises(ValueError, match='封存'):
+            tc.normalize('real_field_id', sealed)
+
+
+def test_real_field_contract_builds_on_the_field_boundary(gateway):
+    from urp_lab.library import fields
+    if not fields.status().get('downloaded'):
+        pytest.skip('Fields2Benchmark 未下载')
+    fid = next(f['id'] for f in fields.listing('nl', None))
+    app, client = gateway
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'text': '2台车采样'}).json()['session_id']
+    s = _wait(client, sid)
+    assert s['state'] == 'awaiting_user'
+    r = client.patch(f'/lab/api/agent/sessions/{sid}/contract', json={'fields': {'real_field_id': fid, 'task_count': 10}})
+    assert r.status_code == 200 and r.json()['state'] == 'awaiting_confirmation'
+    client.post(f'/lab/api/agent/sessions/{sid}/control', json={'action': 'confirm'})
+    s = _wait(client, sid, ('done', 'failed'))
+    assert s['state'] == 'done', s.get('error')
+    built = next(c for c in s['tool_calls'] if c['name'] == 'build_scenario')['result']
+    assert built['tasks'] == 10 and built['vehicles'] == 2
+    sc = client.get(f"/lab/api/scenarios/{s['scenario_id']}").json()
+    assert fid in sc['provenance']['note']
