@@ -16,7 +16,8 @@ STATES = ('idle', 'running', 'awaiting_user', 'awaiting_confirmation', 'awaiting
           'failed', 'done', 'interrupted')
 ACTIVE = ('running',)
 STEP_TITLES = {'understand': '理解需求', 'confirm': '确认任务合同', 'scenario': '建立任务地图', 'recommend': '推荐算法',
-               'solve': '求解对比', 'verify': '独立复核', 'repair': '诊断与修复', 'simulate': '田间仿真', 'report': '结果报告'}
+               'solve': '求解对比', 'study': '重复实验', 'verify': '独立复核', 'repair': '诊断与修复', 'simulate': '田间仿真',
+               'report': '结果报告'}
 NUMBER = re.compile(r'(?<![\w.])-?\d+(?:\.\d+)?')
 
 

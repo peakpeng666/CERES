@@ -382,6 +382,53 @@ def simulation_status(ctx: ToolContext, args: dict) -> dict:
     return {k: state.get(k) for k in keep if k in state}
 
 
+def run_study(ctx: ToolContext, args: dict) -> dict:
+    """Replicated comparison on the current map: algorithms × budgets × seeds through the existing study engine."""
+    import statistics
+    from ..scenarios import get_scenario
+    sc = _scenario(ctx)
+    execution = tc.execution(ctx.session['contract'])
+    budgets = args.get('budgets') or [execution['time_limit_s']]
+    seeds = args.get('seeds') or [1, 2, 3]
+    cells = len(args['algorithms']) * len(budgets) * len(seeds)
+    if cells > 60:
+        raise ToolError('study_too_large', f'{cells} 个运行超过单次上限 60；请减少算法、预算或种子')
+    spec = {'name': f"智能体 {ctx.session['session_id']} 重复实验", 'scenarios': [sc['id']], 'algorithms': args['algorithms'],
+            'budgets': budgets, 'seeds': seeds}
+    try:
+        study = ctx.lab.studies.create(spec, get_scenario, ctx.lab.catalog())
+    except ValueError as exc:
+        raise ToolError('invalid_study', str(exc)) from None
+    sid = study['study_id']
+    ctx.session.setdefault('study_ids', []).append(sid)
+    deadline = time.monotonic() + max(budgets) * cells + 120
+    while time.monotonic() < deadline:
+        view = ctx.lab.studies.get(sid)
+        if view['progress']['state'] == 'done':
+            break
+        if ctx.cancel.is_set():
+            ctx.lab.studies.cancel(sid)
+            raise ToolError('cancelled', '重复实验已按用户请求取消', {'study_id': sid})
+        time.sleep(0.5)
+    else:
+        raise ToolError('wait_timeout', '等待重复实验结束超时；运行仍在后台，可在「算法实验」中查看', {'study_id': sid})
+    groups: dict[tuple, list[dict]] = {}
+    for run in ctx.lab.studies.runs(sid):
+        key = (run['algorithm']['id'], (run.get('params') or {}).get('time_limit_s'))
+        groups.setdefault(key, []).append(run)
+    rows = []
+    for (aid, budget), runs in sorted(groups.items(), key=lambda kv: (kv[0][0], kv[0][1] or 0)):
+        ok = [r for r in runs if r.get('state') == 'done' and r.get('status') == 'feasible' and (r.get('check') or {}).get('valid')]
+        vals = [r['objective']['value'] for r in ok if isinstance((r.get('objective') or {}).get('value'), (int, float))]
+        rows.append({'algorithm_id': aid, 'time_limit_s': budget, 'runs': len(runs), 'verified_feasible': len(ok),
+                     'objective_median': round(statistics.median(vals), 3) if vals else None,
+                     'objective_min': round(min(vals), 3) if vals else None,
+                     'objective_max': round(max(vals), 3) if vals else None,
+                     'wall_s_mean': round(statistics.fmean([(r.get('metrics') or {}).get('wall_s') or 0 for r in runs]), 3)})
+    return {'study_id': sid, 'runs': cells, 'seeds': seeds, 'budgets': budgets, 'rows': rows,
+            'note': '统计检验、性能剖面与临界差图见「算法实验 → 统计分析」'}
+
+
 # ---------------------------------------------------------------- registry --
 RUN_ID = {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80}}, 'required': ['run_id'],
           'additionalProperties': False}
@@ -421,6 +468,13 @@ def registry() -> dict[str, Tool]:
                  'time_limit_s': {'type': 'number', 'minimum': 0.2, 'maximum': 60},
                  'seed': {'type': 'integer', 'minimum': 0, 'maximum': 2147483647}},
               'required': ['algorithms'], 'additionalProperties': False}, solve, 'compute', 'solve', needs_scenario=True),
+        Tool('run_study', '重复实验',
+             '在当前任务地图上按 算法 × 预算 × 随机种子 批量运行（最多 60 个），返回每组经检查可行的次数与目标值分布。',
+             {'type': 'object', 'properties': {
+                 'algorithms': {'type': 'array', 'minItems': 1, 'maxItems': 6, 'items': {'type': 'string', 'maxLength': 80}},
+                 'budgets': {'type': 'array', 'minItems': 1, 'maxItems': 4, 'items': {'type': 'number', 'minimum': 0.2, 'maximum': 60}},
+                 'seeds': {'type': 'array', 'minItems': 1, 'maxItems': 10, 'items': {'type': 'integer', 'minimum': 0, 'maximum': 2147483647}}},
+              'required': ['algorithms'], 'additionalProperties': False}, run_study, 'compute', 'study', needs_scenario=True),
         Tool('verify_run', '独立复核', '对一个方案重新运行独立检查器：任务恰好服务一次、载重、避障、边界、里程复算及与存档一致性。',
              RUN_ID, verify_run, 'compute', 'verify', needs_scenario=True),
         Tool('compare_runs', '方案对比', '在可比方案之间比较里程、工期与耗时，只在同口径的已验证方案中标记最好值。',
@@ -445,7 +499,7 @@ def registry() -> dict[str, Tool]:
 
 PHASE_TOOLS = {
     'understand': ['update_task_contract', 'ask_user', 'find_real_fields'],
-    'execute': ['build_scenario', 'list_algorithms', 'recommend_algorithms', 'solve', 'verify_run', 'compare_runs',
+    'execute': ['build_scenario', 'list_algorithms', 'recommend_algorithms', 'solve', 'run_study', 'verify_run', 'compare_runs',
                 'diagnose_run', 'propose_task_change', 'start_simulation', 'simulation_status', 'ask_user'],
 }
 

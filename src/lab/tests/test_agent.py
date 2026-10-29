@@ -499,3 +499,20 @@ def test_real_field_contract_builds_on_the_field_boundary(gateway):
     assert built['tasks'] == 10 and built['vehicles'] == 2
     sc = client.get(f"/lab/api/scenarios/{s['scenario_id']}").json()
     assert fid in sc['provenance']['note']
+
+
+def test_study_tool_runs_replicates_on_the_session_map(gateway):
+    app, client = gateway
+    lab = app.state.lab
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'auto_confirm': True, 'text': SMALL}).json()['session_id']
+    s = _wait(client, sid, ('done', 'failed'))
+    assert s['state'] == 'done'
+    session = lab.agent.store.get(sid)
+    ctx = tools.ToolContext(lab, session)
+    rec = tools.execute(tools.registry(), ctx, 'run_study', {'algorithms': ['panel.savings_fleet', 'pyvrp.fleet'], 'budgets': [0.5], 'seeds': [1, 2]})
+    assert rec['status'] == 'ok', rec
+    rows = {r['algorithm_id']: r for r in rec['result']['rows']}
+    assert rows['pyvrp.fleet']['runs'] == 2 and rows['pyvrp.fleet']['verified_feasible'] == 2
+    assert rows['panel.savings_fleet']['objective_median'] is not None
+    big = tools.execute(tools.registry(), ctx, 'run_study', {'algorithms': ['pyvrp.fleet'] * 6, 'budgets': [1, 2, 3, 4], 'seeds': list(range(10))})
+    assert big['status'] == 'error' and big['error']['code'] == 'study_too_large'

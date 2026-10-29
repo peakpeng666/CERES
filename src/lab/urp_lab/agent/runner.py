@@ -519,6 +519,8 @@ class AgentRunner:
         if len(s['tool_calls']) - started.get('tool_calls', 0) >= MAX_TOOL_CALLS:
             raise Budget(f'本轮工具调用已达上限 {MAX_TOOL_CALLS} 次，已停止')
         if tool and tool.step:
+            if tool.step == 'study':
+                ensure_step(s, 'study', before='verify')
             set_step(s, tool.step, 'running')
             self._save(s)
         if call.get('parse_error'):
