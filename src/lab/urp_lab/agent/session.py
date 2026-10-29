@@ -88,6 +88,8 @@ def add_usage(session: dict, record: dict):
     if record.get('cost') is not None:
         u['cost'] = round((u['cost'] or 0) + record['cost'], 6)
         u['currency'] = record.get('currency')
+    else:
+        u['unpriced_calls'] = u.get('unpriced_calls', 0) + 1  # subscription quota or no price configured
 
 
 def claims_check(text: str, evidence) -> list[str]:

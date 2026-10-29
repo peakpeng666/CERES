@@ -200,7 +200,9 @@ function UsageSection({ session }: { session: AgentSession }) {
           <div><dt>调用</dt><dd>{u.calls} 次</dd></div>
           <div><dt>输入 / 输出</dt><dd>{u.input_tokens.toLocaleString()} / {u.output_tokens.toLocaleString()} tokens</dd></div>
           <div><dt>模型耗时</dt><dd>{u.latency_s.toFixed(1)} s</dd></div>
-          <div><dt>费用</dt><dd>{u.cost === null ? '—' : `${u.cost.toFixed(4)} ${u.currency ?? ''}`}</dd></div>
+          <div><dt>费用</dt><dd>{u.unpriced_calls
+            ? `${u.unpriced_calls} 次未按量计价（订阅额度或未配置单价）${u.currency ? ` · 其余 ${(u.cost ?? 0).toFixed(4)} ${u.currency}` : ''}`
+            : u.cost === null ? '—' : `${u.cost.toFixed(4)} ${u.currency ?? ''}`}</dd></div>
         </dl>
       ) : <p className={s.muted}>本会话为规则流程，未调用大模型。</p>}
     </section>

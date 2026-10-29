@@ -12,6 +12,8 @@ interface AgentStore {
   loadError: string | null;
   sending: boolean;
   newMode: 'auto' | AgentMode;
+  newProvider: string | null;
+  setNewProvider: (id: string | null) => void;
   loadProviders: () => Promise<void>;
   loadSessions: () => Promise<void>;
   select: (id: string | null) => Promise<void>;
@@ -39,6 +41,7 @@ export const useAgent = create<AgentStore>((set, get) => ({
   loadError: null,
   sending: false,
   newMode: 'auto',
+  newProvider: null,
   actionError: null,
 
   async loadProviders() {
@@ -89,7 +92,7 @@ export const useAgent = create<AgentStore>((set, get) => ({
   async start(text) {
     set({ sending: true, actionError: null });
     try {
-      const s = await agentApi.create({ text, mode: get().newMode });
+      const s = await agentApi.create({ text, mode: get().newMode, provider_id: get().newMode === 'rule' ? undefined : get().newProvider ?? undefined });
       set({ session: s, sessionId: s.session_id, sending: false });
       navigate(`#/agent/${encodeURIComponent(s.session_id)}`);
       void get().loadSessions();
@@ -142,6 +145,7 @@ export const useAgent = create<AgentStore>((set, get) => ({
   },
 
   setNewMode: (newMode) => set({ newMode }),
+  setNewProvider: (newProvider) => set({ newProvider }),
 }));
 
 /** While a turn runs, poll as a fallback to the event stream (which may be closed for hidden tabs). */

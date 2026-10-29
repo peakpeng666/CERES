@@ -158,7 +158,7 @@ export interface AgentSession {
   plan: PlanStep[];
   tool_calls: ToolCall[];
   llm_calls: LlmCall[];
-  usage: { input_tokens: number; output_tokens: number; cost: number | null; currency: string | null; calls: number; latency_s: number };
+  usage: { input_tokens: number; output_tokens: number; cost: number | null; currency: string | null; calls: number; latency_s: number; unpriced_calls?: number };
   scenario_id: string | null;
   run_ids: string[];
   verifications: Record<string, { valid: boolean | null; agrees: boolean | null; category: string }>;

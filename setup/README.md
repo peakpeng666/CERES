@@ -41,7 +41,7 @@ bash setup/llm/local-llm.sh start
 bash setup/llm/local-llm.sh pull qwen3.8:27b
 ```
 
-提供方配置在 `~/.config/urp-workbench/llm.json`，密钥只放在同目录权限为 600 的 `credentials.json` 或环境变量中，不进入前端、日志、仓库或导出。模型不可用时，新任务自动使用**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核与报告，可作为对照基线。智谱 Coding Plan 端点按其条款仅限受支持的编程工具使用，配置中默认停用。架构、接口与评测见 [智能体说明](../src/lab/urp_lab/agent/README.md)。
+提供方配置在 `~/.config/urp-workbench/llm.json`，密钥只放在同目录权限为 600 的 `credentials.json` 或环境变量中，不进入前端、日志、仓库或导出。模型不可用时，新任务自动使用**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核与报告，可作为对照基线。智谱 GLM-5.3（Coding Plan 端点）已按用户决定（2026-10-30）启用为**可选模型**：在「智能体」首页的模型下拉框中选择，默认仍为本地模型；该端点的条款将额度限定在受支持的编程工具中，界面随选项显示这一提示，调用次数与 token 记入会话用量（按“未按量计价”标注）。按量计费端点仍停用。架构、接口与评测见 [智能体说明](../src/lab/urp_lab/agent/README.md)。
 
 **任务理解评测**：`cd src/lab && .venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
 

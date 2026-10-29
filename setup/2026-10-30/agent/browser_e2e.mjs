@@ -1,5 +1,5 @@
 // Browser acceptance of the agent workspace: request → contract → confirm → verified report → multi-turn edit.
-// Usage: NODE_PATH=<dir containing playwright-core> [URP_CHROMIUM=<chrome binary>] node browser_e2e.mjs --out /new/absolute/dir [--url http://127.0.0.1:4100] [--mode auto|rule]
+// Usage: NODE_PATH=<dir containing playwright-core> [URP_CHROMIUM=<chrome binary>] node browser_e2e.mjs --out /new/absolute/dir [--url http://127.0.0.1:4100] [--mode auto|rule] [--provider <id>]
 import { mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -12,11 +12,12 @@ const arg = (name, fallback) => {
 const out = arg('--out');
 const base = arg('--url', 'http://127.0.0.1:4100');
 const mode = arg('--mode', 'auto');
+const provider = arg('--provider', '');
 const request = arg('--text', '60×40米果园，2台车，8个采样点，每车容量4，1个池塘，每个点要在上午九点前完成');
 if (!out || !out.startsWith('/') || existsSync(out)) throw new Error('--out 须为尚不存在的绝对路径');
 mkdirSync(out, { recursive: true });
 
-const log = { base, mode, request, started: new Date().toISOString(), steps: [] };
+const log = { base, mode, provider, request, started: new Date().toISOString(), steps: [] };
 const step = (name, extra = {}) => { log.steps.push({ name, t: new Date().toISOString(), ...extra }); console.log(name, JSON.stringify(extra)); };
 
 const browser = await chromium.launch({ headless: true, executablePath: process.env.URP_CHROMIUM || undefined });
@@ -27,6 +28,7 @@ try {
   await page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith('workbench.layout')).forEach((k) => localStorage.removeItem(k)));
   await page.reload();
   await page.getByText('农业作业任务智能体').waitFor({ timeout: 30_000 });
+  if (provider) await page.getByLabel('新任务使用的模型').selectOption(provider);
   if (mode === 'rule') await page.getByRole('radio', { name: '规则流程' }).click().catch(() => page.getByText('规则流程', { exact: true }).first().click());
   await page.screenshot({ path: `${out}/01-welcome.png` });
   step('welcome');
