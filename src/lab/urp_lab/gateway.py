@@ -101,6 +101,7 @@ class Lab:
         self._catalog: tuple[float, list[dict]] | None = None
         self._catalog_lock = threading.Lock()
         self.shutdown_event = threading.Event()
+        self.agent = None  # created on first /lab/api/agent request (urp_lab.agent.runner.AgentRunner)
 
     def start(self):
         self.jobs.start()
@@ -115,6 +116,8 @@ class Lab:
 
     def shutdown(self):
         try:
+            if getattr(self, 'agent', None) is not None:
+                self.agent.shutdown()
             self.jobs.shutdown()
             self.fieldsim.shutdown()
             self.services.shutdown()
@@ -873,6 +876,9 @@ def create_app(config: Config | None = None) -> FastAPI:
     # Research figures in publication formats (urp_lab/figures): drawn only from recorded runs / simulations / studies.
     from .figures.api import router as figures_router
     app.include_router(figures_router, prefix=api)
+    # Task agent (urp_lab/agent): natural-language request → confirmed task contract → validated tool calls.
+    from .agent.api import router as agent_router
+    app.include_router(agent_router, prefix=api)
 
     @app.api_route(f'{api}/{{rest:path}}', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
     def api_not_found(rest: str):
