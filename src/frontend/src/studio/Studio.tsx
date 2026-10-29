@@ -12,6 +12,7 @@ import {
   LayoutGrid,
   ListRestart,
   Map as MapIcon,
+  MessagesSquare,
   Server,
   Sparkles,
   Upload,
@@ -32,6 +33,8 @@ import type { FleetInstance, ParseResult } from './types';
 import { AdvisorPanel, ComparePanel, InspectorPanel, MapPanel, VerifyPanel } from './panels/PlanPanels';
 import { ScenarioNavigator } from './panels/LibraryPanels';
 import { ConsolePanel, LegacyPlan, RunsPanel, ServicesPanel, SimPanel } from './panels/SystemPanels';
+import { AgentChatPanel, ModelChip } from '../agent/AgentChat';
+import { useAgent } from '../agent/store';
 
 const lib = () => import('./panels/LibraryPanels');
 const research = () => import('./panels/ResearchPanels');
@@ -49,6 +52,7 @@ const AnalysisPanel = lazy(() => research().then((m) => ({ default: m.AnalysisPa
 const AssetLibrary = lazy(() => import('./assets/AssetLibrary').then((m) => ({ default: m.AssetLibrary })));
 const AssetPreview = lazy(() => import('./assets/AssetPreview').then((m) => ({ default: m.AssetPreview })));
 const AssetInspector = lazy(() => import('./assets/AssetInspector').then((m) => ({ default: m.AssetInspector })));
+const AgentTaskPanel = lazy(() => import('../agent/TaskPanel').then((m) => ({ default: m.AgentTaskPanel })));
 const ImportWizard = lazy(() => import('./assets/ImportWizard').then((m) => ({ default: m.ImportWizard })));
 const MapToTaskMap = lazy(() => import('./assets/MapToTaskMap').then((m) => ({ default: m.MapToTaskMap })));
 const ExperimentPanel = lazy(() => import('./experiment/ExperimentPanel').then((m) => ({ default: m.ExperimentPanel })));
@@ -58,6 +62,8 @@ import './dock.css';
 import s from './studio.module.css';
 
 const PANELS = {
+  agentChat: { title: '智能体', C: AgentChatPanel },
+  agentTask: { title: '任务与执行', C: AgentTaskPanel },
   map: { title: '地图', C: MapPanel },
   inspector: { title: '检查器', C: InspectorPanel },
   advisor: { title: '推荐与求解', C: AdvisorPanel },
@@ -100,6 +106,7 @@ const COMPONENTS = Object.fromEntries(Object.entries(PANELS).map(([id, p]) => [i
 )]));
 
 const WORKSPACES: { value: Workspace; label: string; icon: typeof MapIcon }[] = [
+  { value: 'agent', label: '智能体', icon: MessagesSquare },
   { value: 'plan', label: '任务规划', icon: MapIcon },
   { value: 'assets', label: '资产库', icon: Boxes },
   { value: 'experiments', label: '算法实验', icon: FlaskConical },
@@ -110,6 +117,15 @@ const WORKSPACES: { value: Workspace; label: string; icon: typeof MapIcon }[] = 
 
 type Step = { id: PanelId; ref?: PanelId; dir?: 'left' | 'right' | 'above' | 'below' | 'within'; w?: number; h?: number; inactive?: boolean };
 const LAYOUTS: Record<Workspace, Step[]> = {
+  agent: [
+    { id: 'map' },
+    { id: 'agentChat', ref: 'map', dir: 'left', w: 430 },
+    { id: 'agentTask', ref: 'map', dir: 'right', w: 370 },
+    { id: 'compare', ref: 'map', dir: 'below', h: 230 },
+    { id: 'verify', ref: 'compare', dir: 'within', inactive: true },
+    { id: 'results', ref: 'compare', dir: 'within', inactive: true },
+    { id: 'replay', ref: 'compare', dir: 'within', inactive: true },
+  ],
   plan: [
     { id: 'map' },
     { id: 'scenarios', ref: 'map', dir: 'left', w: 250 },
@@ -159,8 +175,23 @@ const LAYOUTS: Record<Workspace, Step[]> = {
 const ALWAYS = new Set<PanelId>(['map', 'rosview', 'gazebo']);
 const LAYOUT_KEY = (w: Workspace) => `workbench.layout.v4.${w}`;
 
+/** The agent layout is sized from the window: side panels shrink, and fold into one tab group on narrow screens. */
+function stepsFor(w: Workspace): Step[] {
+  if (w !== 'agent') return LAYOUTS[w];
+  const width = typeof window === 'undefined' ? 1600 : window.innerWidth;
+  const clamp = (v: number, lo: number, hi: number) => Math.round(Math.min(hi, Math.max(lo, v)));
+  return LAYOUTS.agent.map((step) => {
+    if (step.id === 'agentChat') return { ...step, w: clamp(width * 0.27, 340, 470) };
+    if (step.id === 'agentTask') {
+      return width < 1180 ? { id: 'agentTask', ref: 'agentChat', dir: 'within', inactive: true } : { ...step, w: clamp(width * 0.22, 300, 400) };
+    }
+    if (step.id === 'compare') return { ...step, h: clamp((typeof window === 'undefined' ? 900 : window.innerHeight) * 0.26, 180, 280) };
+    return step;
+  });
+}
+
 function buildDefault(api: DockviewApi, w: Workspace) {
-  for (const step of LAYOUTS[w]) {
+  for (const step of stepsFor(w)) {
     api.addPanel({
       id: step.id, component: step.id, title: PANELS[step.id].title, renderer: ALWAYS.has(step.id) ? 'always' : undefined,
       position: step.ref ? { referencePanel: step.ref, direction: step.dir ?? 'within' } : undefined,
@@ -207,7 +238,10 @@ export function Studio({ route }: { route: Route }) {
 
   // URL → state
   useEffect(() => {
-    if (route.view === 'plan' && route.id) {
+    if (route.view === 'agent' || route.view === 'lab') {
+      if (st.workspace !== 'agent') st.setWorkspace('agent');
+      void useAgent.getState().select(route.view === 'agent' ? route.id : null);
+    } else if (route.view === 'plan' && route.id) {
       void st.open(route.id);
       if (st.workspace !== 'plan') st.setWorkspace('plan');
     } else if (route.view === 'assets') {
@@ -219,16 +253,16 @@ export function Studio({ route }: { route: Route }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [route.view, route.id]);
 
-  // Land on the most recent task map when nothing is open yet.
+  // Opening 任务规划 with nothing loaded lands on the most recent task map.
   useEffect(() => {
-    if (route.view !== 'lab' || st.scenarioId) return;
+    if (st.workspace !== 'plan' || route.view !== 'lab' || st.scenarioId) return;
     lab.scenarios().then(({ scenarios }) => {
       const mine = scenarios.filter((x) => (x as { origin?: string }).origin === 'user' && x.problem_class === 'fleet_routing');
       const pick = mine[mine.length - 1];
       if (pick && !useStudio.getState().scenarioId) location.hash = `#/plan/${encodeURIComponent(pick.id)}`;
     }).catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [route.view]);
+  }, [route.view, st.workspace]);
 
   const onReady = useCallback((e: DockviewReadyEvent) => {
     api.current = e.api;
@@ -297,7 +331,7 @@ export function Studio({ route }: { route: Route }) {
           <span className={s.logo}><Sparkles size={14} /></span>
           <span>农业机器人路径规划</span>
         </div>
-        <ComposeBar />
+        {st.workspace === 'agent' ? <div className={s.compose}><ModelChip /></div> : <ComposeBar />}
         <div className={s.workspaceNav}>
           <Segmented value={st.workspace} onChange={(w) => st.setWorkspace(w)} label="工作区"
             options={WORKSPACES.map((w) => ({ value: w.value, label: w.label, icon: w.icon }))} />

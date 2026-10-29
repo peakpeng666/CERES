@@ -406,3 +406,28 @@ def test_interrupted_sessions_are_recoverable(gateway):
     lab.agent.store.save(s)
     fresh = AgentRunner(lab, path=lab.agent.store.path)
     assert fresh.store.get(sid)['state'] == 'interrupted'
+
+
+# ---------------------------------------------------------------- benchmark --
+def test_benchmark_split_is_by_family_and_reproducible(tmp_path):
+    from urp_lab.agent.evals import dataset
+    built = dataset.build(tmp_path / 'items.jsonl')
+    items = dataset.load(tmp_path / 'items.jsonl')
+    assert built['sha256'] == dataset.build(tmp_path / 'again.jsonl')['sha256']
+    splits = {}
+    for it in items:
+        splits.setdefault(it['family'], set()).add(it['split'])
+    assert all(len(v) == 1 for v in splits.values())          # no family crosses dev/test
+    assert {'dev', 'test'} == {s for v in splits.values() for s in v}
+    for it in items:
+        for turn in it['turns']:
+            for key, value in turn['gold'].items():
+                tc.normalize(key, value)                        # every gold value is a valid contract value
+
+
+def test_benchmark_scoring():
+    from urp_lab.agent.evals.nlu import same, score_turn
+    assert same(20000.1, 20000.100000000002) and same([60, 40.0], [60.0, 40]) and not same(True, 1)
+    sc = score_turn({'task_count': 8, 'vehicle_count': 3, 'objective': 'makespan'}, {'task_count': 8, 'vehicle_count': 2, 'field_size_m': [60, 40]})
+    assert sc['tp'] == 1 and sc['wrong'] == ['vehicle_count'] and sc['missed'] == ['field_size_m'] and sc['extra'] == ['objective']
+    assert sc['fp'] == 2 and sc['fn'] == 2 and not sc['exact']

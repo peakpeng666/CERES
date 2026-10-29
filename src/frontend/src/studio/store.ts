@@ -8,7 +8,7 @@ import { normalizeFleetInstance } from './fleet';
 import { filterRecommendation, planningBlockReason } from './capabilities';
 import { comparable, verifiedPlan } from './comparison';
 
-export type Workspace = 'plan' | 'assets' | 'experiments' | 'sim' | 'library' | 'system';
+export type Workspace = 'agent' | 'plan' | 'assets' | 'experiments' | 'sim' | 'library' | 'system';
 
 type SaveState = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 
@@ -99,7 +99,7 @@ const draftOf = (scenario: Scenario): Instance => scenario.problem_class === 'fl
   : scenario.instance;
 
 export const useStudio = create<StudioState>((set, get) => ({
-  workspace: 'plan',
+  workspace: 'agent',
   scenarioId: null,
   editorSession: null,
   scenario: null,
@@ -375,6 +375,16 @@ async function pollRun(id: string) {
     }
     await new Promise((r) => setTimeout(r, i < 20 ? 300 : 1000));
   }
+}
+
+/** Show a given set of runs (for example those an agent session produced) on the map, comparison and checks. */
+export function showRuns(ids: string[]) {
+  const s = useStudio.getState();
+  if (!ids.length) return;
+  const same = ids.length === s.runIds.length && ids.every((id, i) => s.runIds[i] === id);
+  if (same) return;
+  useStudio.setState({ runIds: ids, focusRun: null, manualFocus: false, playback: null });
+  for (const id of ids) void pollRun(id);
 }
 
 events.subscribe((type, data) => {

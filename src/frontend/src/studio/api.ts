@@ -44,7 +44,7 @@ export interface FieldPhysicsResponse {
   };
 }
 
-async function call<T>(method: string, path: string, body?: unknown, options: CallOptions & { preserveJsonText?: boolean } = {}): Promise<T> {
+export async function call<T>(method: string, path: string, body?: unknown, options: CallOptions & { preserveJsonText?: boolean } = {}): Promise<T> {
   const controller = new AbortController();
   const onAbort = () => controller.abort(options.signal?.reason);
   if (options.signal?.aborted) onAbort();

@@ -466,7 +466,10 @@ class AgentRunner:
         rec['step'] = tool.step if tool else None
         s['tool_calls'].append(rec)
         if tool and tool.step:
-            if rec['status'] == 'ok':
+            if rec['status'] == 'ok' and rec['name'] == 'verify_run':
+                checked = list((s.get('verifications') or {}).values())
+                set_step(s, 'verify', 'done', f"{sum(1 for v in checked if v.get('valid'))}/{len(checked)} 个方案复核通过")
+            elif rec['status'] == 'ok':
                 set_step(s, tool.step, 'done', _detail(rec))
             elif rec['status'] in ('error', 'refused'):
                 set_step(s, tool.step, 'failed', rec['error']['message'])
@@ -776,7 +779,7 @@ def _detail(rec: dict) -> str:
         ok = sum(1 for x in runs if x['status'] == 'feasible' and x['check_valid'])
         return f'{ok}/{len(runs)} 个方案通过检查'
     if name == 'verify_run':
-        return f"{r.get('run_id', '')[-6:]} {'复核通过' if (r.get('recheck') or {}).get('valid') else '复核未通过'}"
+        return '复核通过' if (r.get('recheck') or {}).get('valid') else '复核未通过'
     if name == 'diagnose_run':
         return r.get('diagnosis_label') or ''
     if name == 'start_simulation':
@@ -799,23 +802,31 @@ def _manual_change(action: dict, s: dict) -> dict | None:
 
 
 def _template_report(e: dict) -> str:
-    parts = []
+    """Deterministic report in the same register as the model-written one; every figure comes from the evidence."""
     c = e['contract']
-    parts.append('任务：' + '，'.join(f'{k} {v}' for k, v in list(c.items())[:6]) + '。')
-    if e['runs']:
-        names = '、'.join(dict.fromkeys(r['algorithm'] for r in e['runs'] if r['algorithm']))
-        parts.append(f"共运行 {len(e['runs'])} 个方案（{names}）。")
+    scale = '，'.join(x for x in (
+        f"场地 {c['场地尺寸']}" if '场地尺寸' in c else '',
+        f"{c['任务点数']}{c.get('作业类型', '')}任务点" if '任务点数' in c else '',
+        f"{c['车辆数']}" if '车辆数' in c else '',
+        f"单车容量 {c['单车容量']}" if '单车容量' in c else '',
+        f"障碍为 {c['障碍']}" if c.get('障碍') not in (None, '无') else '') if x)
+    parts = [f'任务规模：{scale}。' if scale else '']
+    runs = e['runs']
+    if runs:
+        names = '、'.join(dict.fromkeys(r['algorithm'] for r in runs if r['algorithm']))
+        checked = sum(1 for r in runs if r['independent_recheck'] is True)
+        parts.append(f'在同一输入、预算与随机种子下比较了 {len(runs)} 个方案（{names}），其中 {checked} 个通过独立检查器复核。')
     best = e.get('best_verified')
     if best:
-        parts.append(f"经独立复核的最好方案为 {best['algorithm']}（{best['run_id']}），总里程 {best['total_distance_m']} m，"
-                     f"最晚完成 {best['makespan_s']} s。")
+        parts.append(f"经复核的最优方案为 {best['algorithm']}（{best['run_id']}），总里程 {best['total_distance_m']} m，"
+                     f"最晚完成时间 {best['makespan_s']} s（规划层匀速估计，不含加减速与排队）。")
     else:
-        parts.append('尚无通过独立复核的方案。')
-    failed = [r for r in e['runs'] if r['diagnosis_label'] not in ('已验证可行',)]
+        parts.append('目前没有通过独立复核的方案。')
+    failed = [r for r in runs if r['independent_recheck'] is not True]
     if failed:
-        parts.append('未通过的方案：' + '；'.join(f"{r['algorithm']} — {r['diagnosis_label']}" for r in failed[:4]) + '。')
+        parts.append('未通过的方案及原因：' + '；'.join(f"{r['algorithm']}：{r['diagnosis_label']}" for r in failed[:4]) + '。')
     if e['precheck']:
-        parts.append('预检查发现：' + '；'.join(e['precheck'][:3]) + '。')
+        parts.append('预检查结论：' + '；'.join(e['precheck'][:3]) + '。')
     if e['unsupported']:
-        parts.append('以下要求当前无法表达，未纳入求解：' + '；'.join(e['unsupported']) + '。')
-    return ''.join(parts)
+        parts.append('以下要求超出当前任务模型的表达范围，未纳入求解：' + '；'.join(e['unsupported']) + '。')
+    return ''.join(p for p in parts if p)

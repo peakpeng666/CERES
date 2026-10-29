@@ -152,7 +152,7 @@ class EventHub {
   private stateListeners = new Set<() => void>();
   private hiddenTimer = 0;
   connected = false;
-  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping'];
+  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session'];
 
   constructor() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;

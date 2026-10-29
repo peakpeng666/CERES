@@ -93,8 +93,10 @@ export function MapPanel() {
   if (st.loadError) return <div className={s.pad}><Notice tone="error">{st.loadError}</Notice></div>;
   if (!st.scenario || !st.draft) {
     return (
-      <EmptyState icon={Sprout} title={st.busy ? `${st.busy}…` : '从一句话开始'}
-        detail="在上方输入任务描述并生成地图，或从左侧场景库打开一个场景。" />
+      <EmptyState icon={Sprout} title={st.busy ? `${st.busy}…` : st.workspace === 'agent' ? '任务地图' : '从一句话开始'}
+        detail={st.workspace === 'agent'
+          ? '在左侧描述任务并确认任务合同后，智能体建立的任务地图与方案显示在这里。'
+          : '在上方输入任务描述并生成地图，或从左侧场景库打开一个场景。'} />
     );
   }
   if (!isFleet(st.scenario)) return <GenericMap scenario={st.scenario} draft={st.draft} run={focus} runs={st.runIds.map((id) => st.runs[id]).filter(Boolean) as Solution[]} />;
