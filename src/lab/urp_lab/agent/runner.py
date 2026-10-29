@@ -593,7 +593,7 @@ class AgentRunner:
     def _apply_answers(self, s: dict, pending: dict, text: str):
         """A bare answer to a single question is bound to that question's field (e.g. "40" → task_count)."""
         fields = [q.get('field') for q in pending.get('questions', []) if q.get('field')]
-        stripped = text.strip().rstrip('。.个台辆')
+        stripped = re.sub(r'\s+', '', text).rstrip('。.个台辆')
         if len(fields) == 1 and re.fullmatch(r'\d+(\.\d+)?', stripped) and fields[0] in ('task_count', 'vehicle_count'):
             s['contract'], _, _ = tc.apply(s['contract'], {fields[0]: int(float(stripped))}, 'user_text', {fields[0]: text}, '回答澄清问题')
 
