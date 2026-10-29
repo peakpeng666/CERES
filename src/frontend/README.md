@@ -1,6 +1,6 @@
 # URP 科研工作台
 
-React/Vite工作台连接本地后端，提供真实CVRP任务提交、排队、独立验算、路线查看、记录导出和完整状态分页。`#/jobs`是路径任务入口，`#/jobs?tab=archives`查看导入的实验及版本化路线。科研工作台首页为 `#/`；原有`#/bpp` BPP结果、逐步装箱回放、选择解释、同前缀风险和原始证据保持可用。
+React/Vite工作台连接本地后端，提供真实CVRP任务提交、排队、独立验算、路线查看、记录导出和完整状态分页。`#/jobs`是路径任务入口，`#/jobs?tab=archives`查看导入的实验及版本化路线。科研工作台首页为 `#/`（智能体工作区，`#/agent/<会话>` 可直接恢复会话）；原有`#/bpp` BPP结果、逐步装箱回放、选择解释、同前缀风险和原始证据保持可用。
 
 完整启动、停止和恢复统一按 [本机使用说明](../../setup/README.md)。下列命令仅用于独立前端开发。
 
@@ -16,6 +16,7 @@ bash scripts/console.sh test
 | 内容 | 位置 |
 |---|---|
 | 页面与交互 | `src/` |
+| 智能体工作区（对话、任务合同、执行计划、调用记录） | `src/agent/`，接口见 [agent/README](../lab/urp_lab/agent/README.md) |
 | 装箱回放与数据读取 | `core/` |
 | 路线检查与文件适配 | [core/routing](core/routing/README.md) |
 | 原始输入 | `inputs/` → `../../data/bpp/inputs` |
