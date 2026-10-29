@@ -264,6 +264,11 @@ def cards(contract: dict, defaults: list[dict] | None = None) -> list[dict]:
         if target and target not in contract['fields']:
             rows.append({'key': target, 'label': FIELDS[target].label, 'value': d['value'],
                          'text': format_value(target, d['value']), 'source': 'default', 'evidence': ''})
+    if defaults is not None:  # execution settings are part of what the user confirms
+        for key, v in EXECUTION_DEFAULTS.items():
+            if key not in contract['fields']:
+                rows.append({'key': key, 'label': FIELDS[key].label, 'value': v, 'text': format_value(key, v),
+                             'source': 'default', 'evidence': ''})
     return rows
 
 
