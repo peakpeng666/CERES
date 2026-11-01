@@ -37,6 +37,8 @@
 | 最终恢复入口测试 | **17 passed** | `.local-state/full-cleanup/restore-boundaries-final.log` |
 | 恢复、资产与启动闭包定向回归 | **33 passed** | `.local-state/full-cleanup/focused-boundaries-final.log` |
 | 最终工程门禁、前端类型及生产构建 | **15/15 passed**，457 个 Python 用例、716 个前端用例 | `.local-state/full-cleanup/engineering-boundaries-final/summary.json` |
+| 修复提交 `28e781c` 按原 CI cone 清单本地独立检出 | **76 public_cli passed** | `.local-state/full-cleanup/ci-sparse-boundaries.log` |
+| 当前文档与远端只读复核 | **187 个链接路径通过，34 个分支 SHA 未变** | `.local-state/full-cleanup/doc-links-boundaries.json`、`remote-heads-boundaries.txt` |
 
 真实负向用例覆盖 `.git`、目录外及目录内链接、归档链接、重复及别名成员、文件/目录冲突、错误根目录、空归档与无匹配材料、并发出现的证据文件、损坏 CRC 及校验后替换归档路径。原 22 项/446 个 Python 用例的首次验证、原失败日志与原提交均保留。此次只修改恢复工具、其测试和现有说明，Lab、双服务、模型和研究实现未变；上表首次 Lab 与双服务结果没有冒充本次重跑。
 

@@ -1,6 +1,6 @@
 {
   "schema": "urp.cleanup-review/1",
-  "generated_utc": "2026-11-01T04:18:57.955701+00:00",
+  "generated_utc": "2026-11-01T04:20:51.849214+00:00",
   "source_repository": "https://github.com/peakpeng666/URP.git",
   "baseline_main_sha": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
   "local_branch": "chore/full-cleanup-20261101",
@@ -510,12 +510,12 @@
     },
     "ci_sparse_checkout": {
       "status": "passed",
-      "source_commit": "d8c90972918638f05b10bca6a5e6aa02c9ebef5e",
-      "tests": 65,
+      "source_commit": "28e781cf08b16f697d78a8a60c93dddf41bf7c9c",
+      "tests": 76,
       "checkout": "independent detached worktree",
       "patterns_source": ".github/workflows/ci.yml engineering job (unchanged, 14 cone directories)",
-      "scope": "Initial implementation commit using the unchanged CI cone list and already locked root Python environment; latest restore boundary tests have not yet been rerun in a new sparse worktree.",
-      "log": ".local-state/full-cleanup/ci-sparse-public-cli.log"
+      "scope": "Local independent cone checkout of the restore boundary fix, reusing the already locked root Python environment. Not a fresh dependency install, remote GitHub CI, browser or container run.",
+      "log": ".local-state/full-cleanup/ci-sparse-boundaries.log"
     },
     "pip_lock_export": {
       "status": "passed",
@@ -526,7 +526,7 @@
       "status": "passed",
       "branch_count": 34,
       "all_recorded_heads_unchanged": true,
-      "log": ".local-state/full-cleanup/remote-heads-final.txt"
+      "log": ".local-state/full-cleanup/remote-heads-boundaries.txt"
     }
   },
   "branch_review": {
@@ -571,7 +571,10 @@
     ".local-state/full-cleanup/restore-boundaries-after.log": "8bdccf0b999f9d76071dd501f86e330f9208a5ba619fca4a53ac8aabc2af3ad3",
     ".local-state/full-cleanup/restore-boundaries-final.log": "c9e44b2868df22608599f2303038d71915b35042ff182501a2cb90f3d73eba48",
     ".local-state/full-cleanup/focused-boundaries-final.log": "2a3181ea7e83ff521a1e77d0a4da0104a3c8d6d93dbf9371837345571152d146",
-    ".local-state/full-cleanup/engineering-boundaries-final-run.log": "4c5dd6d80508caec43d77893ae914b9de30c14a05999f48d0dc105cf315d3704"
+    ".local-state/full-cleanup/engineering-boundaries-final-run.log": "4c5dd6d80508caec43d77893ae914b9de30c14a05999f48d0dc105cf315d3704",
+    ".local-state/full-cleanup/ci-sparse-boundaries.log": "da56239dad2eab04e45e671855fd9860ca3de4b9a4ccd3887f174a8e751dad74",
+    ".local-state/full-cleanup/doc-links-boundaries.json": "fa7f1203f9b66f29f97279970edebc43f0a0507c84dae9493de09a0073efe796",
+    ".local-state/full-cleanup/remote-heads-boundaries.txt": "25f1d1a29b6fbcd3095bd53602f360c497f12f5260c927cdbb52b4fb181d3dc0"
   },
   "prior_validation": {
     "commit": "5460093b0b1d6db97d26b0e7a9b42e2b4c09b149",
@@ -610,6 +613,7 @@
       "already-present",
       "tracked-only"
     ],
-    "invalid_empty_inputs": "Missing or non-directory URP root, empty archive and no matching material files fail without a restore success."
+    "invalid_empty_inputs": "Missing or non-directory URP root, empty archive and no matching material files fail without a restore success.",
+    "implementation_commit": "28e781cf08b16f697d78a8a60c93dddf41bf7c9c"
   }
 }
