@@ -7,10 +7,11 @@ React/Vite 工作台提供农业任务编辑、Agent 面板、算法实验、独
 从本目录运行：
 
 ```sh
-bash scripts/console.sh build
-bash scripts/console.sh serve      # 127.0.0.1:4173
-bash scripts/console.sh dev
-bash scripts/console.sh test
+npm run dev          # 127.0.0.1:5173
+npm run typecheck
+npm run test:ui
+npm run build
+npm run preview      # 127.0.0.1:4173
 ```
 
 | 内容 | 位置 |
@@ -28,9 +29,13 @@ bash scripts/console.sh test
 
 ## 验收
 
-统一工程回归从仓库根执行`bash src/start.sh check`。它使用根`.venv`，保留每次新的日志和输出。`scripts/console.sh setup/test/validate`仍是原BPP独立交付的环境与重建入口，不必为了启动URP任务而重新转换历史数据。
+当前工程回归从仓库根执行 `uv run --no-sync python tools/check_project.py`（`bash src/start.sh check` 调用同一入口），使用根 `.venv`，日志写入新的 `.local-state/checks/<时间>/`。当前 Lab 与双服务 HTTP 检查见 [开发与测试](../../setup/README.md#开发与测试)。
 
-新增浏览器验收脚本为`tools/browser/workspace-acceptance.mjs`，使用该目录原有锁定的Playwright。它要求已运行的**临时测试后端数据库**与生产预览，真实提交两个六节点任务，检查API、导出、刷新、无障碍控件和390px布局；最后一项分页/终态检查使用明确的拦截响应，不向后端写入伪造记录。
+`scripts/console.sh setup/test/validate` 属于历史 BPP 独立交付流程：它使用前端目录自己的 Python 环境，包含科学数据核验与重建；日常工程回归不要求重建这套环境或重新转换历史数据。
+
+### 历史浏览器验收入口（2026-10-17）
+
+`tools/browser/workspace-acceptance.mjs` 是当时的浏览器验收脚本，使用该目录锁定的 Playwright。重跑时要求已运行的**临时测试后端数据库**与生产预览，真实提交两个六节点任务，检查 API、导出、刷新、无障碍控件和 390px 布局；最后一项分页/终态检查使用明确的拦截响应，不向后端写入伪造记录。其历史通过记录不替代当前提交验收。
 
 ```sh
 npm ci --prefix tools/browser
@@ -38,6 +43,6 @@ node tools/browser/node_modules/playwright/cli.js install chromium
 URP_BROWSER_OUTPUT=/absolute/path/to/new-report-dir node tools/browser/workspace-acceptance.mjs
 ```
 
-可用`URP_BASE_URL`指定本机预览地址，`URP_BROWSER_EXECUTABLE`指定实际安装的兼容Chrome二进制。报告目录的父目录须已存在，输出目录必须为新目录。设置`URP_ROUTE_FIXTURE_ID`可追加已导入`backend/tests/route_fixture.py`合成归档的四类路线检查；未设置时报告会明确列出遗漏项。本轮真实浏览器记录及复验步骤见[系统审查](../../docs/20261017-system-review.md)。
+可用`URP_BASE_URL`指定本机预览地址，`URP_BROWSER_EXECUTABLE`指定实际安装的兼容Chrome二进制。报告目录的父目录须已存在，输出目录必须为新目录。设置`URP_ROUTE_FIXTURE_ID`可追加已导入`backend/tests/route_fixture.py`合成归档的四类路线检查；未设置时报告会明确列出遗漏项。2026-10-17 的浏览器记录及复验步骤见[系统审查](../../docs/20261017-system-review.md)；后续各轮实际执行范围见[工程记录](../../setup/2026-10-30/engineering/REPORT.md)。
 
 [设计与交互](docs/FRONTEND.md) · [静态数据接口](docs/DATA_API.md) · [安装与重建](docs/MIGRATION.md) · [验收](docs/ACCEPTANCE.md)。

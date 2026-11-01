@@ -44,7 +44,7 @@
 
 ## 运行数据
 
-CVRP 数值任务及可写档案库位于 `.local-state/`，工程检查默认输出到 `user-runs/`。`data/backend/` 保留原始档案，新任务写入 `.local-state/`。历史审查和实验报告保留各自日期。
+CVRP 数值任务及可写档案库位于 `.local-state/`，工程检查默认输出到 `.local-state/checks/<时间>/`。`data/backend/` 保留原始档案，新任务写入 `.local-state/`。历史审查和实验报告保留各自日期。
 
 田间应用的运行数据、SQLite、会话、缓存和本地构建位于 `src/lab/runtime/`。各项目的依赖环境保留在各自的 `.venv/` 或 `node_modules/`。
 

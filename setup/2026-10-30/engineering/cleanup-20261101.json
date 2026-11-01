@@ -1,0 +1,548 @@
+{
+  "schema": "urp.cleanup-review/1",
+  "generated_utc": "2026-11-01T03:56:48.370728+00:00",
+  "source_repository": "https://github.com/peakpeng666/URP.git",
+  "baseline_main_sha": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
+  "local_branch": "chore/full-cleanup-20261101",
+  "environment": {
+    "python": "3.12.14",
+    "node": "v24.19.0",
+    "uv": "uv 0.12.19 (x86_64-unknown-linux-gnu)"
+  },
+  "remote_actions_applied": false,
+  "checks": {
+    "focused": {
+      "status": "passed",
+      "tests": 22,
+      "log": ".local-state/full-cleanup/focused.log"
+    },
+    "engineering": {
+      "status": "passed",
+      "gates": 15,
+      "python_unittest_count": 446,
+      "frontend_ui_tests": 716,
+      "report": ".local-state/full-cleanup/engineering/summary.json",
+      "details": [
+        {
+          "name": "backend",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v"
+          ],
+          "cwd": "src/backend",
+          "elapsed_seconds": 9.811,
+          "log": "backend.log",
+          "log_sha256": "3a38125f753169356df14218ab0749e309f240ad8efa2e67f592cfce4f0ed908",
+          "tests_run": 97,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "backend_packages",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "integration_backend.py",
+            "-v"
+          ],
+          "cwd": "src/backend",
+          "elapsed_seconds": 0.32,
+          "log": "backend_packages.log",
+          "log_sha256": "20de8aae87cfdcf0e010b683895684aed2837ff9b430750deaa1f98f2ee364a2",
+          "tests_run": 1,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "backend_route_contracts",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "integration_route_scene.py",
+            "-v"
+          ],
+          "cwd": "src/backend",
+          "elapsed_seconds": 1.325,
+          "log": "backend_route_contracts.log",
+          "log_sha256": "acc2f59a64aef52acfc3fec2b7253054aeac4b0a3732a556a119f2bf18155c6e",
+          "tests_run": 1,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "research",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "scripts/test.py"
+          ],
+          "cwd": "src/research",
+          "elapsed_seconds": 4.94,
+          "log": "research.log",
+          "log_sha256": "91d921961b275421a539e118ee7da8b2442dd030549c8804be52abb61cc0b017",
+          "tests_run": 114,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "generator",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "-v",
+            "test_runner"
+          ],
+          "cwd": "src/research/generator",
+          "elapsed_seconds": 0.478,
+          "log": "generator.log",
+          "log_sha256": "93e6cf80e23925285c444e3c3255719cb22c53ce1776ac6ddd33a0bc88a4bc33",
+          "tests_run": 12,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "supervision",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-v"
+          ],
+          "cwd": "src/research/execution",
+          "elapsed_seconds": 8.864,
+          "log": "supervision.log",
+          "log_sha256": "6e793b29e5ffddcff27572b363d5f0640cbed1959dcdbd99ed7faf39e69f9591",
+          "tests_run": 27,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "baseline_aggregation",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "protocol",
+            "-p",
+            "test_*.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "elapsed_seconds": 0.18,
+          "log": "baseline_aggregation.log",
+          "log_sha256": "214d1d88fae29a1d60e1e06cdfcb2e54e3e9dc48662c6db2bd7fa024045a0092",
+          "tests_run": 13,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "independent_validator",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "independent",
+            "-p",
+            "test_*.py",
+            "-v"
+          ],
+          "cwd": ".",
+          "elapsed_seconds": 0.429,
+          "log": "independent_validator.log",
+          "log_sha256": "038cedcfc627f4257e1f590e83a632f405f94b1691c4c1469a0de69ce9663ab4",
+          "tests_run": 32,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "public_cli",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tools/tests",
+            "-v"
+          ],
+          "cwd": ".",
+          "elapsed_seconds": 3.343,
+          "log": "public_cli.log",
+          "log_sha256": "5094e907483adeb750cbca73ff2f2ede8b675c55a787bb6568836457e128d25d",
+          "tests_run": 65,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [
+              {
+                "pid": 2607,
+                "returncode": 0
+              },
+              {
+                "pid": 2616,
+                "returncode": 0
+              },
+              {
+                "pid": 2642,
+                "returncode": 0
+              },
+              {
+                "pid": 2650,
+                "returncode": 0
+              },
+              {
+                "pid": 2659,
+                "returncode": 0
+              },
+              {
+                "pid": 2668,
+                "returncode": 0
+              },
+              {
+                "pid": 2673,
+                "returncode": 0
+              },
+              {
+                "pid": 2680,
+                "returncode": 0
+              },
+              {
+                "pid": 2690,
+                "returncode": 0
+              },
+              {
+                "pid": 2703,
+                "returncode": 0
+              }
+            ],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "robotics_core",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "urp_route_sim/test",
+            "-v"
+          ],
+          "cwd": "src/robotics",
+          "elapsed_seconds": 0.321,
+          "log": "robotics_core.log",
+          "log_sha256": "0981e4ce1b08e05e13a8bef5bc4de62529166ebedd1c0b5fdad23183c15026e2",
+          "tests_run": 56,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "frontend_data",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_*.py",
+            "-v"
+          ],
+          "cwd": "src/frontend",
+          "elapsed_seconds": 7.984,
+          "log": "frontend_data.log",
+          "log_sha256": "95451985ecdd704b31738d755a60db71011130c645cea5e3babd3adcba697529",
+          "tests_run": 28,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "frontend_ui",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "npm",
+            "run",
+            "test:ui"
+          ],
+          "cwd": "src/frontend",
+          "elapsed_seconds": 6.607,
+          "log": "frontend_ui.log",
+          "log_sha256": "4088f4a619ccd1a9373a1e18fdaaabe1e61e0fd2a0ffbd226721364e742344bc",
+          "tests_run": null,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "frontend_replay",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "node",
+            "--test",
+            "core/routing/tests/model-result.test.js",
+            "tests/replay-client.test.mjs",
+            "tests/replay-real.test.mjs",
+            "tests/replay.test.mjs"
+          ],
+          "cwd": "src/frontend",
+          "elapsed_seconds": 2.49,
+          "log": "frontend_replay.log",
+          "log_sha256": "72f8b206b331ed479281d93b126bb3ecf8d89be628c96f5467438dc897007310",
+          "tests_run": null,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "bpp_scientific_readback",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "/workspace/URP-cleanup/.venv/bin/python",
+            "scripts/validate_data.py",
+            "--output",
+            "/workspace/URP-cleanup/.local-state/full-cleanup/engineering/bpp_validation.json"
+          ],
+          "cwd": "src/frontend",
+          "elapsed_seconds": 14.625,
+          "log": "bpp_scientific_readback.log",
+          "log_sha256": "11b3fe252af3f6111a0164d34ea1359786d18c37ebdadf909ac0fc314fb475f8",
+          "tests_run": null,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        },
+        {
+          "name": "frontend_build",
+          "status": "passed",
+          "returncode": 0,
+          "command": [
+            "npm",
+            "run",
+            "build"
+          ],
+          "cwd": "src/frontend",
+          "elapsed_seconds": 14.476,
+          "log": "frontend_build.log",
+          "log_sha256": "d6288a0dfa4a7ffea5e2f6594383d807d46c3d8636831f507d77bb25bd3967cf",
+          "tests_run": null,
+          "cleanup": {
+            "complete": true,
+            "remaining_pids": [],
+            "reaped_descendants": [],
+            "signals": [],
+            "errors": []
+          },
+          "error": null
+        }
+      ]
+    },
+    "lab": {
+      "status": "passed",
+      "passed": 968,
+      "skipped": 11,
+      "subtests_passed": 36,
+      "required_maps": true,
+      "log": ".local-state/full-cleanup/lab.log",
+      "junit": ".local-state/full-cleanup/lab.xml"
+    },
+    "dual_service": {
+      "status": "passed",
+      "scope": "dual-service lifecycle, failure injection, archive Jobs, workbench HTTP; no browser/ROS",
+      "report": ".local-state/full-cleanup/dual-service/summary.json",
+      "frozen_databases": {
+        "before": {
+          "data/backend/research.sqlite3": null
+        },
+        "after": {
+          "data/backend/research.sqlite3": null
+        },
+        "unchanged": true,
+        "missing": [
+          "data/backend/research.sqlite3"
+        ]
+      }
+    },
+    "documentation_paths": {
+      "status": "passed",
+      "scope": "Local Markdown link paths in current entry documents, checked against the full Git tree plus new worktree files; URL reachability and anchors are not audited.",
+      "checked_paths": 183,
+      "missing": []
+    },
+    "historical_and_frozen_evidence": {
+      "status": "passed",
+      "historical_registry_files_checked": 8,
+      "scope": "Original asset inventories, copies/restoration/license evidence and original branch snapshot compared by Git hash; no tracked diff under data/, experiments/, protocol/, frozen research implementations, Lab models or algorithm_inventory.md."
+    },
+    "historical_archive_fingerprint": {
+      "status": "passed",
+      "source_commit": "66b2b8c742598378898d02643d4ddc2f58f1a686",
+      "scope": "Name, byte size, SHA256 and recorded status match the original storage.json archive record; original ZIP not obtained or restored."
+    },
+    "ci_sparse_checkout": {
+      "status": "not-run-yet",
+      "scope": "A checkout of this local commit using the unchanged engineering cone list will be checked before final handoff."
+    }
+  },
+  "branch_review": {
+    "main_ancestors": 18,
+    "referenced_ancestors_to_retain": 6,
+    "ancestor_candidates_pending_review": 12,
+    "non_ancestors_to_retain": 15,
+    "non_ancestors_with_source_only_paths": 5,
+    "non_ancestors_requiring_semantic_review": 10,
+    "remote_branches_deleted": 0
+  },
+  "asset_delta": "docs/assets/current/review.json",
+  "distribution_proposal_applied": false,
+  "unresolved": [
+    "Five third-party authorization evidence gaps and root/per-file distribution scope",
+    "Twelve ancestor archive candidates require a later branch decision; six referenced ancestors are retained",
+    "Ten non-ancestor branches require semantic review; all fifteen non-ancestor branches are retained",
+    "No new binary migration, Drive restore, image digest verification or deployment performed"
+  ],
+  "not_run": [
+    "browser",
+    "live paid model",
+    "Docker/container build",
+    "Windows/WSL",
+    "ROS/Gazebo physics",
+    "native long runs",
+    "original 10.45 GB historical ZIP restore"
+  ],
+  "raw_log_sha256": {
+    ".local-state/full-cleanup/focused.log": "b5465948ad040e739ffc1dca3c3dea20c60ef78ee5cd4a1010907aaa1719ce0f",
+    ".local-state/full-cleanup/engineering-run.log": "7af9c20ff30e06a904a4f0cb861a207c797eeae8b83b2c5cf9f3edb3dcb2d3e3",
+    ".local-state/full-cleanup/lab.log": "dc3232ed5fe4c930974c294f2a78403097471d65706c8e8e3f4ccdf1e7019079",
+    ".local-state/full-cleanup/restore-before.log": "68bba6837a66909397dfad69ac91a3c1699fee9862d21e3a4b2a2b21fd723adf",
+    ".local-state/full-cleanup/restore-after.log": "3627978fbbce02124c3a2f6f178f76d48a5977ba74d9146475c1c0f33a812e69",
+    ".local-state/full-cleanup/dual-service.log": "c8dda15db62db3679ce7ab844c861eb157f5b9feebe97107d5e364c9aec43b0a",
+    ".local-state/full-cleanup/branch-consumers.log": "2c99197e519f63c728aa039646ee7cc1b28f1f488d33474c0063135388a266ed",
+    ".local-state/full-cleanup/doc-links.json": "3560a86f30eab702cf43407cdb4511c1f1ca5e599ebad77cd09b1db196ef4bcd"
+  }
+}

@@ -1,0 +1,76 @@
+name,path,root_license_paths,license_text_labels,nested_license_count,provenance_index,disposition
+ACCEL,src/repos/ACCEL,src/repos/ACCEL/LICENSE,CC-BY-NC-4.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+ADAS,src/repos/ADAS,src/repos/ADAS/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+AILS-II,src/repos/AILS-II,src/repos/AILS-II/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+ALE-Bench,src/repos/ALE-Bench,src/repos/ALE-Bench/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+APE,src/repos/APE,src/repos/APE/LICENSE.md,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+ASlibScenario,src/repos/ASlibScenario,src/repos/ASlibScenario/LICENSE,BSD-style: review clauses,0,src/repos/REPOSITORIES.md,retain; review before extraction
+AlphaEvolve-Results,src/repos/AlphaEvolve-Results,src/repos/AlphaEvolve-Results/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+AnyJev,src/repos/AnyJev,src/repos/AnyJev/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+AutoFolio,src/repos/AutoFolio,src/repos/AutoFolio/LICENSE,BSD-style: review clauses,1,src/repos/REPOSITORIES.md,retain; review before extraction
+AutoML-Zero,src/repos/AutoML-Zero,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+CEoH,src/repos/CEoH,src/repos/CEoH/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+DACBench,src/repos/DACBench,src/repos/DACBench/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+DACE,src/repos/DACE,src/repos/DACE/LICENSE,AGPL: review version and scope,20,src/repos/REPOSITORIES.md,retain; review before extraction
+DGM,src/repos/DGM,src/repos/DGM/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+DR-ALNS,src/repos/DR-ALNS,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+DSPy,src/repos/DSPy,src/repos/DSPy/LICENSE,MIT-style,1,src/repos/REPOSITORIES.md,retain; review before extraction
+DiscoGen,src/repos/DiscoGen,src/repos/DiscoGen/LICENSE,MIT-style,1,src/repos/REPOSITORIES.md,retain; review before extraction
+DiscoRL,src/repos/DiscoRL,src/repos/DiscoRL/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+DreamCoder,src/repos/DreamCoder,src/repos/DreamCoder/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+EoH,src/repos/EoH,src/repos/EoH/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+EoH-S,src/repos/EoH-S,,no-root-license-found,1,src/repos/REPOSITORIES.md,retain; review before extraction
+Eureka,src/repos/Eureka,src/repos/Eureka/LICENSE,MIT-style,2,src/repos/REPOSITORIES.md,retain; review before extraction
+EvoPrompt,src/repos/EvoPrompt,src/repos/EvoPrompt/LICENSE.txt,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+Fields2Cover,src/repos/Fields2Cover,src/repos/Fields2Cover/LICENSE,BSD-style: review clauses,0,src/repos/REPOSITORIES.md,retain; review before extraction
+FunSearch,src/repos/FunSearch,src/repos/FunSearch/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+G-LNS,src/repos/G-LNS,src/repos/G-LNS/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+GEPA,src/repos/GEPA,src/repos/GEPA/LICENSE,MIT-style,1,src/repos/REPOSITORIES.md,retain; review before extraction
+HGS-CARP,src/repos/HGS-CARP,src/repos/HGS-CARP/LICENSE,AGPL: review version and scope,0,src/repos/REPOSITORIES.md,retain; review before extraction
+HGS-TDCARP,src/repos/HGS-TDCARP,src/repos/HGS-TDCARP/LICENSE,AGPL: review version and scope,0,src/repos/REPOSITORIES.md,retain; review before extraction
+HSEvo,src/repos/HSEvo,src/repos/HSEvo/LICENSE,MIT-style,2,src/repos/REPOSITORIES.md,retain; review before extraction
+Hercules,src/repos/Hercules,src/repos/Hercules/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+HeurAgenix,src/repos/HeurAgenix,src/repos/HeurAgenix/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+HiFo-Prompt,src/repos/HiFo-Prompt,src/repos/HiFo-Prompt/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+HpBandSter,src/repos/HpBandSter,src/repos/HpBandSter/LICENSE,BSD-style: review clauses,3,src/repos/REPOSITORIES.md,retain; review before extraction
+InstanceSpace,src/repos/InstanceSpace,src/repos/InstanceSpace/LICENSE,PolyForm-Noncommercial-1.0.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+JAIR2026-FrugalAS,src/repos/JAIR2026-FrugalAS,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+Jev-Mem,src/repos/Jev-Mem,src/repos/Jev-Mem/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+JevOut,src/repos/JevOut,src/repos/JevOut/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+LLM4AD,src/repos/LLM4AD,src/repos/LLM4AD/LICENSE,BSD-style: review clauses,0,src/repos/REPOSITORIES.md,retain; review before extraction
+LLaMEA,src/repos/LLaMEA,src/repos/LLaMEA/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+LaT,src/repos/LaT,src/repos/LaT/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+Lion,src/repos/Lion,src/repos/Lion/LICENSE,Apache-2.0,1,src/repos/REPOSITORIES.md,retain; review before extraction
+LitCEoH,src/repos/LitCEoH,src/repos/LitCEoH/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+MLEvolve,src/repos/MLEvolve,src/repos/MLEvolve/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+OPRO,src/repos/OPRO,src/repos/OPRO/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+OptiMUS,src/repos/OptiMUS,src/repos/OptiMUS/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+OptiMUS-v0.1,src/repos/OptiMUS-v0.1,src/repos/OptiMUS-v0.1/LICENSE,CC-BY-NC-4.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+OptiMUS-v0.2,src/repos/OptiMUS-v0.2,src/repos/OptiMUS-v0.2/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+OptiMUS-v0.3,src/repos/OptiMUS-v0.3,src/repos/OptiMUS-v0.3/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+PLR,src/repos/PLR,src/repos/PLR/LICENSE,CC-BY-NC-4.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+POET,src/repos/POET,src/repos/POET/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+PyVRP,src/repos/PyVRP,src/repos/PyVRP/LICENSE.md,MIT-style,2,src/repos/REPOSITORIES.md,retain; review before extraction
+QD-LHD,src/repos/QD-LHD,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+QDAIF,src/repos/QDAIF,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+QUBE,src/repos/QUBE,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+RLCDAlignBench,src/repos/RLCDAlignBench,src/repos/RLCDAlignBench/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+ReEvo,src/repos/ReEvo,src/repos/ReEvo/LICENSE,MIT-style,1,src/repos/REPOSITORIES.md,retain; review before extraction
+Reflexion,src/repos/Reflexion,src/repos/Reflexion/LICENSE,MIT-style,2,src/repos/REPOSITORIES.md,retain; review before extraction
+RouteFinder,src/repos/RouteFinder,src/repos/RouteFinder/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+RouteLLM,src/repos/RouteLLM,src/repos/RouteLLM/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+SMAC3,src/repos/SMAC3,src/repos/SMAC3/LICENSE.txt,BSD-style: review clauses,0,src/repos/REPOSITORIES.md,retain; review before extraction
+Self-Refine,src/repos/Self-Refine,src/repos/Self-Refine/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+ShinkaEvolve,src/repos/ShinkaEvolve,src/repos/ShinkaEvolve/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+VRPAgent,src/repos/VRPAgent,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+Voyager,src/repos/Voyager,src/repos/Voyager/LICENSE,MIT-style,1,src/repos/REPOSITORIES.md,retain; review before extraction
+algorithm_survival_analysis,src/repos/algorithm_survival_analysis,src/repos/algorithm_survival_analysis/LICENSE,AGPL: review version and scope,0,src/repos/REPOSITORIES.md,retain; review before extraction
+aslib_data,src/repos/aslib_data,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction
+autorank,src/repos/autorank,src/repos/autorank/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+irace,src/repos/irace,src/repos/irace/LICENSE.md,LGPL: review version and scope,3,src/repos/REPOSITORIES.md,retain; review before extraction
+lavoir,src/repos/lavoir,src/repos/lavoir/LICENSE,Apache-2.0,0,src/repos/REPOSITORIES.md,retain; review before extraction
+laya,src/repos/laya,src/repos/laya/LICENSE,Apache-2.0,1,src/repos/REPOSITORIES.md,retain; review before extraction
+online_as,src/repos/online_as,src/repos/online_as/LICENSE,AGPL: review version and scope,0,src/repos/REPOSITORIES.md,retain; review before extraction
+open-source-sisr-routing,src/repos/open-source-sisr-routing,,no-root-license-found,7,src/repos/REPOSITORIES.md,retain; review before extraction
+rl4co,src/repos/rl4co,src/repos/rl4co/LICENSE,MIT-style,0,src/repos/REPOSITORIES.md,retain; review before extraction
+typesafe-router,src/repos/typesafe-router,,no-root-license-found,0,src/repos/REPOSITORIES.md,retain; review before extraction

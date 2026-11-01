@@ -101,7 +101,8 @@ class WorkflowClosureTests(unittest.TestCase):
             selected.append(Path(line.strip()))
         # Cone checkout includes selected directories and files immediately inside
         # their ancestor directories (which is how src/start.sh is obtained).
-        fixtures = (*STARTUP_FIXTURES, 'docs/assets/copies.json', 'docs/assets/restoration.json')
+        fixtures = (*STARTUP_FIXTURES, 'setup/materials-archive.json',
+                    'docs/assets/copies.json', 'docs/assets/restoration.json')
         for name in fixtures:
             path = Path(name)
             with self.subTest(fixture=name):

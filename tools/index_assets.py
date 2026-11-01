@@ -31,7 +31,7 @@ def asset_kind(path):
     lower = path.lower()
     if lower.endswith('.pdf'):
         return 'textbook' if path.startswith('literature/教材/') else 'paper' if path.startswith('papers/') else 'document'
-    if lower.endswith(('.zip', '.tar.gz', '.tgz', '.tar.zst', '.7z', '.rar')):
+    if lower.endswith(('.zip', '.tar.gz', '.tgz', '.tar.xz', '.tar.zst', '.7z', '.rar')):
         return 'experiment-archive' if path.startswith('experiments/') else 'third-party-archive' if path.startswith('src/repos/') else 'archive'
     if lower.endswith(('.sqlite', '.sqlite3', '.db')):
         return 'database'
