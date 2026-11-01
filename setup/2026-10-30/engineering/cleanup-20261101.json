@@ -1,6 +1,6 @@
 {
   "schema": "urp.cleanup-review/1",
-  "generated_utc": "2026-11-01T03:56:48.370728+00:00",
+  "generated_utc": "2026-11-01T03:59:14.499783+00:00",
   "source_repository": "https://github.com/peakpeng666/URP.git",
   "baseline_main_sha": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
   "local_branch": "chore/full-cleanup-20261101",
@@ -491,7 +491,7 @@
     "documentation_paths": {
       "status": "passed",
       "scope": "Local Markdown link paths in current entry documents, checked against the full Git tree plus new worktree files; URL reachability and anchors are not audited.",
-      "checked_paths": 183,
+      "checked_paths": 187,
       "missing": []
     },
     "historical_and_frozen_evidence": {
@@ -505,8 +505,24 @@
       "scope": "Name, byte size, SHA256 and recorded status match the original storage.json archive record; original ZIP not obtained or restored."
     },
     "ci_sparse_checkout": {
-      "status": "not-run-yet",
-      "scope": "A checkout of this local commit using the unchanged engineering cone list will be checked before final handoff."
+      "status": "passed",
+      "source_commit": "d8c90972918638f05b10bca6a5e6aa02c9ebef5e",
+      "tests": 65,
+      "checkout": "/tmp/urp-cleanup-ci-d8c9097",
+      "patterns_source": ".github/workflows/ci.yml engineering job (unchanged, 14 cone directories)",
+      "scope": "Independent Git worktree of the implementation commit, reusing the already locked root Python environment; manifest, startup fixtures and restoration records present. Not a fresh dependency install, browser or container run.",
+      "log": ".local-state/full-cleanup/ci-sparse-public-cli.log"
+    },
+    "pip_lock_export": {
+      "status": "passed",
+      "scope": "uv export --locked --extra solvers --no-dev --no-hashes --no-annotate --no-header matches requirements.lock excluding comments",
+      "output": ".local-state/full-cleanup/requirements.lock"
+    },
+    "remote_heads_final": {
+      "status": "passed",
+      "branch_count": 34,
+      "all_recorded_heads_unchanged": true,
+      "log": ".local-state/full-cleanup/remote-heads-final.txt"
     }
   },
   "branch_review": {
@@ -543,6 +559,9 @@
     ".local-state/full-cleanup/restore-after.log": "3627978fbbce02124c3a2f6f178f76d48a5977ba74d9146475c1c0f33a812e69",
     ".local-state/full-cleanup/dual-service.log": "c8dda15db62db3679ce7ab844c861eb157f5b9feebe97107d5e364c9aec43b0a",
     ".local-state/full-cleanup/branch-consumers.log": "2c99197e519f63c728aa039646ee7cc1b28f1f488d33474c0063135388a266ed",
-    ".local-state/full-cleanup/doc-links.json": "3560a86f30eab702cf43407cdb4511c1f1ca5e599ebad77cd09b1db196ef4bcd"
+    ".local-state/full-cleanup/doc-links.json": "fa7f1203f9b66f29f97279970edebc43f0a0507c84dae9493de09a0073efe796",
+    ".local-state/full-cleanup/ci-sparse-public-cli.log": "3258a4cb8d3fd3dc3dea0ccfe38a3cd009eda9a86a3390e52407e5df51947358",
+    ".local-state/full-cleanup/requirements.lock": "845e4cead937b06e866a22c5a936ffbe56458f57c9f811020b82b9590552a0cd",
+    ".local-state/full-cleanup/remote-heads-final.txt": "25f1d1a29b6fbcd3095bd53602f360c497f12f5260c927cdbb52b4fb181d3dc0"
   }
 }
