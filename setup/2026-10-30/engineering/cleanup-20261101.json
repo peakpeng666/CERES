@@ -1,6 +1,6 @@
 {
   "schema": "urp.cleanup-review/1",
-  "generated_utc": "2026-11-01T03:59:14.499783+00:00",
+  "generated_utc": "2026-11-01T04:18:57.955701+00:00",
   "source_repository": "https://github.com/peakpeng666/URP.git",
   "baseline_main_sha": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
   "local_branch": "chore/full-cleanup-20261101",
@@ -13,22 +13,22 @@
   "checks": {
     "focused": {
       "status": "passed",
-      "tests": 22,
-      "log": ".local-state/full-cleanup/focused.log"
+      "tests": 33,
+      "log": ".local-state/full-cleanup/focused-boundaries-final.log"
     },
     "engineering": {
       "status": "passed",
       "gates": 15,
-      "python_unittest_count": 446,
+      "python_unittest_count": 457,
       "frontend_ui_tests": 716,
-      "report": ".local-state/full-cleanup/engineering/summary.json",
+      "report": ".local-state/full-cleanup/engineering-boundaries-final/summary.json",
       "details": [
         {
           "name": "backend",
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -37,9 +37,9 @@
             "-v"
           ],
           "cwd": "src/backend",
-          "elapsed_seconds": 9.811,
+          "elapsed_seconds": 9.666,
           "log": "backend.log",
-          "log_sha256": "3a38125f753169356df14218ab0749e309f240ad8efa2e67f592cfce4f0ed908",
+          "log_sha256": "1cb435b0c1523835d01fdd1de20c4176a8ac143ae6a6da9890dd3e7769afc803",
           "tests_run": 97,
           "cleanup": {
             "complete": true,
@@ -55,7 +55,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -66,9 +66,9 @@
             "-v"
           ],
           "cwd": "src/backend",
-          "elapsed_seconds": 0.32,
+          "elapsed_seconds": 0.273,
           "log": "backend_packages.log",
-          "log_sha256": "20de8aae87cfdcf0e010b683895684aed2837ff9b430750deaa1f98f2ee364a2",
+          "log_sha256": "efa0efd0c1c59c38b34b3bd80d1f11ba24df397cae8e809508f728c5d25e1b4e",
           "tests_run": 1,
           "cleanup": {
             "complete": true,
@@ -84,7 +84,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -95,9 +95,9 @@
             "-v"
           ],
           "cwd": "src/backend",
-          "elapsed_seconds": 1.325,
+          "elapsed_seconds": 1.228,
           "log": "backend_route_contracts.log",
-          "log_sha256": "acc2f59a64aef52acfc3fec2b7253054aeac4b0a3732a556a119f2bf18155c6e",
+          "log_sha256": "9cd04f59a31e4bce583260315496a9d064467a4c48ba4a2e10b4f504792ffad1",
           "tests_run": 1,
           "cleanup": {
             "complete": true,
@@ -113,13 +113,13 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "scripts/test.py"
           ],
           "cwd": "src/research",
-          "elapsed_seconds": 4.94,
+          "elapsed_seconds": 4.791,
           "log": "research.log",
-          "log_sha256": "91d921961b275421a539e118ee7da8b2442dd030549c8804be52abb61cc0b017",
+          "log_sha256": "b05fd9a9072f50033902c59ca16c95a8052a81a1b388f859e0075896a2288b78",
           "tests_run": 114,
           "cleanup": {
             "complete": true,
@@ -135,16 +135,16 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "-v",
             "test_runner"
           ],
           "cwd": "src/research/generator",
-          "elapsed_seconds": 0.478,
+          "elapsed_seconds": 0.474,
           "log": "generator.log",
-          "log_sha256": "93e6cf80e23925285c444e3c3255719cb22c53ce1776ac6ddd33a0bc88a4bc33",
+          "log_sha256": "46147170d4393cc65c852638fd6ff8db44106e7dcb4a96fbef3f70a4d42def7a",
           "tests_run": 12,
           "cleanup": {
             "complete": true,
@@ -160,7 +160,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -169,9 +169,9 @@
             "-v"
           ],
           "cwd": "src/research/execution",
-          "elapsed_seconds": 8.864,
+          "elapsed_seconds": 8.656,
           "log": "supervision.log",
-          "log_sha256": "6e793b29e5ffddcff27572b363d5f0640cbed1959dcdbd99ed7faf39e69f9591",
+          "log_sha256": "9fddef45d485b9c8ccc38281ea5a1545a48d2623af760b7ef57ea67f5351bc9e",
           "tests_run": 27,
           "cleanup": {
             "complete": true,
@@ -187,7 +187,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -198,9 +198,9 @@
             "-v"
           ],
           "cwd": ".",
-          "elapsed_seconds": 0.18,
+          "elapsed_seconds": 0.123,
           "log": "baseline_aggregation.log",
-          "log_sha256": "214d1d88fae29a1d60e1e06cdfcb2e54e3e9dc48662c6db2bd7fa024045a0092",
+          "log_sha256": "ba7be7c578b722f83fa0bd4473b7267c8bd5722e55262e20106a07cfb216595d",
           "tests_run": 13,
           "cleanup": {
             "complete": true,
@@ -216,7 +216,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -227,9 +227,9 @@
             "-v"
           ],
           "cwd": ".",
-          "elapsed_seconds": 0.429,
+          "elapsed_seconds": 0.423,
           "log": "independent_validator.log",
-          "log_sha256": "038cedcfc627f4257e1f590e83a632f405f94b1691c4c1469a0de69ce9663ab4",
+          "log_sha256": "34ef255c32a8c6fa655601d32a3e38d79a91d0a1c3d99b73c63c034cdc46fa15",
           "tests_run": 32,
           "cleanup": {
             "complete": true,
@@ -245,7 +245,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -254,52 +254,52 @@
             "-v"
           ],
           "cwd": ".",
-          "elapsed_seconds": 3.343,
+          "elapsed_seconds": 3.238,
           "log": "public_cli.log",
-          "log_sha256": "5094e907483adeb750cbca73ff2f2ede8b675c55a787bb6568836457e128d25d",
-          "tests_run": 65,
+          "log_sha256": "7f3015700cfa8dd9b43d6172c2fb3a75fa72aea22780cab578273e9b66ec9232",
+          "tests_run": 76,
           "cleanup": {
             "complete": true,
             "remaining_pids": [],
             "reaped_descendants": [
               {
-                "pid": 2607,
+                "pid": 7616,
                 "returncode": 0
               },
               {
-                "pid": 2616,
+                "pid": 7624,
                 "returncode": 0
               },
               {
-                "pid": 2642,
+                "pid": 7635,
                 "returncode": 0
               },
               {
-                "pid": 2650,
+                "pid": 7643,
                 "returncode": 0
               },
               {
-                "pid": 2659,
+                "pid": 7652,
                 "returncode": 0
               },
               {
-                "pid": 2668,
+                "pid": 7661,
                 "returncode": 0
               },
               {
-                "pid": 2673,
+                "pid": 7666,
                 "returncode": 0
               },
               {
-                "pid": 2680,
+                "pid": 7673,
                 "returncode": 0
               },
               {
-                "pid": 2690,
+                "pid": 7683,
                 "returncode": 0
               },
               {
-                "pid": 2703,
+                "pid": 7696,
                 "returncode": 0
               }
             ],
@@ -313,7 +313,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -322,9 +322,9 @@
             "-v"
           ],
           "cwd": "src/robotics",
-          "elapsed_seconds": 0.321,
+          "elapsed_seconds": 0.324,
           "log": "robotics_core.log",
-          "log_sha256": "0981e4ce1b08e05e13a8bef5bc4de62529166ebedd1c0b5fdad23183c15026e2",
+          "log_sha256": "718a2208d4c64df10dc622ebbcf0df16e0ad208957b6ab1eae8744c427cd2654",
           "tests_run": 56,
           "cleanup": {
             "complete": true,
@@ -340,7 +340,7 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "-m",
             "unittest",
             "discover",
@@ -351,9 +351,9 @@
             "-v"
           ],
           "cwd": "src/frontend",
-          "elapsed_seconds": 7.984,
+          "elapsed_seconds": 6.941,
           "log": "frontend_data.log",
-          "log_sha256": "95451985ecdd704b31738d755a60db71011130c645cea5e3babd3adcba697529",
+          "log_sha256": "1bb4bf0e4d0a2f238cd5bf4108dfd6b7cbbe9843bf35ae4d02fccd30814d0eb1",
           "tests_run": 28,
           "cleanup": {
             "complete": true,
@@ -374,9 +374,9 @@
             "test:ui"
           ],
           "cwd": "src/frontend",
-          "elapsed_seconds": 6.607,
+          "elapsed_seconds": 6.017,
           "log": "frontend_ui.log",
-          "log_sha256": "4088f4a619ccd1a9373a1e18fdaaabe1e61e0fd2a0ffbd226721364e742344bc",
+          "log_sha256": "91e5e26d002f90b70cde0d18384df69e6c8877ff2f89402424165a6575942581",
           "tests_run": null,
           "cleanup": {
             "complete": true,
@@ -400,9 +400,9 @@
             "tests/replay.test.mjs"
           ],
           "cwd": "src/frontend",
-          "elapsed_seconds": 2.49,
+          "elapsed_seconds": 2.383,
           "log": "frontend_replay.log",
-          "log_sha256": "72f8b206b331ed479281d93b126bb3ecf8d89be628c96f5467438dc897007310",
+          "log_sha256": "5b1764dd3661f885541d607f7567248232ba63a14dfe0dc194dc8bbc9d3273f1",
           "tests_run": null,
           "cleanup": {
             "complete": true,
@@ -418,15 +418,15 @@
           "status": "passed",
           "returncode": 0,
           "command": [
-            "/workspace/URP-cleanup/.venv/bin/python",
+            "${REPO}/.venv/bin/python",
             "scripts/validate_data.py",
             "--output",
-            "/workspace/URP-cleanup/.local-state/full-cleanup/engineering/bpp_validation.json"
+            "${REPO}/.local-state/full-cleanup/engineering-boundaries-final/bpp_validation.json"
           ],
           "cwd": "src/frontend",
-          "elapsed_seconds": 14.625,
+          "elapsed_seconds": 14.163,
           "log": "bpp_scientific_readback.log",
-          "log_sha256": "11b3fe252af3f6111a0164d34ea1359786d18c37ebdadf909ac0fc314fb475f8",
+          "log_sha256": "29fca02ac6f7a7665049efc54ed037367db6ec71200f67cb7d55f09189fbe521",
           "tests_run": null,
           "cleanup": {
             "complete": true,
@@ -447,9 +447,9 @@
             "build"
           ],
           "cwd": "src/frontend",
-          "elapsed_seconds": 14.476,
+          "elapsed_seconds": 14.275,
           "log": "frontend_build.log",
-          "log_sha256": "d6288a0dfa4a7ffea5e2f6594383d807d46c3d8636831f507d77bb25bd3967cf",
+          "log_sha256": "c5c75ef5591793414f86eed6336e0a9e82e3bcb1efa0c062896e1a45129daa7a",
           "tests_run": null,
           "cleanup": {
             "complete": true,
@@ -469,7 +469,9 @@
       "subtests_passed": 36,
       "required_maps": true,
       "log": ".local-state/full-cleanup/lab.log",
-      "junit": ".local-state/full-cleanup/lab.xml"
+      "junit": ".local-state/full-cleanup/lab.xml",
+      "source_commit": "d8c90972918638f05b10bca6a5e6aa02c9ebef5e",
+      "rerun_for_restore_boundary_fix": false
     },
     "dual_service": {
       "status": "passed",
@@ -486,7 +488,9 @@
         "missing": [
           "data/backend/research.sqlite3"
         ]
-      }
+      },
+      "source_commit": "d8c90972918638f05b10bca6a5e6aa02c9ebef5e",
+      "rerun_for_restore_boundary_fix": false
     },
     "documentation_paths": {
       "status": "passed",
@@ -508,9 +512,9 @@
       "status": "passed",
       "source_commit": "d8c90972918638f05b10bca6a5e6aa02c9ebef5e",
       "tests": 65,
-      "checkout": "/tmp/urp-cleanup-ci-d8c9097",
+      "checkout": "independent detached worktree",
       "patterns_source": ".github/workflows/ci.yml engineering job (unchanged, 14 cone directories)",
-      "scope": "Independent Git worktree of the implementation commit, reusing the already locked root Python environment; manifest, startup fixtures and restoration records present. Not a fresh dependency install, browser or container run.",
+      "scope": "Initial implementation commit using the unchanged CI cone list and already locked root Python environment; latest restore boundary tests have not yet been rerun in a new sparse worktree.",
       "log": ".local-state/full-cleanup/ci-sparse-public-cli.log"
     },
     "pip_lock_export": {
@@ -562,6 +566,50 @@
     ".local-state/full-cleanup/doc-links.json": "fa7f1203f9b66f29f97279970edebc43f0a0507c84dae9493de09a0073efe796",
     ".local-state/full-cleanup/ci-sparse-public-cli.log": "3258a4cb8d3fd3dc3dea0ccfe38a3cd009eda9a86a3390e52407e5df51947358",
     ".local-state/full-cleanup/requirements.lock": "845e4cead937b06e866a22c5a936ffbe56458f57c9f811020b82b9590552a0cd",
-    ".local-state/full-cleanup/remote-heads-final.txt": "25f1d1a29b6fbcd3095bd53602f360c497f12f5260c927cdbb52b4fb181d3dc0"
+    ".local-state/full-cleanup/remote-heads-final.txt": "25f1d1a29b6fbcd3095bd53602f360c497f12f5260c927cdbb52b4fb181d3dc0",
+    ".local-state/full-cleanup/restore-boundaries-before.log": "1be2d29a02afedb09bdc16ae126ca4d26dac60bac062c7e5a6149c47148ae4c0",
+    ".local-state/full-cleanup/restore-boundaries-after.log": "8bdccf0b999f9d76071dd501f86e330f9208a5ba619fca4a53ac8aabc2af3ad3",
+    ".local-state/full-cleanup/restore-boundaries-final.log": "c9e44b2868df22608599f2303038d71915b35042ff182501a2cb90f3d73eba48",
+    ".local-state/full-cleanup/focused-boundaries-final.log": "2a3181ea7e83ff521a1e77d0a4da0104a3c8d6d93dbf9371837345571152d146",
+    ".local-state/full-cleanup/engineering-boundaries-final-run.log": "4c5dd6d80508caec43d77893ae914b9de30c14a05999f48d0dc105cf315d3704"
+  },
+  "prior_validation": {
+    "commit": "5460093b0b1d6db97d26b0e7a9b42e2b4c09b149",
+    "focused_tests": 22,
+    "engineering_python_tests": 446,
+    "engineering_report": ".local-state/full-cleanup/engineering/summary.json",
+    "ci_sparse_source_commit": "d8c90972918638f05b10bca6a5e6aa02c9ebef5e",
+    "ci_sparse_tests": 65,
+    "ci_sparse_log": ".local-state/full-cleanup/ci-sparse-public-cli.log"
+  },
+  "restore_boundary_review": {
+    "reviewed_commit": "5460093b0b1d6db97d26b0e7a9b42e2b4c09b149",
+    "findings": [
+      "Existing destination symlinks could redirect selected material writes within the repository",
+      "Duplicate canonical ZIP targets could overwrite a file restored earlier in the same run",
+      "Missing URP root or unmatched selection could report a zero-file restore success"
+    ],
+    "before": {
+      "tests": 17,
+      "failures": 15,
+      "errors": 6,
+      "counts_include_subtests": true,
+      "log": ".local-state/full-cleanup/restore-boundaries-before.log"
+    },
+    "after": {
+      "status": "passed",
+      "tests": 17,
+      "log": ".local-state/full-cleanup/restore-boundaries-final.log",
+      "fixtures": "Real TemporaryDirectory Git repository, ZIPs, filesystem symlinks, concurrent-file injection, invalid CRC and path replacement. Original 10.45 GB ZIP not obtained."
+    },
+    "source_blob_sha1": "d914732d3b5bd4e597978aa359984d411b53ba1d",
+    "tests_blob_sha1": "16999041b1a512717d19039def23be5c8a8d5818",
+    "preflight": "Selected material roots, canonical duplicate targets, parent/file conflicts, archive symlinks and existing destination symlink components are rejected before writes; identical existing files are compared byte-for-byte.",
+    "write_semantics": "Exclusive new-file creation and rechecked paths; one verified open archive descriptor. Complete earlier new files and a partial failing new file may remain on a runtime failure; no automatic rollback, and no success result. Archive and destination directories require serial use.",
+    "empty_plan_states": [
+      "already-present",
+      "tracked-only"
+    ],
+    "invalid_empty_inputs": "Missing or non-directory URP root, empty archive and no matching material files fail without a restore success."
   }
 }
