@@ -183,16 +183,16 @@ describe('import entry points that mint a fresh id per click (MapToTaskMap, lab 
 describe('pending write storage', () => {
   it('tolerates corrupt, foreign-version and unavailable storage', async () => {
     storage.setItem('urp.studio.pending-writes', '{not json');
-    let mod = await import('./pendingWrites');
+    let mod = await import('../lab/pendingWrites');
     mod.rememberWrite('k', { id: 'abc-1', kind: 'fork', created: Date.now() });
     expect(mod.pendingWrite('k')?.id).toBe('abc-1');
     storage.setItem('urp.studio.pending-writes', JSON.stringify({ v: 99, entries: { k: { id: 'zz-9', kind: 'x', created: 1 } } }));
-    vi.resetModules(); mod = await import('./pendingWrites');
+    vi.resetModules(); mod = await import('../lab/pendingWrites');
     expect(mod.pendingWrite('k')).toBeUndefined();
     storage.setItem('urp.studio.pending-writes', JSON.stringify({ v: 1, entries: { a: { id: 'BAD ID', kind: 'x', created: Date.now() }, b: 3 } }));
     expect(mod.pendingWrite('a')).toBeUndefined();
     vi.stubGlobal('sessionStorage', { getItem() { throw new Error('denied'); }, setItem() { throw new Error('denied'); } });
-    vi.resetModules(); mod = await import('./pendingWrites');
+    vi.resetModules(); mod = await import('../lab/pendingWrites');
     mod.rememberWrite('k', { id: 'abc-2', kind: 'fork', created: Date.now() });
     expect(mod.pendingWrite('k')?.id).toBe('abc-2');
     mod.forgetWrite('k');
@@ -200,7 +200,7 @@ describe('pending write storage', () => {
   });
   it('drops expired records', async () => {
     storage.setItem('urp.studio.pending-writes', JSON.stringify({ v: 1, entries: { old: { id: 'old-1', kind: 'fork', created: Date.now() - 2 * 86400_000 } } }));
-    const mod = await import('./pendingWrites');
+    const mod = await import('../lab/pendingWrites');
     expect(mod.pendingWrite('old')).toBeUndefined();
   });
 });

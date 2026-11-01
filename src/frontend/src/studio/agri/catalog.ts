@@ -1,6 +1,6 @@
 import { studio } from '../api';
 import { lab, LabApiError } from '../../lab/api';
-import { forgetWrite, pendingWrite, rememberWrite } from '../pendingWrites';
+import { forgetWrite, pendingWrite, rememberWrite } from '../../lab/pendingWrites';
 import { AGRI_PATTERNS, patternStatus, type PatternStatus } from './patterns';
 import type { AgriTaskPattern } from './taxonomy';
 

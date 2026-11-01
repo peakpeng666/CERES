@@ -6,26 +6,27 @@
 
 ## 当前基线
 
-快照：**2026-11-01 03:45 UTC**；已合并 `main` 为 [`4ee2c6dd`](https://github.com/peakpeng666/URP/tree/4ee2c6dd8c2b455351812d3c312a8215627fce1f)。分支与 PR 状态按本次核对记录；本轮整理仅在云端本地分支实施。
+快照：**2026-11-01 06:42 UTC**；已合并 `main` 为 [`9324ba1a`](https://github.com/peakpeng666/URP/tree/9324ba1a71eb4b85a60fddbf4635900471b0e3f8)。七条已授权引用已实际清退；后续文件整理在本地分支实施，尚未作为新批次发布。
 
-- 远端 **34 个分支，含 33 个非主线分支**：[当前逐支 SHA、祖先关系、消费者与建议](current-branches.csv)、[独有路径与保留索引](branch-retention.json)。仅记录建议，远端分支删除数为 **0**。
-- [原 29 个来源分支表](branches.csv)保留工程整合时的快照和取舍；当前另有工程整理、PyVRP 修复、两轮 refresh 和资产核验五支。原表及历史证据不改写。
+- 远端实测由 **35 条引用清退至 28 个分支，含 27 个非主线分支**：[当前逐支 SHA、祖先关系、消费者与建议](current-branches.csv)、[独有路径与保留索引](branch-retention.json)。七条删除的精确 SHA、已合并 PR 恢复入口和操作回执见 [清退记录](branch-retirement-20261101.json)；main 与其他引用均未移动。
+- [原 29 个来源分支表](branches.csv)保留工程整合时的快照和取舍，不跟随引用清退改写原历史。
 - [#15 工程整合](https://github.com/peakpeng666/URP/pull/15)已合并。当前获取入口采用 main。
 - [#16 PyVRP ILS 标识兼容修复](https://github.com/peakpeng666/URP/pull/16)已合并到当前 main；修复头 `293dbf20` 的[工程四项作业](https://github.com/peakpeng666/URP/actions/runs/41074311873)和[部署两项作业](https://github.com/peakpeng666/URP/actions/runs/41074311831)已通过。当前使用 `pyvrp.ils`，保留旧 ID 请求兼容；历史模型与结果维持原件。
 - [#12](https://github.com/peakpeng666/URP/pull/12)、[#13](https://github.com/peakpeng666/URP/pull/13)已关闭（未直接合并），其离线 evolve 功能已由 #15 择取整合；来源分支保留。
 - [#17 全量整理与错误处理](https://github.com/peakpeng666/URP/pull/17)已合并；[主线四项CI](https://github.com/peakpeng666/URP/actions/runs/41105645794)通过，合并前精确提交代码审查无发现。
-- PR **#1、#2、#3、#4、#11、#14、#15、#16、#17、#18、#19** 均已合并。来源分支继续作为整合记录保留。
+- PR **#1、#2、#3、#4、#11、#14、#15、#16、#17、#18、#19、#20** 均已合并。原提交与 PR 记录保留，七条已授权来源引用的清退另有回执。
 
 - [#18 资产与许可证据](https://github.com/peakpeng666/URP/pull/18)已合并；[合并后四项 CI](https://github.com/peakpeng666/URP/actions/runs/41112545177)通过。
-- [#19 统计、Agent、启动与交付契约 refresh](https://github.com/peakpeng666/URP/pull/19)已合并；头 `4c5d383a` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/41125771960)与[deploy CI](https://github.com/peakpeng666/URP/actions/runs/41125771951)合计 **6/6**，当前 [main CI](https://github.com/peakpeng666/URP/actions/runs/41126537526) **4/4**。首次失败、闭包修正及本地验证范围保留在工程记录。
+- [#19 统计、Agent、启动与交付契约 refresh](https://github.com/peakpeng666/URP/pull/19)已合并；头 `4c5d383a` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/41125771960)与[deploy CI](https://github.com/peakpeng666/URP/actions/runs/41125771951)合计 **6/6**，其合并后 [main CI](https://github.com/peakpeng666/URP/actions/runs/41126537526) **4/4**。首次失败、闭包修正及本地验证范围保留在工程记录。
+- [#20 恢复边界、资产与分支索引](https://github.com/peakpeng666/URP/pull/20)已合并；精确头 `8be9b89` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/41277109384)与[部署 CI](https://github.com/peakpeng666/URP/actions/runs/41277109314) **6/6**，合并提交 `9324ba1` 的 [main CI](https://github.com/peakpeng666/URP/actions/runs/41277554358) **4/4**。提交与远端 tree 身份一致。
 
-18 个非主线分支是 main 祖先，其中 `deploy`、`redo` 仍用于安装，另有 4 支被 CI 分支规则引用，先保留消费者；其余 12 支仅列待确认的归档候选。未扫描外部用户保存的 ref，不能仅凭祖先关系删除。
+现存 12 个非主线分支是 main 祖先：`deploy`、`redo` 仍用于安装，另有 4 支被 CI 分支规则引用；5 个原祖先候选暂留，另保留本次已合并的 cleanup 来源支。只清退了本次逐条授权的七支，未将祖先关系当作批量删除许可。
 
-其余 15 支全部保留：备份、local 保留支、无共同祖先 snapshot、paper 分别有 7、368、2,096、7 项 main 缺失路径；workbench 保留支另有 1 项敏感候选路径，仅登记路径与 Git 对象，未打开或提取。其中 10 支虽然没有独有路径，仍有同路径内容差异，语义整合尚待核验；#12/#13 的择取整合事实与“关闭未直接合并”状态同时保留。
+其余 15 支全部保留：备份、local 保留支、无共同祖先 snapshot、paper 分别有 7、368、2,096、7 项 main 缺失路径；workbench 保留支另有 1 项敏感候选路径，仅登记路径与 Git 对象，未打开或提取。其中 10 支已完成分支引入差异、blob/AST 与关键行为审查，具体保留与整合建议见 [语义取舍](branch-semantics.md)，不把路径存在等同于功能完整整合。#12/#13 的择取整合事实与“关闭未直接合并”状态同时保留。
 
 ## 当前 refresh
 
-上一批统计比较身份与有效分母、Agent 能力元数据、启动与构建链路、双服务交付回归、导出与资产恢复汇总已由 #19 完成。本轮处理历史资料恢复入口、`.tar.xz` 资产漏计、分支保护与当前文档，实施和验证记录在[工程记录](../setup/2026-10-30/engineering/REPORT.md)。
+统计、Agent、启动与交付契约已由 #19 完成；恢复边界、`.tar.xz` 漏计及基础索引由 #20 完成。本次后续整理补入独立 Drive 回执、七引用实际清退、十支语义取舍，并统一内部待完成写入入口与当前 CI 说明；实施和验证见[工程记录](../setup/2026-10-30/engineering/REPORT.md)。
 
 源码主线与安装镜像分别验收；当前远端 `deploy` 为 `41e6bdc221cb`，主线合并不代表镜像已发布。
 
@@ -42,7 +43,7 @@
 | 农业输入与地图 | [compose](../src/lab/urp_lab/compose/)、[library](../src/lab/urp_lab/library/) | 保留来源、坐标单位和导入版本；执行前完成米制标定 |
 | 求解与规则推荐 | [solvers](../src/lab/urp_lab/solvers/)、[recommend](../src/lab/urp_lab/recommend.py) | 路由、运动、覆盖和车队适配；名称、版本、预算与适用域分别记录 |
 | 学习推荐 | [learned](../src/lab/urp_lab/learned.py)、[冻结模型](../src/lab/models/cvrp-knn-v1.json) | 现有测试固定 PyVRP 占优；选择器实验与工作台默认预算分别记录 |
-| 离线 evolve | [整合说明](../src/lab/urp_lab/evolve/INTEGRATION.md) | 30 个离线模块，覆盖准入、审计、修复与调度；在线接入及8项serving测试待完成 |
+| 离线 evolve | [整合说明](../src/lab/urp_lab/evolve/INTEGRATION.md) | 30 个离线模块及离线 serving guards 已整合；8 项在线接入测试仍 deferred，不激活历史模型 |
 | 执行与非理想模型 | [执行检查](../src/lab/urp_lab/execution_check.py)、[仿真记录](../setup/2026-10-15/integration/REPORT.md) | 同构差速车、串行交通基线；能耗为后验代理，曲率车辆执行适配待验收 |
 | ROS 参考适配 | [robotics](../src/robotics/README.md)、[上游入口](../src/robotics/docs/UPSTREAM_REFERENCE.md) | 官方上游适配与历史合成fixture按日期归档；当前现场证据见Lab验收 |
 | 档案后端与 CVRP Jobs | [backend](../src/backend/README.md)、[任务契约](../src/backend/docs/JOBS_API.md) | 冻结数据库与可写运行库分开；5秒端到端与1秒搜索循环分别比较 |
@@ -63,9 +64,9 @@
 | 文献与材料 | [literature](../literature/)、[papers](../papers/)、[materials](../materials/)、[reports](../reports/)；先维护来源、版本和书目链接 |
 | 新运行 | `.local-state/`、`src/lab/runtime/`；可写数据库、新轨迹与冻结档案分别保存，详见 [数据与恢复](../setup/README.md#数据与恢复) |
 
-当前已合并 main 完整树共 **29,442 个文件**，其中 `src/repos` **17,432** 个是外部源码快照；自研与适配能力按模块登记。沿用 [75 个外部目录许可证索引](assets/third-party.csv)，根 LICENSE 尚未选择；11 个无根文件目录的许可证据已分项核定，尚有 5 项授权依据待补。
+本次核对的已合并 main 完整树共 **29,450 个文件**，其中 `src/repos` **17,432** 个是外部源码快照；自研与适配能力按模块登记。沿用 [75 个外部目录许可证索引](assets/third-party.csv)，根 LICENSE 尚未选择；11 个无根文件目录的许可证据已分项核定，尚有 5 项授权依据待补。
 
-[原 2,439 项清单](assets/assets.csv)保留历史，现行[派生索引](assets/current/assets.csv)为 **2,443 项**：补入 4 个 `.tar.xz` 实验包，共 **19,983,780 字节**，原路径和 blob 均不变。[外部副本登记](assets/copies.json)仍保留原 Drive 候选状态；联合验证为 **Space 4、Drive 0**，已迁移资产 **0**。原件继续保留，后续迁移以逐文件 SHA256 和实际恢复验证为门槛。
+[原 2,439 项清单](assets/assets.csv)保留历史，现行[派生索引](assets/current/assets.csv)为 **2,443 项**：补入 4 个 `.tar.xz` 实验包，共 **19,983,780 字节**，原路径和 blob 均不变。[外部副本登记](assets/copies.json)仅依独立验证更新对应 Drive 记录；[本次回执](assets/drive-restoration-20261101.json)加入两项成功、两项未分类 fetch 错误，联合为 **Space 4、Drive 2，覆盖 4 个独立资产**，迁移与原件删除均为 **0**。原件继续保留，后续迁移以逐文件 SHA256 和实际恢复验证为门槛。
 
 ## 运行环境与实验口径
 

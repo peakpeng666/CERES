@@ -1,10 +1,10 @@
 {
   "schema": "urp.branch-retention/1",
-  "observed_utc": "2026-11-01T03:45:29.038489+00:00",
-  "main_sha": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
-  "remote_branch_count": 34,
-  "non_main_branches": 33,
-  "scope": "Complete Git trees and ancestry; path presence does not establish semantic integration. No branch content restored or deleted.",
+  "observed_utc": "2026-11-01T06:42:13.797398+00:00",
+  "main_sha": "9324ba1a71eb4b85a60fddbf4635900471b0e3f8",
+  "remote_branch_count": 28,
+  "non_main_branches": 27,
+  "scope": "Post-retirement remote heads and complete trees at main 9324ba1; semantic review references cover ten retained branches. Historical/source-only evidence stays indexed. No historical branch contents restored.",
   "branches": [
     {
       "branch": "backup/local-20261015",
@@ -55,58 +55,22 @@
           "oid": "5b911d2766be21c055663beb47ccf7fd86b23936"
         }
       ],
-      "different_common_paths": 220,
-      "main_only_paths": 10010,
+      "different_common_paths": 221,
+      "main_only_paths": 10018,
       "current_consumers": [],
       "disposition": "protected-source-only-evidence",
       "action_applied": false
     },
     {
-      "branch": "baseline-sync",
-      "sha": "e3a6ffbdfdf523d142b9849874c40a43e6004de7",
+      "branch": "chore/full-cleanup-20261101",
+      "sha": "8be9b89b3202cbaf5f8c7b85ea149980d648a005",
       "is_main_ancestor": true,
-      "merge_base": "e3a6ffbdfdf523d142b9849874c40a43e6004de7",
+      "merge_base": "8be9b89b3202cbaf5f8c7b85ea149980d648a005",
       "source_only_paths": [],
-      "different_common_paths": 227,
-      "main_only_paths": 607,
+      "different_common_paths": 0,
+      "main_only_paths": 0,
       "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
-      "action_applied": false
-    },
-    {
-      "branch": "ccr-2ecf584f-s43cxa",
-      "sha": "85a7048b3d2e96d3cd7434dacf7848f213ed7d37",
-      "is_main_ancestor": true,
-      "merge_base": "85a7048b3d2e96d3cd7434dacf7848f213ed7d37",
-      "source_only_paths": [],
-      "different_common_paths": 109,
-      "main_only_paths": 159,
-      "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
-      "action_applied": false
-    },
-    {
-      "branch": "chore/asset-evidence-20261030",
-      "sha": "0b113f5995854c8513b511a39ac6ad94c47d0625",
-      "is_main_ancestor": true,
-      "merge_base": "0b113f5995854c8513b511a39ac6ad94c47d0625",
-      "source_only_paths": [],
-      "different_common_paths": 37,
-      "main_only_paths": 11,
-      "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
-      "action_applied": false
-    },
-    {
-      "branch": "chore/engineering-cleanup-20261030",
-      "sha": "28350cd702fba9560f04f61db0e60bafb6b9df01",
-      "is_main_ancestor": true,
-      "merge_base": "28350cd702fba9560f04f61db0e60bafb6b9df01",
-      "source_only_paths": [],
-      "different_common_paths": 69,
-      "main_only_paths": 30,
-      "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
+      "disposition": "recent-merged-cleanup-source",
       "action_applied": false
     },
     {
@@ -115,8 +79,8 @@
       "is_main_ancestor": true,
       "merge_base": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "source_only_paths": [],
-      "different_common_paths": 238,
-      "main_only_paths": 1694,
+      "different_common_paths": 239,
+      "main_only_paths": 1702,
       "current_consumers": [],
       "disposition": "ancestor-archive-candidate",
       "action_applied": false
@@ -127,8 +91,8 @@
       "is_main_ancestor": true,
       "merge_base": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "source_only_paths": [],
-      "different_common_paths": 238,
-      "main_only_paths": 1694,
+      "different_common_paths": 239,
+      "main_only_paths": 1702,
       "current_consumers": [],
       "disposition": "ancestor-archive-candidate",
       "action_applied": false
@@ -139,11 +103,12 @@
       "is_main_ancestor": false,
       "merge_base": "b3e2028581e51465b97d520041b5298558434b9d",
       "source_only_paths": [],
-      "different_common_paths": 224,
-      "main_only_paths": 340,
+      "different_common_paths": 225,
+      "main_only_paths": 348,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-frontend-predecessor",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/0"
     },
     {
       "branch": "codex/preserve-20261026-labpatch",
@@ -151,11 +116,12 @@
       "is_main_ancestor": false,
       "merge_base": "5065046d7b7e0b6b682bda46ca3a6c9b42ee8c84",
       "source_only_paths": [],
-      "different_common_paths": 221,
-      "main_only_paths": 673,
+      "different_common_paths": 222,
+      "main_only_paths": 681,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-import-contract-predecessor",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/1"
     },
     {
       "branch": "codex/preserve-20261026-local",
@@ -2372,8 +2338,8 @@
           "oid": "10bb52acbccfd5da7219b14e14c5436699428db3"
         }
       ],
-      "different_common_paths": 204,
-      "main_only_paths": 463,
+      "different_common_paths": 205,
+      "main_only_paths": 471,
       "current_consumers": [],
       "disposition": "protected-source-only-evidence",
       "action_applied": false
@@ -2384,11 +2350,12 @@
       "is_main_ancestor": false,
       "merge_base": "b3e2028581e51465b97d520041b5298558434b9d",
       "source_only_paths": [],
-      "different_common_paths": 219,
-      "main_only_paths": 339,
+      "different_common_paths": 220,
+      "main_only_paths": 347,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-frontend-predecessor",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/2"
     },
     {
       "branch": "codex/preserve-20261026-mamba-results",
@@ -2396,11 +2363,12 @@
       "is_main_ancestor": false,
       "merge_base": "b3e2028581e51465b97d520041b5298558434b9d",
       "source_only_paths": [],
-      "different_common_paths": 232,
-      "main_only_paths": 385,
+      "different_common_paths": 233,
+      "main_only_paths": 393,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-exact-delta-covered",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/3"
     },
     {
       "branch": "codex/preserve-20261026-mamba-studio",
@@ -2408,11 +2376,12 @@
       "is_main_ancestor": false,
       "merge_base": "b3e2028581e51465b97d520041b5298558434b9d",
       "source_only_paths": [],
-      "different_common_paths": 218,
-      "main_only_paths": 337,
+      "different_common_paths": 219,
+      "main_only_paths": 345,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-frontend-predecessor",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/4"
     },
     {
       "branch": "codex/preserve-20261026-verify",
@@ -2420,11 +2389,12 @@
       "is_main_ancestor": false,
       "merge_base": "5065046d7b7e0b6b682bda46ca3a6c9b42ee8c84",
       "source_only_paths": [],
-      "different_common_paths": 203,
-      "main_only_paths": 582,
+      "different_common_paths": 204,
+      "main_only_paths": 590,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-import-contract-predecessor",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/5"
     },
     {
       "branch": "codex/preserve-20261026-workbench",
@@ -2439,8 +2409,8 @@
           "oid": "fcbb2d7e0031a87348674090800a93214e15de71"
         }
       ],
-      "different_common_paths": 215,
-      "main_only_paths": 337,
+      "different_common_paths": 216,
+      "main_only_paths": 345,
       "current_consumers": [],
       "disposition": "protected-sensitive-path",
       "action_applied": false
@@ -2451,8 +2421,8 @@
       "is_main_ancestor": true,
       "merge_base": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "source_only_paths": [],
-      "different_common_paths": 238,
-      "main_only_paths": 1694,
+      "different_common_paths": 239,
+      "main_only_paths": 1702,
       "current_consumers": [
         ".github/workflows/ci.yml:6"
       ],
@@ -2465,8 +2435,8 @@
       "is_main_ancestor": true,
       "merge_base": "41e6bdc221cbe5e733a583fbadb287afd0534723",
       "source_only_paths": [],
-      "different_common_paths": 192,
-      "main_only_paths": 547,
+      "different_common_paths": 193,
+      "main_only_paths": 555,
       "current_consumers": [
         "install.sh:37",
         "install.ps1:22",
@@ -2483,8 +2453,8 @@
       "is_main_ancestor": true,
       "merge_base": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "source_only_paths": [],
-      "different_common_paths": 238,
-      "main_only_paths": 1694,
+      "different_common_paths": 239,
+      "main_only_paths": 1702,
       "current_consumers": [],
       "disposition": "ancestor-archive-candidate",
       "action_applied": false
@@ -2495,8 +2465,8 @@
       "is_main_ancestor": true,
       "merge_base": "3c83a94406fccc3c3114ffff9c35b4fe42dad8a5",
       "source_only_paths": [],
-      "different_common_paths": 199,
-      "main_only_paths": 184,
+      "different_common_paths": 200,
+      "main_only_paths": 192,
       "current_consumers": [
         ".github/workflows/f2c-candidate.yml:7",
         ".github/workflows/f2c-capability.yml:6",
@@ -2508,25 +2478,13 @@
       "action_applied": false
     },
     {
-      "branch": "fix/pyvrp-ils-ids-20261030",
-      "sha": "293dbf20fd0dd9c979997022d28f86710609b99d",
-      "is_main_ancestor": true,
-      "merge_base": "293dbf20fd0dd9c979997022d28f86710609b99d",
-      "source_only_paths": [],
-      "different_common_paths": 60,
-      "main_only_paths": 27,
-      "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
-      "action_applied": false
-    },
-    {
       "branch": "frontend/agriculture",
       "sha": "85b085fcdd9429deeb8c11708af1851384842893",
       "is_main_ancestor": true,
       "merge_base": "85b085fcdd9429deeb8c11708af1851384842893",
       "source_only_paths": [],
-      "different_common_paths": 223,
-      "main_only_paths": 493,
+      "different_common_paths": 224,
+      "main_only_paths": 501,
       "current_consumers": [],
       "disposition": "ancestor-archive-candidate",
       "action_applied": false
@@ -2537,11 +2495,12 @@
       "is_main_ancestor": false,
       "merge_base": "b3e2028581e51465b97d520041b5298558434b9d",
       "source_only_paths": [],
-      "different_common_paths": 215,
-      "main_only_paths": 337,
+      "different_common_paths": 216,
+      "main_only_paths": 345,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-identical-tip-alias",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/6"
     },
     {
       "branch": "frontend/workbench-20261022",
@@ -2549,11 +2508,12 @@
       "is_main_ancestor": false,
       "merge_base": "b3e2028581e51465b97d520041b5298558434b9d",
       "source_only_paths": [],
-      "different_common_paths": 215,
-      "main_only_paths": 337,
+      "different_common_paths": 216,
+      "main_only_paths": 345,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-identical-tip-alias",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/7"
     },
     {
       "branch": "integrate/evolve-contracts-20261024",
@@ -2561,11 +2521,12 @@
       "is_main_ancestor": false,
       "merge_base": "5ddbd22f0e176b9fb6f0ed7f1eeaa8063ea1b4cb",
       "source_only_paths": [],
-      "different_common_paths": 202,
-      "main_only_paths": 135,
+      "different_common_paths": 203,
+      "main_only_paths": 143,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-pre-guard-predecessor",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/8"
     },
     {
       "branch": "integrate/evolve-serving-guards-20261024",
@@ -2573,11 +2534,12 @@
       "is_main_ancestor": false,
       "merge_base": "5ddbd22f0e176b9fb6f0ed7f1eeaa8063ea1b4cb",
       "source_only_paths": [],
-      "different_common_paths": 200,
-      "main_only_paths": 134,
+      "different_common_paths": 201,
+      "main_only_paths": 142,
       "current_consumers": [],
-      "disposition": "retained-semantic-review-required",
-      "action_applied": false
+      "disposition": "retained-offline-guards-integrated",
+      "action_applied": false,
+      "semantic_review": "branch-semantics.json#/branches/9"
     },
     {
       "branch": "local/urp-snapshot-20261023",
@@ -15163,7 +15125,7 @@
         }
       ],
       "different_common_paths": 23,
-      "main_only_paths": 29377,
+      "main_only_paths": 29385,
       "current_consumers": [],
       "disposition": "protected-source-only-evidence",
       "action_applied": false
@@ -15174,8 +15136,8 @@
       "is_main_ancestor": true,
       "merge_base": "9eaf9eb31fff4745e21cc52851031f32118337ea",
       "source_only_paths": [],
-      "different_common_paths": 193,
-      "main_only_paths": 523,
+      "different_common_paths": 194,
+      "main_only_paths": 531,
       "current_consumers": [
         ".github/workflows/ci.yml:6 (optimize/**)"
       ],
@@ -15188,8 +15150,8 @@
       "is_main_ancestor": true,
       "merge_base": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "source_only_paths": [],
-      "different_common_paths": 238,
-      "main_only_paths": 1694,
+      "different_common_paths": 239,
+      "main_only_paths": 1702,
       "current_consumers": [
         ".github/workflows/ci.yml:6 (optimize/**)"
       ],
@@ -15245,8 +15207,8 @@
           "oid": "2527e3beb40dc47d1d4706f862b9c8884d1ac22b"
         }
       ],
-      "different_common_paths": 193,
-      "main_only_paths": 523,
+      "different_common_paths": 194,
+      "main_only_paths": 531,
       "current_consumers": [],
       "disposition": "protected-source-only-evidence",
       "action_applied": false
@@ -15257,8 +15219,8 @@
       "is_main_ancestor": true,
       "merge_base": "6abf099e0dcb7180268b23ef0e254ad5d329520c",
       "source_only_paths": [],
-      "different_common_paths": 192,
-      "main_only_paths": 542,
+      "different_common_paths": 193,
+      "main_only_paths": 550,
       "current_consumers": [
         "install.sh:8",
         "DEPLOY.md#版本与组件",
@@ -15268,37 +15230,13 @@
       "action_applied": false
     },
     {
-      "branch": "refactor/refresh-contracts-20261030",
-      "sha": "4c5d383a13b02022fa73923fccf8ed2824bd4782",
-      "is_main_ancestor": true,
-      "merge_base": "4c5d383a13b02022fa73923fccf8ed2824bd4782",
-      "source_only_paths": [],
-      "different_common_paths": 0,
-      "main_only_paths": 0,
-      "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
-      "action_applied": false
-    },
-    {
-      "branch": "refactor/urp-refresh-20261030",
-      "sha": "54f638380281e68aa65292d11c11c2d54159bcc1",
-      "is_main_ancestor": true,
-      "merge_base": "54f638380281e68aa65292d11c11c2d54159bcc1",
-      "source_only_paths": [],
-      "different_common_paths": 38,
-      "main_only_paths": 13,
-      "current_consumers": [],
-      "disposition": "ancestor-archive-candidate",
-      "action_applied": false
-    },
-    {
       "branch": "workbench-fleet-sim",
       "sha": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "is_main_ancestor": true,
       "merge_base": "5e3332970bf27cc13c68a79d153d5a1d5914dfa9",
       "source_only_paths": [],
-      "different_common_paths": 238,
-      "main_only_paths": 1694,
+      "different_common_paths": 239,
+      "main_only_paths": 1702,
       "current_consumers": [],
       "disposition": "ancestor-archive-candidate",
       "action_applied": false
@@ -15316,12 +15254,95 @@
   "consumer_scan_limit": "Current main files only. No external installer users, saved user refs or other repository consumers were audited. No explicit current reference is not proof of safe deletion.",
   "sensitive_content_policy": "src/frontend/GATEWAY.txt in the workbench preservation branch was not opened, printed or restored; only its path and Git tree identity are indexed.",
   "summary": {
-    "main_ancestors": 18,
+    "main_ancestors": 12,
     "referenced_ancestors_to_retain": 6,
-    "ancestor_candidates_pending_review": 12,
+    "ancestor_candidates_pending_review": 5,
+    "recent_merged_cleanup_source_retained": 1,
     "non_ancestors_to_retain": 15,
     "non_ancestors_with_source_only_paths": 5,
-    "non_ancestors_requiring_semantic_review": 10,
-    "remote_branches_deleted": 0
-  }
+    "non_ancestors_semantic_reviews_completed": 10,
+    "remote_branches_deleted": 7,
+    "original_retained_heads_changed": 0
+  },
+  "retired_refs": [
+    {
+      "branch": "baseline-sync",
+      "expected_sha": "e3a6ffbdfdf523d142b9849874c40a43e6004de7",
+      "main_ancestor": true,
+      "merged_pr": 3,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/3",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "ccr-2ecf584f-s43cxa",
+      "expected_sha": "85a7048b3d2e96d3cd7434dacf7848f213ed7d37",
+      "main_ancestor": true,
+      "merged_pr": 14,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/14",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "chore/engineering-cleanup-20261030",
+      "expected_sha": "28350cd702fba9560f04f61db0e60bafb6b9df01",
+      "main_ancestor": true,
+      "merged_pr": 15,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/15",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "fix/pyvrp-ils-ids-20261030",
+      "expected_sha": "293dbf20fd0dd9c979997022d28f86710609b99d",
+      "main_ancestor": true,
+      "merged_pr": 16,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/16",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "refactor/urp-refresh-20261030",
+      "expected_sha": "54f638380281e68aa65292d11c11c2d54159bcc1",
+      "main_ancestor": true,
+      "merged_pr": 17,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/17",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "chore/asset-evidence-20261030",
+      "expected_sha": "0b113f5995854c8513b511a39ac6ad94c47d0625",
+      "main_ancestor": true,
+      "merged_pr": 18,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/18",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "refactor/refresh-contracts-20261030",
+      "expected_sha": "4c5d383a13b02022fa73923fccf8ed2824bd4782",
+      "main_ancestor": true,
+      "merged_pr": 19,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/19",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    }
+  ],
+  "retirement_receipt": "branch-retirement-20261101.json",
+  "semantic_review": "branch-semantics.json"
 }

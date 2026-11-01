@@ -1,9 +1,9 @@
-/** Idempotent scenario creates on top of the existing Lab endpoints (see pendingWrites.ts). */
+/** Idempotent scenario creates on top of the existing Lab endpoints and lab/pendingWrites. */
 import { lab, LabApiError } from '../lab/api';
 import type { Scenario } from '../lab/types';
 import { studio } from './api';
 import type { FleetScenario } from './types';
-import { clientScenarioId, containsSubmittedValue, contentDigest, createOnce, forgetWrite, importScenarioOnce as importScenarioOnceWith, mismatch, pendingWrite } from './pendingWrites';
+import { clientScenarioId, containsSubmittedValue, contentDigest, createOnce, forgetWrite, importScenarioOnce as importScenarioOnceWith, mismatch, pendingWrite } from '../lab/pendingWrites';
 
 type ForkBody = { instance?: unknown; title?: string };
 

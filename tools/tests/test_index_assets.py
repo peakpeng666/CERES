@@ -95,6 +95,14 @@ class AssetCopyTests(unittest.TestCase):
         self.assertEqual(summary['verified_external_copies_by_provider'], {'drive': 0, 'space': 1})
         self.assertEqual(summary['verified_external_copies'], 1)
 
+    def test_unclassified_drive_fetch_error_does_not_inherit_space_success(self):
+        self.write_restoration([self.space_record()])
+        rows, summary = self.generate({**self.copy, 'state': 'fetch-error-unclassified',
+                                       'downloaded': False, 'permission_denial_confirmed': False})
+        self.assertEqual(summary['verified_external_copies_by_provider'], {'drive': 0, 'space': 1})
+        self.assertEqual(rows[0]['verified_providers'], 'space')
+        self.assertEqual(summary['migrated_assets'], 0)
+
     def test_wrong_blob_or_sha_cannot_inherit_restoration(self):
         for update in ({'git_blob_sha1': '0' * 40}, {'sha256': '0' * 64}, {'exact_path_blob_match': False}):
             self.write_restoration([self.space_record(**update)])
@@ -130,14 +138,17 @@ class AssetCopyTests(unittest.TestCase):
         self.assertEqual(summary['verified_external_copies'], 0)
         self.assertEqual(summary['migrated_assets'], 0)
 
-    def test_current_repository_has_four_space_restorations(self):
+    def test_current_repository_has_four_assets_and_six_provider_copies(self):
         root = Path(__file__).resolve().parents[2]
         entries = assets.tree('HEAD')
         copies, records = assets.verified_copies(root / 'docs/assets/copies.json')
         joined = assets.restoration_view(entries, copies, records, root / 'docs/assets/restoration.json')
-        self.assertEqual(len(joined), 4)
-        self.assertEqual({r['provider'] for r in joined}, {'space'})
+        self.assertEqual(len(joined), 6)
+        self.assertEqual({provider: sum(row['provider'] == provider for row in joined)
+                          for provider in ('drive', 'space')}, {'drive': 2, 'space': 4})
         self.assertEqual(len({r['asset_path'] for r in joined}), 4)
+        self.assertEqual({row['asset_path'] for row in joined if row['provider'] == 'drive'},
+                         {'docs/reports/URP研究进展简报.pdf', 'docs/reports/URP研究进展简报_LaTeX源码.zip'})
 
 
 if __name__ == '__main__':
