@@ -1,0 +1,103 @@
+{
+  "schema": "urp.branch-retirement/1",
+  "checked_utc": "2026-11-01T06:42:10.043630+00:00",
+  "baseline_main_sha": "9324ba1a71eb4b85a60fddbf4635900471b0e3f8",
+  "before_branch_count": 35,
+  "targets": [
+    {
+      "branch": "baseline-sync",
+      "expected_sha": "e3a6ffbdfdf523d142b9849874c40a43e6004de7",
+      "main_ancestor": true,
+      "merged_pr": 3,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/3",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "ccr-2ecf584f-s43cxa",
+      "expected_sha": "85a7048b3d2e96d3cd7434dacf7848f213ed7d37",
+      "main_ancestor": true,
+      "merged_pr": 14,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/14",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "chore/engineering-cleanup-20261030",
+      "expected_sha": "28350cd702fba9560f04f61db0e60bafb6b9df01",
+      "main_ancestor": true,
+      "merged_pr": 15,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/15",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "fix/pyvrp-ils-ids-20261030",
+      "expected_sha": "293dbf20fd0dd9c979997022d28f86710609b99d",
+      "main_ancestor": true,
+      "merged_pr": 16,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/16",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "refactor/urp-refresh-20261030",
+      "expected_sha": "54f638380281e68aa65292d11c11c2d54159bcc1",
+      "main_ancestor": true,
+      "merged_pr": 17,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/17",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "chore/asset-evidence-20261030",
+      "expected_sha": "0b113f5995854c8513b511a39ac6ad94c47d0625",
+      "main_ancestor": true,
+      "merged_pr": 18,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/18",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    },
+    {
+      "branch": "refactor/refresh-contracts-20261030",
+      "expected_sha": "4c5d383a13b02022fa73923fccf8ed2824bd4782",
+      "main_ancestor": true,
+      "merged_pr": 19,
+      "restore_pr_url": "https://github.com/peakpeng666/URP/pull/19",
+      "deleted_ref_verified": true,
+      "post_delete_merged_pr_accessible": true,
+      "post_delete_pr_head_sha_matches": true,
+      "restore_scope": "Merged PR page and retained main-ancestor commit; no restore was executed or UI button tested."
+    }
+  ],
+  "scope": "Delete only these seven merged branch references; commits remain in main and merged PRs. Exact leases and one atomic push.",
+  "operation_outcome": "verified-deleted",
+  "push_exit_code": 0,
+  "after_branch_count": 28,
+  "deleted_refs": [
+    "baseline-sync",
+    "ccr-2ecf584f-s43cxa",
+    "chore/asset-evidence-20261030",
+    "chore/engineering-cleanup-20261030",
+    "fix/pyvrp-ils-ids-20261030",
+    "refactor/refresh-contracts-20261030",
+    "refactor/urp-refresh-20261030"
+  ],
+  "added_refs": [],
+  "changed_other_heads": [],
+  "postchecked_utc": "2026-11-01T06:42:13.797398+00:00",
+  "main_unchanged": true,
+  "restoration_not_attempted": true
+}

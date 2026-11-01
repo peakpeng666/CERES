@@ -35,7 +35,9 @@
       "name": "URP项目研究进展报告_LaTeX源码.zip",
       "url": "https://drive.google.com/file/d/1-L785Vcnu0Xml5ElJBnAztqKIiF1tAo2/view?usp=drivesdk",
       "bytes": 18814049,
-      "state": "existing-unverified"
+      "state": "fetch-error-unclassified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/3"
     },
     {
       "asset_path": "docs/reports/URP研究进展简报_LaTeX源码.zip",
@@ -43,7 +45,12 @@
       "name": "URP研究进展简报_LaTeX源码.zip",
       "url": "https://drive.google.com/file/d/1M6LD0XXxVmi4MMXx72nMQjKYa-8uvaNp/view?usp=drivesdk",
       "bytes": 2444241,
-      "state": "existing-unverified"
+      "state": "restore-verified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/1",
+      "git_blob_sha1": "1477364bd78e3effbee2e740b49822eaf7f66488",
+      "sha256": "c15d8c2a42f0aa850a9a407f0684abad2d0a9a1910967c90372edcb13fca4463",
+      "restore_evidence": "drive-restoration-20261101.json#/records/1"
     },
     {
       "asset_path": "docs/reports/URP项目研究进展报告.pdf",
@@ -51,7 +58,9 @@
       "name": "URP项目研究进展报告.pdf",
       "url": "https://drive.google.com/file/d/1g7GOB6GodgEE2nK5S1Z1K4ZXlxvs4Hhm/view?usp=drivesdk",
       "bytes": 15747930,
-      "state": "existing-unverified"
+      "state": "fetch-error-unclassified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/2"
     },
     {
       "asset_path": "docs/reports/URP研究进展简报.pdf",
@@ -59,7 +68,12 @@
       "name": "URP研究进展简报.pdf",
       "url": "https://drive.google.com/file/d/1PdG8IMobR0ewigFTw-FTUhgbZJQsgV1S/view?usp=drivesdk",
       "bytes": 1935010,
-      "state": "existing-unverified"
+      "state": "restore-verified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/0",
+      "git_blob_sha1": "9f13577b007930e25c1c3560ce30f6ee6b37f792",
+      "sha256": "7c67591c176a094cdcaa0a01fe6e63f3c7aa2dd8403fcb66472b929dc4aa2f15",
+      "restore_evidence": "drive-restoration-20261101.json#/records/0"
     },
     {
       "asset_path": "docs/assets/inventory.json",

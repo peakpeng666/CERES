@@ -1,6 +1,6 @@
 {
-  "source_commit": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
-  "tracked_entries": 29442,
+  "source_commit": "9324ba1a71eb4b85a60fddbf4635900471b0e3f8",
+  "tracked_entries": 29450,
   "asset_counts": {
     "archive": 5,
     "database": 1,
@@ -26,10 +26,10 @@
   ],
   "external_copy_candidates": 6,
   "external_copy_candidates_scope": "copies.json (Drive registry only)",
-  "verified_external_copies": 4,
+  "verified_external_copies": 6,
   "verified_current_assets": 4,
   "verified_external_copies_by_provider": {
-    "drive": 0,
+    "drive": 2,
     "space": 4
   },
   "migrated_assets": 0,

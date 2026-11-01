@@ -11,9 +11,12 @@ The eight serving/recommender tests are retained separately in
 No recommender, frontend, default model, historical result, or research protocol
 is replaced. The package is not connected to the live recommendation path.
 
-The CI job discovers every `test_evolve_*.py` in `tests/`, rather than selecting
-only the nine files named by the historical snapshot workflow. Existing main
-jobs, including agriculture contracts and Node setup, remain unchanged.
+Current CI collects the active evolve contracts through the complete Lab suite
+in `.github/workflows/ci.yml` (`agriculture-contracts`), with the pinned official
+maps required. The old dedicated `evolve-research-contracts` job is historical;
+do not copy it back alongside the full Lab gate. The eight deferred tests below
+are still outside normal discovery. The dated verification sections retain the
+original standalone-job and cloud results.
 
 Run from `src/lab`:
 

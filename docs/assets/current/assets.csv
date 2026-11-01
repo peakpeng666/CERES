@@ -1547,8 +1547,8 @@ data/cifar-training/data_batch_2.bin,dataset-or-model,7e958840b7a55df3353574298e
 data/cifar-training/data_batch_3.bin,dataset-or-model,5259a3e9674ffdf2d5c33a1067f7192ff06c9e2f,review-required,,,
 data/cifar-training/data_batch_4.bin,dataset-or-model,301e7d16d78428f13262e87a5bc78ed45b8224aa,review-required,,,
 data/cifar-training/data_batch_5.bin,dataset-or-model,51fe428dfbdd065852912743ae8b7b63bb1e9d8d,review-required,,,
-docs/reports/URP研究进展简报.pdf,document,9f13577b007930e25c1c3560ce30f6ee6b37f792,review-required,restoration.json#/current_report_assets/1,7c67591c176a094cdcaa0a01fe6e63f3c7aa2dd8403fcb66472b929dc4aa2f15,space
-docs/reports/URP研究进展简报_LaTeX源码.zip,archive,1477364bd78e3effbee2e740b49822eaf7f66488,review-required,restoration.json#/current_report_assets/3,c15d8c2a42f0aa850a9a407f0684abad2d0a9a1910967c90372edcb13fca4463,space
+docs/reports/URP研究进展简报.pdf,document,9f13577b007930e25c1c3560ce30f6ee6b37f792,review-required,copies.json#/copies/4;restoration.json#/current_report_assets/1,7c67591c176a094cdcaa0a01fe6e63f3c7aa2dd8403fcb66472b929dc4aa2f15,drive;space
+docs/reports/URP研究进展简报_LaTeX源码.zip,archive,1477364bd78e3effbee2e740b49822eaf7f66488,review-required,copies.json#/copies/2;restoration.json#/current_report_assets/3,c15d8c2a42f0aa850a9a407f0684abad2d0a9a1910967c90372edcb13fca4463,drive;space
 docs/reports/URP项目研究进展报告.pdf,document,607ace8134490081e18157dac609593f140b4485,review-required,restoration.json#/current_report_assets/2,53e125ddd4144a4456e2afaa933ffa3c4544bd9bd0bf99363d07eb492bac058b,space
 docs/reports/URP项目研究进展报告_LaTeX源码.zip,archive,8b5ec54f0e02e4da1f3851130ba7e363d172ab0f,review-required,restoration.json#/current_report_assets/0,8b7693c34f5e9480515e7797ed0ab50a9fd7bfeefdbf46ce3c04937ae1a3c99b,space
 evidence/recovery/URP-saved-work-handoff-20261014.zip,archive,5ebbf5cf1f7eed1ab52870b90c6b5adc57c0350a,review-required,,,

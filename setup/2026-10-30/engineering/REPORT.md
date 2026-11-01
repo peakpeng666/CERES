@@ -4,6 +4,25 @@
 
 工程基线以 main `5ddbd22` 为基础，整合 Agent、工作台与离线 evolve。第一轮生产代码验证于 `b2f79af`，入口与 CI 验证于 `cf96ed9`；第一轮最终提交为 `aab3b42`。下面先记录在同一 PR 继续推进的第二轮结果。
 
+## 2026-11-01 后续整理：引用清退、Drive 与语义核对
+
+基线为已发布 main `9324ba1a71eb4b85a60fddbf4635900471b0e3f8`。用户授权的七条分支引用已实际删除；本次文件改动保留在本地分支 `chore/reconcile-retained-branches-20261101`，尚未提交或推送为新批次。
+
+- 七支逐条核对远端 SHA、main 祖先关系、已合并 PR 和当前安装/CI 无显式消费者后，以一次原子 push 和逐引用精确 lease 删除。实测远端 **35→28**，main 及其他头未变；删后七个 PR 页仍返回原 head SHA。原提交留在主线，未实际恢复引用或测试网页按钮；[回执](../../../docs/branch-retirement-20261101.json) 保存恢复 PR 入口。五个剩余祖先候选、六个消费分支、本次已合并 cleanup 来源及十五个非祖先支继续保留。
+- 根云端交接的独立 Drive 回执确认简报 PDF、LaTeX ZIP 两项真实下载与内容验证；项目报告 PDF/ZIP 均为未完成下载的未分类 fetch 错误，错误正文未保留，不能断言 403 或权限拒绝。仅更新四条既有 `copies.json` 记录，Space 历史及旧论文包 403 不改，旧被拒路径未访问。现为 **4 个独立资产、6 份提供方副本（Space 4、Drive 2）**，原件删除及迁移 **0**；见[脱敏回执](../../../docs/assets/drive-restoration-20261101.json)。仓库任务只核对交接证据与 Git 身份，没有重复下载原件。
+- 十个旧实现分叉按各自 merge base 比较实际引入文件，并核对模式/blob、Python AST 与关键行为。两个前端引用完全同头；`mamba-results` 的两项独占 BAT 改动均与主线一致；serving-guards 交付 51 项中 49 项同主线，另外两项为已被全量 Lab/必需地图替代的共享配置。保留主线完整幂等比较、请求身份、统计分母和离线准入 guard，不择取旧弱实现或启用八项 deferred 在线集成。全部十五个非祖先支继续保留，详见[语义取舍](../../../docs/branch-semantics.md)与[逐项证据](../../../docs/branch-semantics.json)。
+- Studio 内部导入直接指向已有 `lab/pendingWrites`，删除仅转发该实现的旧入口；实现、持久化键及版本不变。evolve 说明指向当前全量 Lab 门禁，历史专用 CI 不重新复制。没有新增研究功能、改动模型/锁定算法 ID、部署或修改许可证。
+
+| 本次验证 | 结果 | 原始记录 |
+|---|---|---|
+| 副本来源隔离与索引 | **10 passed** | `.local-state/retention-round2/asset-tests.log` |
+| 待完成写入、目录持久化相关前端回归 | **46 passed** | `.local-state/retention-round2/pending-write-tests.log` |
+| 导入来源、幂等、离线 serving 与隔离合约 | **50 passed** | `.local-state/retention-round2/semantic-contract-tests.log` |
+| 农业构建器与真实后端 validator | **434/434 passed**（默认 69、边界 365） | `.local-state/retention-round2/builders.json` |
+| 工程门禁、类型检查与生产构建 | **15/15 passed**，458 个 Python、716 个前端用例 | `.local-state/retention-round2/engineering/summary.json` |
+
+上述定向用例与全量门禁有交集，不相加为独立用例数。历史分支代码未执行；当前全量 Lab、浏览器、Windows、容器、真实模型、ROS/Gazebo 及约 10.45 GB 旧 ZIP 原件恢复没有在这一后续批次重跑。PR #20 的远端结果保持原记录，不作为本次未提交改动的远端 CI。冻结实验/数据库、Space 恢复与许可证据不变；五项第三方授权依据和保留引用的进一步取舍仍待后续决定。
+
 ## 2026-11-01 全量整理：云端本地验证
 
 基线为已合并 main `4ee2c6dd8c2b455351812d3c312a8215627fce1f`，实施分支为 `chore/full-cleanup-20261101`。origin 与基线已核实；本轮仅提交云端本地整理结果，没有推送、创建 PR、合并、部署或删除远端分支。

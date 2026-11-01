@@ -1,10 +1,10 @@
 # 资料与第三方源码
 
-当前派生索引覆盖 **2,443 个文件、75 个第三方源码目录**，来源为已合并 main `4ee2c6dd8c2b455351812d3c312a8215627fce1f`。2026-11-01 修正分类器漏掉 `.tar.xz` 的问题，补入 `experiments/baselines/cvrp/raw/` 四包，共 **19,983,780 字节**；没有新增或改写原始包。逐包路径、blob、大小和与原清单的差异见 [current/review.json](current/review.json)。
+当前派生索引覆盖 **2,443 个文件、75 个第三方源码目录**，来源为已合并 main `9324ba1a71eb4b85a60fddbf4635900471b0e3f8`。2026-11-01 修正分类器漏掉 `.tar.xz` 的问题，补入 `experiments/baselines/cvrp/raw/` 四包，共 **19,983,780 字节**；没有新增或改写原始包。逐包路径、blob、大小和与原清单的差异见 [current/review.json](current/review.json)。
 
 原 **2,439 项**清单及其 `85a7048b` 生成基线保留原样；2026-10-30 的 [review.json](review.json) 仅证明所列 2,439 项的路径和 blob 对齐，不证明分类没有漏项。当前逐项复核仍为 2,439 项原路径/blob 匹配、0 移除、0 内容变更。树中存在与本地已下载分开记录。
 
-现行数量为 559 份论文 PDF、16 份教材 PDF、25 份其他 PDF、**294 个实验压缩包**、5 个其他压缩包、1 份数据库、1,543 个数据或模型文件。当前已有 **4 项报告资产**通过独立副本恢复验证（Space 4、Drive 0），迁移数为 **0**，详见 [restoration.json](restoration.json)。
+现行数量为 559 份论文 PDF、16 份教材 PDF、25 份其他 PDF、**294 个实验压缩包**、5 个其他压缩包、1 份数据库、1,543 个数据或模型文件。当前 **4 项报告资产、6 份提供方副本**通过恢复验证（Space 4、Drive 2），迁移数为 **0**。Space 历史见 [restoration.json](restoration.json)，本次独立 Drive 回执见 [drive-restoration-20261101.json](drive-restoration-20261101.json)。
 
 - [current/assets.csv](current/assets.csv)、[current/inventory.json](current/inventory.json)：当前派生路径、用途、Git blob、证据引用与分提供方统计。
 - [assets.csv](assets.csv)：保留的历史逐文件清单；[inventory.json](inventory.json)、[review.json](review.json) 保留原生成和核验口径。
@@ -57,7 +57,7 @@ PDF 的 `rights_status` 逐项记为 `review-required`。文件名、论文 DOI 
 | BPP 输入与 NPZ 记录 | 作为只读回归数据保存，支持恢复后运行原验算 | 完整保留，源码检出清单继续包含必需 NPZ |
 | CIFAR 五个训练批次 | 以 `data/cifar-training.SOURCE.json` 的五个 SHA256 核对独立副本 | 共 153,650,000 字节，未上传或移出 |
 | 历史 SQLite | 独立副本恢复后检查字节与 SQLite 完整性、行数 | 本轮未上传数据库，保持只读档案 |
-| 项目报告 / LaTeX | 优先核对已有的四份 Drive 文件，避免重复上传 | 独立Space副本4/4匹配当前Git blob；两PDF解析及两ZIP完整性通过 |
+| 项目报告 / LaTeX | 核对已有的四份 Drive 文件，避免重复上传 | Space 4/4 历史保留；本次 Drive 简报 PDF/ZIP 两项通过，另两项 fetch 错误未分类 |
 | 第三方源码与原生资产 | 按上游提交、许可、补丁和现有平台清单分别恢复 | 保留当前来源与许可证，不打包未知授权资料到公开发布 |
 
 ### 独立副本恢复结果
@@ -66,7 +66,15 @@ PDF 的 `rights_status` 逐项记为 `review-required`。文件名、论文 DOI 
 
 19,629,355字节的历史补充论文包也已从独立副本恢复：23成员，包括21篇PDF和2份清单，逐篇大小及SHA256全部匹配。原恢复记录与当时2,439项清单的路径和blob匹配均为0；新补计的四项为实验压缩包，不改变该历史补充包的独立归类。
 
-原Drive下载隧道403记录保留在 `copies.json`；独立副本恢复不改写原Drive下载状态。本轮资产移出数为0。
+原 Drive 论文包下载隧道 403 记录保留在 `copies.json`；上述历史 Space 恢复不改写当时的 Drive 下载状态。本次独立 Drive 更新见下节，资产移出数仍为 0。
+
+### 2026-11-01 独立 Drive 回执
+
+根云端在 `2026-11-01T06:36:13.325340+00:00` 实际下载并验证了两项既有 Drive 副本：简报 PDF 为 1,935,010 字节、26 页且全部页面文本可解析；简报 LaTeX ZIP 为 2,444,241 字节、49 个唯一安全成员，CRC 通过，48 项 manifest 全部匹配且没有未登记普通文件。两者大小、SHA256 和 Git blob 均与主线身份一致。只更新 `copies.json` 中对应的既有记录，没有新增私有 URL 或 ID。
+
+项目报告 PDF 与 ZIP 本次均记为 `fetch-error-unclassified`，没有完成下载。PDF 的首次结果曾在编排保存结构化响应时失败，随后 fetch 返回 isError；ZIP fetch 也返回 isError。错误正文未保留，因此不能断言 HTTP 状态码、403 或权限拒绝，两项随后停止。旧论文包的历史 403 不是这两项的错误依据，旧被拒路径本次未访问。
+
+现行联合结果为四个独立资产、六份提供方副本：原 Space 四份记录完全不动，新 Drive 两份独立成功；其余两份 Drive 失败不继承 Space 的成功。原件删除和迁移均为 0。本仓库整理任务接收上述脱敏回执并核对 Git 内容身份，没有重下载这四项 Drive 对象。
 
 分支状态由 [当前工程索引](../current-index.md) 统一维护；这里仅维护资产身份、权利和恢复状态。
 
@@ -78,6 +86,6 @@ python3 tools/index_assets.py --ref HEAD --output .local-state/asset-index
 
 重新生成时会读取 `copies.json`：未恢复副本保持候选状态，已验证副本必须包含 URL、Git blob、SHA256 和恢复记录，且 Git blob 与所索引版本一致。
 
-派生视图联合读取 `copies.json` 与 `restoration.json`，按当前树的精确路径、Git blob 与实际字节 SHA256 对齐；当前联合已验证副本为4（Drive 0、Space 4），历史补充包不计入现行2,443项资产。新生成的 `external_copy` 为登记文件内的证据引用，不复制私有恢复地址；`verified_providers` 与 `verified_external_copies_by_provider` 区分提供方，原Drive状态不变。恢复副本不等于迁移：`migrated_assets=0` 与 `known_migration_events=0` 仅表示这两份登记中已知迁移事件数，`migration_event_schema_supported=false` 明示当前schema尚无迁移事件契约，不是对所有历史移动的全面审计；路径已不在树中也不能推断已迁移。既有核验原文和生成清单保持不动，新输出须写入独立目录。
+派生视图联合读取 `copies.json` 与 `restoration.json`，按当前树的精确路径、Git blob 与实际字节 SHA256 对齐；当前联合已验证提供方副本为6（Drive 2、Space 4），覆盖4个独立资产，历史补充包不计入现行2,443项资产。`external_copy` 的证据引用以 `docs/assets/` 为基准，不复制私有恢复地址；`verified_providers` 与 `verified_external_copies_by_provider` 区分提供方。Drive 仅依据独立 Drive 验证更新，Space 成功不改写 Drive 状态。恢复副本不等于迁移：`migrated_assets=0` 与 `known_migration_events=0` 仅表示这两份登记中已知迁移事件数，`migration_event_schema_supported=false` 明示当前schema尚无迁移事件契约，不是对所有历史移动的全面审计；路径已不在树中也不能推断已迁移。既有核验原文和历史生成清单保持不动，新输出写入独立目录。
 
 `tools/restore_materials.py` 的历史完整 ZIP 契约另见 [使用说明](../../setup/README.md#历史完整-zip-资料入口)与 [materials-archive.json](../../setup/materials-archive.json)。旧 ZIP 的历史指纹、平台 Release 目录、Drive 候选和 Space 恢复证据分别维护，不能相互替代。

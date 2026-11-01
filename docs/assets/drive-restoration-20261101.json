@@ -1,0 +1,70 @@
+{
+  "schema": "urp.drive-restoration/1",
+  "checked_utc": "2026-11-01T06:36:13.325340+00:00",
+  "expected_identity_source": {
+    "commit": "9324ba1a71eb4b85a60fddbf4635900471b0e3f8",
+    "path": "docs/assets/restoration.json"
+  },
+  "source_kind": "Independent Google Drive copies",
+  "verification_executor": "Root cloud workspace; sanitized receipt handed to the repository cleanup task",
+  "method": "Drive fetch(download_raw_file=True) returned file references; the root cloud workspace downloaded and checked the successful files. No private locators are included here.",
+  "records": [
+    {
+      "asset_path": "docs/reports/URP研究进展简报.pdf",
+      "state": "restore-verified",
+      "downloaded": true,
+      "bytes": 1935010,
+      "sha256": "7c67591c176a094cdcaa0a01fe6e63f3c7aa2dd8403fcb66472b929dc4aa2f15",
+      "git_blob_sha1": "9f13577b007930e25c1c3560ce30f6ee6b37f792",
+      "identity_matches_git": true,
+      "pages": 26,
+      "all_pages_text_parsed": true
+    },
+    {
+      "asset_path": "docs/reports/URP研究进展简报_LaTeX源码.zip",
+      "state": "restore-verified",
+      "downloaded": true,
+      "bytes": 2444241,
+      "sha256": "c15d8c2a42f0aa850a9a407f0684abad2d0a9a1910967c90372edcb13fca4463",
+      "git_blob_sha1": "1477364bd78e3effbee2e740b49822eaf7f66488",
+      "identity_matches_git": true,
+      "zip_members": 49,
+      "zip_unique_members": true,
+      "zip_crc_ok": true,
+      "zip_safe_paths_no_symlinks_no_encryption": true,
+      "manifest_entries": 48,
+      "manifest_matches": 48,
+      "manifest_failures": [],
+      "unmanifested_regular_members": []
+    },
+    {
+      "asset_path": "docs/reports/URP项目研究进展报告.pdf",
+      "state": "fetch-error-unclassified",
+      "downloaded": false,
+      "error_flag": true,
+      "error_detail_retained": false,
+      "permission_denial_confirmed": false,
+      "attempt_notes": "The first fetch returned a result, but orchestration could not store its structured response (Only plain serializable objects can be stored); no download completed. A later fetch returned isError=true without a retained error body, then attempts stopped."
+    },
+    {
+      "asset_path": "docs/reports/URP项目研究进展报告_LaTeX源码.zip",
+      "state": "fetch-error-unclassified",
+      "downloaded": false,
+      "error_flag": true,
+      "error_detail_retained": false,
+      "permission_denial_confirmed": false,
+      "attempt_notes": "Fetch returned isError=true with no usable file; the error body was not retained. Attempts stopped."
+    }
+  ],
+  "verified_drive_assets": 2,
+  "union_verified_current_assets": 4,
+  "union_verified_provider_copies": 6,
+  "union_verified_provider_copies_by_provider": {
+    "drive": 2,
+    "space": 4
+  },
+  "prior_space_evidence_unchanged": true,
+  "historical_blocked_papers_archive_accessed": false,
+  "raw_assets_removed": 0,
+  "migrated_assets": 0
+}
