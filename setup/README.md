@@ -100,6 +100,16 @@ python3 tools/smoke_workbench.py
 
 它会实际生成任务，运行 PyVRP 与 savings，等待独立验算，核对 JSON 导出并读取比较结果。输出保存在新的 `.local-state/smoke/<时间>/` 目录。[本轮报告](2026-10-30/engineering/REPORT.md) 记录当前检查；CI 将全量 Lab、农业构建器和工程检查作为回归入口。
 
+从仓库根执行已有的双服务验收入口，可自行启动并关闭独立网关与档案后端：
+
+```sh
+python3 tools/smoke_dual_service.py \
+  --output "$PWD/.local-state/dual-service-$(date -u +%Y%m%dT%H%M%SZ)-$$" \
+  --port 4186 --archive-port 4187
+```
+
+先按上文准备根、Lab 两套 Python 环境与前端依赖，确保指定端口空闲，输出目录必须是新目录。脚本为失败注入与健康流程分别设置绝对 `URP_API_DB` 和 `URP_LAB_RUNTIME`，在输出目录内新建测试库；不要改为历史库或个人运行库。它检查坏解释器的明确失败、真实 Jobs、工作台求解/验算/导出、关闭与端口释放，并比较检出的冻结数据库前后字节。未检出的原始库记为 `missing`，不当作已验证；这是 HTTP 与生命周期验收，浏览器、容器及 ROS 结果单独记录。
+
 ## 数据与恢复
 
 | 内容 | 位置 |
@@ -131,3 +141,19 @@ python3 tools/platform_snapshot.py restore --catalog setup/platform-snapshot.jso
 ```
 
 旧镜像基于 `ddb5113e`；使用命名卷保存数据，停止不会删除。原生、容器及 Windows/WSL 的执行结果与已知故障见 [历史验收记录](2026-10-15/integration/REPORT.md)。
+
+### 历史完整 ZIP 资料入口
+
+`tools/restore_materials.py` 仅用于旧的完整 `URP.zip`。其 [独立清单](materials-archive.json) 保留 `66b2b8c742598378898d02643d4ddc2f58f1a686:storage.json#/archive` 中的大小 **10,450,371,700 字节**和 SHA256，也保留原记录“Windows 报告已验证、当次任务不可读”的状态；本轮没有取得或重验这份 ZIP。现行 `storage.json` 登记位置与副本，不含旧 `archive` 键。
+
+持有对应原件时先检查，确认后再去掉 `--list` 恢复所选目录：
+
+```sh
+python3 tools/restore_materials.py /absolute/path/to/URP.zip --list --include papers
+```
+
+列出与恢复均先严格核对大小和 SHA256；仅恢复允许目录内未受 Git 跟踪的文件，遇到内容不同的本地文件即失败。`--manifest` 可显式指定同 schema 的历史指纹清单；缺失或不合法时明确报错。此入口不接受平台补充包，也不下载 Drive 文件或登记迁移；平台 Release 使用上面的 `platform_snapshot.py` 流程。
+
+写入前完整预检所选材料：归档须有 `URP/` 根目录及匹配文件；重复规范化目标、文件/子路径冲突、归档符号链接和本地目标任一符号链接组件均拒绝。已有材料逐字节比对；只包含已存在材料时状态为 `already-present`，只包含 Git 管理文件时为 `tracked-only`，均不报告“已恢复”。`--list` 的非空计划为 `planned`；只有实际完成全部计划写入才报告 `restored`。
+
+恢复使用同一个已校验的打开文件读取 ZIP，新目标以排他方式创建，预检后出现的文件也不会被覆盖。请串行使用，不要同时修改 ZIP、恢复目录或其链接。解压、权限或存储错误会非零退出，并给出已完成文件数及可能残留的新文件；它不回滚此前完成的新材料，也不自动删除失败残留。检查后再处理残留，不能把部分写入当作整批成功。`--list` 不读取尚未恢复成员的全部解压内容，CRC/解压错误仍可能在实际恢复时发现。

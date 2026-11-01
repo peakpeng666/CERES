@@ -1,0 +1,41 @@
+{
+  "source_commit": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
+  "tracked_entries": 29442,
+  "asset_counts": {
+    "archive": 5,
+    "database": 1,
+    "dataset-or-model": 1543,
+    "document": 25,
+    "experiment-archive": 294,
+    "paper": 559,
+    "textbook": 16
+  },
+  "third_party_directories": 75,
+  "without_root_license": [
+    "src/repos/AutoML-Zero",
+    "src/repos/DR-ALNS",
+    "src/repos/EoH-S",
+    "src/repos/JAIR2026-FrugalAS",
+    "src/repos/QD-LHD",
+    "src/repos/QDAIF",
+    "src/repos/QUBE",
+    "src/repos/VRPAgent",
+    "src/repos/aslib_data",
+    "src/repos/open-source-sisr-routing",
+    "src/repos/typesafe-router"
+  ],
+  "external_copy_candidates": 6,
+  "external_copy_candidates_scope": "copies.json (Drive registry only)",
+  "verified_external_copies": 4,
+  "verified_current_assets": 4,
+  "verified_external_copies_by_provider": {
+    "drive": 0,
+    "space": 4
+  },
+  "migrated_assets": 0,
+  "known_migration_events": 0,
+  "migration_event_schema_supported": false,
+  "migration_status": "No registered migration events in these schemas; migrated_assets counts known events only, not an audit of all historical moves. Restoration and absent paths do not prove migration",
+  "root_license_present": false,
+  "identity": "Git blob SHA1 identifies repository content; external SHA256 is verified against Git bytes on restoration, not migration; external_copy contains evidence references, not private locators."
+}

@@ -1,6 +1,8 @@
 # 工作台统一部署
 
-`deploy` 和 `redo` 使用同一套安装脚本、依赖准备和镜像构建。默认入口是 `deploy`；需要固定版本时，安装器接受发布标签或完整提交号。
+源码开发从 `main` 开始；默认安装发行通道是 `deploy`，安装器的 Bash / PowerShell 下载地址和镜像发布工作流仍引用该分支，需保留。`redo` 继续作为可选的原生源码安装通道；固定版本时，安装器接受发布标签或完整提交号。
+
+2026-11-01 核对的源码主线为 `4ee2c6dd8c2b455351812d3c312a8215627fce1f`，`deploy` 为 `41e6bdc221cbe5e733a583fbadb287afd0534723`。两者分别记录与验收，main 合并不代表 deploy 已更新或镜像已发布。这里的 40 位值是 **Git 提交 SHA**；容器 registry 的镜像 digest 另为 `sha256:…`，需从实际发布结果核实，本轮未查询或发布新镜像。
 
 默认 `full` 安装工作台、ROS 2 Humble / Gazebo Fortress、CVRP 基线和 Fields2Cover。日常使用见 [工作台使用说明](setup/README.md)，具体版本见 [依赖清单](deploy/DEPENDENCIES.md)。
 

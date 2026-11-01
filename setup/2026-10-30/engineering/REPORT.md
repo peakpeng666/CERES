@@ -4,6 +4,44 @@
 
 工程基线以 main `5ddbd22` 为基础，整合 Agent、工作台与离线 evolve。第一轮生产代码验证于 `b2f79af`，入口与 CI 验证于 `cf96ed9`；第一轮最终提交为 `aab3b42`。下面先记录在同一 PR 继续推进的第二轮结果。
 
+## 2026-11-01 全量整理：云端本地验证
+
+基线为已合并 main `4ee2c6dd8c2b455351812d3c312a8215627fce1f`，实施分支为 `chore/full-cleanup-20261101`。origin 与基线已核实；本轮仅提交云端本地整理结果，没有推送、创建 PR、合并、部署或删除远端分支。
+
+- 历史恢复命令原先在 `--list` 时即报 `KeyError: 'archive'`。现改用独立 `setup/materials-archive.json`，从历史提交 `66b2b8c` 原样保留 ZIP 大小、SHA256 与“Windows 报告已验证、当次任务不可读”的状态；不再读取现行位置登记中的缺失键。列出与恢复均校验完整 ZIP，清单错误、字节不符或本地冲突明确失败；原始约 10.45 GB ZIP 本轮未取得，实际原件恢复未运行。
+- 资产分类补识别 `.tar.xz`，新派生视图为 2,443 项、294 个实验包。补计四包共 19,983,780 字节，旧 2,439 项路径/blob 全匹配，0 移除、0 内容变更。原清单、Drive/Space 登记和原始证据未改写，详见 [差异核对](../../../docs/assets/current/review.json)。既有恢复证据与 Git 字节的联合验证仍为 Space 4、Drive 0，迁移 0；本轮没有重取外部副本。
+- 34 个远端分支中，33 个为非主线；18 个是 main 祖先，其中 6 个存在安装或 CI 消费者，12 个仅列归档候选。15 个非祖先支保留，独有路径逐项登记；其中 10 个无独有路径的分支仍有内容差异，语义核验未完成。敏感候选 `GATEWAY.txt` 仅记录路径和 Git 对象，未打开或恢复。见 [当前清单](../../../docs/current-branches.csv) 与 [保留索引](../../../docs/branch-retention.json)。
+- 当前导航补记 PR #19 完成状态；区分 main 与 deploy、当前工程检查与历史 BPP/浏览器验收，补充已有双服务验收及隔离库要求。五项第三方授权依据仍待补，源码包 `export-ignore` 仅记录建议，未实施分发变更或选择根 LICENSE。
+
+| 首次整理验证（实现提交 `d8c9097`） | 结果 | 云端原始记录 |
+|---|---|---|
+| 恢复、资产和启动闭包定向测试 | **22 passed** | `.local-state/full-cleanup/focused.log` |
+| 工程检查、前端类型与生产构建 | **15/15 passed**，446 个 Python 用例，716 个前端用例 | `.local-state/full-cleanup/engineering/summary.json` |
+| Lab 全量，固定官方地图 | **968 passed、11 skipped、36 subtests passed** | `.local-state/full-cleanup/lab.log`、`lab.xml` |
+| 隔离双服务失败注入、真实 Jobs、求解/验算/导出与关闭 | **passed** | `.local-state/full-cleanup/dual-service/summary.json` |
+| 实现提交 `d8c9097` 按原 CI cone 清单独立检出 | **65 public_cli passed**，恢复清单与夹具均存在 | `.local-state/full-cleanup/ci-sparse-public-cli.log` |
+| 根 pip 导出与 uv 权威锁一致性 | **passed** | `.local-state/full-cleanup/requirements.lock` |
+| 当前入口文档本地链接 | **187 个路径通过** | `.local-state/full-cleanup/doc-links.json` |
+
+双服务使用新运行库，未检出的 `data/backend/research.sqlite3` 在前后清单中均为 `missing`，不能声称核验了其哈希。Git 差异检查确认冻结数据、实验、协议、模型和算法登记没有变化。缺少 ZIP 的负向调用现在返回明确的文件错误（退出码 2），原 KeyError 复现保留在 `.local-state/full-cleanup/restore-before.log`。浏览器、真实模型、容器、Windows、ROS/Gazebo、原生长跑及历史完整 ZIP 原件恢复本轮未运行；过去的 CI 与现场记录按原版本保留。本次检查摘要见 [cleanup-20261101.json](cleanup-20261101.json)。
+
+### 恢复入口边界复核与修正
+
+复核提交 `5460093` 发现旧解压循环仍有三项问题：本地符号链接可越过所选材料目录，重复成员可覆盖本轮先写入的文件，错误 ZIP 根目录可返回零文件成功。这三项最初由代码检查和内存反例确认，随后在真实临时目录、Git 夹具及 ZIP 上复现；没有读取私有原件或修改冻结结果。
+
+修正后，所有所选成员先完成根目录、规范化目标重复、文件/子路径冲突、符号链接及本地冲突预检。已有材料逐字节对齐；空计划明确区分 `already-present`、`tracked-only` 与格式/选取错误。新文件排他创建，预检后出现的文件不会被覆盖；校验与解包保持同一打开文件，归档路径被替换时也不会改读未经校验的新文件。CRC、权限或存储失败会非零退出，注明已完成数和可能残留的新文件，不报告整批成功；已完成的新材料不自动回滚，恢复目录及 ZIP 须串行使用。
+
+| 本次修正验证 | 结果 | 云端原始记录 |
+|---|---|---|
+| 修复前真实 ZIP / 目录反例 | 17 个测试方法，15 个失败、6 个错误（包含多项 subtest） | `.local-state/full-cleanup/restore-boundaries-before.log` |
+| 最终恢复入口测试 | **17 passed** | `.local-state/full-cleanup/restore-boundaries-final.log` |
+| 恢复、资产与启动闭包定向回归 | **33 passed** | `.local-state/full-cleanup/focused-boundaries-final.log` |
+| 最终工程门禁、前端类型及生产构建 | **15/15 passed**，457 个 Python 用例、716 个前端用例 | `.local-state/full-cleanup/engineering-boundaries-final/summary.json` |
+| 修复提交 `28e781c` 按原 CI cone 清单本地独立检出 | **76 public_cli passed** | `.local-state/full-cleanup/ci-sparse-boundaries.log` |
+| 当前文档与远端只读复核 | **187 个链接路径通过，34 个分支 SHA 未变** | `.local-state/full-cleanup/doc-links-boundaries.json`、`remote-heads-boundaries.txt` |
+
+真实负向用例覆盖 `.git`、目录外及目录内链接、归档链接、重复及别名成员、文件/目录冲突、错误根目录、空归档与无匹配材料、并发出现的证据文件、损坏 CRC 及校验后替换归档路径。原 22 项/446 个 Python 用例的首次验证、原失败日志与原提交均保留。此次只修改恢复工具、其测试和现有说明，Lab、双服务、模型和研究实现未变；上表首次 Lab 与双服务结果没有冒充本次重跑。
+
 ## 第二轮 refresh：入口与数据契约
 
 基线为已合并 PR #18 的 `d3f0c03a`（tree `34aff046caa8c41815bf6b9e10535700bc329f46`）。本批修改统计、Agent、启动、交付检查、导出和当前导航；冻结研究记录与原始资产不变。
@@ -32,7 +70,9 @@
 
 首个远端头 `78cb4ca` 的六项 CI 为五项通过、一项失败；容器和源码双服务均通过。工程失败日志确认稀疏检出缺少启动脚本及资产恢复记录，导致 public_cli 的四个 FileNotFoundError 和一项恢复数量断言失败。原始证据见 [engineering artifact](https://github.com/peakpeng666/URP/actions/runs/41124856005/artifacts/13009594257)。
 
-真实本地稀疏检出重现相同 57 用例中的 1 失败、4 错误；在 cone 清单增加 `setup/ubuntu`（同时包含 setup 顶层脚本，不检出日期归档）及 `docs/assets`，并加入检出闭包断言后，58 项 public_cli 测试全部通过。日志保留在 `urp_refresh/ci-sparse-before-2044.log` 和 `ci-sparse-after-2044.log`。其余源码未变；新提交的完整远端检查另行核验。
+真实本地稀疏检出重现相同 57 用例中的 1 失败、4 错误；在 cone 清单增加 `setup/ubuntu`（同时包含 setup 顶层脚本，不检出日期归档）及 `docs/assets`，并加入检出闭包断言后，58 项 public_cli 测试全部通过。日志保留在 `urp_refresh/ci-sparse-before-2044.log` 和 `ci-sparse-after-2044.log`。该次本地验证仅覆盖上述闭包修正，首次失败记录保留。
+
+PR #19 已完成并合并：最终头为 `4c5d383a13b02022fa73923fccf8ed2824bd4782`，合并 main 为 `4ee2c6dd8c2b455351812d3c312a8215627fce1f`。已核验的 [PR 工程 CI](https://github.com/peakpeng666/URP/actions/runs/41125771960) 与 [PR deploy CI](https://github.com/peakpeng666/URP/actions/runs/41125771951) 合计 **6/6**，随后 [main CI](https://github.com/peakpeng666/URP/actions/runs/41126537526) **4/4**。这些是对应提交的既有远端记录，本次文档补记没有重跑过去的测试，也没有发布 deploy 通道或镜像。
 
 ## 全量整理与错误处理修订
 

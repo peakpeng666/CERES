@@ -110,6 +110,26 @@ class AssetCopyTests(unittest.TestCase):
         self.assertEqual(summary['known_migration_events'], 0)
         self.assertFalse(summary['migration_event_schema_supported'])
 
+    def test_tar_xz_results_are_indexed_without_inferring_restoration(self):
+        names = ('cloud-results', 'native-results', 'ubuntu-local-seed1-results',
+                 'ubuntu-local-seeds3-4-results')
+        for name in names:
+            path = self.repo / f'experiments/baselines/cvrp/raw/{name}.tar.xz'
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(b'controlled result archive')
+        subprocess.run(['git', 'add', '.'], cwd=self.repo, check=True)
+        subprocess.run(['git', '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid',
+                        'commit', '-qm', 'result archives'], cwd=self.repo, check=True)
+        rows, summary = self.generate({**self.copy, 'state': 'existing-unverified'})
+        results = [row for row in rows if row['kind'] == 'experiment-archive']
+        self.assertEqual(len(results), 4)
+        self.assertEqual({row['path'] for row in results},
+                         {f'experiments/baselines/cvrp/raw/{name}.tar.xz' for name in names})
+        self.assertTrue(all(row['external_copy'] == '' for row in results))
+        self.assertEqual(summary['asset_counts'], {'archive': 1, 'experiment-archive': 4})
+        self.assertEqual(summary['verified_external_copies'], 0)
+        self.assertEqual(summary['migrated_assets'], 0)
+
     def test_current_repository_has_four_space_restorations(self):
         root = Path(__file__).resolve().parents[2]
         entries = assets.tree('HEAD')

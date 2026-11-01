@@ -1,0 +1,41 @@
+{
+  "schema": "urp.asset-index-delta/1",
+  "source_commit": "4ee2c6dd8c2b455351812d3c312a8215627fce1f",
+  "historical_index": "../assets.csv",
+  "historical_inventory": "../inventory.json",
+  "historical_indexed_assets": 2439,
+  "historical_path_and_blob_matches": 2439,
+  "removed_paths": [],
+  "changed_historical_blobs": [],
+  "current_indexed_assets": 2443,
+  "added_assets": [
+    {
+      "path": "experiments/baselines/cvrp/raw/cloud-results.tar.xz",
+      "git_blob_sha1": "3915ee1e2b249f6291d9b7a1d1976b2889b115c7",
+      "bytes": 6103108
+    },
+    {
+      "path": "experiments/baselines/cvrp/raw/native-results.tar.xz",
+      "git_blob_sha1": "a78ef74886d8cc2f24e8ac81662f4a77a50df672",
+      "bytes": 2184308
+    },
+    {
+      "path": "experiments/baselines/cvrp/raw/ubuntu-local-seed1-results.tar.xz",
+      "git_blob_sha1": "153c180b533748f0942f329c8935baa100d81031",
+      "bytes": 4417720
+    },
+    {
+      "path": "experiments/baselines/cvrp/raw/ubuntu-local-seeds3-4-results.tar.xz",
+      "git_blob_sha1": "6ea469bc57f58447c7868b0c9fa0c8253d87a08c",
+      "bytes": 7278644
+    }
+  ],
+  "added_bytes": 19983780,
+  "reason": "The previous classifier omitted .tar.xz; these four original blobs were already tracked. No archive bytes were changed or extracted.",
+  "restoration_counts": {
+    "drive": 0,
+    "space": 4
+  },
+  "migrated_assets": 0,
+  "scope": "Derived view of the merged main tree using the corrected classifier and existing copy/restoration evidence. Historical inventories and raw evidence are unchanged."
+}
