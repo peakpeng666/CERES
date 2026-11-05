@@ -30,6 +30,7 @@ log = logging.getLogger('urp_lab.jobs')
 GRACE_S = 2.0
 DEFAULT_TIME_LIMIT_S = 60.0
 LOG_TAIL_BYTES = 4096
+NODE_VERSION_TIMEOUT_S = 2.0
 FINAL = ('done', 'error', 'timeout', 'canceled')
 _RESULT_KEYS = ('status', 'objective', 'routes', 'check', 'map_check', 'raw_result', 'trace', 'planning', 'trace_contract')
 
@@ -54,6 +55,26 @@ def _execution_files() -> list[Path]:
     return sorted({p for root in roots for p in root.rglob('*.py')} | set(optional))
 
 
+def _node_version(node: str) -> str:
+    """Probe the selected runtime; retry a transient timeout once, never its value."""
+    for attempt in range(2):
+        try:
+            version = subprocess.run([node, '--version'], capture_output=True, text=True,
+                                     timeout=NODE_VERSION_TIMEOUT_S, check=True).stdout.strip()
+        except subprocess.TimeoutExpired as exc:
+            # A cold executable or loaded runner can exceed the short probe
+            # budget. run() kills and waits for that child before this retry.
+            # Partial timeout output is not runtime identity evidence.
+            if attempt == 0:
+                continue
+            raise SourceChangedError(f'无法核对 Node 执行版本：{exc}') from exc
+        except (OSError, subprocess.SubprocessError) as exc:
+            raise SourceChangedError(f'无法核对 Node 执行版本：{exc}') from exc
+        if not version:
+            raise SourceChangedError('无法核对 Node 执行版本：版本输出为空。')
+        return version
+
+
 def execution_manifest() -> dict:
     """Bind first-party code, learned/JS paths, and native planner artifacts."""
     try:
@@ -69,14 +90,7 @@ def execution_manifest() -> dict:
         except importlib.metadata.PackageNotFoundError:
             packages[name] = None
     node = (paths.node_command() or [None])[0]
-    if node:
-        try:
-            node_version = subprocess.run([node, '--version'], capture_output=True, text=True,
-                                          timeout=2, check=True).stdout.strip()
-        except (OSError, subprocess.SubprocessError) as exc:
-            raise SourceChangedError(f'无法核对 Node 执行版本：{exc}') from exc
-    else:
-        node_version = None
+    node_version = _node_version(node) if node else None
     identity = {'files': files, 'python': sys.version, 'python_executable': str(Path(sys.executable).absolute()),
                 'python_prefix': str(Path(sys.prefix).resolve()),
                 'packages': packages, 'native_dependencies': native,
@@ -118,24 +132,21 @@ def resolve_params(algorithm: dict, given: dict | None) -> dict:
         value = given.get(name, p.get('default'))
         kind = p.get('type')
         if value is None:
-            out[name] = None
-            continue
+            raise ValueError(f'参数 {name} 不能为 null；省略该参数以使用默认值')
         if kind in ('number', 'integer'):
             if isinstance(value, bool):
                 raise ValueError(f'参数 {name} 应为数值，不能为布尔值')
-            if isinstance(value, bool) or not isinstance(value, (int, float)):
+            if not isinstance(value, (int, float)):
                 try:
                     value = float(value)
                 except (TypeError, ValueError):
                     raise ValueError(f"参数 {name} 应为数值") from None
+            if not math.isfinite(float(value)):
+                raise ValueError(f'参数 {name} 必须为有限数值')
             if kind == 'integer':
-                if not math.isfinite(float(value)):
-                    raise ValueError(f'参数 {name} 必须为有限数值')
                 if float(value) != int(value):
                     raise ValueError(f"参数 {name} 应为整数")
                 value = int(value)
-            if not math.isfinite(float(value)):
-                raise ValueError(f'参数 {name} 必须为有限数值')
             if p.get('min') is not None and value < p['min'] or p.get('max') is not None and value > p['max']:
                 raise ValueError(f"参数 {name}={value} 超出范围 [{p.get('min')}, {p.get('max')}]")
         elif kind == 'boolean' and not isinstance(value, bool):
@@ -440,6 +451,8 @@ class JobManager:
             sol.update(state='timeout' if result.get('error_kind')=='timeout' else 'error', error=str(result['error']))
         elif returncode != 0:
             sol.update(state='error', error=f'工作进程返回码 {returncode}，即使输出了 JSON 也不能判成功')
+        elif result.get('status') not in ('optimal', 'feasible', 'infeasible', 'no_solution'):
+            sol.update(state='error', error='工作进程未返回合法的求解终态 status')
         else:
             sol['state'] = 'done'
         if result:

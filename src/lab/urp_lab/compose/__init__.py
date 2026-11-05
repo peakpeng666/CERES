@@ -1,9 +1,9 @@
 """Task composer: one sentence → structured spec → editable farm map scenario (problem class `fleet_routing`)."""
 from __future__ import annotations
 
+from collections import Counter
 import hashlib
 import json
-import math
 import re
 from datetime import datetime, timezone
 
@@ -38,12 +38,37 @@ def describe(spec: dict) -> list[dict]:
     ]
 
 
+def generation_report(spec: dict, instance: dict) -> tuple[dict, list[dict]]:
+    """Describe the generated map, retaining unmet requests rather than inventing geometry."""
+    requested = {k: spec[k] for k in ('plots', 'tasks', 'obstacles')}
+    actual = {'plots': len(instance['plots']), 'tasks': len(instance['tasks']),
+              'obstacles': dict(Counter(o['kind'] for o in instance['obstacles']))}
+    shortfalls = []
+    for key, label in (('plots', '地块'), ('tasks', '任务点')):
+        if actual[key] < requested[key]:
+            shortfalls.append(f'{label}要求 {requested[key]}，实际 {actual[key]}')
+    for kind, count in requested['obstacles'].items():
+        placed = actual['obstacles'].get(kind, 0)
+        if placed < count:
+            shortfalls.append(f'{OBSTACLE_LABEL[kind]}要求 {count}，实际 {placed}')
+    report = {'status': 'partial' if shortfalls else 'complete', 'requested': requested,
+              'actual': actual, 'shortfalls': shortfalls}
+    return report, describe({**spec, **actual})
+
+
+def generation_note(report: dict) -> str:
+    return ' · 未完全生成：' + '；'.join(report['shortfalls']) if report['shortfalls'] else ''
+
+
 def compose(text: str, seed: int | None = None, overrides: dict | None = None) -> dict:
     parsed = parse(text)
     spec, defaults = fill_defaults({**parsed['spec'], **(overrides or {})})
     if seed is None:
-        seed = int(spec.get('seed') or int(hashlib.sha256(parsed['text'].encode()).hexdigest()[:8], 16) % 100000)
+        seed = spec.get('seed')
+        if seed is None:
+            seed = int(hashlib.sha256(parsed['text'].encode()).hexdigest()[:8], 16) % 100000
     instance = gen.generate(spec, seed)
+    generation, cards = generation_report(spec, instance)
     stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
     slug = re.sub(r'[^a-z0-9]+', '-', spec['kind'])[:12]
     sid = f'task-{slug}-{stamp}-{seed % 1000:03d}'
@@ -53,14 +78,14 @@ def compose(text: str, seed: int | None = None, overrides: dict | None = None) -
     word = instance['meta']['task_word']
     scenario = {
         'id': sid, 'title': title,
-        'summary': f"{instance['vehicles']['count']} 台车 · {len(instance['tasks'])} 个{word} · {W:g}×{H:g} m · {len(instance['plots'])} 块地 · {n_obs} 处障碍",
+        'summary': f"{instance['vehicles']['count']} 台车 · {len(instance['tasks'])} 个{word} · {W:g}×{H:g} m · {len(instance['plots'])} 块地 · {n_obs} 处障碍" + generation_note(generation),
         'problem_class': 'fleet_routing', 'frame': {'kind': 'field', 'units': 'm', 'crs': 'local'}, 'cost_unit': 'm',
         'provenance': {'generator': 'urp_lab.compose', 'params': {'text': parsed['text'], 'spec': spec, 'seed': seed}, 'seed': seed,
                        'note': '由任务描述生成；地块、障碍、任务点与车队都可在地图上继续修改。'},
         'sim': {'supported': False, 'world': None, 'spawn': None, 'reason': '生成的农田地图不是 Gazebo 世界'},
         'instance': instance, 'editable': {'tasks': True, 'depot': True, 'capacity': True, 'demands': True},
         'layers': {}, 'origin': 'user', 'compose': {'text': parsed['text'], 'found': parsed['found'], 'defaults': defaults,
-                                                     'cards': describe(spec), 'seed': seed},
+                                                     'cards': cards, 'generation': generation, 'seed': seed},
     }
     return scenario
 
@@ -86,7 +111,10 @@ def from_field(field_id: str, text: str = '', seed: int | None = None, overrides
                      f"{len(inst['plots'])} 块地 · {len(inst['obstacles'])} 处障碍")
     sc['provenance']['note'] = f"边界来自 Fields2Benchmark 真实田块 {field_id}，地块、障碍与任务点在田内生成。"
     sc['provenance']['ref'] = 'mier2024fields2benchmark'
-    sc['compose']['cards'] = describe(spec)
+    generation, cards = generation_report(spec, inst)
+    sc['summary'] += generation_note(generation)
+    sc['compose']['cards'] = cards
+    sc['compose']['generation'] = generation
     sc['compose']['defaults'] = defaults
     return sc
 

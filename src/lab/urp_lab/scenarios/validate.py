@@ -6,6 +6,8 @@ import math
 
 from shapely.geometry import Polygon
 
+from .. import coverage_limits
+
 PROBLEM_CLASSES = ('turn_routing', 'euclidean_cvrp', 'coverage', 'point_to_point', 'fleet_routing')
 OBSTACLE_KINDS = ('pond', 'building', 'tree', 'pole', 'ditch', 'greenhouse', 'rock', 'other')
 FLEET_OBJECTIVES = ('total_distance', 'makespan')
@@ -173,7 +175,7 @@ def coverage(inst: dict) -> dict:
     obstacles = []
     for k, ob in enumerate(inst.get('obstacles') or []):
         pts = [_xy(p, f'obstacles[{k}][{i}]') for i, p in enumerate(ob)]
-        if len(pts) < 3 or not Polygon(pts).is_valid:
+        if len(pts) < 3 or not Polygon(pts).is_valid or Polygon(pts).area <= 0:
             raise ValueError(f'障碍 {k} 多边形无效')
         obstacles.append(pts)
     swath = _num(inst.get('swath_width'), 'swath_width', True)
@@ -186,13 +188,18 @@ def coverage(inst: dict) -> dict:
     if pattern not in ('boustrophedon', 'snake', 'spiral'):
         raise ValueError('route_pattern 只能是 boustrophedon / snake / spiral')
     angle = inst.get('angle_deg')
-    if poly.buffer(-head).is_empty:
-        raise ValueError('地头宽度过大，田块内部为空')
-    if poly.area / (swath * swath) > 200000:
-        raise ValueError('田块相对作业幅宽过大（条带数超出面板范围）')
+    angle = None if angle is None else _num(angle, 'angle_deg')
+    _, inside = coverage_limits.geometry(field, obstacles, head)
+    # Retain the existing area budget, avoiding swath² underflow/overflow.
+    if math.sqrt(poly.area) / swath > math.sqrt(200000):
+        raise ValueError('田块相对作业幅宽过大（面积预算超出面板范围）')
+    # None is automatic direction for f2c.full, not a global x-direction promise.
+    # The fixed-direction panel adapter preflights its own y span at solve time.
+    if angle is not None:
+        coverage_limits.scan_budget(inside, swath, angle)
     out.update(field=field, obstacles=obstacles, swath_width=swath, headland_width=head, turn_radius=max(turn, 0.0),
                robot_width=width, start=_xy(inst.get('start') or field[0], 'start'), route_pattern=pattern,
-               angle_deg=None if angle is None else _num(angle, 'angle_deg'))
+               angle_deg=angle)
     return out
 
 

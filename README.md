@@ -1,68 +1,37 @@
-# URP：农业机器人路径规划与智能推荐系统
+# URP：农业机器人规划与 Agent 工作台
 
-本科生科研训练项目：**面向农业机器人的路径规划算法库构建与智能推荐方法研究**。
+URP 将农业任务建模、算法推荐、真实求解、独立验算、仿真和实验记录接入同一工作台。浏览器入口为 `http://127.0.0.1:4100/`。
 
-项目围绕“算法库构建、实验研究、系统实现”三条主线展开，将路径算法、独立检查、农业任务建模、物理仿真和可视化接入同一研究系统。在已支持的任务与车型内，已运行“输入地图与任务—调用算法—检查路线—保存记录—执行与回放”的流程；LLM 在环推荐与完整农业约束的联合验证仍是后续工作。
+**[安装、启动与开发](setup/README.md)** · **[本轮整合与测试](setup/2026-10-30/engineering/REPORT.md)** · **[当前工程与分支索引](docs/current-index.md)** · [整合时的 29 个来源分支](docs/branches.csv) · [资料与许可证索引](docs/assets/README.md)
 
-入口更新于 **2026-10-20**；本次研究报告的记录截至 **2026-10-19**。主要结果、适用条件与待完成工作见 [导师查看：课题、现状与证据](docs/导师查看.md)。
+## 工程入口
 
-## 先看报告
-
-- [研究进展简报（26 页 PDF）](docs/reports/URP研究进展简报.pdf)：项目介绍、主要实验、系统架构、仿真与可视化、结论边界。配套 [LaTeX 源码](docs/reports/URP研究进展简报_LaTeX源码.zip)。
-- [项目研究进展报告（110 页 PDF）](docs/reports/URP项目研究进展报告.pdf)：详细方法、统计口径、结果分析、图表与证据索引。配套 [LaTeX 源码](docs/reports/URP项目研究进展报告_LaTeX源码.zip)。
-
-## 三条研究主线
-
-1. **算法库构建**：平台静态目录注册 28 个配置、覆盖 5 类问题，包括点到点规划、欧氏 CVRP、转弯任务、覆盖与车队规划。既有本项目实现的构造、搜索和群体方法，也集成 PyVRP、OR-Tools、OMPL 与 Fields2Cover。正式 CVRP 基准比较 17 个配置，与平台目录部分重叠，不能相加或等同于独立算法家族数。已注册、可调用、通过检查、性能已比较与可物理执行分别核验。
-2. **实验研究**：完成 CVRPLIB 主基准，并开展 LLM 辅助候选生成、BPP/CVRP/时间窗实例级选择、田块距离代理、容量分组、罚项、净空、曲率与搜索机制实验。LLM 是通用研究方向；现有生成实验实际使用 GLM-5.3 / GLM-5.3-Flash，模型、预算和批次按原记录分别保留。
-3. **系统实现**：农业机器人路径规划与智能推荐系统连接共享前端、任务网关、算法适配、独立检查、SQLite 记录、ROS 2/Gazebo 和历史回放。二维任务地图、独立 ROS 三维视图、Gazebo 场景、遥测和研究图表分别服务输入检查、执行诊断与实验比较。自然语言入口目前为规则与词汇解析，不能等同于已完成 LLM 推荐闭环。
-
-## 使用与研究入口
-
-启动、停止、恢复和演示步骤统一见 [系统使用说明](setup/README.md)；逐场验收结果及其对应版本见 [集成报告](setup/2026-10-15/integration/REPORT.md)顶部。
-
-[CVRP 冻结基线](experiments/baselines/cvrp/README.md) · [算法库登记](algorithm_inventory.md) · [归档重审](protocol/audits/20261017/README.md) · [下一阶段](docs/下一阶段.md) · [按需取用](docs/按需取用.md)
-
-项目包含源码、论文精读、论文原文、教材、算例和实验原始记录。来源与存储范围见 [storage.json](storage.json)。Git 同步源码、可复现实验协议和验收摘要；本机依赖、运行数据库和大轨迹按 `.gitignore` 保留在本地。
-
-## 系统与实验
-
-农业路径规划系统支持任务地图、路径规划和 Gazebo 物理仿真。实际执行目前限于已适配的同构差速车，多车任务采用串行预约。
-
-同一服务的 `#/jobs` 提供 CVRP 数值任务，`#/bpp` 展示 BPP 历史结果。它们与农业路径规划系统分别执行、验算和记录。CVRP 基准记录访问顺序和未标定 XY 坐标，机器人执行所需的米制轨迹须另行生成与验证。
-
-CVRP 主计划共 **4505 项终态结果：4316 项可行，189 项无有效解**。53 个问题来自 51 个底本，统计仍以 53 个问题计；PyVRP 为 **265/265 可行**，问题等权平均参考差距为 **0.341%**。vendor120、接手验收和页面新任务各自记账。
-
-[归档重审](protocol/audits/20261017/README.md)保留了路线质量结果。部分记录尚缺完整的主机与环境核验链，其耗时可作描述性汇总，暂不纳入已验证的同条件耗时比较。当前 120 例选择器实验中的 30 例测试集相对固定 PyVRP 的平均收益为 0，详见 [导师查看](docs/导师查看.md)。时间窗新几何实验的四特征主方法为 **45/48 可行**，低于固定 SAV 的 **46/48**；八特征消融的积极结果不替代主比较。历史实验结果与后续工程验收分别保留。
-
-理想果园与非理想地面已分别记录 **8/8** 和 **3/3** 任务完成，但仓库场景仍有**容器 0/5、原生 5/5** 的执行差异。Linux 镜像的构建与服务验证不能替代物理回归；Windows/WSL 实机验证未开展，当前暂缓。
-
-| 内容 | 入口 |
+| 模块 | 职责 |
 |---|---|
-| 论文精读与研究分析 | [literature](literature/README.md) · [综合分析](literature/综合分析.md) |
-| 实验报告、源码和结果 | [experiments](experiments/README.md) · [实验目录](experiments/目录.md) |
-| 研究实现与软件 | [src](src/README.md) |
-| 外部论文代码 | [代码目录](src/repos/README.md) |
-| 论文原文 | [papers](papers/README.md) |
-| 老师指南、学习手册和项目材料 | [materials](materials/README.md) |
-| 输入、算例与记录包 | [data](data/README.md) |
-| 项目文档与交付索引 | [docs](docs/README.md) |
-| 系统审查与接口说明 | [2026-10-17 系统审查](docs/20261017-system-review.md) · [Jobs API](src/backend/docs/JOBS_API.md) |
+| [前端](src/frontend/) | 任务编辑、农业模板、Agent 面板、方案对比、研究图表和历史回放 |
+| [Lab](src/lab/CONTRACT.md) | HTTP 网关、Agent 工具、算法适配、独立检查、运行记录和仿真会话 |
+| [离线 evolve](src/lab/urp_lab/evolve/INTEGRATION.md) | 候选准入、互补性审计、修复、动态调度实验与受保护的模型读取 |
+| [档案后端](src/backend/README.md) | 实验包、SQLite 档案与 CVRP 数值任务（`#/jobs`） |
+| [研究实现](src/research/README.md) | CVRP、装箱、转弯任务及历史研究 CLI |
+| [验算与协议](independent/) | 独立复算、冻结协议与原始结果核对 |
+| [仿真](src/robotics/README.md) | ROS 2 / Gazebo 集成、场景与执行回归 |
 
-## 分支与发布
+整理基线保留 main 的统计和执行检查，整合 Agent、工作台编辑与结果功能，以及离线 evolve。算法 ID、接口结构和历史记录继续兼容；逐分支依据见 [branches.csv](docs/branches.csv)。
 
-- `main`：统一的项目入口。
-- `redo`：保留开发与整理历史。
-- `deploy`：用于镜像发布；文档和报告更新不代表重新发布镜像，镜像仍按其发布版本验收。
-- `backup/*` 及其他历史分支原样保留，本次整理不删除旧分支。
+## 运行
 
-## 本机启动
+准备依赖后，启动规划和 Agent 工作台：
 
 ```sh
-bash setup/run.sh lab --open
+bash setup/run.sh lab-code --open
 ```
 
-系统地址：http://127.0.0.1:4100。任务地图、算法建议与对比、独立验算、已适配方案的 ROS 2 / Gazebo 执行和导出均从此进入。
+已安装 ROS 2 / Gazebo 的机器用 `bash setup/run.sh lab --open`。关闭用 `bash setup/run.sh lab-stop`。完整步骤、模型配置、地图获取和验证命令见 [使用说明](setup/README.md)。
 
-推荐收益仍需实验验证；现有物理执行证据限于仿真环境，真实农机作业效果尚未验证。启动前提和操作步骤见 [系统使用说明](setup/README.md)。[src/checks.json](src/checks.json) 保存 2026 年 10 月 10 日的历史检查记录。
+## 研究与资料
 
+[冻结研究证据（截至 2026-10-19）](docs/导师查看.md) · [实验报告与失败记录](experiments/目录.md) · [CVRP 基线](experiments/baselines/cvrp/README.md) · [文献笔记](literature/README.md) · [算法登记](algorithm_inventory.md)
+
+既有实验按各自版本、预算和数据解释。Agent 的现有验证使用脚本模型；真实大模型质量、ROS/Gazebo 执行和历史仿真结果分别记在验收报告中。
+
+论文、教材、结果包和第三方源码的逐项路径保存在 [资产索引](docs/assets/README.md)。本轮未迁移大文件；运行数据库与新轨迹保存在本地运行目录。

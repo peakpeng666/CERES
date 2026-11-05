@@ -4,11 +4,11 @@
  * map, generated with a recorded seed, or clicked; the fleet comes from a vehicle asset. The result is an ordinary
  * user scenario whose instance records the asset versions it was built from.
  */
+import { importScenarioOnce } from '../scenarioWrites';
 import { useEffect, useMemo, useState } from 'react';
 import { Crosshair, Dices, Home, MapPinned, Plus, Trash2, X } from 'lucide-react';
 import { Button, Input, Notice, Segmented, Select, Spinner } from '../../lab/ui';
 import type { XY } from '../../lab/types';
-import { studio } from '../api';
 import { OBSTACLE_STYLE, area, pointInPolygon } from '../editor/geometry';
 import { useStudio } from '../store';
 import type { ObstacleKind } from '../types';
@@ -237,7 +237,8 @@ function Body({ asset, ver, onDone }: { asset: Asset; ver: AssetVersion; onDone:
       },
     };
     try {
-      const sc = await studio.importScenario(scenario);
+      // Stable per content: a retry after a lost response reuses the first id instead of minting a new one.
+      const sc = await importScenarioOnce(scenario);
       onDone(sc.id, scenario.title);
     } catch (e) {
       setSaveError((e as Error).message);

@@ -12,6 +12,8 @@ import time
 from functools import lru_cache
 from pathlib import Path
 
+from .. import coverage_limits
+
 STEP = .02
 
 @lru_cache(maxsize=1)
@@ -38,8 +40,11 @@ def check_path(instance, points, swaths):
     """Independent geometry, coverage and sampled-curvature check of exported coordinates."""
     from shapely.geometry import Polygon, LineString
     from shapely.ops import unary_union
-    area = Polygon(instance['field'], instance.get('obstacles', []))
-    interior = area.buffer(-instance['headland_width'])
+    try:
+        area, interior = coverage_limits.geometry(instance['field'], instance.get('obstacles', []), instance['headland_width'])
+        coverage_limits.output_budget(segments=len(swaths), points=len(points))
+    except ValueError as error:
+        return dict(valid=False, errors=[str(error)]), {}
     errors = []
     if len(points) < 2 or not all(math.isfinite(v) for p in points for v in p):
         return dict(valid=False, errors=['没有有限的可执行路径']), {}
@@ -87,8 +92,7 @@ def solve(instance, pattern):
     import fields2cover as f2c
     from ..scenarios.maps import densify
     from shapely.geometry import Polygon
-    area = Polygon(instance['field'], instance.get('obstacles', []))
-    inside = area.buffer(-instance['headland_width'])
+    area, inside = coverage_limits.geometry(instance['field'], instance.get('obstacles', []), instance['headland_width'])
     if inside.is_empty or inside.geom_type != 'Polygon' or not inside.equals(inside.convex_hull):
         return [], dict(valid=False,errors=['当前适配器仅支持单个凸内缩作业区；凹田块、孔洞或分离区需先分解']), {}, None
     def ring(points):
@@ -97,14 +101,21 @@ def solve(instance, pattern):
     angle = math.radians(instance.get('angle_deg') or 0)
     robot = f2c.Robot(instance['robot_width'], instance['swath_width'])
     robot.setMinTurningRadius(instance['turn_radius'])
+    coverage_limits.scan_budget(inside, instance['swath_width'], instance.get('angle_deg') or 0)
     generated = f2c.SG_BruteForce().generateSwaths(angle, instance['swath_width'], cell)
+    coverage_limits.output_budget(segments=generated.size(), points=2 * generated.size())
     ordering = f2c.RP_Snake() if pattern == 'snake' else f2c.RP_Boustrophedon()
     ordered = ordering.genSortedSwaths(generated)
+    coverage_limits.output_budget(segments=ordered.size(), points=2 * ordered.size())
     swaths = [[[s.startPoint().getX(),s.startPoint().getY()], [s.endPoint().getX(),s.endPoint().getY()]]
               for s in [ordered.at(i) for i in range(ordered.size())]]
     turner = f2c.PP_DubinsCurves(); turner.setDiscretization(STEP)
     points, legs, raw_turns = [], [], []
+    emitted = 0
     for i, (a,b) in enumerate(swaths):
+        # Check before densify allocates its list, not after a huge straight leg.
+        samples_needed = max(1, math.ceil(math.dist(a, b) / STEP)) + 1
+        coverage_limits.output_budget(points=emitted + samples_needed)
         leg = [list(p) for p in densify([a,b], STEP)]
         if i+1 < len(swaths):
             c,d = swaths[i+1]
@@ -112,6 +123,7 @@ def solve(instance, pattern):
                                     f2c.Point(*c), math.atan2(d[1]-c[1],d[0]-c[0]))
             if not turn.size():
                 return [],dict(valid=False,errors=['Fields2Cover 没有返回转弯连接']),{},None
+            coverage_limits.output_budget(points=emitted + len(leg) + turn.size())
             samples = []
             for j in range(turn.size()):
                 state = turn.getState(j)
@@ -122,6 +134,8 @@ def solve(instance, pattern):
                 if math.dist(leg[-1],p)>1e-8:leg.append(p)
             if math.dist(leg[-1],c)>1e-5:raise ValueError('Fields2Cover 转弯端点不连续')
             raw_turns.append(samples)
+        emitted += len(leg)
+        coverage_limits.output_budget(points=emitted)
         legs.append(leg)
         points.extend(leg if not points else leg[1:])
     check, metrics = check_path(instance, points, swaths)
@@ -149,6 +163,9 @@ def solve_full(instance, params):
     if instance['turn_radius'] <= 0:
         raise ValueError('需要大于 0 的最小转弯半径')
     t0 = time.perf_counter()
+    _, inside = coverage_limits.geometry(instance['field'], instance.get('obstacles', []), instance['headland_width'])
+    if instance.get('angle_deg') is not None:
+        coverage_limits.scan_budget(inside, instance['swath_width'], instance['angle_deg'])
 
     def ring(points):
         pts = list(points) + [points[0]]
@@ -175,6 +192,8 @@ def solve_full(instance, params):
         for i in range(inner.size()):
             swaths.push_back(generator.generateSwaths(math.radians(instance['angle_deg']), robot.getCovWidth(), inner.getGeometry(i)))
     else:
+        # Preserve native candidate selection. Its internal work remains under
+        # the existing worker wall-clock boundary, not an assumed x-axis count.
         swaths = generator.generateBestSwaths(objective, robot.getCovWidth(), inner)
     route = f2c.RP_RoutePlannerBase().genRoute(mid_hl, swaths)
     turner = getattr(f2c, TURN_MODELS[params.get('turn_model', 'dubins')])()
@@ -183,6 +202,7 @@ def solve_full(instance, params):
     elapsed = time.perf_counter() - t0
     if path.size() < 2:
         return [], dict(valid=False, errors=['Fields2Cover 没有生成路径']), {}, None
+    coverage_limits.output_budget(points=path.size() + 1)
     states = [path.getState(i) for i in range(path.size())]
     full = [[s.point.getX(), s.point.getY()] for s in states]
     # A PathState stores its start plus length. The final state may be an entire
@@ -196,6 +216,7 @@ def solve_full(instance, params):
     for a, b, k in zip(full, full[1:], kinds):
         lengths[k] += math.dist(a, b)
         if k == 'swath' and math.dist(a, b) > 1e-6:
+            coverage_limits.output_budget(segments=len(swath_lines) + 1)
             swath_lines.append(LineString([a, b]))
     reverse = sum(1 for s in states if s.dir == f2c.PathDirection_BACKWARD)
     field = Polygon(instance['field'], instance.get('obstacles') or [])

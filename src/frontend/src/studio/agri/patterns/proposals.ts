@@ -1,0 +1,271 @@
+/**
+ * 提案模式（17 个）：需要后端新组件才能求解的模式。
+ *
+ * 纪律：
+ * - 每个提案给出 missing（缺口字段/组件清单）与 apiDraft（接口草案），等待确认后再实现；
+ * - fixtures/ 下有合成接口示例（非实测数据）（含 meta.status='proposal' 与 blocked_by），
+ *   但构建产物不得把未实现键当作已生效约束提交（导入即校验拒绝）；
+ * - 边界纪律：涉及新增求解器/数据库迁移/ROS 控制的，提交接口方案与差异清单等待确认。
+ */
+import type { AgriTaskPattern } from '../taxonomy';
+
+function proposalCap(defined: 'yes' | 'partial', definedNote: string, gap: string): AgriTaskPattern['capabilities'] {
+  return {
+    defined: { level: defined, note: definedNote },
+    editable: { level: 'no', note: '仅前端预览与 fixture 展示；未接入可编辑实例。' },
+    solvable: { level: 'no', note: `阻塞：${gap}` },
+    checkable: { level: 'no', note: '无独立验算器；验算器设计随 apiDraft 一并提交。' },
+    simulatable: { level: 'no', note: '无执行模型。' },
+    experimented: { level: 'no', note: '提案模式无运行记录，不预先声称。' },
+  };
+}
+
+interface ProposalSpec {
+  id: string; name: string;
+  envs: AgriTaskPattern['environments'];
+  op: AgriTaskPattern['operation'];
+  obj: AgriTaskPattern['serviceObject'];
+  prob: AgriTaskPattern['planningProblem'];
+  vehicles: string[];
+  summary: string; modeling: string; refs: string[]; metrics: string[];
+  defined: 'yes' | 'partial'; definedNote: string; gap: string;
+  missing: string[]; apiDraft: string; fixtures: string[];
+  factors?: { name: string; range: string; basis: string }[];
+}
+
+function makeProposal(s: ProposalSpec): AgriTaskPattern {
+  return {
+    id: s.id, name: s.name,
+    environments: s.envs, operation: s.op, serviceObject: s.obj,
+    vehicleClasses: s.vehicles, planningProblem: s.prob,
+    summary: s.summary, modeling: s.modeling, refs: s.refs, metrics: s.metrics,
+    capabilities: proposalCap(s.defined, s.definedNote, s.gap),
+    proposal: { missing: s.missing, apiDraft: s.apiDraft, fixtures: s.fixtures },
+    experimentFactors: s.factors,
+  };
+}
+
+export const PROPOSAL_PATTERNS: AgriTaskPattern[] = [
+  makeProposal({
+    id: 'row-service-carp', name: '行服务 CARP（果树/大田逐行作业）',
+    envs: ['orchard', 'open_field', 'vineyard'], op: 'intertillage', obj: 'row_set', prob: 'row_service',
+    vehicles: ['tractor_implement', 'diff_drive'],
+    summary: '每条作物行是必须服务的线段（含方向），行序列与出入行点联合优化。',
+    modeling: '行服务必须表达必须服务的线段及方向，不用中心点代替整行；服务时间 = 行长 / 作业速度；距离成本与时间成本不得混用。',
+    refs: ['bochtis2009', 'oksanen2009'], metrics: ['service_completion', 'deadhead_distance', 'turn_count'],
+    defined: 'partial', definedNote: 'fixture 仅含方向线段与端点；容量 CARP 仍缺弧需求、车辆容量和作业速度。',
+    gap: 'fleet_routing 适配器拒绝 line_tasks（400，输入保留）。',
+    missing: ['line_tasks（validate.py 拒绝键）', '行序列 + 出入行点联合优化', '行方向约束成本', '弧需求与车辆容量', '服务速度与时间成本量纲'],
+    apiDraft: 'instance.line_tasks: [{p1, p2, direction, width_m}]；route 增 line_sequence；check 复算每行覆盖与方向。',
+    fixtures: ['fixtures/carp_rows_orchard.json', 'fixtures/row_service_directed_terraced.json'],
+  }),
+  makeProposal({
+    id: 'bpattern-turn', name: '地头转弯模式优化（B-pattern）',
+    envs: ['open_field'], op: 'tillage', obj: 'row_set', prob: 'row_service',
+    vehicles: ['tractor_implement'],
+    summary: '地头转弯从 flat/U/Ω/fishtail 转弯库中选择，转弯长度与半径约束进目标。',
+    modeling: '转弯类型库有明确长度与半径；不可从直线里程臆造转弯成本。',
+    refs: ['bochtis2008', 'oksanen2009'], metrics: ['nonworking_distance', 'turn_count', 'headland_area'],
+    defined: 'yes', definedNote: 'fixture 含 12 行与 4 类转弯库（长度/半径/是否倒车）。',
+    gap: '转弯类型库与行序联合优化不在契约内。',
+    missing: ['line_tasks（validate.py 拒绝键）', '转弯类型库与长度表', '行序列 + 转弯联合优化'],
+    apiDraft: 'vehicle.turn_library: [{type, min_headland_m, length_m}]；route 增 turn_sequence；check 复核转弯空间。',
+    fixtures: ['fixtures/bpattern_12rows.json'],
+    factors: [{ name: '行距/转弯半径比', range: '0.5–4', basis: 'bochtis2008 转弯构型选择' }],
+  }),
+  makeProposal({
+    id: 'ctf-compaction', name: '压实约束路径（CTF 行走道）',
+    envs: ['open_field'], op: 'seeding', obj: 'area', prob: 'full_coverage',
+    vehicles: ['tractor_implement'],
+    summary: '控制交通耕作：所有行驶限制在固定行走道上，压实面积作为一等指标。',
+    modeling: '压实面积按行走道几何计算（compacted_area_m2），不从路线长度臆造。',
+    refs: ['galceran2013'], metrics: ['soil_compaction_risk', 'coverage_ratio'],
+    defined: 'yes', definedNote: 'fixture 含 9 条行走道与压实面积指标名。',
+    gap: '行走道网络与压实测量模型缺失。',
+    missing: ['tramline_network 字段', '轮载/接地比压 → 压实模型或测量依据'],
+    apiDraft: 'instance.tramlines: [{p1, p2, width_m}]；check 复核所有轮迹落在行走道；metrics.compacted_area_m2。',
+    fixtures: ['fixtures/ctf_9tramlines.json'],
+  }),
+  makeProposal({
+    id: 'sweep-turn-check', name: '牵引机具扫掠转弯校验',
+    envs: ['orchard', 'open_field'], op: 'tillage', obj: 'area', prob: 'full_coverage',
+    vehicles: ['tractor_implement'],
+    summary: '铰接农机转弯时机具扫掠包络可能扫过障碍/作物；需扫掠几何校验。',
+    modeling: '扫掠包络需铰接角约束与间隙门（clearance gates）测量依据，不可从质心轨迹臆造。',
+    refs: ['oksanen2009'], metrics: ['turn_count', 'missed_area'],
+    defined: 'yes', definedNote: 'fixture 含 articulation_max_deg 与间隙门。',
+    gap: '铰接运动学与扫掠包络模型缺失。',
+    missing: ['articulated_kinematics', '扫掠包络几何验算器'],
+    apiDraft: 'vehicle.articulation: {max_deg, implement_length_m}；check 增 swept_envelope 复核。',
+    fixtures: ['fixtures/sweep_turn_headland.json'],
+  }),
+  makeProposal({
+    id: 'selective-patch-coverage', name: '斑块选择性覆盖（病虫草害）',
+    envs: ['open_field', 'orchard'], op: 'spraying_selective', obj: 'multi_region', prob: 'selective_coverage',
+    vehicles: ['diff_drive', 'uav'],
+    summary: '只覆盖识别出的病虫草害斑块，斑块间转场成本与收益权衡（定向问题）。',
+    modeling: '多区域选择性服务：每斑块有收益与面积；不是所有区域都必须服务。',
+    refs: ['plessen2019'], metrics: ['coverage_ratio', 'service_completion', 'total_distance'],
+    defined: 'partial', definedNote: '斑块几何可定义；收益函数量纲待定。',
+    gap: '选择性覆盖求解器（定向/奖品收集）不在契约内。',
+    missing: ['区域收益字段', '选择性覆盖求解器'],
+    apiDraft: 'instance.patches: [{ring, value}]；objective=collected_value - travel_cost。',
+    fixtures: ['fixtures/selective_patches.json'],
+  }),
+  makeProposal({
+    id: 'slope-terrace-risk', name: '坡地与梯田风险约束路径',
+    envs: ['terrace', 'tea_garden', 'orchard'], op: 'transfer', obj: 'multi_region', prob: 'multi_field_alloc',
+    vehicles: ['diff_drive', 'tractor_implement'],
+    summary: '坡地作业的路径需考虑坡度上限、侧翻风险与等高行约束。',
+    modeling: '坡度风险需要地形高程/坡度场与重心模型；无模型时不得用路线长度代替风险。',
+    refs: ['oksanen2009'], metrics: ['slope_risk', 'makespan'],
+    defined: 'partial', definedNote: '台面与坡道几何可定义；风险函数量纲待模型。',
+    gap: '地形字段（terrain）与坡度风险模型缺失。',
+    missing: ['terrain 高程/坡度场', '侧翻风险模型或测量依据'],
+    apiDraft: 'instance.terrain: {slope_grid}; constraint max_grade_percent；metrics.slope_exposure。',
+    fixtures: ['fixtures/slope_terraces.json'],
+  }),
+  makeProposal({
+    id: 'paddy-transplant-rows', name: '水田插秧行服务',
+    envs: ['paddy'], op: 'transplanting', obj: 'row_set', prob: 'row_service',
+    vehicles: ['diff_drive'],
+    summary: '插秧机逐行作业：行服务 + 下陷风险区。',
+    modeling: '行服务语义同 CARP；下陷风险区（sinkage_zones）需地形字段支撑。',
+    refs: ['bochtis2009'], metrics: ['service_completion', 'turn_count'],
+    defined: 'yes', definedNote: 'fixture 含 10 行与下陷风险区。',
+    gap: 'line_tasks 拒绝键 + terrain 字段缺失。',
+    missing: ['line_tasks（validate.py 拒绝键）', 'terrain 下陷区字段'],
+    apiDraft: 'instance.line_tasks + terrain.sinkage_zones: [{ring, risk}]。',
+    fixtures: ['fixtures/paddy_rows_10.json'],
+  }),
+  makeProposal({
+    id: 'parallel-lane-conflict', name: '并行时空冲突调度（多机共道）',
+    envs: ['open_field', 'greenhouse', 'orchard'], op: 'transfer', obj: 'composite', prob: 'mrta',
+    vehicles: ['diff_drive'],
+    summary: '多机共用单车道：通行湾会车、路段时间窗预约。',
+    modeling: '车道图 + 通行湾 + 边时间窗预约表；冲突消解是调度问题而非几何问题。',
+    refs: ['urp_p510'], metrics: ['makespan', 'service_completion'],
+    defined: 'yes', definedNote: 'fixture 含 4 机器人共用车道图与通行湾。',
+    gap: '车道图与预约表字段缺失；冲突消解求解器缺失。',
+    missing: ['lane_graph 字段', 'reservation_table', '冲突消解策略'],
+    apiDraft: 'instance.lane_graph: {nodes, edges:[{a,b,width_m,passing_bay}]}; edge_time_window 预约策略。',
+    fixtures: ['fixtures/parallel_4robots_1lane.json'],
+  }),
+  makeProposal({
+    id: 'harvester-cart-rendezvous', name: '收割机—接粮车动态汇合',
+    envs: ['open_field'], op: 'grain_cart', obj: 'composite', prob: 'heterogeneous_coop',
+    vehicles: ['tractor_implement', 'diff_drive'],
+    summary: '收割机不停机作业，接粮车按粮箱充满预测动态汇合。',
+    modeling: '会合点随收割机状态移动；需移动服务者（moving_servers）与充满时间预测。',
+    refs: ['jensen2015', 'seyyedhasani2017'], metrics: ['service_completion', 'deadhead_distance'],
+    defined: 'partial', definedNote: '收割机轨迹可由覆盖解生成；汇合协议未定。',
+    gap: '移动服务者语义缺失。',
+    missing: ['moving_servers 字段', '会合点预测模型'],
+    apiDraft: 'instance.moving_servers: [{vehicle_id, path, fill_rate}]; rendezvous events。',
+    fixtures: ['fixtures/harvester_rendezvous.json'],
+  }),
+  makeProposal({
+    id: 'airground-coop', name: '空地协同（无人机+地面车）',
+    envs: ['open_field', 'aerial', 'orchard'], op: 'monitoring', obj: 'composite', prob: 'heterogeneous_coop',
+    vehicles: ['uav', 'diff_drive'],
+    summary: '无人机普查标记目标，地面车按标记执行点作业；含先后关系与交接事件。',
+    modeling: '空地交接事件 + 先后约束（survey_before_spray）；无人机无执行模型，任务组织可共用框架。',
+    refs: ['pyvrp_docs'], metrics: ['service_completion', 'makespan'],
+    defined: 'yes', definedNote: 'fixture 含 1 机 2 车、交接事件与先后约束。',
+    gap: '异构协同调度（空中 frame + 交接事件）不在契约内。',
+    missing: ['frame.kind=aerial 三维框架', 'handoff 事件字段', 'precedence 约束'],
+    apiDraft: 'instance.frames: [aerial, ground]; handoff_events: [{from, to, task}]; precedence: [{before, after}]。',
+    fixtures: ['fixtures/airground_1uav_2ugv.json'],
+  }),
+  makeProposal({
+    id: 'harvest-time-window', name: '采收时间窗（成熟度与冷链）',
+    envs: ['orchard', 'greenhouse'], op: 'picking', obj: 'point_set', prob: 'time_window',
+    vehicles: ['diff_drive'],
+    summary: '采摘点带成熟度时间窗与冷链截止，超时降质。',
+    modeling: '时间窗是任务属性（ready/due），不是事后过滤。',
+    refs: ['seyyedhasani2017'], metrics: ['service_completion', 'makespan'],
+    defined: 'yes', definedNote: 'fixture 含点时间窗。',
+    gap: 'VRPTW 不在契约内。',
+    missing: ['task.time_window 字段', 'VRPTW 求解支持'],
+    apiDraft: 'task.time_window: [ready_s, due_s]；check 复算到达时刻落在窗内。',
+    fixtures: ['fixtures/timewindow_harvest.json'],
+  }),
+  makeProposal({
+    id: 'dynamic-task-stream', name: '动态任务流（病虫草情即时报送）',
+    envs: ['open_field'], op: 'spraying_selective', obj: 'point_set', prob: 'dynamic_replan',
+    vehicles: ['diff_drive'],
+    summary: '作业途中新任务持续到达、旧任务取消；滚动时域重规划且已承诺路线锁定。',
+    modeling: '事件流（到达/取消）+ 重规划策略（lock_committed）；确定性 rng 保证可复现。',
+    refs: ['plessen2019'], metrics: ['service_completion', 'makespan'],
+    defined: 'yes', definedNote: 'fixture 含 45 到达 + 5 取消事件流，rng 20261021。',
+    gap: '在线重规划框架缺失。',
+    missing: ['event_stream 字段', '滚动时域重规划策略'],
+    apiDraft: 'instance.event_stream: [{t, type: arrive|cancel, task}]; replan: {policy: lock_committed}。',
+    fixtures: ['fixtures/dynamic_stream_50events.json'],
+  }),
+  makeProposal({
+    id: 'dynamic-obstacle-herd', name: '动态障碍（牲畜/人员活动区）',
+    envs: ['pasture', 'livestock_barn'], op: 'monitoring', obj: 'composite', prob: 'dynamic_replan',
+    vehicles: ['diff_drive'],
+    summary: '畜群活动区随时间移动，巡检路径需带安全裕度避让。',
+    modeling: '动态障碍用时间戳轨迹 + safety_margin 表达；不是静态多边形。',
+    refs: ['urp_p510'], metrics: ['service_completion', 'total_distance'],
+    defined: 'yes', definedNote: 'fixture 含 2 畜群各 13 个时间戳航点。',
+    gap: '动态障碍字段与时空冲突检测缺失。',
+    missing: ['动态障碍轨迹字段', '时空冲突检测'],
+    apiDraft: 'instance.dynamic_obstacles: [{id, waypoints:[{t,x,y}], safety_margin_m}]。',
+    fixtures: ['fixtures/dynobst_herd_2.json'],
+  }),
+  makeProposal({
+    id: 'tmr-feeding-shifts', name: '定时饲喂班次（TMR 配送）',
+    envs: ['livestock_barn'], op: 'feeding', obj: 'point_set', prob: 'time_window',
+    vehicles: ['diff_drive'],
+    summary: '饲槽按班次（早/中/晚）配送：多班次时间窗 + 中央厨房装料站。',
+    modeling: '班次是真实时间窗（86400 s 周期）；装料站是补给点。',
+    refs: ['jensen2015'], metrics: ['service_completion', 'refill_overhead'],
+    defined: 'yes', definedNote: 'fixture 含 2 舍 12 饲槽 3 班次与厨房站。',
+    gap: 'VRPTW + 周期调度不在契约内。',
+    missing: ['task.time_window 字段', '周期计划字段'],
+    apiDraft: 'task.shift_windows: [[start_s, end_s]...]; period_s=86400。',
+    fixtures: ['fixtures/feeding_2barns_3shifts.json'],
+  }),
+  makeProposal({
+    id: 'farm-warehouse-pd', name: '农场仓储出入库取送',
+    envs: ['farm_depot'], op: 'material_handling', obj: 'point_set', prob: 'pickup_delivery',
+    vehicles: ['diff_drive'],
+    summary: '成对取送：货架位 → 月台，先后关系（先取后送）与配对不可拆。',
+    modeling: '取送必须明确起终点与取送关系；配对 + precedence 是原生语义，不可退化为需求点。',
+    refs: ['pyvrp_docs'], metrics: ['service_completion', 'makespan'],
+    defined: 'yes', definedNote: 'fixture 含 10 对取送与 precedence 表。',
+    gap: 'PDP（配对 + 先后）不在契约内。',
+    missing: ['pickup_delivery_pairs 字段', 'precedence 约束'],
+    apiDraft: 'instance.pd_pairs: [{pickup, delivery, demand}]; precedence: [{before, after}]。',
+    fixtures: ['fixtures/pd_warehouse_20.json'],
+  }),
+  makeProposal({
+    id: 'multi-pond-transfer', name: '多塘水产转场（闸口连接）',
+    envs: ['aquaculture'], op: 'transfer', obj: 'multi_region', prob: 'multi_field_alloc',
+    vehicles: ['boat'],
+    summary: '多塘水面经闸口转场：闸口宽度 ≥ 船宽才可通行，泊位有限。',
+    modeling: '水面图（water_graph）表达塘面与闸口的真实连接关系；闸宽校验是硬约束。',
+    refs: ['urp_p510'], metrics: ['service_completion', 'makespan'],
+    defined: 'yes', definedNote: 'fixture 含 4 塘 4 闸（闸宽 ≥ 船宽）与泊位。',
+    gap: '水面图与船艇运动学缺失。',
+    missing: ['water_graph 字段', '船艇执行模型'],
+    apiDraft: 'instance.water_graph: {ponds, gates:[{a,b,width_m}], berths}; constraint gate.width >= ship.width。',
+    fixtures: ['fixtures/ponds_4_gates.json'],
+  }),
+  makeProposal({
+    id: 'uav-energy-coverage', name: '无人机能耗覆盖航测',
+    envs: ['aerial'], op: 'monitoring', obj: 'area', prob: 'full_coverage',
+    vehicles: ['uav'],
+    summary: '续航约束下的覆盖航测：能耗模型决定分段与起降点选择。',
+    modeling: '能耗需功率/速度/载重模型；不得从路线长度臆造续航。',
+    refs: ['galceran2013'], metrics: ['energy_use', 'coverage_ratio'],
+    defined: 'partial', definedNote: '覆盖几何可定义；能耗参数集待定。',
+    gap: '能耗模型与三维覆盖求解缺失。',
+    missing: ['能耗模型参数', '三维覆盖求解'],
+    apiDraft: 'vehicle.energy: {capacity_wh, hover_w, cruise_w}; constraint per-sortie budget。',
+    fixtures: ['fixtures/uav_energy_survey.json'],
+  }),
+];

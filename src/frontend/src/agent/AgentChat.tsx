@@ -73,7 +73,7 @@ function ConfirmationCard({ msg, session, latest }: { msg: AgentMessage; session
   const control = useAgent((x) => x.control);
   const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   const data = msg.data as { cards: ContractCard[]; unsupported: string[]; revision: number };
-  const active = latest && session.state === 'awaiting_confirmation';
+  const active = latest && !session.restoration?.read_only && session.state === 'awaiting_confirmation';
   return (
     <div className={s.card}>
       <div className={s.cardHead}>任务合同 · 第 {data.revision} 版</div>
@@ -128,7 +128,7 @@ function QuestionsCard({ pending, active }: { pending: Pending; active: boolean 
 function ApprovalCard({ msg, session, latest }: { msg: AgentMessage; session: AgentSession; latest: boolean }) {
   const control = useAgent((x) => x.control);
   const pending = useAgent((x) => x.sending || x.pendingAction !== null);
-  const active = latest && session.state === 'awaiting_approval';
+  const active = latest && !session.restoration?.read_only && session.state === 'awaiting_approval';
   return (
     <div className={s.card} data-tone="approval">
       <div className={s.cardHead}><ShieldCheck size={13} /> 需要你的批准</div>
@@ -218,7 +218,7 @@ function Message({ msg, session, latest }: { msg: AgentMessage; session: AgentSe
     return (
       <div className={s.assistant}>
         <div>{msg.text}</div>
-        <QuestionsCard pending={msg.data as unknown as Pending} active={latest && session.state === 'awaiting_user'} />
+        <QuestionsCard pending={msg.data as unknown as Pending} active={latest && !session.restoration?.read_only && session.state === 'awaiting_user'} />
       </div>
     );
   }
@@ -245,7 +245,7 @@ function RunningLine({ session }: { session: AgentSession }) {
 function Resumable({ session }: { session: AgentSession }) {
   const control = useAgent((x) => x.control);
   const pending = useAgent((x) => x.sending || x.pendingAction !== null);
-  if (!['paused', 'failed', 'cancelled', 'interrupted'].includes(session.state)) return null;
+  if (session.restoration?.read_only || !['paused', 'failed', 'cancelled', 'interrupted'].includes(session.state)) return null;
   return (
     <div className={s.resume}>
       <span>{STATE_LABEL[session.state]}{session.error ? `：${session.error.message}` : ''}</span>
@@ -403,11 +403,11 @@ export function AgentChatPanel() {
         {session?.messages.map((m, i) => (
           <Message key={m.id} msg={m} session={session} latest={i === lastIndex(m.kind)} />
         ))}
-        {session?.state === 'running' && <RunningLine session={session} />}
+        {session?.state === 'running' && !session.restoration?.read_only && <RunningLine session={session} />}
         {session && <Resumable session={session} />}
       </div>
       {actionError && <div className={s.actionError}><CircleAlert size={12} /> {actionError}</div>}
-      <Composer key={sessionId ?? 'new'} session={session} />
+      {session?.restoration?.read_only ? <p className={s.event}>{session.restoration.note}</p> : <Composer key={sessionId ?? 'new'} session={session} />}
     </div>
   );
 }

@@ -5,6 +5,7 @@ from validate import *
 
 def audit(root, result_dir, planned):
     if type(planned) is not int or planned<0:raise ValueError('planned must be a nonnegative integer')
+    if not result_dir.is_dir():raise ValueError('result_dir must be an existing directory')
     manifest=root/'src/research/configs/cvrplib_cases.json'
     cases={c['case_id']:c for c in json.loads(manifest.read_text())['cases']}
     rows=[]; keys=[]; errors=[]; instances={}
@@ -59,6 +60,7 @@ if __name__=='__main__':
     parser.add_argument('result_dir',type=Path);parser.add_argument('--planned',type=int,required=True)
     parser.add_argument('--root',type=Path,default=Path(__file__).resolve().parents[1]);parser.add_argument('--output',type=Path,required=True)
     args=parser.parse_args(); report=audit(args.root,args.result_dir,args.planned)
-    args.output.write_text(json.dumps(report,indent=2)+'\n')
+    with args.output.open('x') as output:
+        output.write(json.dumps(report,indent=2)+'\n')
     print(json.dumps({k:v for k,v in report.items() if k!='rows'}))
     raise SystemExit(1 if report['audit_errors'] or report['duplicate_keys'] else 0)

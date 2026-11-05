@@ -361,3 +361,6 @@ def chat(provider: Provider, messages: list[dict], tools: list[dict] | None = No
                         model=msg['model'], provider=provider.id, cost=cost, currency=price.get('currency'),
                         reasoning_chars=msg.get('reasoning_chars', 0), reasoning=msg.get('reasoning'))
     raise LLMError(str(last), 'provider_error')  # pragma: no cover - loop always returns or raises
+
+# Compatibility for the main branch's environment-only research client API.
+from .research_llm import ModelError, OpenAICompatibleModel, Reply, model_from_env

@@ -136,20 +136,22 @@ def map_png(world: str) -> bytes:
     return maps.map_png(world)
 
 
-def import_scenario(obj: dict) -> dict:
-    """Validate and store a user scenario; returns its summary. ValueError(中文) when invalid."""
+def prepare_import(obj: dict) -> dict:
+    """Normalize a scenario import without writing it."""
     if not isinstance(obj, dict):
         raise ValueError('场景应为 JSON 对象')
     sid = str(obj.get('id') or '').strip().lower()
     if not ID_RE.match(sid):
         raise ValueError('场景 id 须为 2–64 位小写字母、数字、-、_、.（以字母或数字开头）')
-    if sid in _builtin():
+    if sid in field.MAP_SCENARIO_IDS or sid in motion.MAP_SCENARIO_IDS or sid in _builtin():
         raise ValueError(f'场景 id {sid} 与内置场景重名')
     pc = obj.get('problem_class')
     if pc not in PROBLEM_CLASSES:
         raise ValueError(f'problem_class 须为 {" / ".join(PROBLEM_CLASSES)}')
     inst = validate_instance(pc, obj.get('instance'))
     frame_in = obj.get('frame') or {'kind': 'benchmark'}
+    if not isinstance(frame_in, dict):
+        raise ValueError('frame 须为 JSON 对象')
     if frame_in.get('kind') == 'map':
         world = frame_in.get('world')
         if world not in maps.known_worlds():
@@ -173,10 +175,21 @@ def import_scenario(obj: dict) -> dict:
     validate_frame(pc, frame)
     default_unit = {'turn_routing': 'cm_equivalent' if frame['kind'] == 'map' else 'synthetic_integer_cost',
                     'point_to_point': 'm', 'coverage': 'm' if frame['kind'] != 'benchmark' else 'unitless'}.get(pc, 'euclidean')
+    source = obj.get('provenance') if isinstance(obj.get('provenance'), dict) else {}
+    source_params = source.get('params') if isinstance(source.get('params'), dict) else {}
+    # Keep generator inputs for reproducibility; importing never grants execution capability.
+    try:
+        source_params = json.loads(json.dumps(source_params, allow_nan=False))
+    except (TypeError, ValueError) as exc:
+        raise ValueError('生成参数须为有限数值组成的 JSON 对象') from exc
+    source_seed = source.get('seed')
+    if source_seed is not None and (isinstance(source_seed, bool) or not isinstance(source_seed, int)):
+        raise ValueError('生成种子须为整数')
     scenario = {
         'id': sid, 'title': str(obj.get('title') or sid)[:80], 'summary': str(obj.get('summary') or '用户导入场景')[:400],
         'problem_class': pc, 'frame': frame, 'cost_unit': str(obj.get('cost_unit') or default_unit),
-        'provenance': {'generator': 'user_import', 'params': {}, 'seed': None,
+        'provenance': {'generator': 'user_import', 'params': source_params, 'seed': source_seed,
+                       'source_generator': str(source.get('source_generator') or source.get('generator') or '')[:120],
                        'note': note + (' 原始说明：' + str(obj['provenance'].get('note'))[:300]
                                        if isinstance(obj.get('provenance'), dict) and obj['provenance'].get('note') else '')},
         'sim': sim, 'instance': inst,
@@ -184,12 +197,17 @@ def import_scenario(obj: dict) -> dict:
         'layers': obj.get('layers') if isinstance(obj.get('layers'), dict) else {},
         'origin': 'user',
     }
-    paths.USER_SCENARIOS.mkdir(parents=True, exist_ok=True)
-    target = paths.USER_SCENARIOS / f'{sid}.json'
-    tmp = target.with_suffix('.json.tmp')
-    tmp.write_text(json.dumps(scenario, ensure_ascii=False, indent=1), encoding='utf-8')
-    tmp.replace(target)
-    return summary(scenario)
+    return scenario
+
+
+def import_scenario(obj: dict) -> dict:
+    """Validate and store a new user scenario; returns its summary."""
+    scenario = prepare_import(obj)
+    sid = scenario['id']
+    with _WRITE_LOCK:
+        if (paths.USER_SCENARIOS / f'{sid}.json').exists():
+            raise ScenarioConflict(f'场景 {sid} 已存在；请使用新 ID 导入，或在规划页编辑原场景')
+        return summary(save_user_scenario(scenario, overwrite=False))
 
 
 def save_user_scenario(scenario: dict, overwrite: bool = True, expected_revision: int | None = None) -> dict:
@@ -221,7 +239,7 @@ def _save_user_scenario(scenario: dict, overwrite: bool = True) -> dict:
     sid = str(scenario.get('id') or '').strip().lower()
     if not ID_RE.match(sid):
         raise ValueError('场景 id 须为 2–64 位小写字母、数字、-、_、.')
-    if sid in _builtin():
+    if sid in field.MAP_SCENARIO_IDS or sid in motion.MAP_SCENARIO_IDS or sid in _builtin():
         raise ValueError('内置场景不能覆盖；请另存为新场景')
     target = paths.USER_SCENARIOS / f'{sid}.json'
     if target.exists() and not overwrite:

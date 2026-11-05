@@ -1,0 +1,519 @@
+FFFFF..F..FFFF..FFFF.................................................... [  9%]
+........................................................................ [ 18%]
+..................................................s..................... [ 28%]
+........................................................................ [ 37%]
+........................................ss.F......... [ 44%]
+........................................................................ [ 54%]
+........................................................................ [ 63%]
+........................................................................ [ 73%]
+........................................................sss............. [ 82%]
+..........................................................................................F...Fs............................... [ 99%]
+....                                                                     [100%]
+=================================== FAILURES ===================================
+________ test_actual_solver_witnesses[maze-inspection-urp.turn_mode_dp] ________
+
+sid = 'maze-inspection', aid = 'urp.turn_mode_dp'
+
+    @pytest.mark.parametrize('sid,aid',[
+     ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
+     ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
+     ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
+     ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+    def test_actual_solver_witnesses(sid,aid):
+>       s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
+          ^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_________ test_actual_solver_witnesses[maze-inspection-urp.raw_oracle] _________
+
+sid = 'maze-inspection', aid = 'urp.raw_oracle'
+
+    @pytest.mark.parametrize('sid,aid',[
+     ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
+     ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
+     ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
+     ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+    def test_actual_solver_witnesses(sid,aid):
+>       s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
+          ^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_____ test_actual_solver_witnesses[maze-inspection-pyvrp.hgs+urp.layered] ______
+
+sid = 'maze-inspection', aid = 'pyvrp.hgs+urp.layered'
+
+    @pytest.mark.parametrize('sid,aid',[
+     ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
+     ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
+     ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
+     ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+    def test_actual_solver_witnesses(sid,aid):
+>       s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
+          ^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+____ test_actual_solver_witnesses[maze-inspection-ortools.gls+urp.layered] _____
+
+sid = 'maze-inspection', aid = 'ortools.gls+urp.layered'
+
+    @pytest.mark.parametrize('sid,aid',[
+     ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
+     ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
+     ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
+     ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+    def test_actual_solver_witnesses(sid,aid):
+>       s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
+          ^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+______ test_actual_solver_witnesses[farm-rows-warehouse-urp.turn_mode_dp] ______
+
+sid = 'farm-rows-warehouse', aid = 'urp.turn_mode_dp'
+
+    @pytest.mark.parametrize('sid,aid',[
+     ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
+     ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
+     ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
+     ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+    def test_actual_solver_witnesses(sid,aid):
+>       s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
+          ^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'farm-rows-warehouse'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'farm-rows-warehouse'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+____ test_actual_solver_witnesses[field-coverage-depot-panel.boustrophedon] ____
+
+sid = 'field-coverage-depot', aid = 'panel.boustrophedon'
+
+    @pytest.mark.parametrize('sid,aid',[
+     ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
+     ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
+     ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
+     ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+    def test_actual_solver_witnesses(sid,aid):
+>       s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
+          ^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:25: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'field-coverage-depot'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'field-coverage-depot'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_________________ test_simulation_uses_immutable_edited_input __________________
+
+    def test_simulation_uses_immutable_edited_input():
+>       s,sol=solved();s['instance']['customers'][0]['node']=2
+              ^^^^^^^^
+
+tests/test_acceptance.py:47: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:43: in solved
+    s=get_scenario('maze-inspection');a=catalog()[0];sol=skeleton('test',s,s['instance'],a,{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_________________ test_invalid_simulation_rejected[<lambda>0] __________________
+
+mutation = <function <lambda> at 0x7feba0b3e840>
+
+    @pytest.mark.parametrize('mutation',[lambda r:r.update(frame={'kind':'benchmark','units':'unitless'}),lambda r:r.update(check=None),lambda r:r.update(map_check={'collision_free':False})])
+    def test_invalid_simulation_rejected(mutation):
+>       s,r=solved();mutation(r)
+            ^^^^^^^^
+
+tests/test_acceptance.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:43: in solved
+    s=get_scenario('maze-inspection');a=catalog()[0];sol=skeleton('test',s,s['instance'],a,{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_________________ test_invalid_simulation_rejected[<lambda>1] __________________
+
+mutation = <function <lambda> at 0x7feba0b3e8e0>
+
+    @pytest.mark.parametrize('mutation',[lambda r:r.update(frame={'kind':'benchmark','units':'unitless'}),lambda r:r.update(check=None),lambda r:r.update(map_check={'collision_free':False})])
+    def test_invalid_simulation_rejected(mutation):
+>       s,r=solved();mutation(r)
+            ^^^^^^^^
+
+tests/test_acceptance.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:43: in solved
+    s=get_scenario('maze-inspection');a=catalog()[0];sol=skeleton('test',s,s['instance'],a,{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_________________ test_invalid_simulation_rejected[<lambda>2] __________________
+
+mutation = <function <lambda> at 0x7feba0b3e980>
+
+    @pytest.mark.parametrize('mutation',[lambda r:r.update(frame={'kind':'benchmark','units':'unitless'}),lambda r:r.update(check=None),lambda r:r.update(map_check={'collision_free':False})])
+    def test_invalid_simulation_rejected(mutation):
+>       s,r=solved();mutation(r)
+            ^^^^^^^^
+
+tests/test_acceptance.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:43: in solved
+    s=get_scenario('maze-inspection');a=catalog()[0];sol=skeleton('test',s,s['instance'],a,{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_____________________ test_nonzero_exit_never_becomes_done _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_nonzero_exit_never_become0')
+
+    def test_nonzero_exit_never_becomes_done(tmp_path):
+>       m,db,s=job(tmp_path,'import sys; print(\'{"status":"feasible","routes":[]}\');sys.exit(7)')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:67: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:63: in job
+    s=get_scenario('maze-inspection');sol=skeleton('test',s,s['instance'],catalog()[0],{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+________________________ test_timeout_and_full_raw_logs ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_timeout_and_full_raw_logs0')
+
+    def test_timeout_and_full_raw_logs(tmp_path):
+>       m,db,s=job(tmp_path,'import time;print("started",flush=True);time.sleep(30)')
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:71: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:63: in job
+    s=get_scenario('maze-inspection');sol=skeleton('test',s,s['instance'],catalog()[0],{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+__________________________ test_cancel_active_process __________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_cancel_active_process0')
+
+    def test_cancel_active_process(tmp_path):
+>       m,db,s=job(tmp_path,'import time;time.sleep(30)');t=threading.Thread(target=m.execute,args=(s,{},20));t.start()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_acceptance.py:77: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/test_acceptance.py:63: in job
+    s=get_scenario('maze-inspection');sol=skeleton('test',s,s['instance'],catalog()[0],{},None)
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'maze-inspection'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'maze-inspection'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_____________________ test_gateway_validation_and_snapshot _____________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_gateway_validation_and_sn0')
+
+    def test_gateway_validation_and_snapshot(tmp_path):
+        app=create_app(Config(runtime=tmp_path,background=False,extra_hosts={'testserver'}))
+        with TestClient(app) as c:
+            assert c.post('/lab/api/solve',json={},headers={'Origin':'http://evil.invalid'}).status_code==403
+            assert c.post('/lab/api/solve',content='{}').status_code==415
+            assert c.post('/lab/api/solve',json={'scenario_id':'missing','algorithms':['urp.turn_mode_dp']}).status_code==404
+>           assert c.post('/lab/api/solve',json={'scenario_id':'maze-inspection','algorithms':['missing']}).status_code==400
+E           AssertionError: assert 404 == 400
+E            +  where 404 = <Response [404 Not Found]>.status_code
+E            +    where <Response [404 Not Found]> = post('/lab/api/solve', json={'scenario_id': 'maze-inspection', 'algorithms': ['missing']})
+E            +      where post = <starlette.testclient.TestClient object at 0x7feb92c32ae0>.post
+
+tests/test_acceptance.py:89: AssertionError
+_________________ test_partial_actual_coverage_is_not_complete _________________
+
+    def test_partial_actual_coverage_is_not_complete():
+>       s=get_scenario('field-coverage-depot');i=s['instance']
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_extended.py:34: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'field-coverage-depot'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'field-coverage-depot'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_____________________________ test_motion_planners _____________________________
+
+    def test_motion_planners():
+>       sc = get_scenario('p2p-maze-cross')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+tests/test_workbench.py:189: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+scenario_id = 'p2p-maze-cross'
+
+    def get_scenario(scenario_id: str) -> dict:
+        s = _builtin().get(scenario_id) or _user().get(scenario_id)
+        if s is None and scenario_id.startswith(('cvrplib-', 'field-')):
+            s = _library(scenario_id)
+            if s is not None:
+                _remember(scenario_id)
+        if s is None:
+>           raise KeyError(scenario_id)
+E           KeyError: 'p2p-maze-cross'
+
+urp_lab/scenarios/__init__.py:127: KeyError
+_______________________ test_gateway_compose_edit_solve ________________________
+
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-0/test_gateway_compose_edit_solv0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7feb91b3cf20>
+
+    def test_gateway_compose_edit_solve(tmp_path, monkeypatch):
+        from urp_lab import gateway, paths
+        monkeypatch.setattr(paths, 'USER_SCENARIOS', tmp_path / 'scenarios')
+        app = gateway.create_app(gateway.Config(port=4199, runtime=tmp_path, background=False))
+        with TestClient(app, base_url='http://127.0.0.1:4199') as c:
+            cards = c.post('/lab/api/compose/parse', json={'text': EXAMPLES[0]}).json()['cards']
+            assert any(card['label'] == '车队' for card in cards)
+            sc = c.post('/lab/api/compose', json={'text': EXAMPLES[2]}).json()
+            assert sc['problem_class'] == 'fleet_routing' and sc['origin'] == 'user'
+            inst = sc['instance']
+            inst['tasks'] = inst['tasks'][:-1]
+            inst['vehicles']['count'] = 3
+            upd = c.put(f"/lab/api/scenarios/{sc['id']}", json={'instance': inst}).json()
+            assert len(upd['instance']['tasks']) == 11 and upd['instance']['vehicles']['count'] == 3
+            bad = dict(inst, tasks=inst['tasks'] + [{'id': 999, 'xy': inst['obstacles'][0]['polygon'][0], 'demand': 1}])
+            assert c.put(f"/lab/api/scenarios/{sc['id']}", json={'instance': bad}).status_code == 400
+>           assert c.put('/lab/api/scenarios/maze-inspection', json={'title': 'x'}).status_code == 403
+E           AssertionError: assert 404 == 403
+E            +  where 404 = <Response [404 Not Found]>.status_code
+E            +    where <Response [404 Not Found]> = put('/lab/api/scenarios/maze-inspection', json={'title': 'x'})
+E            +      where put = <starlette.testclient.TestClient object at 0x7feb9ad05010>.put
+
+tests/test_workbench.py:241: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_agent.py::test_unconfigured_agent_reports_setup_and_refuses
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/openapi/utils.py:303: UserWarning: Duplicate Operation ID api_not_found_lab_api__rest__get for function api_not_found at /workspace/URP/src/lab/urp_lab/gateway.py
+    warnings.warn(message, stacklevel=1)
+
+tests/test_agent.py::test_unconfigured_agent_reports_setup_and_refuses
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/openapi/utils.py:303: UserWarning: Duplicate Operation ID archive_proxy_api__rest__head for function archive_proxy at /workspace/URP/src/lab/urp_lab/gateway.py
+    warnings.warn(message, stacklevel=1)
+
+tests/test_fleet_connectivity.py::test_component_capacity_shortage_is_not_bridged[pyvrp.fleet-total_distance]
+tests/test_fleet_connectivity.py::test_depot_without_vehicle_does_not_make_task_serviceable[pyvrp.fleet-total_distance]
+tests/test_fleet_connectivity.py::test_missing_start_or_return_arc_is_infeasible[missing_arc0-pyvrp.fleet-total_distance]
+tests/test_fleet_connectivity.py::test_missing_start_or_return_arc_is_infeasible[missing_arc1-pyvrp.fleet-total_distance]
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/pyvrp/PenaltyManager.py:228: PenaltyBoundWarning: 
+              A penalty parameter has reached its maximum value. This means PyVRP
+              struggles to find a feasible solution for this instance, either
+              because the instance has no feasible solution, or it is hard to
+              find one - possibly due to large data scaling differences. Check
+              the instance carefully to determine if a feasible solution exists,
+              or consider increasing PenaltyParams.max_penalty.
+              
+    warn(msg, PenaltyBoundWarning)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_acceptance.py::test_actual_solver_witnesses[maze-inspection-urp.turn_mode_dp]
+FAILED tests/test_acceptance.py::test_actual_solver_witnesses[maze-inspection-urp.raw_oracle]
+FAILED tests/test_acceptance.py::test_actual_solver_witnesses[maze-inspection-pyvrp.hgs+urp.layered]
+FAILED tests/test_acceptance.py::test_actual_solver_witnesses[maze-inspection-ortools.gls+urp.layered]
+FAILED tests/test_acceptance.py::test_actual_solver_witnesses[farm-rows-warehouse-urp.turn_mode_dp]
+FAILED tests/test_acceptance.py::test_actual_solver_witnesses[field-coverage-depot-panel.boustrophedon]
+FAILED tests/test_acceptance.py::test_simulation_uses_immutable_edited_input
+FAILED tests/test_acceptance.py::test_invalid_simulation_rejected[<lambda>0]
+FAILED tests/test_acceptance.py::test_invalid_simulation_rejected[<lambda>1]
+FAILED tests/test_acceptance.py::test_invalid_simulation_rejected[<lambda>2]
+FAILED tests/test_acceptance.py::test_nonzero_exit_never_becomes_done - KeyEr...
+FAILED tests/test_acceptance.py::test_timeout_and_full_raw_logs - KeyError: '...
+FAILED tests/test_acceptance.py::test_cancel_active_process - KeyError: 'maze...
+FAILED tests/test_acceptance.py::test_gateway_validation_and_snapshot - Asser...
+FAILED tests/test_extended.py::test_partial_actual_coverage_is_not_complete
+FAILED tests/test_workbench.py::test_motion_planners - KeyError: 'p2p-maze-cr...
+FAILED tests/test_workbench.py::test_gateway_compose_edit_solve - AssertionEr...
+17 failed, 736 passed, 7 skipped, 7 warnings, 36 subtests passed in 135.39s (0:02:15)

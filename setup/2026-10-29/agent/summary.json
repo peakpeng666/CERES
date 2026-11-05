@@ -1,0 +1,111 @@
+{
+ "check": "urp.agent.browser/1",
+ "utc": "2026-10-29T11:17:09.196Z",
+ "browser": "chromium 153.0.8010.12",
+ "model": "stub_llm.py: loopback stand-in that plays a fixed script; not a language model",
+ "passed": 15,
+ "total": 15,
+ "checks": [
+  {
+   "name": "research_turn",
+   "pass": true,
+   "detail": "compose_scenario → recommend → list_algorithms → solve → wait_for_runs → compare_runs"
+  },
+  {
+   "name": "runs_pass_independent_check",
+   "pass": true,
+   "detail": [
+    "pyvrp.fleet: done, check.valid=true, 1778.9864680067512 m",
+    "ortools.fleet: done, check.valid=true, 1778.9864680067512 m"
+   ]
+  },
+  {
+   "name": "answer_grounded",
+   "pass": true,
+   "detail": {
+    "method": "heuristic-v1",
+    "checked": 3,
+    "grounded": 3,
+    "skipped": 1,
+    "not_found": [],
+    "unknown_ids": [],
+    "note": "启发式核对：数字须出现在本会话工具结果或用户消息中（容差 0.5% 或按所写位数舍入一致）；≤10 的整数与年份不核对；推算得到的数字会列为未直接找到。"
+   }
+  },
+  {
+   "name": "grounding_badge_shown",
+   "pass": true,
+   "detail": "3/3 个数字可在工具结果中找到"
+  },
+  {
+   "name": "run_link_opens_plan",
+   "pass": true,
+   "detail": "#/plan/task-sampling-20261029-111652-007"
+  },
+  {
+   "name": "approval_requested",
+   "pass": true,
+   "detail": {
+    "call_id": "c2s",
+    "tool": "start_field_simulation",
+    "label": "启动田间仿真",
+    "arguments": {
+     "run_id": "run_20261029T111653_f67cf5"
+    },
+    "requested_utc": "2026-10-29T11:17:04.027Z"
+   }
+  },
+  {
+   "name": "shortcut_does_not_solve",
+   "pass": true,
+   "detail": "工作台对比 runs before/after: 0/0"
+  },
+  {
+   "name": "denial_recorded",
+   "pass": true,
+   "detail": {
+    "state": "idle",
+    "step": "用户拒绝执行"
+   }
+  },
+  {
+   "name": "timeline_follows_latest",
+   "pass": true,
+   "detail": {
+    "scrollTop": 991,
+    "scrollHeight": 1598,
+    "clientHeight": 607
+   }
+  },
+  {
+   "name": "compose_bar_handoff",
+   "pass": true,
+   "detail": "30 亩菜地，两台小车从东北角出发运输，每台载重 20，十二个投放点聚集分布"
+  },
+  {
+   "name": "stop_cancels_turn",
+   "pass": true,
+   "detail": "user assistant tool:compose_scenario assistant tool:recommend tool:list_algorithms assistant notice"
+  },
+  {
+   "name": "unconfigured_notice",
+   "pass": true,
+   "detail": "未配置大模型：在启动网关的环境里设置 URP_LLM_API_KEY（或 ZHIPU_API_KEY），可选 URP_LLM_MODEL、URP_LLM_BASE_URL，然后重启工作台。任何 OpenAI 兼容的 /chat/completions 接口都可以使用。"
+  },
+  {
+   "name": "key_not_recorded",
+   "pass": true,
+   "detail": "API, session records with messages, runtime files and gateway log scanned"
+  },
+  {
+   "name": "model_protocol",
+   "pass": true,
+   "detail": "11 model requests, 0 protocol errors"
+  },
+  {
+   "name": "no_page_errors",
+   "pass": true,
+   "detail": []
+  }
+ ]
+}

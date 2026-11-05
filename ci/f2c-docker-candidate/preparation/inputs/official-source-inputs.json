@@ -1,0 +1,53 @@
+{
+  "schema": "urp.jammy-source-input-reference/1",
+  "status": "references_verified_not_a_complete_build_lock",
+  "sources": [
+    {
+      "name": "fields2cover",
+      "version": "2.1.0",
+      "commit": "011e4159cd633ee3adf82122dd030153b94da0fa",
+      "url": "https://files.pythonhosted.org/packages/9d/3d/48c8a6da510ec222bc560be44d2c164d704ec8c706a1a1505d99c1fd9a40/fields2cover-2.1.0.tar.gz",
+      "sha256": "756ed60234dd9b0b1ba19d3cf4f8e1ade18744754bba548c3742b2c30a37e640",
+      "bytes": 110389
+    },
+    {
+      "name": "steering_functions",
+      "commit": "13e3f5658144b3832fb1eb31a0e2f5a3cbf57db9",
+      "url": "https://codeload.github.com/Fields2Cover/steering_functions/tar.gz/13e3f5658144b3832fb1eb31a0e2f5a3cbf57db9",
+      "sha256": "19b06ba133c95232a7407032f9ed794dca98d4ce6d1122e434f00a6d9a07ae0a",
+      "bytes": 143249
+    },
+    {
+      "name": "matplot",
+      "commit": "5d01eb3695b07634a2b6642fd423740dea9b026c",
+      "url": "https://codeload.github.com/alandefreitas/matplotplusplus/tar.gz/5d01eb3695b07634a2b6642fd423740dea9b026c",
+      "sha256": "839498e6e2fef5e588476fe28cb9e671f82b1777c90fbb6ef9de641951754cb6",
+      "bytes": 39009464
+    },
+    {
+      "name": "json",
+      "commit": "4424a0fcc1c7fa640b5c87d26776d99150dacd10",
+      "url": "https://codeload.github.com/nlohmann/json/tar.gz/4424a0fcc1c7fa640b5c87d26776d99150dacd10",
+      "sha256": "93adda79eb21e730fb34fc02511db263cf397d4587157e95ff83f42ad60569bf",
+      "bytes": 8027056
+    },
+    {
+      "name": "ortools-jammy-headers",
+      "version": "9.15.6755",
+      "commit": "551ad10d94835c99e5e1e684500d3db398c0e345",
+      "url": "https://github.com/google/or-tools/releases/download/v9.15/or-tools_amd64_ubuntu-22.04_cpp_v9.15.6755.tar.gz",
+      "sha256": "0b30114d7c05f0596286bf3ef8d02adcf5f45be3b39273490e6bb74a2a9bd1ea",
+      "bytes": 55938522,
+      "role": "headers and interface reference only; never archive native runtime"
+    },
+    {
+      "name": "ortools-python-runtime",
+      "version": "9.15.6755",
+      "filename": "ortools-9.15.6755-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "url": "https://files.pythonhosted.org/packages/49/0f/6d6d722102a0ceccf4a5038e2bc91d023da84a6dba98482a4634df3d27ab/ortools-9.15.6755-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+      "sha256": "033836c0eb33bc72697a299e0caedbb25fc9d1cee0b13832d69cb30405f57b3e",
+      "bytes": 29838435,
+      "role": "single runtime provider; no import performed"
+    }
+  ]
+}

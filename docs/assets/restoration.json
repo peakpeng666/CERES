@@ -1,0 +1,111 @@
+{
+  "schema": "urp.asset-restoration/1",
+  "reviewed_commit": "007388d5e012f6a901945eda3b0abaf1aedfeb0d",
+  "review_date": "2026-10-30",
+  "source_kind": "independent owner-held Space copies",
+  "verified_current_assets": 4,
+  "current_report_assets": [
+    {
+      "asset_path": "docs/reports/URP项目研究进展报告_LaTeX源码.zip",
+      "bytes": 18814049,
+      "sha256": "8b7693c34f5e9480515e7797ed0ab50a9fd7bfeefdbf46ce3c04937ae1a3c99b",
+      "git_blob_sha1": "8b5ec54f0e02e4da1f3851130ba7e363d172ab0f",
+      "indexed_path_exists": true,
+      "expected_git_blob_sha1": "8b5ec54f0e02e4da1f3851130ba7e363d172ab0f",
+      "exact_path_blob_match": true,
+      "matching_asset_paths": [
+        "docs/reports/URP项目研究进展报告_LaTeX源码.zip"
+      ],
+      "zip_crc_ok": true,
+      "zip_members": 301,
+      "zip_unique_members": true,
+      "zip_safe_paths_no_symlinks_no_encryption": true,
+      "manifest_members": [
+        "URP_LaTeX_source/MANIFEST.sha256"
+      ],
+      "manifest_entries": 300,
+      "manifest_matches": 300,
+      "manifest_failures": [],
+      "unmanifested_regular_members": [],
+      "regular_file_count": 301
+    },
+    {
+      "asset_path": "docs/reports/URP研究进展简报.pdf",
+      "bytes": 1935010,
+      "sha256": "7c67591c176a094cdcaa0a01fe6e63f3c7aa2dd8403fcb66472b929dc4aa2f15",
+      "git_blob_sha1": "9f13577b007930e25c1c3560ce30f6ee6b37f792",
+      "indexed_path_exists": true,
+      "expected_git_blob_sha1": "9f13577b007930e25c1c3560ce30f6ee6b37f792",
+      "exact_path_blob_match": true,
+      "matching_asset_paths": [
+        "docs/reports/URP研究进展简报.pdf"
+      ],
+      "pdf_parse_ok": true,
+      "pages": 26
+    },
+    {
+      "asset_path": "docs/reports/URP项目研究进展报告.pdf",
+      "bytes": 15747930,
+      "sha256": "53e125ddd4144a4456e2afaa933ffa3c4544bd9bd0bf99363d07eb492bac058b",
+      "git_blob_sha1": "607ace8134490081e18157dac609593f140b4485",
+      "indexed_path_exists": true,
+      "expected_git_blob_sha1": "607ace8134490081e18157dac609593f140b4485",
+      "exact_path_blob_match": true,
+      "matching_asset_paths": [
+        "docs/reports/URP项目研究进展报告.pdf"
+      ],
+      "pdf_parse_ok": true,
+      "pages": 110
+    },
+    {
+      "asset_path": "docs/reports/URP研究进展简报_LaTeX源码.zip",
+      "bytes": 2444241,
+      "sha256": "c15d8c2a42f0aa850a9a407f0684abad2d0a9a1910967c90372edcb13fca4463",
+      "git_blob_sha1": "1477364bd78e3effbee2e740b49822eaf7f66488",
+      "indexed_path_exists": true,
+      "expected_git_blob_sha1": "1477364bd78e3effbee2e740b49822eaf7f66488",
+      "exact_path_blob_match": true,
+      "matching_asset_paths": [
+        "docs/reports/URP研究进展简报_LaTeX源码.zip"
+      ],
+      "zip_crc_ok": true,
+      "zip_members": 49,
+      "zip_unique_members": true,
+      "zip_safe_paths_no_symlinks_no_encryption": true,
+      "manifest_members": [
+        "URP研究进展简报_LaTeX源码/MANIFEST.sha256"
+      ],
+      "manifest_entries": 48,
+      "manifest_matches": 48,
+      "manifest_failures": [],
+      "unmanifested_regular_members": [],
+      "regular_file_count": 49
+    }
+  ],
+  "historical_supplement": {
+    "archive_sha256": "37a0317e541d70ba4b7e9e94ac9bc8c5d83b2d3a39009ad0ed565a1b1ed60df9",
+    "archive_bytes": 19629355,
+    "crc_ok": true,
+    "safe_member_paths_no_symlinks_no_encryption": true,
+    "unique_members": true,
+    "members": 23,
+    "pdfs": 21,
+    "manifest_all_match": true,
+    "provenance_all_match": true,
+    "exact_asset_path_matches": 0,
+    "exact_path_blob_matches": 0,
+    "asset_blob_matches": 0,
+    "scope": "historical supplementary papers archive; not current 2439-asset baseline",
+    "original_root_metadata": [
+      "manifest.json",
+      "source-provenance.json"
+    ],
+    "original_payload_namespace": "papers/补充/",
+    "current_baseline_matches": 0,
+    "current_baseline_assets": 2439,
+    "namespace_note": "Historical supplemental PDFs have neither exact paths nor byte-identical Git blobs in current index; renaming alone cannot explain zero blob overlap. This does not prove they were never tracked in other historical branches."
+  },
+  "drive_copy_registry": "copies.json",
+  "drive_restore_status_unchanged": true,
+  "assets_removed": 0
+}

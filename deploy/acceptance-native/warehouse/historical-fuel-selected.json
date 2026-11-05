@@ -1,0 +1,246 @@
+{
+  "fuel.gazebosim.org/movai/models/shelf/1/meshes/Box_paper_04_1_Base_Color.png": {
+    "sha256": "011024eac091cc125b7addab56547a241558bcb76d2f3190d2932d4db0c4492b",
+    "size": 1016531
+  },
+  "fuel.gazebosim.org/movai/models/shelf/1/meshes/shelf_big_movai.dae": {
+    "sha256": "2ade1557766e2bdda0325f6cfce6924c33f3434a8c74379c4764743c21a877bb",
+    "size": 228406
+  },
+  "fuel.gazebosim.org/movai/models/shelf/1/model.config": {
+    "sha256": "0935cc457d5477eda3cca41fc832b70418d8ca3b7a4c3ce27cb3c479f0ceb555",
+    "size": 310
+  },
+  "fuel.gazebosim.org/movai/models/shelf/1/model.sdf": {
+    "sha256": "5bd74fe8bda9f9e200150713338385b9b0a7e0d087ab82c48e3ae51c869b69ec",
+    "size": 924
+  },
+  "fuel.gazebosim.org/movai/models/shelf_big/2/meshes/Box_paper_04_1_Base_Color.png": {
+    "sha256": "011024eac091cc125b7addab56547a241558bcb76d2f3190d2932d4db0c4492b",
+    "size": 1016531
+  },
+  "fuel.gazebosim.org/movai/models/shelf_big/2/meshes/shelf_big_movai.dae": {
+    "sha256": "2ade1557766e2bdda0325f6cfce6924c33f3434a8c74379c4764743c21a877bb",
+    "size": 228406
+  },
+  "fuel.gazebosim.org/movai/models/shelf_big/2/model.config": {
+    "sha256": "16920d959a782311f3920ac03c744b4655279c085a040ae7052f5bf09e38ae3f",
+    "size": 334
+  },
+  "fuel.gazebosim.org/movai/models/shelf_big/2/model.sdf": {
+    "sha256": "0fb3e7441418919d3feb561f33b6d1088c862f9bc4b095e1313bdc5bfe9e49d7",
+    "size": 943
+  },
+  "fuel.gazebosim.org/openrobotics/models/chair/3/meshes/Chair.mtl": {
+    "sha256": "b6cff293530c53d6fc9ce96a423bcf6f54f2ef44e7137378be4461e352080290",
+    "size": 340
+  },
+  "fuel.gazebosim.org/openrobotics/models/chair/3/meshes/Chair.obj": {
+    "sha256": "c15bd054d3a54a82ebfd00a3dcf89a37046f6157c453040e834c0e06e749a763",
+    "size": 19757
+  },
+  "fuel.gazebosim.org/openrobotics/models/chair/3/meshes/Chair_Diffuse.png": {
+    "sha256": "5841f94e06c2bc246f17bd55ce56a44f9c9a620a522413df473dc75049e7dd10",
+    "size": 769123
+  },
+  "fuel.gazebosim.org/openrobotics/models/chair/3/model.config": {
+    "sha256": "70b823befc5c96877ae159c114288aae285d3fb2a24f935ad10b32299c6673a8",
+    "size": 283
+  },
+  "fuel.gazebosim.org/openrobotics/models/chair/3/model.sdf": {
+    "sha256": "81d55695df13fbc7475bfc2ed48d1632e64faacf80683d41a3e92627c1b3dbc9",
+    "size": 875
+  },
+  "fuel.gazebosim.org/openrobotics/models/foldable_chair/3/mesh/foldable_chair.dae": {
+    "sha256": "fd035ca9ddf21ffc6757bb6d5a794be5299df6329b8f1574945826ec3fe66345",
+    "size": 161587
+  },
+  "fuel.gazebosim.org/openrobotics/models/foldable_chair/3/mesh/foldable_chair.png": {
+    "sha256": "d120f8068d09dd91bd3fde4401406cdf4c620dfb529bcbb535827532f4632a3a",
+    "size": 4790083
+  },
+  "fuel.gazebosim.org/openrobotics/models/foldable_chair/3/model.config": {
+    "sha256": "50e6d163666f7d591097dc6648e638cfdb7a5dc9c132f7e3547792362d8d20d7",
+    "size": 284
+  },
+  "fuel.gazebosim.org/openrobotics/models/foldable_chair/3/model.sdf": {
+    "sha256": "aee1f51c36c70511283b0357d3b396c95edb024c0019f1c1cf0be40fe5dc04dd",
+    "size": 720
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey barrier/6/materials/textures/jersey_barrier_diffuse.jpg": {
+    "sha256": "57f552ef666849bc3a21086aa89fccb12a3906eea743907ef05a90ceb5bfbaa2",
+    "size": 34516
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey barrier/6/materials/textures/jersey_barrier_spec.jpg": {
+    "sha256": "f0bb399b56d20246371a09b7390f0db5b863d0da03aafba4218dc196e72b622d",
+    "size": 33902
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey barrier/6/meshes/jersey_barrier.dae": {
+    "sha256": "4a32cf46cd5d82ba21add31465e37a2b57b7b0403364f94fc5a47379feed7a34",
+    "size": 57275
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey barrier/6/model.config": {
+    "sha256": "0ba72cbf0ec684b897a234af39d95684ba7d39b86acea9ad952f4e1ce8e76808",
+    "size": 389
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey barrier/6/model.sdf": {
+    "sha256": "8ca20acc01547394d9f0a3e5c914c85d3f257a3e809f7e5de35eb2fdb72ed31c",
+    "size": 2058
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey%20barrier/6/materials/textures/jersey_barrier_diffuse.jpg": {
+    "sha256": "57f552ef666849bc3a21086aa89fccb12a3906eea743907ef05a90ceb5bfbaa2",
+    "size": 34516
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey%20barrier/6/materials/textures/jersey_barrier_spec.jpg": {
+    "sha256": "f0bb399b56d20246371a09b7390f0db5b863d0da03aafba4218dc196e72b622d",
+    "size": 33902
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey%20barrier/6/meshes/jersey_barrier.dae": {
+    "sha256": "4a32cf46cd5d82ba21add31465e37a2b57b7b0403364f94fc5a47379feed7a34",
+    "size": 57275
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey%20barrier/6/model.config": {
+    "sha256": "0ba72cbf0ec684b897a234af39d95684ba7d39b86acea9ad952f4e1ce8e76808",
+    "size": 389
+  },
+  "fuel.gazebosim.org/openrobotics/models/jersey%20barrier/6/model.sdf": {
+    "sha256": "8ca20acc01547394d9f0a3e5c914c85d3f257a3e809f7e5de35eb2fdb72ed31c",
+    "size": 2058
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/meshes/MaleVisitor.png": {
+    "sha256": "664169d68e9f792beedb9c5fb90f65f47d3bfb674605f37d54679e3fcb6d3b3d",
+    "size": 1183491
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/meshes/MaleVisitorStatic.mtl": {
+    "sha256": "859499b3eebd371fecb18f4d8d1c6db0630341ab461aa22a566991f841d2b80a",
+    "size": 449
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/meshes/MaleVisitorStatic.obj": {
+    "sha256": "5a5508f4adf0b69df858727b8dbce97fc6e735f35c72da9aaf0fc7b364e20db3",
+    "size": 175699
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/meshes/MaleVisitorStatic_Col.mtl": {
+    "sha256": "5ea6cd44f150bbb4fff10386acdf556c56113d5d8d79af3b1fff2d6199b32200",
+    "size": 229
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/meshes/MaleVisitorStatic_Col.obj": {
+    "sha256": "feded16115d772d51b75be16941e5ee376cd92bf1aee6b84f4d21fac4dc47878",
+    "size": 982
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/meshes/Phone.png": {
+    "sha256": "b60b4b932a7232d5449e846caed572f68c2755e0de3dc09da2e7dc622158bda9",
+    "size": 7571
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/model.config": {
+    "sha256": "e3c8edaa7c1cb0fd73af43386f83c2571553cfcf1975ca86e0ecb540df6448a2",
+    "size": 347
+  },
+  "fuel.gazebosim.org/openrobotics/models/malevisitoronphone/2/model.sdf": {
+    "sha256": "c2da242d84552b6383e084a4022bfe14ba9561fbf3f80f789249ecf3a8329447",
+    "size": 858
+  },
+  "fuel.gazebosim.org/openrobotics/models/table/4/Table_Diffuse.jpg": {
+    "sha256": "d9891a81facea4747cf7b2b9c8891c0cadca50613b677bb8cab7ed5a8a601d23",
+    "size": 707345
+  },
+  "fuel.gazebosim.org/openrobotics/models/table/4/model-1_2.sdf": {
+    "sha256": "bf88c3ab3b045a307c681cbca58e677087e28195beefff418a704b4950579a65",
+    "size": 3614
+  },
+  "fuel.gazebosim.org/openrobotics/models/table/4/model-1_3.sdf": {
+    "sha256": "e524f0ab1225fbe90e69994895e3640d5be1f63ab25f955de9c7293ef80cdeb9",
+    "size": 3607
+  },
+  "fuel.gazebosim.org/openrobotics/models/table/4/model-1_4.sdf": {
+    "sha256": "f528ee4128390c49e8c83abcd45d4bb87abc80adefa0da620575f3615a517247",
+    "size": 3607
+  },
+  "fuel.gazebosim.org/openrobotics/models/table/4/model.config": {
+    "sha256": "135367bc4c08ce4757a069ad78f0f8d09868e645ba263fac6660ab34dc3cf3aa",
+    "size": 395
+  },
+  "fuel.gazebosim.org/openrobotics/models/table/4/model.sdf": {
+    "sha256": "99fb1778308e10e4c28bf66238e17fc6feef78bc6898c3ab40adfaea6613c2e6",
+    "size": 5355
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/meshes/Asphalt010_1K_Color.jpg": {
+    "sha256": "95ddb95c812e6633a018f164b389ff4fe5488fefd85f177e617ea4a32f79fe7e",
+    "size": 968810
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/meshes/Rough_Square_Concrete_Block.jpg": {
+    "sha256": "6b69ae3b6987d85103c2edf2810968c472fa0d456027c78c778c311272781e6d",
+    "size": 77244
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/meshes/Tape001_1K_Color.png": {
+    "sha256": "c4975a44b4b7cc32838319b6ffa4e615f2640893374ae812bf9626b0680afdbb",
+    "size": 86373
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/meshes/Terrazzo005_1K_Color.jpg": {
+    "sha256": "e312b966741d492a2f507981093124ac005a63e562ef93b2d3b5ac6754d04582",
+    "size": 1461999
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/meshes/warehouse.dae": {
+    "sha256": "6ddfd0d97416e0af94a1087d25dcb313aee93992ed949c14e5ac671a3531fc52",
+    "size": 304435
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/meshes/warehouse_colision.stl": {
+    "sha256": "78fa7f71edc7ec8347e647ca29a0f347036f8a9c253e502e74f8fc6e1180e0e8",
+    "size": 159684
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/model.config": {
+    "sha256": "4112eae762973474b0d79ad711ad3682c34f36c0ed6185df2e85da39eb3dd227",
+    "size": 329
+  },
+  "fuel.gazebosim.org/openrobotics/models/warehouse/5/model.sdf": {
+    "sha256": "8a2a1e3cf36d53d676841455c3d244a616230a584f81f6327542063c32973c24",
+    "size": 1499
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/brown_eye.png": {
+    "sha256": "4659691c7295ad6206c78b003e5fd0e5f91dcd53032fa914a229bb48cabe424b",
+    "size": 610817
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/eyebrow002.png": {
+    "sha256": "1de4e4cb69b3f4324390219ffbeb17a0b2555104d3211d1ac667655b69b64038",
+    "size": 96277
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/eyelashes01.png": {
+    "sha256": "4b69c0fff2648874460e9caf80c31413c444218a5c50afebc425aeaa65484a35",
+    "size": 91600
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/female_casualsuit01_diffuse.png": {
+    "sha256": "414d46afa55fba09ad0913484d57df2ba6b597dc8193595a13a12436137dc21b",
+    "size": 3019656
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/female_casualsuit02_diffuse.png": {
+    "sha256": "23bd3c8e4df3993fe3bdb849daba7a4dd0476f3a28fd8402cd28abbb26666f49",
+    "size": 4340869
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/ponytail01_diffuse.png": {
+    "sha256": "dcb364300cac06ce8bef91b2f7c0970baf310898bbdd06b0c6b884ee9306eb97",
+    "size": 3910782
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/shoes05_diffuse.png": {
+    "sha256": "7fe5ea2600f6578cdf017da3392ae13aedabea8e8cc1dd6302a8f57e8fb7e5af",
+    "size": 1291907
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/tongue01_diffuse.png": {
+    "sha256": "3150be398e48e8ba1feac164c3143c16c0b2e959d9ffb6155f0171f59cfb4ea9",
+    "size": 625419
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/materials/textures/young_lightskinned_female_diffuse.png": {
+    "sha256": "b2a6ac8cd4f9febdb447368e29c76cd68410bb66e46d9dcfa2d5f75126eea8fc",
+    "size": 4391156
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/meshes/casual_female.dae": {
+    "sha256": "b0f47228b4a1cfa5026f24f5955d5f2b7cc7f7a770888951041a787b3e51d994",
+    "size": 3888035
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/model.config": {
+    "sha256": "19d1bdb5e4a769c9dc48c21ffe9dd5c9c4cb20a198afabe229c2475f2ac9b771",
+    "size": 351
+  },
+  "fuel.gazebosim.org/plateau/models/casual female/1/model.sdf": {
+    "sha256": "70a3a24f3b80f6bbd780a05a5a2c10d974e2928bbc50427bb54fcbb000b05222",
+    "size": 706
+  }
+}

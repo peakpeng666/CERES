@@ -10,12 +10,24 @@
     "required_data"
   ],
   "reconciliation": {
-    "status": "current_research_baseline",
-    "scope": "Current URP files: selected implementations, literature, textbooks, data, recorded experiments and research corrections.",
+    "status": "historical_reconciliation",
+    "scope": "Historical content reconciliation at the recorded commits; current engineering entry is setup/README.md.",
     "original_repository_commit": "0d8faf3dba83dad44cc242eaef17d8b982ee7f80",
     "verified_payload_commit": "bb593e5cfbebe7ce104cbaf1e3da90975819fe95",
     "verification_scope": "Canonical relative-path ordinary-file content.",
     "symlink_restore": "tools/restore_links.py restores the four directory links after a Drive download.",
     "git_exec_modes": "Original Git executable modes preserved."
+  },
+  "project_artifacts_folder": "https://drive.google.com/drive/folders/1zs4eHCumbKPNV0ZnI9JWK6JnQHV1569T",
+  "asset_review_folder": "https://drive.google.com/drive/folders/1RT2EE4UOE5qrbrSizstQDqfroMRwqKmo",
+  "asset_inventory": "docs/assets/inventory.json",
+  "copy_registry": "docs/assets/copies.json",
+  "runtime_data": {
+    "schema": "urp.runtime-bundle/1",
+    "identity": "dataset.json",
+    "location_environment": "URP_DATA_HOME",
+    "raw_data_policy": "Local/private storage; never automatically uploaded. GitHub keeps source, checks, hashes and recovery receipts.",
+    "transfer_cli": "python -m urp_lab data export|verify|restore|recover",
+    "restore_policy": "Verify all hashes and SQLite metadata; restore only into a new directory; preserve the original runtime."
   }
 }

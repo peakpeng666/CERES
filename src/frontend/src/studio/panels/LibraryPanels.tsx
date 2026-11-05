@@ -1,5 +1,6 @@
 import { cite } from '../cite';
 import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { importGeojsonOnce, importScenarioOnce, UncertainImportError, type GeojsonResolution } from '../scenarioWrites';
 import { BookOpen, Code2, Copy, Download, FileUp, Sprout } from 'lucide-react';
 import { lab, useLabResource } from '../../lab/api';
 import { Badge, Button, EmptyState, Input, Notice, Segmented, Select, Spinner } from '../../lab/ui';
@@ -9,6 +10,8 @@ import { useStudio } from '../store';
 import type { CvrplibInstance, FieldEntry, Reference } from '../types';
 import { LibraryBadge } from './PlanPanels';
 import s from './panels.module.css';
+import { AgriCatalog } from '../agri/AgriCatalog';
+import { FOCUS_EVENT, peekCatalogFocus } from '../agri/drafts';
 
 const CodeMirror = lazy(() => import('@uiw/react-codemirror'));
 
@@ -20,6 +23,8 @@ const FRAME_LABEL = (sc: ScenarioSummary) =>
 
 /* ------------------------------------------------------------ scenarios -- */
 export function ScenarioNavigator() {
+  const [catalog, setCatalog] = useState(() => Boolean(peekCatalogFocus()));
+  useEffect(() => { const on = () => setCatalog(true); window.addEventListener(FOCUS_EVENT, on); return () => window.removeEventListener(FOCUS_EVENT, on); }, []);
   const res = useLabResource('studio-scenarios', () => lab.scenarios(), { pollMs: 8000 });
   const current = useStudio((st) => st.scenarioId);
   const notify = useStudio((st) => st.notify);
@@ -32,12 +37,24 @@ export function ScenarioNavigator() {
     ['资源库（最近打开）', list.filter((x) => ['cvrplib', 'fields2benchmark'].includes((x as { origin?: string }).origin ?? ''))],
     ['基准算例', list.filter((x) => x.frame.kind === 'benchmark' && (x as { origin?: string }).origin === 'builtin')],
   ];
+  const [uncertain, setUncertain] = useState<{ error: UncertainImportError; geojson: unknown; title: string } | null>(null);
+  async function finishGeojson(geojson: unknown, title: string, resolution?: GeojsonResolution) {
+    try {
+      const sc = await importGeojsonOnce(geojson, title, resolution);
+      setUncertain(null);
+      location.hash = `#/plan/${encodeURIComponent(sc.id)}`;
+      res.reload();
+      notify('ok', resolution && 'adopt' in resolution ? `已打开已保存的 ${sc.title}` : `已导入 ${sc.title}`);
+    } catch (e) {
+      if (e instanceof UncertainImportError) setUncertain({ error: e, geojson, title });
+      else notify('error', `导入失败：${(e as Error).message}`);
+    }
+  }
   async function importFile(file: File) {
     try {
       const obj = JSON.parse(await file.text());
-      const sc = obj.type === 'FeatureCollection' || obj.type === 'Feature'
-        ? await studio.importGeojson(obj, file.name.replace(/\.(geo)?json$/i, ''))
-        : await studio.importScenario(obj);
+      if (obj.type === 'FeatureCollection' || obj.type === 'Feature') return await finishGeojson(obj, file.name.replace(/\.(geo)?json$/i, ''));
+      const sc = await importScenarioOnce(obj);
       location.hash = `#/plan/${encodeURIComponent(sc.id)}`;
       res.reload();
       notify('ok', `已导入 ${sc.title}`);
@@ -47,6 +64,9 @@ export function ScenarioNavigator() {
   }
   return (
     <div className={s.scroll}>
+      <div className={s.pad}><Button size="sm" onClick={() => setCatalog(!catalog)} aria-expanded={catalog}>{catalog ? '返回已有场景' : '打开农业任务目录'}</Button></div>
+      <div hidden={!catalog}><AgriCatalog visible={catalog} /></div>
+      <div hidden={catalog}>
       <div className={s.search}>
         <Input placeholder="搜索场景" value={q} onChange={(e) => setQ(e.target.value)} aria-label="搜索场景" />
       </div>
@@ -56,6 +76,15 @@ export function ScenarioNavigator() {
           <input type="file" accept=".json,.geojson,application/json" hidden onChange={(e) => e.target.files?.[0] && void importFile(e.target.files[0])} />
         </label>
       </div>
+      {uncertain && (
+        <div className={s.pad} aria-label="导入结果待确认">
+          <Notice tone="warn">{uncertain.error.message}</Notice>
+          {uncertain.error.candidates.map((c) => (
+            <Button key={c.id} size="sm" onClick={() => void finishGeojson(uncertain.geojson, uncertain.title, { adopt: c.id })}>这是刚才的导入：{c.title}（{c.id}）</Button>
+          ))}
+          <Button size="sm" variant="plain" onClick={() => void finishGeojson(uncertain.geojson, uncertain.title, { reimport: true })}>确认未保存，重新导入</Button>
+        </div>
+      )}
       {res.loading && !res.data && <div className={s.pad}><Spinner /></div>}
       {groups.map(([title, items]) => items.length > 0 && (
         <div key={title}>
@@ -73,6 +102,7 @@ export function ScenarioNavigator() {
           </ul>
         </div>
       ))}
+      </div>
     </div>
   );
 }

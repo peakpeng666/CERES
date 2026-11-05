@@ -17,6 +17,8 @@ import { displaySegments, gapLimit, replayIndex } from './replayIndex';
 import { planningFingerprint } from '../fleet';
 import type { FleetInstance } from '../types';
 import { SessionEvidence } from './SessionEvidence';
+import { RunTrace } from './RunTrace';
+import { IntegrityNotice } from '../../lab/views/plan/IntegrityNotice';
 import p from '../panels/panels.module.css';
 import a from '../assets/assets.module.css';
 
@@ -176,6 +178,10 @@ export function ReplayPanel() {
               <span>会话</span><span className={a.mono}>{r.session_id} · 清理 {r.session_report?.cleanup_status ?? '未记录'}</span>
             </div>
             {r.provenance_warning && <Notice tone="warn">{r.provenance_warning}</Notice>}
+            <IntegrityNotice run={runs[r.run_id]} />
+            {runs[r.run_id]
+              ? <RunTrace run={runs[r.run_id]!} title="方案追溯" />
+              : <p className={p.hint}>方案记录未载入：种子、实例哈希与算法版本暂为未知；点“载入此方案对照”读取 {r.run_id}。</p>}
             <SessionEvidence result={r} />
             <p className={p.meta}>以上物理证据与独立检查是全程终检，不随回放时刻改写；下方时间轴只重放已记录样本。</p>
             <div className={a.timeline}>

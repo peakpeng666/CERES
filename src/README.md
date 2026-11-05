@@ -6,6 +6,8 @@
 | [backend](backend/README.md) | 本地实验包导入、SQLite记录、附件、比较和路线API；持久化 CVRP 数值任务与独立验算 |
 | [frontend](frontend/README.md) | 科研面板、规划、仿真与运行记录；BPP 入口保留在 #/bpp |
 | [lab](lab/CONTRACT.md) | 统一网关、求解适配、独立检查、推荐、导出与 ROS 仿真会话 |
+| [lab/urp_lab/agent](lab/urp_lab/agent/) | 大模型会话、工作台工具与执行批准 |
+| [lab/urp_lab/evolve](lab/urp_lab/evolve/INTEGRATION.md) | 离线候选、准入、修复、动态调度与模型读取检查 |
 | [robotics](robotics/README.md) | 官方 TurtleBot4 固定版本预检与 route-scene 研究适配，保留独立验收范围 |
 | [repos](repos/README.md) | 75个外部论文代码目录及来源清单 |
 

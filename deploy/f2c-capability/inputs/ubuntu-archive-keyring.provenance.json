@@ -1,0 +1,518 @@
+{
+  "identity_reference_results": {
+    "all_three_vendor_full_primary_fingerprints_and_uids_published_in_image_verification_reference": true,
+    "chisel_armored_public_key_crc24_matches": true,
+    "chisel_computed_v4_fingerprint": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+    "chisel_decoded_sha256": "5ebbeeb474034b1fa7e50abbe6f136e177fc826219e01f314b3623f7b3097e96",
+    "chisel_decoded_size_bytes": 1167,
+    "chisel_packet_tags": [
+      6,
+      13,
+      2
+    ],
+    "chisel_public_key_body_sha256": "80accbc93366d3021a11602151f251253bfdfd60bbd3afc0c502e0dc7e22cc05",
+    "chisel_public_key_uid_self_signature_bytes_equal_selected_vendor_packets": true,
+    "selected_full_fingerprint": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+    "vendor_download_url_published_in_image_verification_reference": true
+  },
+  "identity_references": [
+    {
+      "retrieved_at_utc": "2026-10-22T17:21:26.743820+00:00",
+      "selected_full_fingerprint_published": true,
+      "sha256": "76a1ae1398256acda0363724c73fe04852af5e11c5fab7bb6a0bae3750efc4af",
+      "size_bytes": 47418,
+      "url": "https://documentation.ubuntu.com/security/software-integrity/image-verification/"
+    },
+    {
+      "retrieved_at_utc": "2026-10-22T17:21:30.447624+00:00",
+      "selected_full_fingerprint_published": true,
+      "sha256": "f576636c85684dad59f47a2702992ea39e64eb79dcd45eaa4c47f1a21334975b",
+      "size_bytes": 66819,
+      "url": "https://ubuntu.com/chisel/docs/latest/reference/chisel-releases/chisel.yaml/"
+    }
+  ],
+  "inspection": {
+    "keys": [
+      {
+        "accepted_signer": false,
+        "algorithm": "RSA",
+        "algorithm_id": 1,
+        "created_utc": "2012-05-11T21:15:36+00:00",
+        "creation_unix": 1336770936,
+        "exponent": 65537,
+        "fingerprint_v4_sha1": "790BC7277767219C42C86F933B4FE6ACC0B21F32",
+        "key_id": "3B4FE6ACC0B21F32",
+        "modulus_bits": 4096,
+        "packet_offset": 0,
+        "public_key_body_sha256": "88464f87e2176ee1d47c2f8340d484e957ae39a5259485817c7c1a794d7150e8",
+        "user_id": "Ubuntu Archive Automatic Signing Key (2012) <ftpmaster@ubuntu.com>",
+        "version": 4
+      },
+      {
+        "accepted_signer": false,
+        "algorithm": "RSA",
+        "algorithm_id": 1,
+        "created_utc": "2012-05-11T22:10:48+00:00",
+        "creation_unix": 1336774248,
+        "exponent": 65537,
+        "fingerprint_v4_sha1": "843938DF228D22F7B3742BC0D94AA3F0EFE21092",
+        "key_id": "D94AA3F0EFE21092",
+        "modulus_bits": 4096,
+        "packet_offset": 1203,
+        "public_key_body_sha256": "480626faf0b0941b6b539b627c2b9746ea0e4a9af1874b77f4464b01f4f1b6fd",
+        "user_id": "Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>",
+        "version": 4
+      },
+      {
+        "accepted_signer": true,
+        "algorithm": "RSA",
+        "algorithm_id": 1,
+        "created_utc": "2018-09-17T15:01:46+00:00",
+        "creation_unix": 1537196506,
+        "exponent": 65537,
+        "fingerprint_v4_sha1": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+        "key_id": "871920D1991BC93C",
+        "modulus_bits": 4096,
+        "packet_offset": 2404,
+        "public_key_body_sha256": "80accbc93366d3021a11602151f251253bfdfd60bbd3afc0c502e0dc7e22cc05",
+        "user_id": "Ubuntu Archive Automatic Signing Key (2018) <ftpmaster@ubuntu.com>",
+        "version": 4
+      }
+    ],
+    "method": "Bounded pure Python OpenPGP v4 public-data parsing; no native tools or signature verification.",
+    "packet_count": 18,
+    "packets": [
+      {
+        "body_offset": 3,
+        "body_sha256": "88464f87e2176ee1d47c2f8340d484e957ae39a5259485817c7c1a794d7150e8",
+        "body_size": 525,
+        "header_format": "old",
+        "name": "Public-Key",
+        "offset": 0,
+        "public_key": {
+          "accepted_signer": false,
+          "algorithm": "RSA",
+          "algorithm_id": 1,
+          "created_utc": "2012-05-11T21:15:36+00:00",
+          "creation_unix": 1336770936,
+          "exponent": 65537,
+          "fingerprint_v4_sha1": "790BC7277767219C42C86F933B4FE6ACC0B21F32",
+          "key_id": "3B4FE6ACC0B21F32",
+          "modulus_bits": 4096,
+          "packet_offset": 0,
+          "public_key_body_sha256": "88464f87e2176ee1d47c2f8340d484e957ae39a5259485817c7c1a794d7150e8",
+          "version": 4
+        },
+        "tag": 6,
+        "total_size": 528
+      },
+      {
+        "body_hex": "000067706701000000000000",
+        "body_offset": 530,
+        "body_sha256": "f3d729ceb4174f0be902f67270e9133146147221f2ebf155ed39d1304ba5f042",
+        "body_size": 12,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 528,
+        "tag": 12,
+        "total_size": 14,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 544,
+        "body_sha256": "8c8aa0e7492caa910a40d4c52bbeb6b1289b2af72b22acbcdb3cc0474c824527",
+        "body_size": 66,
+        "header_format": "old",
+        "name": "User-ID",
+        "offset": 542,
+        "tag": 13,
+        "total_size": 68,
+        "user_id": "Ubuntu Archive Automatic Signing Key (2012) <ftpmaster@ubuntu.com>"
+      },
+      {
+        "body_hex": "000067706702000000000000",
+        "body_offset": 612,
+        "body_sha256": "f12c70d894a0fc2c285e680430d0e726f54820b8b94d159a19edb0a6551c0c43",
+        "body_size": 12,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 610,
+        "tag": 12,
+        "total_size": 14,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 627,
+        "body_sha256": "bdb90e15cd8f2781a5b8a9d4374e58ec1ebc000e64d317d93a8d4789b3fe3b74",
+        "body_size": 568,
+        "header_format": "old",
+        "name": "Signature",
+        "offset": 624,
+        "signature": {
+          "cryptographic_signature_verified": false,
+          "hash_algorithm": 2,
+          "hash_prefix_hex": "5d7e",
+          "hashed_subpackets": [
+            {
+              "critical": false,
+              "type": 2,
+              "value_hex": "4fad8178"
+            },
+            {
+              "critical": false,
+              "type": 27,
+              "value_hex": "03"
+            },
+            {
+              "critical": false,
+              "type": 11,
+              "value_hex": "0908070302"
+            },
+            {
+              "critical": false,
+              "type": 21,
+              "value_hex": "0802090a0b"
+            },
+            {
+              "critical": false,
+              "type": 22,
+              "value_hex": "020301"
+            },
+            {
+              "critical": false,
+              "type": 30,
+              "value_hex": "01"
+            },
+            {
+              "critical": false,
+              "type": 23,
+              "value_hex": "80"
+            }
+          ],
+          "public_key_algorithm": 1,
+          "signature_mpi_bits": 4096,
+          "signature_type": 19,
+          "unhashed_subpackets": [
+            {
+              "critical": false,
+              "type": 16,
+              "value_hex": "3b4fe6acc0b21f32"
+            }
+          ],
+          "version": 4
+        },
+        "tag": 2,
+        "total_size": 571
+      },
+      {
+        "body_hex": "000367706700",
+        "body_offset": 1197,
+        "body_sha256": "7cab85011cf6c43284a677ae1e6d33e51983660733e47e9dd690dc08c3605a05",
+        "body_size": 6,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 1195,
+        "tag": 12,
+        "total_size": 8,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 1206,
+        "body_sha256": "480626faf0b0941b6b539b627c2b9746ea0e4a9af1874b77f4464b01f4f1b6fd",
+        "body_size": 525,
+        "header_format": "old",
+        "name": "Public-Key",
+        "offset": 1203,
+        "public_key": {
+          "accepted_signer": false,
+          "algorithm": "RSA",
+          "algorithm_id": 1,
+          "created_utc": "2012-05-11T22:10:48+00:00",
+          "creation_unix": 1336774248,
+          "exponent": 65537,
+          "fingerprint_v4_sha1": "843938DF228D22F7B3742BC0D94AA3F0EFE21092",
+          "key_id": "D94AA3F0EFE21092",
+          "modulus_bits": 4096,
+          "packet_offset": 1203,
+          "public_key_body_sha256": "480626faf0b0941b6b539b627c2b9746ea0e4a9af1874b77f4464b01f4f1b6fd",
+          "version": 4
+        },
+        "tag": 6,
+        "total_size": 528
+      },
+      {
+        "body_hex": "000067706701000000000000",
+        "body_offset": 1733,
+        "body_sha256": "f3d729ceb4174f0be902f67270e9133146147221f2ebf155ed39d1304ba5f042",
+        "body_size": 12,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 1731,
+        "tag": 12,
+        "total_size": 14,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 1747,
+        "body_sha256": "ac98542731781f18f9550fb014ab5a5302f7dbde1ed84f34507d1f5b805616dc",
+        "body_size": 65,
+        "header_format": "old",
+        "name": "User-ID",
+        "offset": 1745,
+        "tag": 13,
+        "total_size": 67,
+        "user_id": "Ubuntu CD Image Automatic Signing Key (2012) <cdimage@ubuntu.com>"
+      },
+      {
+        "body_hex": "000067706702000000000000",
+        "body_offset": 1814,
+        "body_sha256": "f12c70d894a0fc2c285e680430d0e726f54820b8b94d159a19edb0a6551c0c43",
+        "body_size": 12,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 1812,
+        "tag": 12,
+        "total_size": 14,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 1829,
+        "body_sha256": "3896470b05ac1de6721b31ac6ba434aed5777c344bffa749d6e8caff2d1d1f66",
+        "body_size": 567,
+        "header_format": "old",
+        "name": "Signature",
+        "offset": 1826,
+        "signature": {
+          "cryptographic_signature_verified": false,
+          "hash_algorithm": 10,
+          "hash_prefix_hex": "4840",
+          "hashed_subpackets": [
+            {
+              "critical": false,
+              "type": 2,
+              "value_hex": "4fad8e68"
+            },
+            {
+              "critical": false,
+              "type": 27,
+              "value_hex": "03"
+            },
+            {
+              "critical": false,
+              "type": 11,
+              "value_hex": "09080703"
+            },
+            {
+              "critical": false,
+              "type": 21,
+              "value_hex": "0a09080b"
+            },
+            {
+              "critical": false,
+              "type": 22,
+              "value_hex": "02030100"
+            },
+            {
+              "critical": false,
+              "type": 30,
+              "value_hex": "01"
+            },
+            {
+              "critical": false,
+              "type": 23,
+              "value_hex": "80"
+            }
+          ],
+          "public_key_algorithm": 1,
+          "signature_mpi_bits": 4096,
+          "signature_type": 19,
+          "unhashed_subpackets": [
+            {
+              "critical": false,
+              "type": 16,
+              "value_hex": "d94aa3f0efe21092"
+            }
+          ],
+          "version": 4
+        },
+        "tag": 2,
+        "total_size": 570
+      },
+      {
+        "body_hex": "000367706700",
+        "body_offset": 2398,
+        "body_sha256": "7cab85011cf6c43284a677ae1e6d33e51983660733e47e9dd690dc08c3605a05",
+        "body_size": 6,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 2396,
+        "tag": 12,
+        "total_size": 8,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 2407,
+        "body_sha256": "80accbc93366d3021a11602151f251253bfdfd60bbd3afc0c502e0dc7e22cc05",
+        "body_size": 525,
+        "header_format": "old",
+        "name": "Public-Key",
+        "offset": 2404,
+        "public_key": {
+          "accepted_signer": true,
+          "algorithm": "RSA",
+          "algorithm_id": 1,
+          "created_utc": "2018-09-17T15:01:46+00:00",
+          "creation_unix": 1537196506,
+          "exponent": 65537,
+          "fingerprint_v4_sha1": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+          "key_id": "871920D1991BC93C",
+          "modulus_bits": 4096,
+          "packet_offset": 2404,
+          "public_key_body_sha256": "80accbc93366d3021a11602151f251253bfdfd60bbd3afc0c502e0dc7e22cc05",
+          "version": 4
+        },
+        "tag": 6,
+        "total_size": 528
+      },
+      {
+        "body_hex": "000067706701000000000000",
+        "body_offset": 2934,
+        "body_sha256": "f3d729ceb4174f0be902f67270e9133146147221f2ebf155ed39d1304ba5f042",
+        "body_size": 12,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 2932,
+        "tag": 12,
+        "total_size": 14,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 2948,
+        "body_sha256": "f4d8ad5a6540ecf47907c46a8df8d8d54e2af5e1e9bfea52dedf0cfb69828178",
+        "body_size": 66,
+        "header_format": "old",
+        "name": "User-ID",
+        "offset": 2946,
+        "tag": 13,
+        "total_size": 68,
+        "user_id": "Ubuntu Archive Automatic Signing Key (2018) <ftpmaster@ubuntu.com>"
+      },
+      {
+        "body_hex": "000067706702000000000000",
+        "body_offset": 3016,
+        "body_sha256": "f12c70d894a0fc2c285e680430d0e726f54820b8b94d159a19edb0a6551c0c43",
+        "body_size": 12,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 3014,
+        "tag": 12,
+        "total_size": 14,
+        "trust_interpreted_or_accepted": false
+      },
+      {
+        "body_offset": 3031,
+        "body_sha256": "3a9fd1808e0a34d257e4bd2307475a03fb333c36961c9f48d1ce2555b9e088ef",
+        "body_size": 568,
+        "header_format": "old",
+        "name": "Signature",
+        "offset": 3028,
+        "signature": {
+          "cryptographic_signature_verified": false,
+          "hash_algorithm": 10,
+          "hash_prefix_hex": "2c73",
+          "hashed_subpackets": [
+            {
+              "critical": false,
+              "type": 2,
+              "value_hex": "5b9fc1da"
+            },
+            {
+              "critical": false,
+              "type": 27,
+              "value_hex": "03"
+            },
+            {
+              "critical": false,
+              "type": 11,
+              "value_hex": "0908070302"
+            },
+            {
+              "critical": false,
+              "type": 21,
+              "value_hex": "0802090a0b"
+            },
+            {
+              "critical": false,
+              "type": 22,
+              "value_hex": "020301"
+            },
+            {
+              "critical": false,
+              "type": 30,
+              "value_hex": "01"
+            },
+            {
+              "critical": false,
+              "type": 23,
+              "value_hex": "80"
+            }
+          ],
+          "public_key_algorithm": 1,
+          "signature_mpi_bits": 4096,
+          "signature_type": 19,
+          "unhashed_subpackets": [
+            {
+              "critical": false,
+              "type": 16,
+              "value_hex": "871920d1991bc93c"
+            }
+          ],
+          "version": 4
+        },
+        "tag": 2,
+        "total_size": 571
+      },
+      {
+        "body_hex": "000367706700",
+        "body_offset": 3601,
+        "body_sha256": "7cab85011cf6c43284a677ae1e6d33e51983660733e47e9dd690dc08c3605a05",
+        "body_size": 6,
+        "header_format": "old",
+        "name": "Trust",
+        "offset": 3599,
+        "tag": 12,
+        "total_size": 8,
+        "trust_interpreted_or_accepted": false
+      }
+    ],
+    "secret_key_material_present": false,
+    "tag_counts": {
+      "12": 9,
+      "13": 3,
+      "2": 3,
+      "6": 3
+    },
+    "v4_fingerprint_algorithm": "SHA-1 over 0x99 || two-octet big-endian public-key-body length || public-key body."
+  },
+  "purpose": "Frozen public-data input for exact signer restriction; not installed package attribution.",
+  "schema": "ubuntu-public-keyring-provenance-v1",
+  "selected_exact_signing_fingerprint": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+  "vendor": {
+    "preserved_vendor_bytes_unmodified": true,
+    "retrieved_at_utc": "2026-10-22T17:20:54.515240+00:00",
+    "sha256": "80a36b0a6de2f69f49d2df75ef473ccde121e9e190b9ea01d20a4f63778d5c31",
+    "size_bytes": 3607,
+    "url": "https://archive.ubuntu.com/ubuntu/project/ubuntu-archive-keyring.gpg"
+  },
+  "verification_limitations": [
+    "This is public-data structure, exact-byte, and full-fingerprint identity review, not cryptographic signature or self-signature verification.",
+    "Both identity references are Canonical publications. Their HTTPS publication and retrieval are the external identity bootstrap, not an independent-organization trust chain.",
+    "The vendor download URL is mutable. Only the recorded exact byte count and SHA-256 describe this reviewed input; later downloads are not automatically approved.",
+    "The complete vendor ring contains other keys. Only F6ECB3762474EDA9D21B7022871920D1991BC93C is accepted as the exact signer; primary-key aliases, arbitrary subkeys, other ring keys, UIDs and short key IDs do not expand policy.",
+    "The nine tag-12 vendor trust packets are inventoried and exact-byte-matched as data, but confer no trust or authorization.",
+    "No native verifier execution, metadata authentication, installed-package attribution, runtime capability check, revocation/freshness proof, or scientific result follows from this input review.",
+    "Recorded hashes require an independently approved source-integrity anchor before runtime consumption. A hash computed from a same-run download is not an external trust anchor.",
+    "The v4 identity fingerprint uses SHA-1 as defined by OpenPGP. File integrity is pinned separately using SHA-256.",
+    "No explicit standalone license statement for the binary keyring was identified in the inspected download or identity references. Documentation license notices must not be assumed to license the keyring data."
+  ]
+}

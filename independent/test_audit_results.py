@@ -1,6 +1,8 @@
 import hashlib
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -43,6 +45,30 @@ class AuditAccounting(unittest.TestCase):
         path.parent.mkdir()
         path.write_text(json.dumps(value))
         return path
+
+    def test_missing_or_file_input_directory_is_not_an_empty_success(self):
+        for path in (self.root / 'absent', self.root / 'tiny.vrp'):
+            with self.subTest(path=path), self.assertRaises(ValueError):
+                audit(self.root, path, 1)
+
+    def test_cli_never_overwrites_existing_evidence(self):
+        output = self.root / 'audit.json'
+        original = b'preserved historical evidence\n'
+        output.write_bytes(original)
+        command = [sys.executable, str(Path(__file__).with_name('audit_results.py')),
+                   str(self.runs), '--root', str(self.root), '--planned', '0', '--output', str(output)]
+        result = subprocess.run(command, capture_output=True, text=True, timeout=10)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(output.read_bytes(), original)
+
+    def test_invalid_failure_status_is_counted_and_reported(self):
+        record = dict(self.record, feasible=False)
+        record.pop('status')
+        self.put('missing-status', record)
+        report = audit(self.root, self.runs, 1)
+        self.assertEqual(report['attempted'], 1)
+        self.assertEqual(report['eligible'], 0)
+        self.assertEqual(len(report['audit_errors']), 1)
 
     def test_valid_result_and_missing_identity_hashes(self):
         self.put('valid', self.record)

@@ -1,0 +1,22 @@
+
+> bpp-research-console@1.0.0 test:ui
+> vitest run
+
+
+ RUN  v5.0.3 /workspace/URP/src/frontend
+
+
+ Test Files  50 passed (50)
+      Tests  690 passed (690)
+   Start at  07:00:48
+   Duration  5.32s (tests 41%, import 30%, transform 26%, worker 2%)
+
+  Transform  transforming modules took 2.52s · 26% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

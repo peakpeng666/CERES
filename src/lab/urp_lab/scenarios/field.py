@@ -284,8 +284,17 @@ def field_coverage_depot() -> dict:
     }
 
 
+# Reserved even in the bench image, where official ROS maps are not installed.
+MAP_SCENARIO_IDS = frozenset({'maze-inspection', 'farm-rows-warehouse', 'cvrp-depot-floor', 'field-coverage-depot'})
+
+
 def map_scenarios() -> list[dict]:
-    return [maze_inspection(), farm_rows_warehouse(), cvrp_depot_floor(), field_coverage_depot()]
+    installed = set(maps.known_worlds())
+    builders = [('maze', maze_inspection), ('warehouse', farm_rows_warehouse),
+                ('depot', cvrp_depot_floor), ('depot', field_coverage_depot)]
+    # Missing maps are an optional deployment capability. Errors in an installed
+    # map must propagate; never replace corrupt maps with fabricated geometry.
+    return [build() for world, build in builders if world in installed]
 
 
 def maze_inspection() -> dict:

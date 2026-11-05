@@ -1,0 +1,43 @@
+{
+  "application_commit": "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35",
+  "files": {
+    "README.md": {
+      "sha256": "04d63a60e1a7df82cc88c7df68b9e0fc3cb81f679f801d94eedf720d05d2a84b"
+    },
+    "build-requirements.lock": {
+      "sha256": "20882c0230ae0bd0d73dff6a21c0f069a2c893bff443a7e286a7916c9cbef2c3"
+    },
+    "official-source-inputs.json": {
+      "sha256": "bc35cc1dbd57937fa8fa4762b7b2653dbc3d39d1f056fbfcc859d228cf426d65"
+    },
+    "recipe/build-wheel-inputs.json": {
+      "sha256": "2ccb5350ac9a8cc81f7d661282c48d4e4beafdc40e2bb2b4bafa92ad838888b8"
+    },
+    "recipe/guardlib.py": {
+      "sha256": "55d4688f3bf76227a9e70c111c066cb69bf8d4238f3749a993431817f01513b2"
+    },
+    "recipe/live_inputs.py": {
+      "sha256": "b8865c8b8475c33f00609866b627548f188faf78143cba8d425619b1655079c5"
+    },
+    "recipe/prepare_inputs.py": {
+      "sha256": "3e6e6c9b3cdc00e6c6e2a1b8ce3fbb5086af387d0a0037be5b2c20658749ac00"
+    },
+    "recipe/runtime_prepare.py": {
+      "sha256": "f671b41379d97a3f718cf130b62681a5e1e10feef291cce23c7f3a6366993056"
+    },
+    "recipe/tests/test_docker_contract.py": {
+      "sha256": "db7cefde70461c646a336674254c96e25a1d43b1c9c8d4a172cb53313eef0090"
+    },
+    "recipe/tests/test_input_preparation.py": {
+      "sha256": "2ec4a59ec03e206598dbbec34d76acac870b6619f7bfa00d6e22c060d2ac8cae"
+    },
+    "recipe/verify_prepared_inputs.py": {
+      "sha256": "e2c6926f19bd7032dd634ddaa3ba375f451a77b547e5dd6d1eace2cf84b1784b"
+    },
+    "source-provenance.json": {
+      "sha256": "df63d1f1721614b8bf47b17ce02e0a0983c563fda068b15ed791727c59eac954"
+    }
+  },
+  "schema": 1,
+  "status": "source-candidate-awaiting-independent-review"
+}

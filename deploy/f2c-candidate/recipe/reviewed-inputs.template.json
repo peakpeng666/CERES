@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "status": "incomplete",
+  "notice": "Deliberately not launchable. This is a field guide, not a host lock. Never change status without independently verifying all evidence and complete resolved inputs on the same live Jammy runner.",
+  "review": {
+    "host_closure_complete": false,
+    "input_closure_complete": false,
+    "package_provenance_verified": false,
+    "interface_metadata_reviewed": false,
+    "single_wheel_runtime_provider": false,
+    "dependency_link_flags_reviewed": false,
+    "evidence": []
+  },
+  "host": {
+    "os": {"id": "ubuntu", "version": "22.04", "architecture": "x86_64"},
+    "python": {"version": "3.12.13", "prefix": null, "executable": null},
+    "os_release": null,
+    "commands": {},
+    "trees": [],
+    "files": []
+  },
+  "network": {"kernel_boot_id": null, "netns": null},
+  "packages": {
+    "distribution": "ubuntu",
+    "release": "22.04",
+    "signed_metadata_verified": false,
+    "signed_metadata": [],
+    "snapshot": {"kind": null, "identifier": null},
+    "resolved": []
+  },
+  "inputs": {
+    "trees": [],
+    "sources": {},
+    "build_requirements": null,
+    "build_wheels": []
+  },
+  "interface": {"archive": null, "cmake_ref": null},
+  "runtime": {
+    "provider": "ortools-python-wheel-only",
+    "wheel": null,
+    "extracted_ref": null,
+    "system_sonames": {"gdal": "libgdal.so.30", "tinyxml2": "libtinyxml2.so.9"},
+    "system_libraries": []
+  },
+  "build": {"source_date_epoch": 1788454736, "parallel_jobs": 2, "minimum_free_bytes": 4294967296}
+}

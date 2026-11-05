@@ -1,0 +1,60 @@
+{
+  "schema": "urp.asset-review/1",
+  "review_date": "2026-10-30",
+  "reviewed_commit": "8885ef6cf7aebfa592c112f911cb62f3eaab07f0",
+  "asset_index": "assets.csv",
+  "indexed_assets": 2439,
+  "matching_path_and_blob": 2439,
+  "missing_paths": [],
+  "changed_blobs": [],
+  "asset_counts": {
+    "database": 1,
+    "archive": 5,
+    "dataset-or-model": 1543,
+    "document": 25,
+    "experiment-archive": 290,
+    "textbook": 16,
+    "paper": 559
+  },
+  "third_party_directories": 75,
+  "license_scope_review": "rights-review.md",
+  "sisr_license_paths": [
+    "src/repos/open-source-sisr-routing/ctop/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/ctop/lib/cxxopts_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/ctop/lib/json_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/cvrp/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/cvrp/lib/cxxopts_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/cvrp/lib/json_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/main/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/pdptw/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/pdptw/lib/cxxopts_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/pdptw/lib/json_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/top/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/top/lib/cxxopts_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/top/lib/json_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/toptw/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/toptw/lib/cxxopts_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/toptw/lib/json_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/vrptw/LICENSE.txt",
+    "src/repos/open-source-sisr-routing/vrptw/lib/cxxopts_LICENSE.txt",
+    "src/repos/open-source-sisr-routing/vrptw/lib/json_LICENSE.txt"
+  ],
+  "verified_external_copies": 0,
+  "migrated_assets": 0,
+  "papers_zip_metadata_review": {
+    "bytes": 19629355,
+    "permission_types": [
+      "user",
+      "user"
+    ],
+    "permission_roles": [
+      "owner",
+      "writer"
+    ],
+    "public_or_domain_permission_returned": false,
+    "download_retried": false,
+    "restore_status": "restore-blocked"
+  },
+  "verification_scope": "Git tree paths and object identifiers; no raw asset bytes or third-party license blobs restored.",
+  "additional_asset_paths": []
+}

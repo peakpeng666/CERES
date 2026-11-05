@@ -32,3 +32,43 @@ describe('scientific plan comparison', () => {
     expect(verifiedPlan({ ...old, raw_result: { adapter_contract: 'urp.f2c-full/2' } })).toBe(true);
   });
 });
+
+describe('comparison grouping with integrity and outcome', () => {
+  const verified = (over: Partial<Solution> = {}) => ({ ...run(), process: { source_identity_verified: true }, ...over }) as Solution;
+  it('quarantined runs have no comparison key and are never comparable', async () => {
+    const { comparisonKey } = await import('./comparison');
+    const q = verified({ process: { source_identity_verified: false } });
+    expect(comparisonKey(q)).toBeNull();
+    expect(comparable(q, q)).toBe(false);
+  });
+  it('unknown identity is grouped apart from verified identity', () => {
+    expect(comparable(verified(), verified())).toBe(true);
+    expect(comparable(run(), run())).toBe(true);
+    expect(comparable(verified(), run())).toBe(false);
+  });
+  it('partitions: only verified feasible runs are ranked; the rest are listed with a status', async () => {
+    const { partitionRuns } = await import('./comparison');
+    const runs = [
+      verified({ run_id: 'ok' }),
+      verified({ run_id: 'ok2', objective: { value: 9, unit: 'euclidean', lower_bound: null } }),
+      verified({ run_id: 'q', process: { source_identity_verified: false } }),
+      verified({ run_id: 'fail', state: 'error', error: '缺少依赖 pyvrp' }),
+      verified({ run_id: 'to', state: 'timeout' }),
+      verified({ run_id: 'cx', state: 'canceled' }),
+      verified({ run_id: 'inf', status: 'infeasible', check: null }),
+      verified({ run_id: 'chk', check: { valid: false, errors: ['x'] } as Solution['check'] }),
+      verified({ run_id: 'run', state: 'running' }),
+      run(),
+      verified({ run_id: 'other-input', instance_sha256: 'different' }),
+      verified({ run_id: 'other-obj', instance: { objective: 'makespan' } as unknown as Solution['instance'] }),
+    ];
+    const { groups, excluded } = partitionRuns(runs);
+    expect(Object.fromEntries(excluded.map((e) => [e.run.run_id, e.reason.code]))).toEqual({
+      q: 'quarantined', fail: 'failed', to: 'timeout', cx: 'canceled', inf: 'infeasible', chk: 'unchecked', run: 'pending',
+    });
+    expect(excluded.find((e) => e.run.run_id === 'fail')!.reason.text).toContain('缺少依赖');
+    expect(groups.map((g) => [g.identity, g.runs.map((r) => r.run_id)])).toEqual([
+      ['verified', ['ok', 'ok2']], ['unknown', ['one']], ['verified', ['other-input']], ['verified', ['other-obj']],
+    ]);
+  });
+});

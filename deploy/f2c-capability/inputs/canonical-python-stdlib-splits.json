@@ -1,0 +1,1229 @@
+{
+  "packages": [
+    {
+      "architecture": "all",
+      "archive": {
+        "sha256": "b2bada10bef81fa7dc4bde61a1a462f37ca5027805e7c96e58685e9034c6094f",
+        "size": 138862,
+        "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/p/python3-stdlib-extensions/python3-distutils_3.10.8-1~22.04_all.deb"
+      },
+      "index_reference": {
+        "component": "main",
+        "index_sha256": "0d1e4c9a8a5efe021366ad516bdb4c70da90752095f30f88c6716604f296174c",
+        "stanza_ordinal_split_double_newline": 21221,
+        "stanza_sha256_without_separator": "eb5394474d00450a803e5f69945768e773d7e35e5f3d1edfe80ff931ae2c2081",
+        "suite": "jammy-updates"
+      },
+      "members": [
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/_msvccompiler.py",
+          "sha256": "aef0dc5c3f04305640965b56adc3b0c3085e70ca0f28736ece3993044d4e9f4c",
+          "size": 20007,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/archive_util.py",
+          "sha256": "a96fae886c187b14ef2b97be8927a5ff7d43b21c7e0aa4da9cd3caeac9f07fdf",
+          "size": 8572,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/bcppcompiler.py",
+          "sha256": "3890d5a425265fa1fcbffee5575ce27d5d5f731f760abd9d862521ebdf3d5092",
+          "size": 14894,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/ccompiler.py",
+          "sha256": "194146bc2645bafe0d34d90d6837958779de804b21178b3e1a3da651bbbccffb",
+          "size": 47418,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/cmd.py",
+          "sha256": "79ca3a2c0194b686cbb8f69fba19a02a09304512ff598f0a27861e0c21e9725b",
+          "size": 18079,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/__init__.py",
+          "sha256": "f0bcde9801fad1d064fee42c8ccbe36eb121cba7b6e4415c40c3ec144217ee37",
+          "size": 771,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/bdist.py",
+          "sha256": "b8fa0cb381931c6d51e13da553a7d91a3e9841324d9ba4496862f2fdac990459",
+          "size": 5433,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/bdist_dumb.py",
+          "sha256": "053babf63708a69c8fecf89abe37ec93b623125aafc5e60eda7a54c8f3ce7a47",
+          "size": 4913,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/bdist_msi.py",
+          "sha256": "f9a6c1fdcbaead2f17ea343b2645d5fae6e6fa5b6bbd84aa92d715a013caa968",
+          "size": 35519,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/bdist_rpm.py",
+          "sha256": "8233b0db61a10d26dcab46ddab6e5c4dbfa7e875969b46d284b41a77f9a42789",
+          "size": 21537,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/build.py",
+          "sha256": "d753724765005336a5ae44d9da98740401c55850b68ed4ac37b808685f8d0b4f",
+          "size": 5767,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/build_clib.py",
+          "sha256": "6e05531e1dbc78b400d86930ebc6a602977f8fba90057e0c4c8fb34ef00afc9e",
+          "size": 8022,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/build_ext.py",
+          "sha256": "09c735e566175e89f9c4f7b18f2b793f3fdf8d29a2bdc0019f59cb2c37296465",
+          "size": 31655,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/build_py.py",
+          "sha256": "4bf365c3885913c3e7220a97e4e14c766b7e19298e84f410e1fda3af5b819e85",
+          "size": 17190,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/build_scripts.py",
+          "sha256": "68ac9c2493f1dcb7d9d5cbd981225ac670f62e7bd1339589fbcc64a5d81c2ec2",
+          "size": 6232,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/check.py",
+          "sha256": "9927e429a3a9e968e41ae0bd5fa5ce2d691dfc1aa5e84b532b8089a8d3e87c0f",
+          "size": 5636,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/clean.py",
+          "sha256": "d930ade3baeee2165933445f55f5188f96dba6272918b3f8421c398c1b6fa7d9",
+          "size": 2776,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/config.py",
+          "sha256": "d9a4e3c30dcfc23301f3e6626c27b83fb07ea86d61335827feb257632c51cfa7",
+          "size": 13117,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/install.py",
+          "sha256": "d6b7abf0f77b3a1b04cab6afac3d6c11473f92a5f22bd6449bb0e684bd2b6aef",
+          "size": 30802,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/install_data.py",
+          "sha256": "62118e0308778093ea17b7a6e57034ae6a51e36cf56cb87cd28a049730f252f9",
+          "size": 2822,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/install_egg_info.py",
+          "sha256": "841cd2efd989f18105128c6c705308714ad2f877153a433ceace06da0283abe4",
+          "size": 3527,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/install_headers.py",
+          "sha256": "5d0ea27646c80dfaf59635c23b39ee55432f385a47067e9c2b45b3f6020cd9be",
+          "size": 1298,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/install_lib.py",
+          "sha256": "90acb3385df7f7f447061b30f443b46f60ae94ce8245a30e722f7c4e89d52bc0",
+          "size": 8624,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/install_scripts.py",
+          "sha256": "fc22d4790c06251718da48a4edaccf327e4876d0c2ae359d52f675921946e9c9",
+          "size": 2017,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/register.py",
+          "sha256": "da36aaf7debcaedda9b91543071d476cd897bf6eee3a4f22744ff894f7ffdd53",
+          "size": 11712,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/sdist.py",
+          "sha256": "aa8b498c03b3ca1263ab6fa80c89a3345aceb5a4a778414325307eb04935c275",
+          "size": 19005,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/command/upload.py",
+          "sha256": "ed9475fb90f3ef73d98f8f1f40b8637de2767c9c4fca95975b0a2c55164e5b8c",
+          "size": 7621,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/config.py",
+          "sha256": "76d1e06e5c7d2617f2acac75f89ec9971c3f7fbb3c65b3c54228b65163136696",
+          "size": 4827,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/core.py",
+          "sha256": "8db74e92938ad3dc62fb9eaf861c2f9f77d87612dbe4324ef2adcad5f9d0cf44",
+          "size": 8876,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/cygwinccompiler.py",
+          "sha256": "f54e0902eb14ce5006265d18e674e83e443795dcec780b62c9ee37e26c09d28c",
+          "size": 16380,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/debug.py",
+          "sha256": "37a32b4c0a8aea5f52564ead5b0791d74f0f33c3a5eea3657f257e9c770b86c6",
+          "size": 139,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/dep_util.py",
+          "sha256": "1ae47d230fe3cd9464c9e989e475fcac1ff0446c642017019b5aa1e78afbce19",
+          "size": 3491,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/dir_util.py",
+          "sha256": "39fae3542d0ce3d8b597aabe08496f8e9c5bdf95f77edd7e0cbf30afa1aef259",
+          "size": 8364,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/dist.py",
+          "sha256": "1e797f81633e34c7993030ac4047b0cd43e49739d40dd03ef262d5c7dd7b17d2",
+          "size": 50385,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/errors.py",
+          "sha256": "62bead29919dcc1a0d8b9def06d8aad1427ffd7d390a6c5275026a3966b0e926",
+          "size": 3577,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/extension.py",
+          "sha256": "cfb99f8b891f9e933544d4b0d25a59569e71bbd79320d61ba64e953e6a6f5a58",
+          "size": 10529,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/fancy_getopt.py",
+          "sha256": "38fc69d82c478b5629fddd43f09c56e147aaf5f0bbd6d7a040569a7e1e7c1865",
+          "size": 17784,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/file_util.py",
+          "sha256": "d2152a7c8b4dff1d83562851d0c1dd03828231508e3bc568072685a7f6ba3038",
+          "size": 8148,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/filelist.py",
+          "sha256": "f1b471873a7616c6a81d3ed3b8a0f842372e87f07d3b0ff14edfe1b5926f3764",
+          "size": 12832,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/log.py",
+          "sha256": "8560667540b62bddbb41c56fdd110c5b71cc3dc97171c3d09e0c4b4ae517425d",
+          "size": 1969,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/msvc9compiler.py",
+          "sha256": "33d3edc009158d1bf1353165440929e8403935776c16bfaa775f97466f8a8ac3",
+          "size": 30453,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/msvccompiler.py",
+          "sha256": "658b27520202e2d653d969096d39135325520807369c533d0d5288b887cf054d",
+          "size": 23540,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/spawn.py",
+          "sha256": "87336cdb85c2f6ecf2c67cd8a43903bf2cf884c218b1661dcc63a52ad96343e7",
+          "size": 4660,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/sysconfig.py",
+          "sha256": "e50634bfcb92d8e22e9d9a2e74457f6f8b10b0f6d4eac8decfab9278028c1757",
+          "size": 13941,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/text_file.py",
+          "sha256": "3ecb8025e59d289a0b495ffa37a229079fb43daf382b32d4b9c24c1516b3c372",
+          "size": 12483,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/unixccompiler.py",
+          "sha256": "3f2e93dc6821de71c08bd5aaf7a842782e77f510c3bd9055d591cabc58cdbf9e",
+          "size": 15391,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/util.py",
+          "sha256": "5a759d80dc2bebdda1bc4461ddc9a335c378e3a25e4da20218cdce07686824ae",
+          "size": 21032,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/distutils/versionpredicate.py",
+          "sha256": "671a4403e4d0bfcf2651673a85eb543b8a92a80dac6bb8a98d9dd010ae5ebc39",
+          "size": 5133,
+          "uid": 0
+        }
+      ],
+      "name": "python3-distutils",
+      "source": "python3-stdlib-extensions",
+      "version": "3.10.8-1~22.04"
+    },
+    {
+      "architecture": "all",
+      "archive": {
+        "sha256": "7bd212e61e8bb7fabf4768629e5dc97e6f8a7f98cc9335b5a3ce8c11cb633248",
+        "size": 77598,
+        "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/p/python3-stdlib-extensions/python3-lib2to3_3.10.8-1~22.04_all.deb"
+      },
+      "index_reference": {
+        "component": "main",
+        "index_sha256": "0d1e4c9a8a5efe021366ad516bdb4c70da90752095f30f88c6716604f296174c",
+        "stanza_ordinal_split_double_newline": 21252,
+        "stanza_sha256_without_separator": "baca050877cb6dfcfd634a0f86233d789842f9ec2e6f567e74bf82a318deb7f8",
+        "suite": "jammy-updates"
+      },
+      "members": [
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/__init__.py",
+          "sha256": "f4d8715dcaeb8183319e613f00574170b06ca2ff7af34e62d6e869919fc129d7",
+          "size": 163,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/__main__.py",
+          "sha256": "c7b09f90e66dea194ad63dc02c6425dff977d16f1f21a157b7475905c219a707",
+          "size": 67,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/btm_matcher.py",
+          "sha256": "a1aa5d35558acf4b6016054963285cb145f97a764926bea07cbd674563f3248d",
+          "size": 6623,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/btm_utils.py",
+          "sha256": "79d210510630052adafcc7c4ad8cf16acd2fd8e9adb46deea952cd81bfbea661",
+          "size": 9966,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixer_base.py",
+          "sha256": "c795a53ca849c42212c8ec33a74284e0377df852eb4ea599aba62d5af1df282a",
+          "size": 6690,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixer_util.py",
+          "sha256": "306d0b2ea8169bdca711c6a31c0b1a3ce710d38ae2b6568ef519aa38451af608",
+          "size": 15206,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/__init__.py",
+          "sha256": "836cdb388117cf81e78d9fa2a141cca1b14b0179733322e710067749a1b16fe9",
+          "size": 47,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_apply.py",
+          "sha256": "b5171e32758a78450854f40867775d4aca58665bc920ebece04fcfcc153af02a",
+          "size": 2346,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_asserts.py",
+          "sha256": "4c77972812cb5ec0a72afbce3e1d618c27ef7b239329c5c952c2bcbe77dba5dd",
+          "size": 984,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_basestring.py",
+          "sha256": "d041443d6499a735bb78fec9da1bf33b3d034b5192c98bc273b16a44692fc88f",
+          "size": 320,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_buffer.py",
+          "sha256": "2da37b49c30d6a0b4db43146ebb4ac8e5ffcb9814816b4742e464cb856977883",
+          "size": 590,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_dict.py",
+          "sha256": "38f460596ebfb64046aab3d9a65935bd4c76a470118fb7d10a088dc0ecdc53ea",
+          "size": 3760,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_except.py",
+          "sha256": "7ff6f560c3c3d7a5d9ceef5ba31c556341f7ce1bc1b52d96b063f6c2c4765651",
+          "size": 3344,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_exec.py",
+          "sha256": "9e0893327205dea12004e88d18c580286e7977e081b5eda7baf5b7bc93bc6c52",
+          "size": 979,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_execfile.py",
+          "sha256": "6ff65db1192099457cb3d9f2618a893c6ac430028550284f3a34d5c08042b0eb",
+          "size": 2048,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_exitfunc.py",
+          "sha256": "ef4f18f651d32410c43644c27590903d41e38e763b0e108e6c685a3412a7d29c",
+          "size": 2495,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_filter.py",
+          "sha256": "2c7f0121193395750eab2b2abf5059d9a3b1a61f81763f52511265d7bca5cb21",
+          "size": 2765,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_funcattrs.py",
+          "sha256": "111df53fac6a121d61abe33883a68e731820ddc4864b0a4c1000cf2ac5f019cd",
+          "size": 644,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_future.py",
+          "sha256": "baba8cafb48dd9181a0e1f7b0f20b585ce2925e8f347e00b87407a256bb16663",
+          "size": 547,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_getcwdu.py",
+          "sha256": "5bc5252f683a401e7d81c5911617c4af1a1bcdf99a51c4bf1cfccb00446ff220",
+          "size": 451,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_has_key.py",
+          "sha256": "32943d3b921c1c3f0d3776d19e5120806990b817bc99a7e22799847abfda1f63",
+          "size": 3196,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_idioms.py",
+          "sha256": "600e34faf36e14307e59d55088e3979881d497b8fc9d77659e77709f9e8bafd7",
+          "size": 4876,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_import.py",
+          "sha256": "803baf96f9603c957eb974f252b0ad9829c889a293e0ce6829db1bce3da6dd4e",
+          "size": 3256,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_imports.py",
+          "sha256": "cdf7ee6d85e2b148230984cfc4ea3f193be458958ea42ef290854a9672a64370",
+          "size": 5684,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_imports2.py",
+          "sha256": "b6f3c628839ffe7fd72569dd6ca2210e18edae3e180002747ea011b76b7ec0ef",
+          "size": 289,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_input.py",
+          "sha256": "10c5ef3b45a4ee7e88af8852181916a788aae2bea52b08f3473815c1c43598d1",
+          "size": 708,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_intern.py",
+          "sha256": "8d29a162536b99c91bd2f9259dda7f39fec751949d6354d2c1f2e5d070c87d66",
+          "size": 1144,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_isinstance.py",
+          "sha256": "8408c92b99f50d8c4978b47a2b2155588e315f2ebbe58c160dcdcdcb89e19914",
+          "size": 1608,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_itertools.py",
+          "sha256": "578a51b9935020b03a510de15ece55fcd02c9474f37a54c158fb97ba5fd15af1",
+          "size": 1548,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_itertools_imports.py",
+          "sha256": "2e419cfbd7f2a326ae7fa10873aa377112ebec32545238fdf988acb088c3cdb7",
+          "size": 2086,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_long.py",
+          "sha256": "306b80e0a72c0d16dd934b7d51ab0c9a4224f83be5d6cbad8a7158a0a5d73551",
+          "size": 476,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_map.py",
+          "sha256": "b82c0762c44adf2af7745c030afe291e2badfe360925046c8e58d85340717696",
+          "size": 3640,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_metaclass.py",
+          "sha256": "45a30c866aa2ff69e089da147ed09986aad4516b5e5dd943f8dfcb7d3946a3e1",
+          "size": 8197,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_methodattrs.py",
+          "sha256": "8d60082f98ce52ee4955099bfd447cbadfa0e9b24ccb8d135cecc833168d44e8",
+          "size": 606,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_ne.py",
+          "sha256": "4f9cb1388ba86f29422d20979d3423fdf3541ba35a17ed44d6f4a517ff784ecd",
+          "size": 571,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_next.py",
+          "sha256": "5c7d86d9f81b2498486d626c7feced1b92f23171cf9e42881abb78de1a93bccd",
+          "size": 3174,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_nonzero.py",
+          "sha256": "c2cd7e3ba44508643a20eec4ea4c19f2f1adfd36f6b974d7c143e449571ae736",
+          "size": 591,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_numliterals.py",
+          "sha256": "1c4dd0f7881999abde6cf4d232836fa3e55fc41a7d5aa2b9866092f65707db7f",
+          "size": 768,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_operator.py",
+          "sha256": "023872fe9f03a25387cf2c17fc950cf0f990353df66e603c3a1cd3199dbccd86",
+          "size": 3426,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_paren.py",
+          "sha256": "53734f1d7778ad28a4ec3ab4415923e2da8f230de4cd527589829f570e9f254d",
+          "size": 1226,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_print.py",
+          "sha256": "cf2690f1b502249289f52cd544190db0b94d59df5eca139829cd2bf0742e9dba",
+          "size": 2844,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_raise.py",
+          "sha256": "c38ffec5862597ee8f9dac50385af943ee312bfc394366be08b2fc12563ca1a5",
+          "size": 2926,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_raw_input.py",
+          "sha256": "ce04cbaa76d414949afc230360dd9a29ff579bd868cc7f8805230d126ac9ce9b",
+          "size": 454,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_reduce.py",
+          "sha256": "9a03910a6c183586e1db01863fcde6417d06745fb3e63032333d71c5e82e7919",
+          "size": 837,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_reload.py",
+          "sha256": "17570148167e43b2155b6e1c814a3cca9e3ef53750c504932a9c7d62a8b68a3f",
+          "size": 1081,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_renames.py",
+          "sha256": "8b71472317bf3adabf819e665c725d03e3064baa45f6ffbfd78cca83eaa46e8d",
+          "size": 2221,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_repr.py",
+          "sha256": "d16930b7ef8577747cfef602aba854c64ce85d4ae1e54a18a456eaa202643e3d",
+          "size": 613,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_set_literal.py",
+          "sha256": "33f2c0b6e16357e083c3a98877e7317abe1578a44c288e5979c9d96fb5aa6727",
+          "size": 1697,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_standarderror.py",
+          "sha256": "ce7eb37bc7fb29aa138b1cec6656ae8b4886cbfa700e119a1bb8484284cb717a",
+          "size": 449,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_sys_exc.py",
+          "sha256": "0143830586d09d702ca3eeaa8f86698e5fd18af69fd28147e71a1a77600d356a",
+          "size": 1034,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_throw.py",
+          "sha256": "fec731ed523d5cdfa21893833b52b2844eabfd1549792c1c9f8ceac2d0e8e901",
+          "size": 1582,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_tuple_params.py",
+          "sha256": "f3307d4750d0657d9c42b857d5f37bdb5824f9358939da7d16d13f61eb8abc72",
+          "size": 5565,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_types.py",
+          "sha256": "a0a133cfc78e82e1f71ce628408e7d10a38552ba3e3228ebd113838c1ce44484",
+          "size": 1774,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_unicode.py",
+          "sha256": "01b2a9b1084b6a0424f27eec488c761f75f053a409608ec36a9ee0ede0d38097",
+          "size": 1256,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_urllib.py",
+          "sha256": "3d1c04d976ff4d2841025a785aaab0cc4ee06c9c9b4e09d1e2456949fa273856",
+          "size": 8367,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_ws_comma.py",
+          "sha256": "5e7a16daec0b2619110516804bf90cac459a4d0315198fd4eff69c36c54378dd",
+          "size": 1090,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_xrange.py",
+          "sha256": "60d8ce92db6f399606d2e40a3c631ba566127e8cd637ebbf35b822672139cab2",
+          "size": 2694,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_xreadlines.py",
+          "sha256": "e8c2f19f7047bfc7539fd78839929004d8fe0efba1fbcbd9d712d285e43834ba",
+          "size": 689,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/fixes/fix_zip.py",
+          "sha256": "55ce115556c7513dd967364dc6a40c39210c874e8168cf090ddd6dc606df34cb",
+          "size": 1289,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/main.py",
+          "sha256": "8f5dfa77b8c8b375daba8bb88aaa195395674311e2513b29575a70821e3aa0b8",
+          "size": 11854,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/patcomp.py",
+          "sha256": "a033a3eb91a39f96747d4300aa3394965e529c71896cd6503dd27e6b685eede5",
+          "size": 7054,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/__init__.py",
+          "sha256": "858eb0f50533bd3bd16fe32815f77fabfed92ede885070b6cb15827ec66ea500",
+          "size": 143,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/conv.py",
+          "sha256": "e2946a686c12e02248fafb1a57e7514e0c22bdb2b4a66e644215c86fedc37bff",
+          "size": 9642,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/driver.py",
+          "sha256": "beed834bd06ff496aebd27054db877284ffe8ac3a7fdde21de392e621975c3ad",
+          "size": 6177,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/grammar.py",
+          "sha256": "b04309478d2086cde92de4ba62c87bd986d05d7181c51e186a30d64468c95fa9",
+          "size": 5533,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/literals.py",
+          "sha256": "84bc9d5387a2e20fab844e530358571afa39fa3fc0e8024270b5f7d8ac5a595a",
+          "size": 1635,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/parse.py",
+          "sha256": "e245e005e524ab445a570df31f70c6fd7b901ee3b0b68bd3bcf4b41b37fa7bb6",
+          "size": 8155,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/pgen.py",
+          "sha256": "8fe2ac7e0303f0110d75832d746e6661fcd5373fa498d929163f557fd1027434",
+          "size": 13830,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 493,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/token.py",
+          "sha256": "47c7f968e1e3bf66d53fb4a6a9fc848cdae11d66d49bb70c7cf41961ea91f30c",
+          "size": 1302,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pgen2/tokenize.py",
+          "sha256": "aaa0b98f6a65e08e9f8e34358198e329d29554a0d4b5f5059924a252eeb0f5c4",
+          "size": 21119,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pygram.py",
+          "sha256": "b49d77876a9d1822ff6be04daf464341a8e4c0c3414240abf519254de2a97a48",
+          "size": 1305,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/pytree.py",
+          "sha256": "e53689352fb4fc83d85a09369650389ee01db802ad872a8abfc0bf6603ec38b9",
+          "size": 27974,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/lib2to3/refactor.py",
+          "sha256": "6e9a4262fb65cd4d277f009df73ffa5748f5fe3b963d3c5395c160d5f88b089b",
+          "size": 27507,
+          "uid": 0
+        }
+      ],
+      "name": "python3-lib2to3",
+      "source": "python3-stdlib-extensions",
+      "version": "3.10.8-1~22.04"
+    },
+    {
+      "architecture": "amd64",
+      "archive": {
+        "sha256": "fb7d9e9e10de015da2eab2a6da33fc6672d096b9281ccac0ecf990de4f724407",
+        "size": 5724,
+        "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/universe/p/python3.10/python3.10-venv_3.10.12-1~22.04.18_amd64.deb"
+      },
+      "index_reference": {
+        "component": "universe",
+        "index_sha256": "8432a1997d6d37c2ddd228000ac758e3b23459892e892d2cf5d2c72235cad4ba",
+        "stanza_ordinal_split_double_newline": 5343,
+        "stanza_sha256_without_separator": "d6729405522050e6d4379c4532bf1b693c44efce1866ef28f890f52e1175a523",
+        "suite": "jammy-updates"
+      },
+      "members": [
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/ensurepip/__init__.py",
+          "sha256": "384f5232d66daad6c7bdee43e3353c5efad77cf5229f1d38d784de5eecaad0fb",
+          "size": 10864,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/ensurepip/__main__.py",
+          "sha256": "ee735f518d0fc4dfec81f7aa3da1e052372ed4202c0da4eddd2587840beaecd7",
+          "size": 88,
+          "uid": 0
+        },
+        {
+          "gid": 0,
+          "kind": "file",
+          "mode": 420,
+          "path": "/usr/lib/python3.10/ensurepip/_uninstall.py",
+          "sha256": "3a6e95d01c45e2e47c05df3c81073b895c97c1eb0e5b90ab175d6d9263fc81f2",
+          "size": 808,
+          "uid": 0
+        }
+      ],
+      "name": "python3.10-venv",
+      "source": "python3.10",
+      "version": "3.10.12-1~22.04.18"
+    }
+  ],
+  "pdb_hypothesis": {
+    "excluded_python3_10_archive": {
+      "sha256": "10b62fd31bd0310a0b6391c04b67a1f6b33d180820b4a6cf7d25b55b993a15d7",
+      "size": 508494,
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/p/python3.10/python3.10_3.10.12-1~22.04.18_amd64.deb"
+    },
+    "excluded_python3_10_scanned_count": 0,
+    "explanation": "The python3.10 package has no .py/.so member under /usr/lib/python3.10. Its /usr/bin/pdb3.10 symlink points to pdb.py supplied by already-allowed libpython3.10-stdlib. This evidence does not justify adding python3.10.",
+    "member": {
+      "gid": 0,
+      "kind": "file",
+      "mode": 493,
+      "path": "/usr/lib/python3.10/pdb.py",
+      "sha256": "2b9b37cf7a19ec1ac0809d3384db2dfd6eb59b77283aa53c8659cac70faf2df0",
+      "size": 63225,
+      "uid": 0
+    },
+    "owner": "libpython3.10-stdlib",
+    "owner_archive": {
+      "sha256": "ee09afbc981a4aaa00053f019eab6b45dcc4dbeb4ca4fcc4277eff539e09f228",
+      "size": 1850286
+    },
+    "source": "python3.10",
+    "status": "DISPROVED_FOR_CHECKED_CANONICAL_ARCHIVES"
+  },
+  "provenance": {
+    "indexes": {
+      "main": {
+        "sha256": "0d1e4c9a8a5efe021366ad516bdb4c70da90752095f30f88c6716604f296174c",
+        "size": 3907652,
+        "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-updates/main/binary-amd64/Packages.xz"
+      },
+      "universe": {
+        "sha256": "8432a1997d6d37c2ddd228000ac758e3b23459892e892d2cf5d2c72235cad4ba",
+        "size": 1288484,
+        "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-updates/universe/binary-amd64/Packages.xz"
+      }
+    },
+    "release": {
+      "expected_signer_from_candidate": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+      "sha256": "34beb69f860de8eb98f2315b4c38c2542b1b005153652e399d898c892431adda",
+      "size": 128049,
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-updates/InRelease"
+    },
+    "verification_scope": "Retained source-reviewed InRelease anchor and index/archive hash-size bindings; archive data inspection only. No new signature verification or hosted ownership claim."
+  },
+  "purpose": "Canonical public-package inventory review fixture, not a runtime authentication substitute",
+  "schema": 1,
+  "snapshot": "20261021T000000Z"
+}

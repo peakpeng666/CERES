@@ -15,6 +15,7 @@ import sys
 import threading
 import time
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -366,6 +367,7 @@ class ServiceManager:
         self.logs_dir = self.runtime / 'logs'
         self.logs_dir.mkdir(parents=True, exist_ok=True)
         self.archive_url, self.sim_port = archive_url.rstrip('/'), sim_port
+        self.archive_port = urlsplit(self.archive_url).port or 80
         self.sim_url = f'http://127.0.0.1:{sim_port}'
         self.sim_client = None  # set by the gateway (simclient.SimClient)
         self.started_utc = utc_now()
@@ -448,12 +450,11 @@ class ServiceManager:
                         url=f'http://127.0.0.1:{self.port}/', started_utc=self.started_utc, log='gateway', facts=facts)
 
     def _archive_service(self) -> dict:
-        backend_python = paths.REPO / 'src/backend/.venv/bin/python'
         status, health = http_json('GET', f'{self.archive_url}/api/health', timeout=0.6)
         ok = status == 200 and isinstance(health, dict) and health.get('status') == 'ok'
         proc = self.archive
         ours = proc is not None and proc.alive
-        base = dict(port=ARCHIVE_PORT, url=f'{self.archive_url}/api/health', log='archive',
+        base = dict(port=self.archive_port, url=f'{self.archive_url}/api/health', log='archive',
                     known_issues=[])
         facts = []
         if ok:
@@ -469,9 +470,7 @@ class ServiceManager:
                             facts=facts, **base)
         if ok:
             return _service('archive', '档案后端', 'process', 'running',
-                            '外部进程（非本网关启动），网关不会停止它', pid=pid_listening(ARCHIVE_PORT), facts=facts, **base)
-        if not backend_python.exists():
-            return _service('archive', '档案后端', 'process', 'unavailable', '缺少 src/backend/.venv', **base)
+                            '外部进程（非本网关启动），网关不会停止它', pid=pid_listening(self.archive_port), facts=facts, **base)
         if ours:
             if time.monotonic() - proc.started_at < 30:
                 return _service('archive', '档案后端', 'process', 'starting', '等待健康检查…', pid=proc.proc.pid,
@@ -481,10 +480,17 @@ class ServiceManager:
         if proc is not None and not proc.stop_requested and proc.returncode not in (None, 0):
             return _service('archive', '档案后端', 'process', 'failed',
                             f'进程已退出（返回码 {proc.returncode}），见日志 archive', controls=['start'], **base)
-        holder = pid_listening(ARCHIVE_PORT)
+        holder = pid_listening(self.archive_port)
         if holder:
             return _service('archive', '档案后端', 'process', 'degraded',
-                            f'端口 {ARCHIVE_PORT} 被进程 {holder} 占用但健康检查失败', pid=holder, **base)
+                            f'端口 {self.archive_port} 被进程 {holder} 占用但健康检查失败', pid=holder, **base)
+        # Use the launcher's resolver rather than guessing a historical venv.
+        # Only diagnose dependencies after live/failed states, retaining real exits.
+        resolved = subprocess.run(['bash', 'src/start.sh', 'python-path'], cwd=paths.REPO,
+                                  capture_output=True, text=True, timeout=5)
+        if resolved.returncode:
+            return _service('archive', '档案后端', 'process', 'unavailable',
+                            resolved.stderr.strip() or 'Python 解释器不可用', **base)
         return _service('archive', '档案后端', 'process', 'stopped', '未运行；历史档案视图需要它', controls=['start'], **base)
 
     def sim_alive(self) -> bool:

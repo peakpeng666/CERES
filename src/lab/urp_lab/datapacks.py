@@ -191,6 +191,7 @@ class PackManager:
         pack = self.installed('history')
         if pack is None or (services.archive is not None and services.archive.alive):
             return
-        argv = [sys.executable, '-m', 'urp_lab.archive_runner', '--pack', str(pack), '--db', str(self.root.parent / 'archive' / 'research.sqlite3'), '--port', str(ARCHIVE_PORT)]
+        archive_db = Path(os.environ.get('URP_API_DB') or self.root.parent / 'archive' / 'research.sqlite3')
+        argv = [sys.executable, '-m', 'urp_lab.archive_runner', '--pack', str(pack), '--db', str(archive_db), '--port', str(ARCHIVE_PORT)]
         services.archive = ManagedProcess('archive', argv, paths.LAB, services.logs_dir / 'archive.log')
         services.archive.start()

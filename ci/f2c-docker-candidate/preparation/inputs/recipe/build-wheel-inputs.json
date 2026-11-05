@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "target": "CPython 3.12 Linux x86_64",
+  "wheels": [
+    {
+      "name": "build",
+      "version": "1.2.2.post1",
+      "sha256": "1d61c0887fa860c01971625baae8bdd338e517b836a2f70dd1f7aa3a6b2fc5b5",
+      "url": "https://files.pythonhosted.org/packages/84/c2/80633736cd183ee4a62107413def345f7e6e3c01563dbca1417363cf957e/build-1.2.2.post1-py3-none-any.whl",
+      "filename": "build-1.2.2.post1-py3-none-any.whl",
+      "bytes": 22950
+    },
+    {
+      "name": "cmake",
+      "version": "3.31.6",
+      "sha256": "1c8b05df0602365da91ee6a3336fe57525b137706c4ab5675498f662ae1dbcec",
+      "url": "https://files.pythonhosted.org/packages/59/e8/096984b89133681533650b9078c5ed1c5c9b534e869b5487f22d4de1935c/cmake-3.31.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "filename": "cmake-3.31.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl",
+      "bytes": 27800904
+    },
+    {
+      "name": "installer",
+      "version": "0.7.0",
+      "sha256": "05d1933f0a5ba7d8d6296bb6d5018e7c94fa473ceb10cf198a92ccea19c27b53",
+      "url": "https://files.pythonhosted.org/packages/e5/ca/1172b6638d52f2d6caa2dd262ec4c811ba59eee96d54a7701930726bce18/installer-0.7.0-py3-none-any.whl",
+      "filename": "installer-0.7.0-py3-none-any.whl",
+      "bytes": 453838
+    },
+    {
+      "name": "ninja",
+      "version": "1.11.1.4",
+      "sha256": "096487995473320de7f65d622c3f1d16c3ad174797602218ca8c967f51ec38a0",
+      "url": "https://files.pythonhosted.org/packages/eb/7a/455d2877fe6cf99886849c7f9755d897df32eaf3a0fba47b56e615f880f7/ninja-1.11.1.4-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl",
+      "filename": "ninja-1.11.1.4-py3-none-manylinux_2_12_x86_64.manylinux2010_x86_64.whl",
+      "bytes": 422814
+    },
+    {
+      "name": "packaging",
+      "version": "24.2",
+      "sha256": "09abb1bccd265c01f4a3aa3f7a7db064b36514d2cba19a2f694fe6150451a759",
+      "url": "https://files.pythonhosted.org/packages/88/ef/eb23f262cca3c0c4eb7ab1933c3b1f03d021f2c48f54763065b6f0e321be/packaging-24.2-py3-none-any.whl",
+      "filename": "packaging-24.2-py3-none-any.whl",
+      "bytes": 65451
+    },
+    {
+      "name": "pathspec",
+      "version": "0.12.1",
+      "sha256": "a0d503e138a4c123b27490a4f7beda6a01c6f288df0e4a8b79c7eb0dc7b4cc08",
+      "url": "https://files.pythonhosted.org/packages/cc/20/ff623b09d963f88bfde16306a54e12ee5ea43e9b597108672ff3a408aad6/pathspec-0.12.1-py3-none-any.whl",
+      "filename": "pathspec-0.12.1-py3-none-any.whl",
+      "bytes": 31191
+    },
+    {
+      "name": "pyproject_hooks",
+      "version": "1.2.0",
+      "sha256": "9e5c6bfa8dcc30091c74b0cf803c81fdd29d94f01992a7707bc97babb1141913",
+      "url": "https://files.pythonhosted.org/packages/bd/24/12818598c362d7f300f18e74db45963dbcb85150324092410c8b49405e42/pyproject_hooks-1.2.0-py3-none-any.whl",
+      "filename": "pyproject_hooks-1.2.0-py3-none-any.whl",
+      "bytes": 10216
+    },
+    {
+      "name": "scikit_build_core",
+      "version": "0.11.6",
+      "sha256": "ce6d8fe64e6b4c759ea0fb95d2f8a68f60d2df31c2989838633b8ec930736360",
+      "url": "https://files.pythonhosted.org/packages/43/49/ec16b3db6893db788ae35f98506ff5a9c25dca7eb18cc38ada8a4c1dc944/scikit_build_core-0.11.6-py3-none-any.whl",
+      "filename": "scikit_build_core-0.11.6-py3-none-any.whl",
+      "bytes": 185764
+    },
+    {
+      "name": "swig",
+      "version": "4.3.0",
+      "sha256": "6cbbb7a6a12a0127b8d1f9c7f670f9e7ad0721f7303922d8b348c1646f8dbef3",
+      "url": "https://files.pythonhosted.org/packages/11/56/b3503019d00b2cd8bb8e770cc7ac8108a1dfba8d38fc4d16c4259d7ea914/swig-4.3.0-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl",
+      "filename": "swig-4.3.0-py2.py3-none-manylinux_2_5_x86_64.manylinux1_x86_64.whl",
+      "bytes": 1877710
+    }
+  ]
+}

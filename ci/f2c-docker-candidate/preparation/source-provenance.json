@@ -1,0 +1,17 @@
+{
+  "copied_package_preparer": {
+    "candidate_sha256": "0746592a76d178a306b406cc309fd621e8904af397437a33387bf3744e7e77c6",
+    "changes": [
+      "Add exact signed cmake 3.22.1-1ubuntu1.22.04.2 root",
+      "Add exact signed python3-apt 2.4.0ubuntu4.1 root"
+    ],
+    "source_cohort": "jammy-v7",
+    "source_relative_path": "recipe/prepare_jammy_packages.py",
+    "source_sha256": "3ef3c611be036f06331e4c2f0567fa75db27072270b075c72dc1231a4644f558"
+  },
+  "native_execution": false,
+  "protocol": "urp.f2c.docker-engine-netnone/1",
+  "runtime_stage_included": false,
+  "schema": 1,
+  "scope": "compiler-build-only"
+}

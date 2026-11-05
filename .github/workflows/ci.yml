@@ -3,7 +3,7 @@ name: URP engineering checks
 on:
   pull_request:
   push:
-    branches: [main, cvrp-baselines, redo, deploy, 'optimize/**']
+    branches: [main, cvrp-baselines, redo, deploy, 'optimize/**', 'agent/**']
   workflow_dispatch:
   workflow_call:
 
@@ -15,32 +15,74 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  nonideal-model-contracts:
-    # Pure model/geometry/causal-replay checks. This job is not a Gazebo run.
+  desktop-contracts:
     runs-on: ubuntu-22.04
-    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: src/desktop
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node --test src/desktop/test/main.test.js
+
+  agriculture-contracts:
+    # TS builders and the complete Lab suite, including Agent, evolve and execution contracts.
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
           sparse-checkout: |
-            src/lab
-            src/research
-            src/frontend/core/routing
+            /*
+            !/src/repos/
+            !/papers/
+            !/literature/
+            !/materials/
+            !/experiments/results/
+            !/data/cifar-training/
+            !*.pdf
+            !*.zip
+            !*.tar.gz
+            !*.sqlite
+            !*.sqlite3
+            !*.db
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: src/frontend/package-lock.json
       - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
         with:
           version: '0.12.23'
+      - run: uv sync --locked --extra solvers
       - run: uv sync --locked --inexact
         working-directory: src/lab
-      - name: Check physical model contracts and observation-to-control replay
+      - run: npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
+      - name: Validate all agriculture builders against the real backend contract
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          mkdir -p .local-state/agriculture-contracts
+          node src/frontend/tools/check-agri-contract.mjs .local-state/agriculture-contracts/builders.json
+      - name: Fetch and verify the pinned official occupancy maps
+        run: python3 tools/fetch_ros_maps.py
+      - name: Run all Lab contracts with required maps
         working-directory: src/lab
-        run: uv run --no-sync python -m pytest -q tests/test_field_physics.py tests/test_field_nonideal.py tests/test_nonideal_audit.py tests/test_ground_risk.py tests/test_ground_audit.py tests/test_field_actuation.py tests/test_result_index.py tests/test_execution_identity.py tests/test_native_execution_identity.py tests/test_invalidated_metrics.py tests/test_map_path_config.py tests/test_extended.py::test_learned_split_isolation tests/test_extended.py::test_learned_model_integrity_and_scope tests/test_extended.py::test_pre_http_simulator_failure_is_visible --junitxml=../../.local-state/nonideal-model-contracts.xml
-      - name: Retain model test results
+        env:
+          URP_ROS_MAPS: ${{ github.workspace }}/.local-state/ros-maps
+        run: uv run --no-sync python -m pytest -q --require-maps --junitxml=../../.local-state/agriculture-contracts/lab.xml
+      - name: Exercise isolated dual-service HTTP flow and startup failure
+        run: python3 tools/smoke_dual_service.py --output .local-state/agriculture-contracts/dual-service --port 4186 --archive-port 4187
+      - name: Retain agriculture contract results
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: nonideal-model-contracts
-          path: .local-state/nonideal-model-contracts.xml
+          name: agriculture-contracts
+          path: .local-state/agriculture-contracts
           include-hidden-files: true
           if-no-files-found: warn
   evolve-research-contracts:
@@ -72,6 +114,7 @@ jobs:
           path: .local-state/evolve-research-contracts.xml
           include-hidden-files: true
           if-no-files-found: warn
+
   engineering:
     runs-on: ubuntu-22.04
     timeout-minutes: 20
@@ -79,10 +122,14 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+          # Cone mode includes setup/run.sh and setup/profile.sh as parent files
+          # of setup/ubuntu, without checking out dated research archives.
           sparse-checkout: |
             .github
             tools
             scripts
+            setup/ubuntu
+            docs/assets
             protocol
             independent
             src/backend
@@ -101,6 +148,11 @@ jobs:
         with:
           version: '0.12.23'
       - run: uv sync --locked --extra solvers
+      - name: Check the pip export against the authoritative uv lock
+        run: |
+          mkdir -p .local-state
+          uv export --locked --extra solvers --no-dev --no-hashes --no-annotate --no-header > .local-state/requirements.lock
+          sed '/^#/d' requirements.lock | diff -u - .local-state/requirements.lock
       - run: npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
       - run: uv run --no-sync python tools/check_project.py --output .local-state/ci
       - name: Retain checks and all failures
@@ -126,10 +178,44 @@ jobs:
             cohort_b/ails
             cohort_b/sisr
             src/research
-      - name: Install native build and archive-test prerequisites
+      - name: Verify preinstalled native build and archive-test prerequisites
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends openjdk-17-jdk-headless g++ zstd
+          set -euo pipefail
+          mkdir -p .local-state/deployment-prerequisites
+          {
+            printf 'Runner image: %s / %s\n' "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+            # ubuntu-22.04 provides a complete JDK 17 separately from its default Java.
+            # Fail closed on image drift instead of downloading another JDK during smoke tests.
+            if [[ -z "${JAVA_HOME_17_X64:-}" || ! -x "$JAVA_HOME_17_X64/bin/java" || ! -x "$JAVA_HOME_17_X64/bin/javac" ]]; then
+              echo '::error::The runner must provide a complete JDK 17 at JAVA_HOME_17_X64.'
+              exit 1
+            fi
+            export JAVA_HOME="$JAVA_HOME_17_X64"
+            export PATH="$JAVA_HOME/bin:$PATH"
+            printf 'JAVA_HOME=%s\n' "$JAVA_HOME"
+            for tool in java javac g++ zstd; do
+              command -v "$tool" || { echo "::error::Missing required tool: $tool"; exit 1; }
+            done
+            if ! java_version="$(java -version 2>&1)"; then
+              printf '%s\n' "$java_version"; exit 1
+            fi
+            printf '%s\n' "$java_version"
+            if ! javac_version="$(javac -version 2>&1)"; then
+              printf '%s\n' "$javac_version"; exit 1
+            fi
+            printf '%s\n' "$javac_version"
+            java_17_pattern='version[[:space:]]+"17([."]|$)'
+            javac_17_pattern='^javac[[:space:]]+17([.]|$)'
+            if [[ ! "$java_version" =~ $java_17_pattern || ! "$javac_version" =~ $javac_17_pattern ]]; then
+              echo '::error::Both java and javac must report major version 17.'
+              exit 1
+            fi
+            g++ --version
+            zstd --version
+            printf 'JAVA_HOME=%s\n' "$JAVA_HOME" >> "$GITHUB_ENV"
+            printf '%s\n' "$JAVA_HOME/bin" >> "$GITHUB_PATH"
+          } 2>&1 | tee .local-state/deployment-prerequisites/toolchain.txt
       - name: Check installer and publication contracts
         run: |
           for file in install.sh deploy/*.sh setup/ubuntu/*.sh; do bash -n "$file"; done
@@ -141,8 +227,6 @@ jobs:
             URP_PORT=4200 docker compose -f "$file" config --format json | python3 -c 'import json,sys; lab=json.load(sys.stdin)["services"]["lab"]; assert str(lab["environment"]["URP_PORT"]) == "4100"; assert any(str(p["published"]) == "4200" and p["target"] == 4100 for p in lab["ports"])'
           done
       - name: Build and minimally execute native CVRP adapters
-        env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         run: |
           source setup/ubuntu/env.sh
           command -v java
@@ -155,6 +239,15 @@ jobs:
         with:
           name: deployment-cohort-smoke
           path: .local-state/cohort-smoke
+          include-hidden-files: true
+          if-no-files-found: warn
+
+      - name: Retain prerequisite toolchain diagnostics
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: deployment-prerequisites
+          path: .local-state/deployment-prerequisites
           include-hidden-files: true
           if-no-files-found: warn
 

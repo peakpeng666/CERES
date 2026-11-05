@@ -231,6 +231,9 @@ export interface MapCheck {
   min_clearance_m: number | null;
   robot_radius_m: number;
   violations: { route: number; segment: number; point: XY; clearance_m: number }[];
+  margin_m?: number;
+  violation_count?: number;
+  method?: string;
 }
 
 export interface Solution {

@@ -1,23 +1,11 @@
 import type { XY } from '../../lab/types';
 import type { FleetInstance, FleetObstacle, FleetRoute, ObstacleKind } from '../types';
 
-export function pointInPolygon([x, y]: XY, poly: XY[]): boolean {
-  let inside = false;
-  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-    const [xi, yi] = poly[i];
-    const [xj, yj] = poly[j];
-    if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-  }
-  return inside;
-}
+// 包含与点线距离与农业构建器共用同一实现，避免两套几何判定出现分歧。
+import { pointInPolygon as sharedPointInPolygon, segDist } from '../agri/geometry';
 
-export function distToSegment(p: XY, a: XY, b: XY): number {
-  const dx = b[0] - a[0];
-  const dy = b[1] - a[1];
-  const len = dx * dx + dy * dy;
-  const t = len ? Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / len)) : 0;
-  return Math.hypot(p[0] - (a[0] + t * dx), p[1] - (a[1] + t * dy));
-}
+export const pointInPolygon = (p: XY, poly: XY[]): boolean => sharedPointInPolygon(p, poly);
+export const distToSegment = (p: XY, a: XY, b: XY): number => segDist(p, a, b);
 
 export function distToEdges(p: XY, poly: XY[]): number {
   let best = Infinity;

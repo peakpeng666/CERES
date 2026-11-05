@@ -270,6 +270,16 @@ class JobManager:
             with _RUN_LOCK:
                 self._check_source()
                 result = self._runner(payload)
+            if (not isinstance(result, dict) or type(result.get('feasible')) is not bool
+                    or not isinstance(result.get('status'), str) or not result['status']):
+                raise StoreError('invalid_runner_result', '执行结果缺少明确的状态或布尔可行性。', 500)
+            if (result['status'] in {'OK', 'TIMEOUT_WITH_FEASIBLE_INCUMBENT'} and not result['feasible']
+                    or result['status'] in {'NO_SOLUTION', 'TIMEOUT_NO_SOLUTION'} and result['feasible']):
+                raise StoreError('invalid_runner_result', '执行结果状态与可行性矛盾。', 500)
+            cost = result.get('cost')
+            if (result['feasible'] and (type(cost) is not int or not 0 <= cost <= 2**63-1)
+                    or not result['feasible'] and cost is not None):
+                raise StoreError('invalid_runner_result', '执行结果成本必须与可行性一致。', 500)
             if result.get('payload_sha256') != self._digest(payload):
                 raise StoreError('result_identity_mismatch', '执行结果不属于已接受的输入。', 409)
             if result.get('status') in {'OK','TIMEOUT_WITH_FEASIBLE_INCUMBENT','TIMEOUT_NO_SOLUTION','NO_SOLUTION'}:

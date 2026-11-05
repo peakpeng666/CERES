@@ -6,10 +6,11 @@ const http = require('node:http');
 const net = require('node:net');
 const os = require('node:os');
 const path = require('node:path');
+const { dataLocations, prepareDataHome } = require('./data-home');
 
 const PREFERRED_PORT = 4100;
 const START_TIMEOUT_MS = 120_000;
-const STOP_TIMEOUT_MS = 20_000;
+const STOP_TIMEOUT_MS = 180_000;
 
 function request(url, { method = 'GET', timeoutMs = 1500 } = {}) {
   return new Promise((resolve) => {
@@ -64,14 +65,17 @@ function layout(app) {
   return { python, cwd: lab };
 }
 
-function childEnv(app, port) {
+function childEnv(app, port, settings) {
   const env = { ...process.env };
   // The AppImage runtime exports its own library path; the bundled Python must not inherit it.
   for (const name of ['LD_LIBRARY_PATH', 'PYTHONHOME', 'PYTHONPATH', 'VIRTUAL_ENV']) delete env[name];
   const config = path.join(os.homedir(), '.config', 'urp-workbench');
+  const data = dataLocations(app, settings);
   return {
     ...env,
-    URP_LAB_RUNTIME: path.join(app.getPath('userData'), 'runtime'),
+    URP_DATA_HOME: data.root,
+    URP_LAB_RUNTIME: data.runtime,
+    URP_API_DB: data.archiveDb,
     URP_CONFIG_DIR: config,
     URP_LLM_CONFIG: path.join(config, 'llm.json'),
     URP_LLM_CREDENTIALS: path.join(config, 'credentials.json'),
@@ -106,6 +110,7 @@ class Backend {
   }
 
   async start(onStatus = () => {}) {
+    prepareDataHome(this.app, this.settings);
     const { python, cwd } = layout(this.app);
     if (!fs.existsSync(python)) throw new Error(`找不到内置 Python：${python}`);
     const port = await choosePort(this.settings.get('port'));
@@ -117,7 +122,7 @@ class Backend {
     onStatus('正在启动后端');
     // Stdin stays open for the app's lifetime; the gateway leaves by itself if the app dies without saying goodbye.
     this.child = spawn(python, ['-m', 'urp_lab', 'serve', '--port', String(port), '--no-archive', '--exit-with-stdin'],
-      { cwd, env: childEnv(this.app, port), stdio: ['pipe', log, log], windowsHide: true });
+      { cwd, env: childEnv(this.app, port, this.settings), stdio: ['pipe', log, log], windowsHide: true });
     fs.closeSync(log);
     const child = this.child;
     const exited = new Promise((resolve) => child.once('exit', (code) => resolve(code ?? -1)));
@@ -143,7 +148,9 @@ class Backend {
     if (clean) return;
     if (process.platform === 'win32') spawn('taskkill', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true });
     else child.kill('SIGKILL');
+    const stopped = await Promise.race([gone.then(() => true), new Promise((r) => setTimeout(() => r(false), 5000))]);
+    if (!stopped) throw new Error('后端还未退出，不能切换或迁移数据');
   }
 }
 
-module.exports = { Backend, healthy, request, portIsFree, choosePort };
+module.exports = { Backend, healthy, request, portIsFree, choosePort, layout, childEnv };

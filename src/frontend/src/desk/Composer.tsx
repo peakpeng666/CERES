@@ -79,7 +79,7 @@ export function Composer({ session, big = false, compact = false, seed, placehol
   }, [text]);
 
   const running = session?.state === 'running';
-  const blocked = running || pending;
+  const blocked = running || pending || !!session?.restoration?.read_only;
   const placeholder = hint ?? (!session ? (newMap ? '想在这张地图上做什么？例如：比较 3 个算法，目标是尽快完成' : '场地大小、车辆数、任务点数、容量与目标，写一句话就行')
     : session.state === 'awaiting_user' ? '回答上面的问题，或补充其他要求'
       : session.state === 'awaiting_confirmation' ? '输入“确认”开始执行，或说明要修改的地方'

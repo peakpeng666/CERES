@@ -41,7 +41,7 @@ try:
  inst['customers']=[{'id':i,'node':n,'demand':1,'label':f'T{i}'} for i,n in enumerate(nodes)];inst['capacity']=12
  r=done(solve(sc['id'],'urp.turn_mode_dp',{'time_limit_s':.05},inst))
  check('actual_exact_solver_timeout',r['state']=='timeout' and not r['routes'],run=r)
- rid=solve('bench-cvrp-uniform-n100','pyvrp.hgs',{'time_limit_s':30});wait('/lab/api/runs/'+rid,'state',{'running'})
+ rid=solve('bench-cvrp-uniform-n100','pyvrp.ils',{'time_limit_s':30});wait('/lab/api/runs/'+rid,'state',{'running'})
  api.call('POST',f'/lab/api/runs/{rid}/cancel',{});r=done(rid)
  check('cancel_solver',r['state']=='canceled' and not r['routes'],run=r)
  extra_node=next(int(k) for k in inst['coordinates'] if int(k) not in nodes and int(k)!=0)

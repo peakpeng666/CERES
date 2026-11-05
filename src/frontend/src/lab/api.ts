@@ -126,7 +126,7 @@ export const lab = {
 
 /** Download URLs (served with Content-Disposition by the gateway). */
 export const exportUrl = {
-  run: (run_id: string, format: 'json' | 'csv' | 'geojson') =>
+  run: (run_id: string, format: 'json' | 'csv' | 'tasks-csv' | 'geojson') =>
     `${BASE}/runs/${encodeURIComponent(run_id)}/export?format=${format}`,
   simRun: (id: string, format: 'json' | 'csv') => `${BASE}/sim/runs/${encodeURIComponent(id)}/export?format=${format}`,
 };
@@ -166,7 +166,7 @@ class EventHub {
   private stateListeners = new Set<() => void>();
   private hiddenTimer = 0;
   connected = false;
-  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session', 'physics_run', 'pack'];
+  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session', 'physics_run', 'pack', 'agent'];
 
   constructor() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -254,9 +254,9 @@ export function useLabResource<T>(
   load: (signal: AbortSignal) => Promise<T>,
   options: { event?: string; select?: (data: unknown) => T | null; pollMs?: number; reloadOn?: string } = {},
 ): { data: T | null; error: Error | null; loading: boolean; reload: () => void } {
-  const [data, setData] = useState<T | null>(null);
-  const [error, setError] = useState<Error | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [result, setResult] = useState<{ key: string; data: T | null; error: Error | null; loading: boolean }>(
+    { key, data: null, error: null, loading: true },
+  );
   const [nonce, setNonce] = useState(0);
   const loadRef = useRef(load);
   loadRef.current = load;
@@ -265,34 +265,30 @@ export function useLabResource<T>(
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true);
-    loadRef
-      .current(controller.signal)
-      .then((v) => {
-        if (controller.signal.aborted) return;
-        setData(v);
-        setError(null);
+    setResult((previous) => ({ key, data: previous.key === key ? previous.data : null, error: previous.key === key ? previous.error : null, loading: true }));
+    const loader = loadRef.current;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    void Promise.resolve().then(() => loader(controller.signal))
+      .then((data) => {
+        if (!controller.signal.aborted) setResult({ key, data, error: null, loading: false });
       })
-      .catch((e: Error) => {
-        if (e.name !== 'AbortError') setError(e);
+      .catch((error: Error) => {
+        if (!controller.signal.aborted) setResult((previous) => ({ ...previous, error, loading: false }));
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!controller.signal.aborted && options.pollMs) timer = setTimeout(() => setNonce((n) => n + 1), options.pollMs);
       });
-    return () => controller.abort();
-  }, [key, nonce]);
+    return () => { controller.abort(); clearTimeout(timer); };
+  }, [key, nonce, options.pollMs]);
 
   useEffect(() => {
     if (!options.event) return;
     return events.subscribe((type, payload) => {
       if (type !== options.event) return;
       const next = selectRef.current ? selectRef.current(payload) : (payload as T);
-      if (next !== null && next !== undefined) {
-        setData(next);
-        setError(null);
-      }
+      if (next !== null && next !== undefined) setResult({ key, data: next, error: null, loading: false });
     });
-  }, [options.event]);
+  }, [key, options.event]);
 
   useEffect(() => {
     if (!options.reloadOn) return;
@@ -305,13 +301,9 @@ export function useLabResource<T>(
     return () => { off(); window.clearTimeout(timer); };
   }, [options.reloadOn]);
 
-  useEffect(() => {
-    if (!options.pollMs) return;
-    const id = window.setInterval(() => setNonce((n) => n + 1), options.pollMs);
-    return () => window.clearInterval(id);
-  }, [options.pollMs]);
-
-  return { data, error, loading, reload: () => setNonce((n) => n + 1) };
+  // A changed key must never render the previous resource, even before effects run.
+  const current = result.key === key ? result : { data: null, error: null, loading: true };
+  return { ...current, reload: () => setNonce((n) => n + 1) };
 }
 
 /* ---------------------------------------------------------------- format -- */

@@ -3,6 +3,7 @@ import pytest
 import os
 import subprocess
 import sys
+import time
 from types import SimpleNamespace
 
 from urp_lab.services import ServiceManager
@@ -48,10 +49,16 @@ def test_late_gone_notification_cannot_fail_new_run(restarted):
 
 def test_adoption_requires_runtime_identity_and_expires_on_exit(tmp_path, monkeypatch):
     sid = 'session-owned'
-    child = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)',
+    ready = tmp_path / 'child-ready'
+    child = subprocess.Popen([sys.executable, '-c',
+                              'import pathlib,sys,time; pathlib.Path(sys.argv[1]).touch(); time.sleep(60)', str(ready),
                               '--runtime', str(tmp_path / 'sim' / sid)],
                              env={**os.environ, 'URP_SIM_SESSION': sid})
     try:
+        deadline = time.monotonic() + 5
+        while not ready.exists() and child.poll() is None and time.monotonic() < deadline:
+            time.sleep(.005)
+        assert ready.exists(), 'child did not finish exec before the ownership check'
         manager = ServiceManager(runtime=tmp_path)
         foreign = ServiceManager(runtime=tmp_path / 'other-runtime')
         monkeypatch.setattr('urp_lab.services.pid_listening', lambda _: child.pid)

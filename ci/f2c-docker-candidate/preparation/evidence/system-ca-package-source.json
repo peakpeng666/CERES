@@ -1,0 +1,216 @@
+{
+  "schema": 1,
+  "research_date": "2026-10-22",
+  "purpose": "Reproducible public-source evidence for the Jammy default CA-file path mismatch; no package code execution.",
+  "snapshot": "20261021T000000Z",
+  "snapshot_base_url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/",
+  "public_runtime_observation": {
+    "code": "BLOCKED_post_install_verification__ca_file_missing",
+    "meaning": "The v10 helper reached the CA-file predicate after successful imports and Python/APT version predicates.",
+    "limits": [
+      "No observation establishes whether /etc/ssl/certs/ca-certificates.crt was generated.",
+      "No observation independently establishes the actual loaded libcrypto bytes or its default path in the failed process.",
+      "The source/package mismatch is proven for the exact public archives inspected; this is not a claim that the missing default alias is the only hosted defect."
+    ]
+  },
+  "metadata_chain": {
+    "inrelease_url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-security/InRelease",
+    "inrelease_size": 128927,
+    "inrelease_sha256": "eaa0a9cb0ad5ea72dcaf84e81a1f13c82a5afbb08700bee189b9b7e2c638c5a9",
+    "expected_archive_signer_fingerprint": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+    "index_url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-security/main/binary-amd64/Packages.xz",
+    "index_size": 3643160,
+    "index_sha256": "193e21d53e0d7fbf97fed37314da94d75223d4575b769aa95891d8ea1592471a",
+    "exact_inrelease_sha256_entry": " 193e21d53e0d7fbf97fed37314da94d75223d4575b769aa95891d8ea1592471a          3643160 main/binary-amd64/Packages.xz",
+    "verification_performed": [
+      "InRelease SHA256 matches the frozen bootstrap anchor.",
+      "Packages.xz byte count and SHA256 match the InRelease SHA256 entry.",
+      "Inspected binary package byte counts and SHA256 values match their exact index stanzas."
+    ],
+    "signature_limit": "No independent signature-verification claim is made by this artifact. The frozen bootstrap separately verifies InRelease signatures. A local research recheck was unavailable because gpgv was not installed; no installation was attempted."
+  },
+  "packages": [
+    {
+      "name": "ca-certificates",
+      "version": "20260816ubuntu0.22.04.1",
+      "architecture": "all",
+      "size": 139540,
+      "sha256": "29ca037f49f7a4b41d67ad72946c2e541f3ae52d8f6ab1495d2af09aa391144b",
+      "filename": "pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.22.04.1_all.deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.22.04.1_all.deb",
+      "depends": "openssl (>= 1.1.1), debconf (>= 0.5) | debconf-2.0",
+      "exact_index_stanza": "Package: ca-certificates\nPriority: important\nSection: misc\nInstalled-Size: 343\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nArchitecture: all\nVersion: 20260816ubuntu0.22.04.1\nDepends: openssl (>= 1.1.1), debconf (>= 0.5) | debconf-2.0\nEnhances: openssl\nBreaks: ca-certificates-java (<< 20121112+nmu1)\nFilename: pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.22.04.1_all.deb\nSize: 139540\nMD5sum: ea3c056d1a8d84c264dcb5287fe2b355\nSHA1: 41cf432e283995679f76c546f7e783609acbb892\nSHA256: 29ca037f49f7a4b41d67ad72946c2e541f3ae52d8f6ab1495d2af09aa391144b\nSHA512: fc9606cf40db00aa75ebd58181f29ad4f5a64dc3ffac54781889e21a29b9397316302c681516aaee157efdf5de04e8e6264736c1f7cf20f66259304858fe288a\nDescription: Common CA certificates\nDescription-md5: e867d2a359bea1800b5bff209fc65bd1\nMulti-Arch: foreign\nOriginal-Maintainer: Julien Cristau <jcristau@debian.org>\nOrigin: Ubuntu\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\nTask: minimal, server-minimal\n",
+      "archive_data_facts": {
+        "cert_pem_members": [],
+        "bundle_members": []
+      }
+    },
+    {
+      "name": "libpython3.10-minimal",
+      "version": "3.10.12-1~22.04.18",
+      "architecture": "amd64",
+      "size": 816508,
+      "sha256": "ccbd08562769e0a38b34005dc8bde200838e6c6530cc04ac34525129ed42d847",
+      "filename": "pool/main/p/python3.10/libpython3.10-minimal_3.10.12-1~22.04.18_amd64.deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/p/python3.10/libpython3.10-minimal_3.10.12-1~22.04.18_amd64.deb",
+      "depends": "libc6 (>= 2.14), libssl3 (>= 3.0.0~~alpha1)",
+      "exact_index_stanza": "Package: libpython3.10-minimal\nSource: python3.10\nPriority: important\nSection: python\nInstalled-Size: 5121\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nArchitecture: amd64\nVersion: 3.10.12-1~22.04.18\nRecommends: libpython3.10-stdlib\nDepends: libc6 (>= 2.14), libssl3 (>= 3.0.0~~alpha1)\nConflicts: binfmt-support (<< 1.1.2)\nFilename: pool/main/p/python3.10/libpython3.10-minimal_3.10.12-1~22.04.18_amd64.deb\nSize: 816508\nMD5sum: 469a30e607e89d30019cada2ab5e0f6c\nSHA1: 83f926d40200653f144b79a71dfde0e4aba4b1cb\nSHA256: ccbd08562769e0a38b34005dc8bde200838e6c6530cc04ac34525129ed42d847\nSHA512: 64a21f6c4c94d83ddc2d5a11948802355c2de776e5378d3679bd062d4df57b55b2fed4d0daa5dc90f7edfa65d636f56a83dd818d431eae3bfa44491a48b3c1a1\nDescription: Minimal subset of the Python language (version 3.10)\nDescription-md5: 300d4a02aaf80930aca7c7ab3ecb0176\nOriginal-Maintainer: Matthias Klose <doko@debian.org>\nMulti-Arch: same\nOrigin: Ubuntu\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\nTask: minimal, server-minimal\n",
+      "archive_data_facts": {
+        "cert_pem_members": [],
+        "bundle_members": [],
+        "ssl_py": {
+          "member": "./usr/lib/python3.10/ssl.py",
+          "sha256": "0bb5594fc11e744c99aff4ea7cabb50eed5ad62b8f87171bb80af4143dc83aa0",
+          "lines": "438-449",
+          "semantics": "Default file path is obtained from _ssl, overridden by the matching environment key, and retained only when os.path.isfile returns true."
+        }
+      }
+    },
+    {
+      "name": "libssl3",
+      "version": "3.0.2-0ubuntu1.30",
+      "architecture": "amd64",
+      "size": 1907006,
+      "sha256": "d1b4636e32ac6d3b95d583ac05ac548b1aa248414bae1c51b14f54be0f8fd7bc",
+      "filename": "pool/main/o/openssl/libssl3_3.0.2-0ubuntu1.30_amd64.deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/o/openssl/libssl3_3.0.2-0ubuntu1.30_amd64.deb",
+      "depends": "libc6 (>= 2.34), debconf (>= 0.5) | debconf-2.0",
+      "exact_index_stanza": "Package: libssl3\nSource: openssl\nPriority: required\nSection: libs\nInstalled-Size: 5841\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nArchitecture: amd64\nVersion: 3.0.2-0ubuntu1.30\nDepends: libc6 (>= 2.34), debconf (>= 0.5) | debconf-2.0\nFilename: pool/main/o/openssl/libssl3_3.0.2-0ubuntu1.30_amd64.deb\nSize: 1907006\nMD5sum: 48ba2f065c16a24fd77a5d0b3a99e252\nSHA1: a59a0fa5b633d3a6c34a99d6044e1a3cde751cf0\nSHA256: d1b4636e32ac6d3b95d583ac05ac548b1aa248414bae1c51b14f54be0f8fd7bc\nSHA512: 015d5fcfc382aed29bb979206ffa8dc28b87dc532cea226f4f16c2c12d8a8bcb3c088212fba776d3d2a56e65a22f72a041605cbba97a6d32fe33b1011be81f1c\nHomepage: https://www.openssl.org/\nDescription: Secure Sockets Layer toolkit - shared libraries\nDescription-md5: 88547c6206c7fbc4fcc7d09ce100d210\nMulti-Arch: same\nOriginal-Maintainer: Debian OpenSSL Team <pkg-openssl-devel@alioth-lists.debian.net>\nOrigin: Ubuntu\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\nTask: minimal, server-minimal\n",
+      "archive_data_facts": {
+        "cert_pem_members": [],
+        "bundle_members": [],
+        "libcrypto": {
+          "member": "./usr/lib/x86_64-linux-gnu/libcrypto.so.3",
+          "sha256": "7cc817ff1841b59516d684f357bc0c3fc2cc52c3fa9b4ffb8ce8bdc215f02915",
+          "symbol": "X509_get_default_cert_file@@OPENSSL_3.0.0",
+          "symbol_virtual_address": "0x2294e0",
+          "return_string_virtual_address": "0x35c5ca",
+          "return_string": "/usr/lib/ssl/cert.pem",
+          "verification": "Read-only objdump disassembly and rodata inspection; the shared library was not executed."
+        }
+      }
+    },
+    {
+      "name": "openssl",
+      "version": "3.0.2-0ubuntu1.30",
+      "architecture": "amd64",
+      "size": 1185522,
+      "sha256": "a5b9484a287aba47096fa9ea9821c5c98cf95b8dd726786e7c3a3311fb8eb3b4",
+      "filename": "pool/main/o/openssl/openssl_3.0.2-0ubuntu1.30_amd64.deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/o/openssl/openssl_3.0.2-0ubuntu1.30_amd64.deb",
+      "depends": "libc6 (>= 2.34), libssl3 (>= 3.0.2-0ubuntu1.2)",
+      "exact_index_stanza": "Package: openssl\nPriority: important\nSection: utils\nInstalled-Size: 2053\nMaintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>\nArchitecture: amd64\nVersion: 3.0.2-0ubuntu1.30\nSuggests: ca-certificates\nDepends: libc6 (>= 2.34), libssl3 (>= 3.0.2-0ubuntu1.2)\nFilename: pool/main/o/openssl/openssl_3.0.2-0ubuntu1.30_amd64.deb\nSize: 1185522\nMD5sum: 5eab03dc05eeccb0a69e9a876f084a4d\nSHA1: 3fb5840d8222426b4e9f2bdf0725fa1cf54e1d9b\nSHA256: a5b9484a287aba47096fa9ea9821c5c98cf95b8dd726786e7c3a3311fb8eb3b4\nSHA512: b24f643a56bb3575dbe1a59f5e25a0e3062ea286a6663d7a00edc7d4fe67fe6c049e66ecab8ae8ef29686b157dd19fcbdebdfee70522767b990e00b217425273\nHomepage: https://www.openssl.org/\nDescription: Secure Sockets Layer toolkit - cryptographic utility\nDescription-md5: 1f6f070f1d0a8f3ed379c44218ff7bbf\nMulti-Arch: foreign\nOriginal-Maintainer: Debian OpenSSL Team <pkg-openssl-devel@alioth-lists.debian.net>\nOrigin: Ubuntu\nBugs: https://bugs.launchpad.net/ubuntu/+filebug\nTask: minimal, server-minimal\n",
+      "archive_data_facts": {
+        "cert_pem_members": [],
+        "bundle_members": [],
+        "ssl_symlinks": [
+          {
+            "member": "./usr/lib/ssl/certs",
+            "target": "/etc/ssl/certs"
+          },
+          {
+            "member": "./usr/lib/ssl/misc/tsget",
+            "target": "tsget.pl"
+          },
+          {
+            "member": "./usr/lib/ssl/openssl.cnf",
+            "target": "/etc/ssl/openssl.cnf"
+          },
+          {
+            "member": "./usr/lib/ssl/private",
+            "target": "/etc/ssl/private"
+          }
+        ]
+      }
+    }
+  ],
+  "ubuntu_source_packaging": {
+    "dsc_url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/o/openssl/openssl_3.0.2-0ubuntu1.30.dsc",
+    "dsc_size": 2486,
+    "dsc_sha256": "22b1c851fb5c229b27f497b1867e994ab2ad2f90d288d2dc3bd6eef15f6307bc",
+    "debian_tar_url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/o/openssl/openssl_3.0.2-0ubuntu1.30.debian.tar.xz",
+    "debian_tar_size": 319128,
+    "debian_tar_sha256": "b2f4d75e1eba248397d8e4f4a029195ec3bb0e971b2e975594115a1c79b31c47",
+    "authentication_limit": "The Debian tar checksum matches the official HTTPS-retrieved .dsc. The .dsc signature was not independently verified and this source archive was not anchored through a signed Sources index in this research.",
+    "source_locations": [
+      {
+        "member": "debian/rules",
+        "lines": "33",
+        "finding": "Configure argument --openssldir=/usr/lib/ssl."
+      },
+      {
+        "member": "debian/rules",
+        "lines": "121-123",
+        "finding": "Move certs, openssl.cnf and private to /etc/ssl and create links for only those names."
+      },
+      {
+        "member": "debian/openssl.install",
+        "lines": "1-9",
+        "finding": "Install manifest names certs, private, misc and openssl.cnf under usr/lib/ssl; no cert.pem."
+      },
+      {
+        "member": "debian/openssl.postinst",
+        "lines": "3-7",
+        "finding": "Creates /usr/lib/ssl -> /etc/ssl only if /usr/lib/ssl does not exist; does not create cert.pem."
+      }
+    ]
+  },
+  "ca_generation_source": {
+    "package": "ca-certificates",
+    "control_members": [
+      {
+        "member": "postinst",
+        "lines": "141-150,153-167",
+        "finding": "Runs update-ca-certificates during configuration and for registered update triggers."
+      },
+      {
+        "member": "triggers",
+        "lines": "1-2",
+        "finding": "Registers update-ca-certificates and update-ca-certificates-fresh."
+      }
+    ],
+    "data_member": "usr/sbin/update-ca-certificates",
+    "locations": [
+      {
+        "lines": "27-32",
+        "finding": "Default bundle is /etc/ssl/certs/ca-certificates.crt."
+      },
+      {
+        "lines": "90-101,147-155",
+        "finding": "Selected certificate data is appended by add() to the temporary bundle."
+      },
+      {
+        "lines": "190-197",
+        "finding": "The temporary bundle is installed only if it exists; no /usr/lib/ssl/cert.pem alias is created."
+      }
+    ]
+  },
+  "primary_api_sources": [
+    {
+      "url": "https://raw.githubusercontent.com/python/cpython/v3.10.12/Modules/_ssl.c",
+      "lines": "4906-4935",
+      "finding": "Calls X509_get_default_cert_file_env() and X509_get_default_cert_file() to obtain file defaults."
+    },
+    {
+      "url": "https://docs.python.org/3.10/library/ssl.html#ssl.get_default_verify_paths",
+      "finding": "cafile is None if the resolved file does not exist."
+    },
+    {
+      "url": "https://docs.openssl.org/3.0/man3/SSL_CTX_load_verify_locations/",
+      "finding": "Default CAfile and CApath are separate; SSL_CERT_FILE/SSL_CERT_DIR can override them. A missing default location need not make set_default_verify_paths fail."
+    },
+    {
+      "url": "https://manpages.ubuntu.com/manpages/jammy/man8/update-ca-certificates.8.html",
+      "finding": "Ubuntu generates the combined bundle as /etc/ssl/certs/ca-certificates.crt."
+    }
+  ],
+  "execution_scope": {
+    "package_installation": false,
+    "maintainer_scripts_executed": false,
+    "downloaded_libraries_executed": false,
+    "docker_executed": false,
+    "native_build_executed": false,
+    "raw_hosted_logs_included": false,
+    "publication_performed": false
+  }
+}

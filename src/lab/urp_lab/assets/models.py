@@ -18,9 +18,10 @@ import numpy as np
 from defusedxml import ElementTree as ET
 
 from .safety import clean_relpath, ImportRejected
+from .. import paths
 
 GLB_MAGIC, JSON_CHUNK, BIN_CHUNK = 0x46546C67, 0x4E4F534A, 0x004E4942
-ROS_SHARE = Path('/opt/ros/humble/share')
+ROS_SHARE = paths.ROS_SHARE
 DRIVE_PATTERNS = (
     ('ackermann', re.compile(r'ackermann', re.I)),
     ('tracked', re.compile(r'tracked', re.I)),

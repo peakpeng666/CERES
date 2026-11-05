@@ -1,0 +1,176 @@
+# Separate capability-only cohort; no rootfs preparation or native build.
+name: Jammy rootless capability proof
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/agriculture-compatibility-20261022]
+    paths: [.github/workflows/f2c-capability.yml]
+permissions:
+  contents: read
+concurrency:
+  group: f2c-jammy-capability-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  capability-only:
+    if: github.repository == 'peakpeng666/URP' && github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    env:
+      REVIEWED_SOURCE_INDEX_SHA256: 31fcdd8ae103f04dabbb38b2f36fe2a87b525298e9202a3a8a2bfa210c6ec732
+    steps:
+      - name: Check out reviewed capability sources
+        id: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          path: recipe-source
+          persist-credentials: false
+          sparse-checkout: deploy/f2c-capability
+      - name: Materialize only reviewed indexed bytes
+        id: anchor
+        shell: bash
+        run: |
+          exec 2>/dev/null
+          set -euo pipefail
+          umask 077
+          export CANDIDATE_ROOT="$RUNNER_TEMP/f2c-capability"
+          export CAPABILITY_PYCACHE="$RUNNER_TEMP/f2c-capability/unused-pycache"
+          test ! -e "$CANDIDATE_ROOT" && test ! -L "$CANDIDATE_ROOT"
+          test ! -e "$CAPABILITY_PYCACHE" && test ! -L "$CAPABILITY_PYCACHE"
+          mkdir "$CANDIDATE_ROOT"
+          /usr/bin/python3.10 -I -B -S -X "pycache_prefix=$CAPABILITY_PYCACHE" - <<'PY_ANCHOR'
+          import hashlib,json,os,pathlib,re,stat
+          def require(value):
+              if not value: raise ValueError('Bootstrap invariant rejected')
+          source=pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'recipe-source/deploy/f2c-capability'
+          root=pathlib.Path(os.environ['CANDIDATE_ROOT'])
+          expected=os.environ['REVIEWED_SOURCE_INDEX_SHA256']
+          require(re.fullmatch('[0-9a-f]{64}',expected))
+          def regular(path):
+              for part in (path, *path.parents):
+                  require(not part.is_symlink())
+              s=path.stat(); require(stat.S_ISREG(s.st_mode) and s.st_nlink==1 and s.st_size<=2000000)
+              return path.read_bytes()
+          def unique(pairs):
+              result={}
+              for key,value in pairs:
+                  require(key not in result)
+                  result[key]=value
+              return result
+          raw=regular(source/'source-index.json')
+          require(hashlib.sha256(raw).hexdigest()==expected)
+          index=json.loads(raw,object_pairs_hook=unique)
+          require(index['schema']==1 and index['status']=='reviewed-source')
+          require(index['identity']=='jammy-rootless-capability-v7')
+          require(1<=len(index['files'])<=64)
+          for name,row in index['files'].items():
+              require(isinstance(name,str) and not name.startswith('/') and all(x not in ('','.','..') for x in name.split('/')))
+              require(re.fullmatch('[A-Za-z0-9_./-]+',name))
+              require(set(row)=={'sha256'} and re.fullmatch('[0-9a-f]{64}',row['sha256']))
+              data=regular(source/name); require(hashlib.sha256(data).hexdigest()==row['sha256'])
+              out=root/name; out.parent.mkdir(parents=True,exist_ok=True)
+              with out.open('xb') as f: f.write(data)
+          with (root/'source-index.json').open('xb') as f: f.write(raw)
+          PY_ANCHOR
+          mkdir "$CANDIDATE_ROOT/private-evidence"
+          printf 'CANDIDATE_ROOT=%s\nCAPABILITY_PYCACHE=%s\n' "$CANDIDATE_ROOT" "$CAPABILITY_PYCACHE" >> "$GITHUB_ENV"
+          echo 'stage=anchor status=PASS'
+      - name: Run hermetic pure helper fixtures
+        id: helper_tests
+        shell: bash
+        run: |
+          exec 2>/dev/null
+          set -euo pipefail
+          test ! -e "$CAPABILITY_PYCACHE" && test ! -L "$CAPABILITY_PYCACHE"
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            /usr/bin/python3.10 -I -B -S -X "pycache_prefix=$CAPABILITY_PYCACHE" \
+            - "$CANDIDATE_ROOT" "$REVIEWED_SOURCE_INDEX_SHA256" \
+            >"$CANDIDATE_ROOT/private-evidence/tests.log" 2>&1 <<'PY_HELPERS'
+          import hashlib,json,pathlib,stat,sys
+          def require(value):
+              if not value: raise ValueError('Bootstrap invariant rejected')
+          def regular(path):
+              require(not any(p.is_symlink() for p in (path,*path.parents)))
+              st=path.stat()
+              require(stat.S_ISREG(st.st_mode) and st.st_nlink==1 and st.st_size<=2000000)
+              return path.read_bytes()
+          root=pathlib.Path(sys.argv[1])
+          raw=regular(root/'source-index.json')
+          require(hashlib.sha256(raw).hexdigest()==sys.argv[2])
+          index=json.loads(raw)
+          verified={}
+          for name in ('recipe/helper_test_reporter.py','inputs/helper-test-identities.json'):
+              data=regular(root/name)
+              require(hashlib.sha256(data).hexdigest()==index['files'][name]['sha256'])
+              verified[name]=data
+          helper=root/'recipe/helper_test_reporter.py'
+          namespace={'__name__':'verified_helper_test_reporter','__file__':str(helper)}
+          exec(compile(verified['recipe/helper_test_reporter.py'],str(helper),'exec'),namespace)
+          raise SystemExit(namespace['run'](root,verified['inputs/helper-test-identities.json']))
+          PY_HELPERS
+          echo 'stage=helper_tests status=PASS'
+      - name: Authenticate existing host facilities without installation
+        id: authentication
+        shell: bash
+        run: |
+          exec 2>/dev/null
+          set -euo pipefail
+          test ! -e "$CAPABILITY_PYCACHE" && test ! -L "$CAPABILITY_PYCACHE"
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            /usr/bin/python3.10 -I -B -S -X "pycache_prefix=$CAPABILITY_PYCACHE" \
+            "$CANDIDATE_ROOT/recipe/prepare_capability_inputs.py" --root "$CANDIDATE_ROOT" \
+            --expected-source-index-sha256 "$REVIEWED_SOURCE_INDEX_SHA256" \
+            >"$CANDIDATE_ROOT/private-evidence/authentication.log" 2>&1
+          echo 'stage=authentication status=PASS'
+      - name: Prove existing namespace capabilities with trusted ephemeral child
+        id: capability
+        shell: bash
+        run: |
+          exec 2>/dev/null
+          set -euo pipefail
+          test ! -e "$CAPABILITY_PYCACHE" && test ! -L "$CAPABILITY_PYCACHE"
+          LOCK_SHA="$(/usr/bin/python3.10 -I -B -S -X "pycache_prefix=$CAPABILITY_PYCACHE" -c \
+            'import hashlib,sys; print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "$CANDIDATE_ROOT/capability-inputs.lock.json")"
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            /usr/bin/python3.10 -I -B -S -X "pycache_prefix=$CAPABILITY_PYCACHE" \
+            "$CANDIDATE_ROOT/recipe/probe_namespace_capabilities.py" --root "$CANDIDATE_ROOT" \
+            --expected-source-index-sha256 "$REVIEWED_SOURCE_INDEX_SHA256" \
+            --expected-lock-sha256 "$LOCK_SHA" --execute-capability-probe \
+            >"$CANDIDATE_ROOT/private-evidence/capability.log" 2>&1
+      - name: Publish bounded capability outcome only
+        if: always()
+        env:
+          OUTCOME_CHECKOUT: ${{ steps.checkout.outcome }}
+          OUTCOME_ANCHOR: ${{ steps.anchor.outcome }}
+          OUTCOME_HELPER_TESTS: ${{ steps.helper_tests.outcome }}
+          OUTCOME_AUTHENTICATION: ${{ steps.authentication.outcome }}
+          OUTCOME_CAPABILITY: ${{ steps.capability.outcome }}
+        shell: bash
+        run: |
+          exec 2>/dev/null
+          /usr/bin/python3.10 -I -B -S -X "pycache_prefix=$RUNNER_TEMP/f2c-capability/unused-pycache" - <<'PY_REPORT'
+          import hashlib,json,os,pathlib
+          def require(value):
+              if not value: raise ValueError('Bootstrap invariant rejected')
+          try:
+              root=pathlib.Path(os.environ['CANDIDATE_ROOT'])
+              raw=(root/'source-index.json').read_bytes()
+              require(hashlib.sha256(raw).hexdigest()==os.environ['REVIEWED_SOURCE_INDEX_SHA256'])
+              index=json.loads(raw)
+              verified={}
+              for name in ('recipe/report_capability_status.py','recipe/public_codes.json','recipe/helper_test_reporter.py','inputs/helper-test-identities.json'):
+                  path=root/name
+                  require(not any(p.is_symlink() for p in (path,*path.parents)))
+                  require(path.stat().st_nlink==1)
+                  data=path.read_bytes()
+                  require(hashlib.sha256(data).hexdigest()==index['files'][name]['sha256'])
+                  verified[name]=data
+              diagnostic=root/'recipe/helper_test_reporter.py'
+              namespace={'__name__':'verified_helper_test_reporter','__file__':str(diagnostic)}
+              exec(compile(verified['recipe/helper_test_reporter.py'],str(diagnostic),'exec'),namespace)
+              helper=root/'recipe/report_capability_status.py'
+              data=verified['recipe/report_capability_status.py']
+              exec(compile(data,str(helper),'exec'),{'__name__':'verified_capability_report','__file__':str(helper),'_VERIFIED_PUBLIC_CODES_BYTES':verified['recipe/public_codes.json'],'_VERIFIED_HELPER_PROJECTOR':namespace['project'],'_VERIFIED_HELPER_IDENTITIES_BYTES':verified['inputs/helper-test-identities.json']})
+          except Exception:
+              print('stage=report status=FAIL code=UNKNOWN')
+          PY_REPORT

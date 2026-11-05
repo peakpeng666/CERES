@@ -1,6 +1,7 @@
-"""SQLite history of solver runs and simulation runs (full JSON + indexed columns; never deleted)."""
+"""SQLite history of solver runs, simulation runs, studies and agent sessions (full JSON + indexed columns; never deleted)."""
 from __future__ import annotations
 
+import errno
 import json
 import sqlite3
 import sys
@@ -25,6 +26,9 @@ CREATE TABLE IF NOT EXISTS physics_runs (
   physics_run_id TEXT PRIMARY KEY, run_id TEXT, session_id TEXT, engine TEXT, state TEXT,
   created_utc TEXT, finished_utc TEXT, json TEXT NOT NULL);
 CREATE INDEX IF NOT EXISTS physics_runs_run ON physics_runs(run_id, created_utc);
+CREATE TABLE IF NOT EXISTS agent_sessions (
+  session_id TEXT PRIMARY KEY, created_utc TEXT, updated_utc TEXT, state TEXT, json TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS agent_sessions_updated ON agent_sessions(updated_utc);
 """
 
 RUN_ACTIVE = ('queued', 'running')
@@ -60,7 +64,9 @@ class Store:
             except BaseException as exc:
                 self._owner_file.close()
                 self._owner_file = None
-                raise RuntimeError(f'运行库 {self.path} 已有任务执行服务；请复用该网关或选择其他 runtime。') from exc
+                if isinstance(exc, OSError) and exc.errno in (errno.EACCES, errno.EAGAIN):
+                    raise RuntimeError(f'运行库 {self.path} 已有任务执行服务；请复用该网关或选择其他 runtime。') from exc
+                raise
         try:
             self._db = sqlite3.connect(self.path, check_same_thread=False, isolation_level=None, timeout=30)
             self._db.execute('PRAGMA journal_mode=WAL')
@@ -173,6 +179,21 @@ class Store:
             cursor = self._db.execute(sql, (limit,))
             names = [c[0] for c in cursor.description]
             return [dict(zip(names, row)) for row in cursor]
+    def put_agent_session(self, session: dict):
+        with self._lock:
+            self._db.execute('INSERT OR REPLACE INTO agent_sessions VALUES (?,?,?,?,?)',
+                             (session['session_id'], session.get('created_utc'), session.get('updated_utc'),
+                              session.get('state'), json.dumps(session, ensure_ascii=False)))
+
+    def get_agent_session(self, session_id: str) -> dict | None:
+        rows = self._query('SELECT json FROM agent_sessions WHERE session_id=?', (session_id,))
+        return rows[0] if rows else None
+
+    def list_agent_sessions(self, limit: int = 100, states: tuple[str, ...] = ()) -> list[dict]:
+        if states:
+            return self._query(f"SELECT json FROM agent_sessions WHERE state IN ({','.join('?' * len(states))}) "
+                               'ORDER BY updated_utc DESC LIMIT ?', (*states, int(limit)))
+        return self._query('SELECT json FROM agent_sessions ORDER BY updated_utc DESC LIMIT ?', (int(limit),))
 
     def runs_by_ids(self, run_ids: list[str]) -> list[dict]:
         out = []

@@ -26,4 +26,9 @@ contextBridge.exposeInMainWorld('desktop', {
     enable: () => ipcRenderer.invoke('sim:enable'),
     disable: () => ipcRenderer.invoke('sim:disable'),
   },
+  data: {
+    info: () => ipcRenderer.invoke('data:info'),
+    export: () => ipcRenderer.invoke('data:export'),
+    restore: () => ipcRenderer.invoke('data:restore'),
+  },
 });

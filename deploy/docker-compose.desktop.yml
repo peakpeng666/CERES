@@ -3,6 +3,7 @@
 # so the private-file check is relaxed here; the directory itself stays in the user's profile.
 services:
   lab:
+    user: "${URP_HOST_UID:-1000}:${URP_HOST_GID:-1000}"
     environment:
       URP_CONFIG_DIR: /config
       URP_LLM_CONFIG: /config/llm.json
@@ -11,3 +12,7 @@ services:
       URP_MODELS_REFRESH: "1"
     volumes:
       - ${URP_HOST_CONFIG:?}:/config
+      # Same records in native and simulation modes. Matching UID preserves the host's 0600 credentials.
+      - ${URP_HOST_RUNTIME:?}:/data/lab
+      - ${URP_HOST_ARCHIVE:?}:/data/archive
+      - ${URP_HOST_DATASET:?}:/data/dataset.json:ro

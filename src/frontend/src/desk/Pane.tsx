@@ -459,7 +459,7 @@ function Contract({ c }: { c: Ctx }) {
   void editContract;
   const pending = useAgent((x) => x.sending || x.pendingAction !== null);
   const [adding, setAdding] = useState('');
-  const locked = session.state === 'running';
+  const locked = session.state === 'running' || !!session.restoration?.read_only;
   const present = new Set(session.contract_cards.map((x) => x.key));
   const addable = Object.keys(OPTIONAL_LABEL).filter((x) => !present.has(x));
   return (
@@ -493,7 +493,7 @@ function Field({ c, k }: { c: Ctx; k: string }) {
   const req = session.contract.request_text ?? '';
   const hit = x.evidence && req.includes(x.evidence);
   const hist = session.contract.history.flatMap((v) => v.changes.filter((q) => q.key === k).map((q) => ({ v, q })));
-  const locked = session.state === 'running';
+  const locked = session.state === 'running' || !!session.restoration?.read_only;
   return (
     <div className={s.layer}>
       <h2>{x.label}</h2>

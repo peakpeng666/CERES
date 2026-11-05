@@ -1,0 +1,75 @@
+{
+  "application_commit": "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35",
+  "excluded_legacy_entrypoints": [
+    "recipe/build_offline.sh",
+    "recipe/build_guard.py",
+    "recipe/run_build.py"
+  ],
+  "native_build_executed": false,
+  "new_files": [
+    "README.md",
+    "recipe/tests/test_docker_contract.py"
+  ],
+  "reused_files": {
+    "build-requirements.lock": {
+      "adaptation": "unchanged hash-constrained build dependencies",
+      "candidate_sha256": "20882c0230ae0bd0d73dff6a21c0f069a2c893bff443a7e286a7916c9cbef2c3",
+      "upstream_path": "build-requirements.lock",
+      "upstream_sha256": "20882c0230ae0bd0d73dff6a21c0f069a2c893bff443a7e286a7916c9cbef2c3"
+    },
+    "official-source-inputs.json": {
+      "adaptation": "unchanged immutable archive references",
+      "candidate_sha256": "bc35cc1dbd57937fa8fa4762b7b2653dbc3d39d1f056fbfcc859d228cf426d65",
+      "upstream_path": "official-source-inputs.json",
+      "upstream_sha256": "bc35cc1dbd57937fa8fa4762b7b2653dbc3d39d1f056fbfcc859d228cf426d65"
+    },
+    "recipe/build-wheel-inputs.json": {
+      "adaptation": "unchanged wheel URL/size/hash pins",
+      "candidate_sha256": "2ccb5350ac9a8cc81f7d661282c48d4e4beafdc40e2bb2b4bafa92ad838888b8",
+      "upstream_path": "recipe/build-wheel-inputs.json",
+      "upstream_sha256": "2ccb5350ac9a8cc81f7d661282c48d4e4beafdc40e2bb2b4bafa92ad838888b8"
+    },
+    "recipe/guardlib.py": {
+      "adaptation": "Docker split layout; Python/UV-only bootstrap; exact two-file application selection; compiler-only gate; no legacy launcher or application aliases",
+      "candidate_sha256": "55d4688f3bf76227a9e70c111c066cb69bf8d4238f3749a993431817f01513b2",
+      "upstream_path": "recipe/guardlib.py",
+      "upstream_sha256": "61d86c1e211ebc8f8ffa6a7b28618e9998d6903703639354ef06379ae00a7a48"
+    },
+    "recipe/live_inputs.py": {
+      "adaptation": "unchanged bounded data extraction and authenticated package-byte proof",
+      "candidate_sha256": "b8865c8b8475c33f00609866b627548f188faf78143cba8d425619b1655079c5",
+      "upstream_path": "recipe/live_inputs.py",
+      "upstream_sha256": "b8865c8b8475c33f00609866b627548f188faf78143cba8d425619b1655079c5"
+    },
+    "recipe/prepare_inputs.py": {
+      "adaptation": "Image-only compiler materialization; exact current Lab pyproject.toml and uv.lock; ABI/bootstrap evidence; no validation provisioning or old same-runner coupling",
+      "candidate_sha256": "3e6e6c9b3cdc00e6c6e2a1b8ce3fbb5086af387d0a0037be5b2c20658749ac00",
+      "upstream_path": "recipe/prepare_live.py",
+      "upstream_sha256": "1d1b97f6c42f4618ad87d5623c76b0fb09d5d973ed1217522ae09502fa55c426"
+    },
+    "recipe/runtime_prepare.py": {
+      "adaptation": "unchanged static ELF analysis, single wheel runtime and narrow shim",
+      "candidate_sha256": "f671b41379d97a3f718cf130b62681a5e1e10feef291cce23c7f3a6366993056",
+      "upstream_path": "recipe/runtime_prepare.py",
+      "upstream_sha256": "f671b41379d97a3f718cf130b62681a5e1e10feef291cce23c7f3a6366993056"
+    },
+    "recipe/tests/test_input_preparation.py": {
+      "adaptation": "ported pure fixtures to new preparer and source identity",
+      "candidate_sha256": "2ec4a59ec03e206598dbbec34d76acac870b6619f7bfa00d6e22c060d2ac8cae",
+      "upstream_path": "recipe/tests/test_live_preparation.py",
+      "upstream_sha256": "e1d36bda616278262e5e9508723d6b339f8930e1383adae1e9a4b08391011d92"
+    },
+    "recipe/verify_prepared_inputs.py": {
+      "adaptation": "Data-only compiler preflight; Python/UV bootstrap, strict selected application files, preserved provider/package/ABI/loader gates; no execution entrypoint",
+      "candidate_sha256": "e2c6926f19bd7032dd634ddaa3ba375f451a77b547e5dd6d1eace2cf84b1784b",
+      "upstream_path": "recipe/verify_offline_inputs.py",
+      "upstream_sha256": "1071c82f4ea625c37a40a98ac6211c5d1a6b764651ca03b57e096d8d9b3ded11"
+    }
+  },
+  "runtime_validation_performed": false,
+  "schema": 1,
+  "scope": "compiler-build-only; application declaration/lock data only; no validation/Node/npm provisioning",
+  "status": "candidate_code_not_native_executed",
+  "upstream_bundle": "urp_f2c_jammy_candidate_v7",
+  "upstream_source_index_sha256": "b706328f71ecd03cee3e2fd3ff9f369110a6da94f25fbec2474f27f8b29c3e81"
+}

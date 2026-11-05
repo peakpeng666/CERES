@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "scope": "public_executable_labels_not_installed_version_proof",
+  "sources": [
+    {
+      "repository": "iRobotEducation/create3_sim",
+      "revision": "7d7a4f69a503d4eef22f13aeb8755c86955b8cc5",
+      "path": "irobot_create_common/irobot_create_common_bringup/launch/create3_nodes.launch.py",
+      "url": "https://github.com/iRobotEducation/create3_sim/blob/7d7a4f69a503d4eef22f13aeb8755c86955b8cc5/irobot_create_common/irobot_create_common_bringup/launch/create3_nodes.launch.py",
+      "source_sha256": "d81aa2d2591046d5d1a851305b8370f61e63056bd9c78a51a3ef0201598f20df",
+      "executables": [
+        "hazards_vector_publisher",
+        "ir_intensity_vector_publisher",
+        "kidnap_estimator_publisher",
+        "mock_publisher",
+        "motion_control",
+        "robot_state",
+        "ui_mgr",
+        "wheel_status_publisher"
+      ]
+    },
+    {
+      "repository": "iRobotEducation/create3_sim",
+      "revision": "7d7a4f69a503d4eef22f13aeb8755c86955b8cc5",
+      "path": "irobot_create_ignition/irobot_create_ignition_bringup/launch/create3_ignition_nodes.launch.py",
+      "url": "https://github.com/iRobotEducation/create3_sim/blob/7d7a4f69a503d4eef22f13aeb8755c86955b8cc5/irobot_create_ignition/irobot_create_ignition_bringup/launch/create3_ignition_nodes.launch.py",
+      "source_sha256": "c295af3d8f978f188d8158445180ebfa4a205cb567bbdbee6f6e5c510c1f5365",
+      "executables": [
+        "interface_buttons_node",
+        "pose_republisher_node",
+        "sensors_node"
+      ]
+    },
+    {
+      "repository": "iRobotEducation/create3_sim",
+      "revision": "7d7a4f69a503d4eef22f13aeb8755c86955b8cc5",
+      "path": "irobot_create_common/irobot_create_control/launch/include/control.py",
+      "url": "https://github.com/iRobotEducation/create3_sim/blob/7d7a4f69a503d4eef22f13aeb8755c86955b8cc5/irobot_create_common/irobot_create_control/launch/include/control.py",
+      "source_sha256": "06d9aac1e0ffb384c0eb7b96b95e617a0525b5bc1fda5737564aedf82659cc8d",
+      "executables": [
+        "spawner",
+        "static_transform_publisher"
+      ]
+    },
+    {
+      "repository": "turtlebot/turtlebot4_simulator",
+      "revision": "0ea4a60c51e49ed4a9e25b4f9971ff0f0c9a08fe",
+      "path": "turtlebot4_ignition_bringup/launch/turtlebot4_nodes.launch.py",
+      "url": "https://github.com/turtlebot/turtlebot4_simulator/blob/0ea4a60c51e49ed4a9e25b4f9971ff0f0c9a08fe/turtlebot4_ignition_bringup/launch/turtlebot4_nodes.launch.py",
+      "source_sha256": "03b4e709a36d8c981e472172842257dd0c01561a8410b14480e1adc1211ef452",
+      "executables": [
+        "turtlebot4_ignition_hmi_node",
+        "turtlebot4_node"
+      ]
+    }
+  ],
+  "added_process_names": [
+    "hazards_vector_publisher",
+    "interface_buttons_node",
+    "ir_intensity_vector_publisher",
+    "kidnap_estimator_publisher",
+    "mock_publisher",
+    "motion_control",
+    "pose_republisher_node",
+    "robot_state",
+    "sensors_node",
+    "spawner",
+    "static_transform_publisher",
+    "turtlebot4_ignition_hmi_node",
+    "ui_mgr",
+    "wheel_status_publisher"
+  ]
+}

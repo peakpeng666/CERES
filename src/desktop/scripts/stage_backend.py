@@ -145,6 +145,12 @@ def stage(target: str, out: Path, cache: Path) -> dict:
     lock = hashlib.sha256((LAB / 'uv.lock').read_bytes()).hexdigest()
     manifest = {'schema': 'urp.desktop-backend/1', 'target': target, 'python': PYTHON, 'uv_lock_sha256': lock, 'files': len(files), 'bytes': sum(f.stat().st_size for f in files),
                 'trimmed_bytes': saved, 'staged_utc': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())}
+    # A backend built from a local dirty tree must never be mistaken for a published commit.
+    manifest['source_commit'] = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip()
+    manifest['source_dirty'] = bool(subprocess.check_output(['git', 'status', '--porcelain', '--untracked-files=no'], cwd=ROOT, text=True).strip())
+    manifest['source_files'] = {p.relative_to(app).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
+                                for p in sorted(app.rglob('*')) if p.is_file() and p.suffix in ('.py', '.js', '.json', '.toml', '.lock', '.html', '.css')
+                                and '.venv' not in p.parts and '__pycache__' not in p.parts}
     (home / 'backend-manifest.json').write_text(json.dumps(manifest, indent=1))
     return manifest
 

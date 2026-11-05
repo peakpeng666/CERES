@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "purpose": "Public certificate data seed for a CA-free pinned Ubuntu image; no package code is executed during seed extraction.",
+  "snapshot": "20261021T000000Z",
+  "signer": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+  "package": {
+    "name": "ca-certificates",
+    "version": "20260816ubuntu0.22.04.1",
+    "architecture": "all",
+    "suite": "jammy-security",
+    "component": "main"
+  },
+  "inputs": [
+    {
+      "name": "jammy-security.InRelease",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-security/InRelease",
+      "size": 128927,
+      "sha256": "eaa0a9cb0ad5ea72dcaf84e81a1f13c82a5afbb08700bee189b9b7e2c638c5a9"
+    },
+    {
+      "name": "jammy-security.main.amd64.Packages.xz",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/dists/jammy-security/main/binary-amd64/Packages.xz",
+      "size": 3643160,
+      "sha256": "193e21d53e0d7fbf97fed37314da94d75223d4575b769aa95891d8ea1592471a"
+    },
+    {
+      "name": "ca-certificates.deb",
+      "url": "https://snapshot.ubuntu.com/ubuntu/20261021T000000Z/pool/main/c/ca-certificates/ca-certificates_20260816ubuntu0.22.04.1_all.deb",
+      "size": 139540,
+      "sha256": "29ca037f49f7a4b41d67ad72946c2e541f3ae52d8f6ab1495d2af09aa391144b"
+    }
+  ]
+}

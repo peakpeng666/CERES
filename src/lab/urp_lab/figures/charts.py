@@ -166,8 +166,8 @@ def algo_compare(ctx: D.Context, st: Style, opts: dict):
 
 
 def convergence(ctx: D.Context, st: Style, opts: dict):
-    from ..analysis import trace_matches
-    done = [r for r in ctx.runs if len(r.get('trace') or []) >= 1 and r.get('state') == 'done']
+    from ..analysis import trace_matches, _valid_trace
+    done = [r for r in ctx.runs if r.get('trace') and r.get('state') == 'done']
     runs = [r for r in done if trace_matches(r)]
     other = [r for r in done if not trace_matches(r)]
     fig, axs = figure(st, 0.62)
@@ -188,11 +188,17 @@ def convergence(ctx: D.Context, st: Style, opts: dict):
     ax.yaxis.set_major_locator(MaxNLocator(5))
     ax.grid(which='major', axis='both')
     ax.legend(loc='best')
-    skip_zh = '；'.join(f"{alg_name(r, st)} 的过程轨迹记录的是求解器内部目标（终值 {r['trace'][-1][1]:.2f}，与目标值 {r['objective']['value']:.2f} 不一致），未画入" for r in other)
-    skip_en = '; '.join(f"the trace of {alg_name(r, st)} records the solver's internal objective (final {r['trace'][-1][1]:.2f} vs objective {r['objective']['value']:.2f}) and is not drawn" for r in other)
+    def reason(r, lang):
+        if (r.get('trace_contract') or {}).get('semantic') != 'reported_objective':
+            return '代理或未知目标语义' if lang == 'zh' else 'proxy or unknown objective semantics'
+        if not _valid_trace(r):
+            return '轨迹结构/时间顺序非法或非单调 incumbent' if lang == 'zh' else 'invalid structure/timing or non-monotone incumbent'
+        return '轨迹终值与目标值不一致' if lang == 'zh' else 'endpoint mismatch with reported objective'
+    skip_zh = '；'.join(f"{alg_name(r, st)}：{reason(r, 'zh')}，未画入" for r in other)
+    skip_en = '; '.join(f"{alg_name(r, st)}: {reason(r, 'en')}; excluded" for r in other)
     cap = {
-        'zh': '求解过程中当前最好解随计算时间的变化（任一时刻停止求解所能得到的方案质量），横轴为对数时间；各曲线首点为第一个可行解。' + (f'{skip_zh}。' if other else ''),
-        'en': 'Best-so-far objective against wall-clock time (anytime behaviour; log time axis). The first marker of each curve is the first feasible solution.'
+        'zh': '求解过程中当前最好解随计算时间的变化（任一时刻停止求解所能得到的方案质量），横轴为对数时间；各曲线首点为第一个已记录的可行解（此前未知）。' + (f'{skip_zh}。' if other else ''),
+        'en': 'Best-so-far objective against wall-clock time (anytime behaviour; log time axis). The first marker is the first recorded feasible solution; earlier telemetry is unknown.'
               + (f' Note: {skip_en}.' if other else ''),
     }
     return fig, cap, {'trace': rows}

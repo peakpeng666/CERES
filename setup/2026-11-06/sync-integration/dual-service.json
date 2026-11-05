@@ -1,0 +1,4 @@
+{
+  "status": "passed",
+  "scope": "dual-service lifecycle, failure injection, archive Jobs, workbench HTTP; no browser/ROS"
+}

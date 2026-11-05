@@ -117,6 +117,33 @@ class HealthCheckTests(unittest.TestCase):
         with self.response(b'{"status":"ok"}'):
             self.module.check("http://127.0.0.1/test")
 
+    def test_default_checks_both_gateway_and_archive(self):
+        with patch.object(self.module.urllib.request, 'urlopen',
+                          side_effect=[io.BytesIO(b'{"status":"ok"}'), io.BytesIO(b'{"status":"ok"}')]) as opened:
+            self.module.check()
+        self.assertEqual(len(opened.call_args_list), 2)
+        self.assertTrue(opened.call_args_list[0].args[0].endswith('/lab/api/health'))
+        self.assertTrue(opened.call_args_list[1].args[0].endswith('/api/health'))
+
+    def test_explicit_lab_only_mode_does_not_require_archive(self):
+        with patch.object(self.module.urllib.request, 'urlopen',
+                          return_value=io.BytesIO(b'{"status":"ok","archive_required":false}')) as opened:
+            self.module.check()
+        self.assertEqual(opened.call_count, 1)
+
+    def test_malformed_mode_never_disables_archive_check(self):
+        for value in ('"false"', '0', 'null'):
+            with self.subTest(value=value), self.response(
+                    ('{"status":"ok","archive_required":' + value + '}').encode()), \
+                    self.assertRaisesRegex(RuntimeError, 'must be a boolean'):
+                self.module.check()
+
+    def test_green_lab_does_not_mask_failed_archive(self):
+        with patch.object(self.module.urllib.request, 'urlopen',
+                          side_effect=[io.BytesIO(b'{"status":"ok"}'), io.BytesIO(b'{"status":"failed"}')]), \
+                self.assertRaises(RuntimeError):
+            self.module.check()
+
     def test_http_200_but_failed_status_is_unhealthy(self):
         with self.response(b'{"status":"failed"}'), self.assertRaises(RuntimeError):
             self.module.check("http://127.0.0.1/test")

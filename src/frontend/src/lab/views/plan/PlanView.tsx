@@ -10,6 +10,7 @@ import s from '../Workbench.module.css';
 import { TaskEditor } from './TaskEditor';
 import { asTurn, asCvrp, toggleTurnTask, addCvrpPoint, parseEditableInstance } from './planModel';
 import { coveragePercent, withoutInvalidatedResults } from './resultIntegrity';
+import { IntegrityNotice } from './IntegrityNotice';
 
 export function PlanView({ route }: { route: Route }) {
   return <PlanWorkspace key={`${route.id??'maze-inspection'}:${route.params.get('run')??''}`} route={route}/>;
@@ -72,12 +73,13 @@ function PlanWorkspace({ route }: { route: Route }) {
         {!run?<p>{pending?'正在求解…':'尚无本次实验结果。选择参数后求解。'}</p>:<>
           <div className={s.row}><strong>{RUN_STATE_LABEL[run.state]} · {run.status?STATUS_LABEL[run.status]:''}</strong><span className={s.meta}>{run.run_id}</span></div>
           <p>{fmt.algorithm(run.algorithm)} · <SourceBadge source={run.algorithm.source}/></p>
+          <IntegrityNotice run={rawRun}/>
           {run.error&&<Notice tone="error">{run.error}</Notice>}
           <div className={s.metrics}><Metric label="目标成本" value={fmt.num(run.objective.value)} unit={run.objective.unit}/><Metric label="几何长度" value={fmt.num(run.metrics.length)} unit={run.frame.units}/><Metric label="独立检查" value={run.check?(run.check.valid?'通过':'未通过'):'未检查'}/><Metric label="整段路径净空" value={fmt.num(run.map_check?.min_clearance_m)} unit="m"/></div>
           {run.check&&!run.check.valid&&<Notice tone="error">{run.check.errors.join('；')}</Notice>}
           {run.map_check&&<Notice tone={run.map_check.collision_free?'ok':'warn'}>地图净空：{run.map_check.collision_free?'通过':'未通过'} · 机器人半径 {run.map_check.robot_radius_m} m</Notice>}
           {sc?.problem_class==='coverage'&&coveragePercent(run)!==null&&<Notice>覆盖率 {fmt.num(coveragePercent(run))}%</Notice>}
-          <div className={s.row}>{(['json','csv','geojson'] as const).map(f=><a key={f} href={exportUrl.run(run.run_id,f)} download>导出 {f.toUpperCase()}</a>)}{!simBlockReason(run,sc?.sim)&&<a className={s.primaryLink} href={`#/sim?run=${run.run_id}`}>进入仿真</a>}</div>
+          <div className={s.row}>{(['json','csv','geojson'] as const).map(f=><a key={f} href={exportUrl.run(run.run_id,f)} download>导出 {f.toUpperCase()}</a>)}{run.problem_class === 'fleet_routing' && <a href={exportUrl.run(run.run_id,'tasks-csv')} download>导出任务/趟次 CSV</a>}{!simBlockReason(run,sc?.sim)&&<a className={s.primaryLink} href={`#/sim?run=${run.run_id}`}>进入仿真</a>}</div>
           {simBlockReason(run,sc?.sim)&&<p className={s.muted}>{simBlockReason(run,sc?.sim)}</p>}
           <details><summary>原始结果、检查器与复现信息（无效运行仅供审计）</summary><pre>{JSON.stringify(rawRun,null,2)}</pre></details>
         </>}

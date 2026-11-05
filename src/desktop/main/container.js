@@ -5,7 +5,8 @@ const { spawn } = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
-const { healthy } = require('./backend');
+const { healthy, request } = require('./backend');
+const { dataLocations, prepareDataHome } = require('./data-home');
 
 const REGISTRY = 'ghcr.io/peakpeng666/urp-sim';
 const HOST_PORT = 4100;
@@ -36,8 +37,9 @@ function run(command, args, { timeoutMs = 10_000, env, onLine } = {}) {
 }
 
 class Container {
-  constructor(app, { port = HOST_PORT } = {}) {
+  constructor(app, { port = HOST_PORT, settings } = {}) {
     this.app = app;
+    this.settings = settings;
     this.port = port;
     this.base = `http://127.0.0.1:${port}`;
     this.tag = app.isPackaged ? `v${app.getVersion()}` : 'deploy';
@@ -46,7 +48,13 @@ class Container {
   }
 
   env() {
-    return { ...process.env, URP_IMAGE_TAG: process.env.URP_IMAGE_TAG || this.tag, URP_PORT: String(this.port), URP_HOST_CONFIG: path.join(os.homedir(), '.config', 'urp-workbench') };
+    const data = dataLocations(this.app, this.settings);
+    const user = os.userInfo();
+    return { ...process.env, URP_IMAGE_TAG: process.env.URP_IMAGE_TAG || this.tag, URP_PORT: String(this.port),
+      URP_HOST_CONFIG: path.join(os.homedir(), '.config', 'urp-workbench'),
+      URP_HOST_RUNTIME: data.runtime, URP_HOST_ARCHIVE: data.archive,
+      URP_HOST_DATASET: path.join(data.root, 'dataset.json'),
+      URP_HOST_UID: String(user.uid >= 0 ? user.uid : 1000), URP_HOST_GID: String(user.gid >= 0 ? user.gid : 1000) };
   }
 
   /** What this machine has, so the page can say exactly what is missing. */
@@ -68,20 +76,27 @@ class Container {
   }
 
   async start(onLine = () => {}) {
+    const data = prepareDataHome(this.app, this.settings);
     // Docker would create a missing mount point itself, owned by root, and the app could no longer save keys there.
     fs.mkdirSync(this.env().URP_HOST_CONFIG, { recursive: true });
     const up = await run('docker', ['compose', ...this.files, 'up', '-d'], { timeoutMs: 0, env: this.env(), onLine });
     if (up.code !== 0) throw new Error(up.out.split('\n').slice(-4).join('\n') || 'docker compose 启动失败');
     const deadline = Date.now() + START_TIMEOUT_MS;
     while (Date.now() < deadline) {
-      if (await healthy(this.base)) return this.base;
+      if (await healthy(this.base)) {
+        const response = await request(`${this.base}/lab/api/health`);
+        if (JSON.parse(response.body).dataset_id !== data.dataset.dataset_id) throw new Error('容器未使用当前数据集，已拒绝切换；请检查数据挂载和镜像版本');
+        return this.base;
+      }
       await new Promise((r) => setTimeout(r, 1000));
     }
     throw new Error('容器已启动，但工作台 5 分钟内没有就绪');
   }
 
   async stop() {
-    return run('docker', ['compose', ...this.files, 'stop'], { timeoutMs: 120_000, env: this.env() });
+    const result = await run('docker', ['compose', ...this.files, 'stop', '--timeout', '180'], { timeoutMs: 200_000, env: this.env() });
+    if (result.code !== 0) throw new Error(`容器未能停止，不能切换数据：${result.out.split('\n').slice(-3).join('\n')}`);
+    return result;
   }
 }
 

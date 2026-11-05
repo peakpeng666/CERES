@@ -148,6 +148,48 @@ class JobTests(unittest.TestCase):
         self.assertEqual(self.manager.list()['counts'],
                          {'queued':0,'running':0,'completed':1,'failed':1,'interrupted':0})
 
+    def test_malformed_runner_result_fails_only_its_attempt(self):
+        for feasible in (None, 'false', 1):
+            with self.subTest(feasible=feasible):
+                def malformed(p):
+                    result = {'status': 'NO_SOLUTION', 'payload_sha256': self.manager._digest(p)}
+                    if feasible is not None:
+                        result['feasible'] = feasible
+                    return result
+                with patch.object(self.manager, '_runner', malformed):
+                    failed = wait_job(self.manager, self.manager.submit(payload())['id'])
+                self.assertEqual(failed['status'], 'failed')
+                self.assertEqual(failed['error']['code'], 'invalid_runner_result')
+                self.assertIsNone(failed['feasible'])
+                self.assertFalse(self.manager._stopping.is_set())
+        recovered = wait_job(self.manager, self.manager.submit(payload())['id'])
+        self.assertEqual(recovered['status'], 'completed')
+
+    def test_result_status_must_agree_with_feasibility(self):
+        for status, feasible, cost in (('OK', False, None), ('TIMEOUT_WITH_FEASIBLE_INCUMBENT', False, None),
+                                       ('NO_SOLUTION', True, 4), ('TIMEOUT_NO_SOLUTION', True, 4)):
+            with self.subTest(status=status):
+                def malformed(p):
+                    return {'status': status, 'payload_sha256': self.manager._digest(p),
+                            'feasible': feasible, 'cost': cost}
+                with patch.object(self.manager, '_runner', malformed):
+                    failed = wait_job(self.manager, self.manager.submit(payload())['id'])
+                self.assertEqual(failed['status'], 'failed')
+                self.assertEqual(failed['error']['code'], 'invalid_runner_result')
+                self.assertFalse(self.manager._stopping.is_set())
+
+    def test_invalid_result_cost_does_not_kill_worker(self):
+        for feasible, cost in ((True, {}), (True, 2**64), (True, True), (False, 0)):
+            with self.subTest(feasible=feasible, cost=cost):
+                def malformed(p):
+                    return {'status': 'OK', 'payload_sha256': self.manager._digest(p),
+                            'feasible': feasible, 'cost': cost}
+                with patch.object(self.manager, '_runner', malformed):
+                    failed = wait_job(self.manager, self.manager.submit(payload())['id'])
+                self.assertEqual(failed['status'], 'failed')
+                self.assertEqual(failed['error']['code'], 'invalid_runner_result')
+                self.assertFalse(self.manager._stopping.is_set())
+
     def test_queue_limit_and_graceful_stop_preserve_every_accepted_attempt(self):
         entered, release = threading.Event(), threading.Event()
         def blocked(p):

@@ -6,6 +6,7 @@ import logging
 import threading
 import time
 
+from .execution_timing import budget_metadata, freeze_plan_budget
 from .events import EventBus, utc_now
 from .jobs import new_id
 from .services import ServiceError, ServiceManager, bridge_known_issues, http_json
@@ -15,7 +16,7 @@ log = logging.getLogger('urp_lab.sim')
 
 POLL_S = 0.25
 IDLE_PROBE_S = 5.0
-READY_TIMEOUT_S = 900.0
+READY_TIMEOUT_S = 1200.0
 SIM_FINAL = ('succeeded', 'failed', 'canceled')
 
 
@@ -30,7 +31,7 @@ def new_sim_run(sim_run_id: str, solution: dict, session_id: str | None, world: 
               'state': 'pending', 't_sim': None, 'distance_m': None} for t in plan.get('tasks') or []]
     return {
         'sim_run_id': sim_run_id, 'run_id': solution['run_id'], 'session_id': session_id, 'world': world, 'mode': mode,
-        'state': 'queued', 'sources': plan.get('sources') or {},
+        'state': 'queued', 'sources': plan.get('sources') or {}, **budget_metadata(plan),
         'planned': {'path': plan.get('path') or [], 'length_m': plan.get('planned_length_m')},
         'tasks': tasks, 'actual': {'ground_truth': [], 'amcl': []}, 'nav2': [],
         'metrics': {'duration_sim_s': None, 'duration_wall_s': None, 'actual_length_m': None,
@@ -184,7 +185,8 @@ class SimClient:
             self.bus.publish('sim_run', run)
 
     def submit(self, solution: dict, scenario: dict, mode: str, *, autostart: bool = False,
-               gui: bool | None = None, rviz: bool | None = None) -> dict:
+               gui: bool | None = None, rviz: bool | None = None, budget_s=None,
+               time_basis=None, wall_watchdog_s=None) -> dict:
         from .simplan import NotSimulatable, to_sim_plan
 
         if mode not in ('follow_path', 'nav2_waypoints'):
@@ -202,6 +204,10 @@ class SimClient:
             plan = to_sim_plan(solution, scenario, mode)
         except NotSimulatable as exc:
             raise ServiceError(422, 'not_simulatable', str(exc)) from None
+        try:
+            plan = freeze_plan_budget(plan, budget_s=budget_s, time_basis=time_basis, wall_watchdog_s=wall_watchdog_s)
+        except ValueError as exc:
+            raise ServiceError(422, 'invalid_execution_budget', str(exc)) from None
         world = sim.get('world') or frame.get('world')
         with self._lock:
             active = [r for r in self.store.active_sim_runs()]

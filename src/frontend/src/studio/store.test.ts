@@ -9,6 +9,7 @@ const mocks = vi.hoisted(() => ({
   cancelRun: vi.fn(),
   scenario: vi.fn(),
   runs: vi.fn(),
+  run: vi.fn(),
   recommend: vi.fn(),
   navigate: vi.fn(),
 }));
@@ -18,7 +19,7 @@ vi.mock('../lab/api', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../lab/api')>();
   return {
     ...actual,
-    lab: { ...actual.lab, solve: mocks.solve, cancelRun: mocks.cancelRun, scenario: mocks.scenario, runs: mocks.runs, recommend: mocks.recommend },
+    lab: { ...actual.lab, solve: mocks.solve, cancelRun: mocks.cancelRun, scenario: mocks.scenario, runs: mocks.runs, run: mocks.run, recommend: mocks.recommend },
     events: { subscribe: vi.fn() },
   };
 });
@@ -67,7 +68,7 @@ beforeEach(() => {
     draft: structuredClone(instance) as unknown as Instance,
     past: [], future: [], save: 'dirty', saveError: null, solveError: null,
     algorithms: [algorithm], chosen: [algorithm.id], budget: 3, seed: 42, paramOverrides: {},
-    runIds: [], runs: {}, focusRun: null, manualFocus: false,
+    runIds: [], runs: {}, runErrors: {}, focusRun: null, manualFocus: false,
     recommendation: null, recommending: false, busy: null, toast: null,
   });
   mocks.solve.mockResolvedValue({ job_id: 'job-test', runs: [] });
@@ -230,4 +231,76 @@ describe('serialized draft saving before solve', () => {
     await opening;
     expect(useStudio.getState().runIds).toEqual(['new-comparison']);
   });
+});
+
+
+describe('workbench request lifecycle', () => {
+  it('submits only once when solve is clicked again during saving', async () => {
+    const saved = deferred<Scenario>();
+    mocks.saveScenario.mockReturnValueOnce(saved.promise);
+    const first = useStudio.getState().solve();
+    const second = useStudio.getState().solve();
+    saved.resolve(scenario);
+    await Promise.all([first, second]);
+    expect(mocks.solve).toHaveBeenCalledTimes(1);
+  });
+
+  it('a failed old submission cannot overwrite the newly opened scenario', async () => {
+    const result = deferred<never>();
+    useStudio.setState({ save: 'saved' });
+    mocks.solve.mockReturnValueOnce(result.promise);
+    const submitting = useStudio.getState().solve(); await microtasks();
+    mocks.scenario.mockResolvedValueOnce({ ...scenario, id: 'new-scene' });
+    mocks.runs.mockResolvedValueOnce({ runs: [] });
+    mocks.recommend.mockResolvedValue({ ranking: [], recommended: null });
+    await useStudio.getState().open('new-scene');
+    result.reject(new Error('old submission failed')); await submitting;
+    expect(useStudio.getState()).toMatchObject({ scenarioId: 'new-scene', solveError: null, busy: null });
+  });
+
+  it('keeps polling failures visible, then clears them on recovery', async () => {
+    useStudio.setState({ save: 'saved' });
+    mocks.solve.mockResolvedValueOnce({ runs: ['run-new'] });
+    mocks.run.mockRejectedValueOnce(new Error('gateway offline')).mockResolvedValueOnce({
+      run_id: 'run-new', scenario_id: scenario.id, state: 'error', routes: [],
+    });
+    await useStudio.getState().solve(); await microtasks();
+    expect(useStudio.getState().runErrors['run-new']).toContain('gateway offline');
+    await vi.advanceTimersByTimeAsync(300);
+    expect(useStudio.getState().runErrors).toEqual({});
+    expect(useStudio.getState().runs['run-new'].state).toBe('error');
+  });
+
+  it('does not apply a poll response after leaving its comparison', async () => {
+    const result = deferred<any>();
+    useStudio.setState({ save: 'saved' });
+    mocks.solve.mockResolvedValueOnce({ runs: ['run-old'] });
+    mocks.run.mockReturnValueOnce(result.promise);
+    await useStudio.getState().solve();
+    useStudio.setState({ runIds: ['run-other'], runs: {} });
+    result.resolve({ run_id: 'run-old', scenario_id: scenario.id, state: 'error', routes: [] });
+    await microtasks();
+    expect(useStudio.getState().runs).toEqual({});
+    expect(mocks.run).toHaveBeenCalledTimes(1);
+  });
+});
+
+
+it('allows a new scene to submit while an old-scene request is pending without releasing the new lock', async () => {
+  const old = deferred<any>(), next = deferred<any>();
+  useStudio.setState({ save: 'saved' });
+  mocks.solve.mockReturnValueOnce(old.promise).mockReturnValueOnce(next.promise);
+  const first = useStudio.getState().solve(); await microtasks();
+  mocks.scenario.mockResolvedValueOnce({ ...scenario, id: 'new-scene-concurrent' });
+  mocks.runs.mockResolvedValueOnce({ runs: [] });
+  mocks.recommend.mockResolvedValue({ ranking: [], recommended: null });
+  await useStudio.getState().open('new-scene-concurrent');
+  useStudio.getState().setChosen([algorithm.id]);
+  const second = useStudio.getState().solve(); await microtasks();
+  expect(mocks.solve).toHaveBeenCalledTimes(2);
+  old.resolve({ runs: [] }); await first;
+  await useStudio.getState().solve();
+  expect(mocks.solve).toHaveBeenCalledTimes(2);
+  next.resolve({ runs: [] }); await second;
+  expect(useStudio.getState().scenarioId).toBe('new-scene-concurrent');
 });

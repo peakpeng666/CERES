@@ -1,0 +1,12 @@
+{
+  "snapshot": "20261021T000000Z",
+  "signer": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+  "base_manifest": "sha256:98510ac07bb4545e389be502a8918b385c018bfe4ceeb5ac7e0375c782268b04",
+  "release_hashes": {
+    "jammy": "c14060cd8c6d625874dfcb9523a35a395bf4865c28b6b6a82569ef326fe92dc6",
+    "jammy-updates": "34beb69f860de8eb98f2315b4c38c2542b1b005153652e399d898c892431adda",
+    "jammy-security": "eaa0a9cb0ad5ea72dcaf84e81a1f13c82a5afbb08700bee189b9b7e2c638c5a9"
+  },
+  "release_sizes": {"jammy": 270087, "jammy-updates": 128049, "jammy-security": 128927},
+  "review_source": "Audited v7 recipe prepare_jammy_packages.py and retained snapshot-20261021T000000Z metadata; no native execution or new network fetch in this authoring pass."
+}

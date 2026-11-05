@@ -1,0 +1,32 @@
+{
+  "source_commit": "85a7048b3d2e96d3cd7434dacf7848f213ed7d37",
+  "tracked_entries": 29283,
+  "asset_counts": {
+    "archive": 5,
+    "database": 1,
+    "dataset-or-model": 1543,
+    "document": 25,
+    "experiment-archive": 290,
+    "paper": 559,
+    "textbook": 16
+  },
+  "third_party_directories": 75,
+  "without_root_license": [
+    "src/repos/AutoML-Zero",
+    "src/repos/DR-ALNS",
+    "src/repos/EoH-S",
+    "src/repos/JAIR2026-FrugalAS",
+    "src/repos/QD-LHD",
+    "src/repos/QDAIF",
+    "src/repos/QUBE",
+    "src/repos/VRPAgent",
+    "src/repos/aslib_data",
+    "src/repos/open-source-sisr-routing",
+    "src/repos/typesafe-router"
+  ],
+  "external_copy_candidates": 6,
+  "verified_external_copies": 0,
+  "migrated_assets": 0,
+  "root_license_present": false,
+  "identity": "Git blob SHA1 identifies repository content; external SHA256 remains blank until a verified migration."
+}

@@ -3,6 +3,7 @@ import { navigate } from '../app/router';
 import { events, lab, LabApiError } from '../lab/api';
 import type { Algorithm, Instance, Recommendation, Scenario, Solution } from '../lab/types';
 import { studio } from './api';
+import { forkScenarioOnce } from './scenarioWrites';
 import type { FleetInstance, ParseResult, Selection, Tool, ObstacleKind } from './types';
 import { normalizeFleetInstance } from './fleet';
 import { filterRecommendation, planningBlockReason } from './capabilities';
@@ -36,6 +37,7 @@ interface StudioState {
   paramOverrides: Record<string, Record<string, number | string | boolean>>;
   runIds: string[];
   runs: Record<string, Solution>;
+  runErrors: Record<string, string>;
   focusRun: string | null;
   manualFocus: boolean;
   hiddenVehicles: string[];
@@ -75,6 +77,8 @@ interface StudioState {
   openCode: (path: string | null) => void;
   setStudy: (id: string | null) => void;
   loadAlgorithms: () => Promise<void>;
+  /** Opens a scenario (if needed) and shows the given runs in the map and comparison, e.g. runs an agent submitted. */
+  showRuns: (scenarioId: string, runIds: string[]) => Promise<void>;
 }
 
 const HISTORY = 120;
@@ -83,6 +87,7 @@ let recommendTimer: number | undefined;
 let draftRevision = 0;
 let loadSequence = 0;
 let saveInFlight: Promise<void> | null = null;
+let solveInFlight: number | null = null;
 
 const message = (e: unknown) => (e instanceof LabApiError || e instanceof Error ? e.message : String(e));
 
@@ -122,6 +127,7 @@ export const useStudio = create<StudioState>((set, get) => ({
   paramOverrides: {},
   runIds: [],
   runs: {},
+  runErrors: {},
   focusRun: null,
   manualFocus: false,
   hiddenVehicles: [],
@@ -162,7 +168,7 @@ export const useStudio = create<StudioState>((set, get) => ({
     window.clearTimeout(saveTimer);
     window.clearTimeout(recommendTimer);
     set({ scenarioId: id, scenario: null, draft: null, editorSession: id, loadError: null, busy: '载入场景', selection: null, past: [], future: [], save: 'idle', saveError: null, solveError: null, chosen: [],
-          runIds: [], runs: {}, focusRun: null, manualFocus: false, recommendation: null, playback: null, hiddenVehicles: [], paramOverrides: {} });
+          runIds: [], runs: {}, runErrors: {}, recommending: false, focusRun: null, manualFocus: false, recommendation: null, playback: null, hiddenVehicles: [], paramOverrides: {} });
     try {
       const sc = await lab.scenario(id);
       if (get().scenarioId !== id || loadSequence !== loadToken) return false;
@@ -175,6 +181,7 @@ export const useStudio = create<StudioState>((set, get) => ({
       const latestJob = recent.runs[0]?.job_id;
       const ids = recent.runs.filter((r) => r.job_id === latestJob).map((r) => r.run_id);
       set({ runs, runIds: ids, focusRun: pickBest(ids.map((i) => runs[i])) });
+      for (const id of ids) if (['queued', 'running'].includes(runs[id].state)) void pollRun(id);
       return true;
     } catch (e) {
       if (get().scenarioId === id && loadSequence === loadToken) set({ loadError: message(e), busy: null });
@@ -250,69 +257,78 @@ export const useStudio = create<StudioState>((set, get) => ({
   },
 
   async solve(ids) {
-    const { scenario, draft, chosen } = get();
-    const list = ids ?? chosen;
-    if (!scenario || !draft || !list.length) return;
-    set({ solveError: null });
-    await flushSave();
-    const current = get();
-    if (current.save === 'error' || current.save === 'dirty' || current.save === 'saving') {
-      const fleet = current.scenario?.problem_class === 'fleet_routing' && current.draft
-        ? normalizeFleetInstance(current.draft as unknown as FleetInstance)
-        : null;
-      const raw = current.save === 'error'
-        ? `场景尚未保存，未提交求解：${current.saveError ?? '请重试保存'}`
-        : '最新草稿仍在保存，未提交求解；保存完成后可重试';
-      const detail = fleet ? withFleetContext(raw, fleet) : raw;
-      set({ solveError: detail });
-      get().notify('error', detail);
-      return;
-    }
-    if (!current.scenario || !current.draft) return;
-    if (current.scenario.problem_class === 'fleet_routing') {
-      const fleet = normalizeFleetInstance(current.draft as unknown as FleetInstance);
-      const blocked = list.map((id) => planningBlockReason(fleet, id)).find(Boolean);
-      if (blocked) {
-        const detail = `未提交求解：${blocked}`;
+    const sequence = loadSequence;
+    if (solveInFlight === sequence) return;
+    solveInFlight = sequence;
+    try {
+      const { scenario, draft, chosen } = get();
+      const list = ids ?? chosen;
+      if (!scenario || !draft || !list.length) return;
+      set({ solveError: null });
+      await flushSave();
+      const current = get();
+      if (loadSequence !== sequence) return;
+      if (current.save === 'error' || current.save === 'dirty' || current.save === 'saving') {
+        const fleet = current.scenario?.problem_class === 'fleet_routing' && current.draft
+          ? normalizeFleetInstance(current.draft as unknown as FleetInstance)
+          : null;
+        const raw = current.save === 'error'
+          ? `场景尚未保存，未提交求解：${current.saveError ?? '请重试保存'}`
+          : '最新草稿仍在保存，未提交求解；保存完成后可重试';
+        const detail = fleet ? withFleetContext(raw, fleet) : raw;
         set({ solveError: detail });
         get().notify('error', detail);
         return;
       }
-    }
-    const submitted = current.scenario.problem_class === 'fleet_routing'
-      ? normalizeFleetInstance(current.draft as unknown as FleetInstance) as unknown as Instance
-      : current.draft;
-    const scenarioId = current.scenario.id;
-    set({ busy: '求解中' });
-    try {
-      const specs = list.map((id) => {
-        const a = current.algorithms.find((x) => x.id === id);
-        const suggested = current.recommendation?.ranking.find((r) => r.algorithm_id === id)?.suggested_params;
-        const overridden = current.paramOverrides[id] ?? {};
-        const params: Record<string, unknown> = {};
-        for (const p of a?.params ?? []) {
-          if (overridden[p.name] !== undefined) params[p.name] = overridden[p.name];
-          else if (suggested?.[p.name] !== undefined) params[p.name] = suggested[p.name];
+      if (!current.scenario || !current.draft) return;
+      if (current.scenario.problem_class === 'fleet_routing') {
+        const fleet = normalizeFleetInstance(current.draft as unknown as FleetInstance);
+        const blocked = list.map((id) => planningBlockReason(fleet, id)).find(Boolean);
+        if (blocked) {
+          const detail = `未提交求解：${blocked}`;
+          set({ solveError: detail });
+          get().notify('error', detail);
+          return;
         }
-        if (a?.params.some((p) => p.name === 'time_limit_s')) params.time_limit_s = current.budget;
-        if (a?.params.some((p) => p.name === 'seed')) params.seed = current.seed;
-        return { id, params };
-      });
-      const job = await lab.solve(scenarioId, specs, submitted, '工作台对比');
-      if (get().scenario?.id !== scenarioId) return;
-      set({ runIds: job.runs, focusRun: null, manualFocus: false, busy: null, playback: null });
-      for (const id of job.runs) void pollRun(id);
-    } catch (e) {
-      const detail = current.scenario.problem_class === 'fleet_routing'
-        ? withFleetContext(message(e), submitted as unknown as FleetInstance)
-        : message(e);
-      set({ busy: null, solveError: detail });
-      get().notify('error', detail);
-    }
+      }
+      const submitted = current.scenario.problem_class === 'fleet_routing'
+        ? normalizeFleetInstance(current.draft as unknown as FleetInstance) as unknown as Instance
+        : current.draft;
+      const scenarioId = current.scenario.id;
+      set({ busy: '求解中' });
+      try {
+        const specs = list.map((id) => {
+          const a = current.algorithms.find((x) => x.id === id);
+          const suggested = current.recommendation?.ranking.find((r) => r.algorithm_id === id)?.suggested_params;
+          const overridden = current.paramOverrides[id] ?? {};
+          const params: Record<string, unknown> = {};
+          for (const p of a?.params ?? []) {
+            if (overridden[p.name] !== undefined) params[p.name] = overridden[p.name];
+            else if (suggested?.[p.name] !== undefined) params[p.name] = suggested[p.name];
+          }
+          if (a?.params.some((p) => p.name === 'time_limit_s')) params.time_limit_s = current.budget;
+          if (a?.params.some((p) => p.name === 'seed')) params.seed = current.seed;
+          return { id, params };
+        });
+        const job = await lab.solve(scenarioId, specs, submitted, '工作台对比');
+        if (get().scenario?.id !== scenarioId || loadSequence !== sequence) return;
+        set({ runIds: job.runs, runErrors: {}, focusRun: null, manualFocus: false, busy: null, playback: null });
+        for (const id of job.runs) void pollRun(id);
+      } catch (e) {
+        if (get().scenario?.id !== scenarioId || loadSequence !== sequence) return;
+        const detail = current.scenario.problem_class === 'fleet_routing'
+          ? withFleetContext(message(e), submitted as unknown as FleetInstance)
+          : message(e);
+        set({ busy: null, solveError: detail });
+        get().notify('error', detail);
+      }
+    } finally { if (solveInFlight === sequence) solveInFlight = null; }
   },
 
   async cancelRun(runId) {
+    const sequence = loadSequence;
     const canceled = await lab.cancelRun(runId);
+    if (loadSequence !== sequence) return;
     set((current) => ({ runs: { ...current.runs, [runId]: canceled } }));
   },
 
@@ -356,6 +372,33 @@ export const useStudio = create<StudioState>((set, get) => ({
       get().notify('error', `算法库读取失败：${message(e)}`);
     }
   },
+
+  async showRuns(scenarioId, runIds) {
+    if (get().workspace !== 'plan') set({ workspace: 'plan' });
+    navigate(`#/plan/${encodeURIComponent(scenarioId)}`);
+    // The route effect opens the scenario; wait for it instead of racing its reset of the run list.
+    for (let i = 0; i < 150 && !(get().scenarioId === scenarioId && get().scenario); i++) await new Promise((r) => setTimeout(r, 100));
+    if (get().scenarioId !== scenarioId || !get().scenario) {
+      get().notify('error', '未能打开运行所属场景');
+      return;
+    }
+    const sequence = loadSequence;
+    const loaded = await Promise.allSettled(runIds.map((id) => lab.run(id)));
+    if (get().scenarioId !== scenarioId || loadSequence !== sequence) return;
+    const found: Solution[] = [];
+    const failures: string[] = [];
+    loaded.forEach((result, index) => {
+      if (result.status === 'rejected') failures.push(`${runIds[index]}：${message(result.reason)}`);
+      else if (result.value.scenario_id !== scenarioId || result.value.run_id !== runIds[index]) failures.push(`${runIds[index]}：运行响应身份不匹配`);
+      else found.push(result.value);
+    });
+    if (failures.length) get().notify('error', `部分运行未载入：${failures.join('；')}`);
+    if (!found.length) return;
+    const runs = { ...get().runs, ...Object.fromEntries(found.map((r) => [r.run_id, r])) };
+    const ids = found.map((r) => r.run_id);
+    set({ runs, runIds: ids, focusRun: pickBest(ids.map((id) => runs[id])), manualFocus: false, playback: null });
+    for (const r of found) if (['queued', 'running'].includes(r.state)) void pollRun(r.run_id);
+  },
 }));
 
 export function pickBest(runs: (Solution | undefined)[]): string | null {
@@ -368,20 +411,29 @@ export function pickBest(runs: (Solution | undefined)[]): string | null {
 }
 
 async function pollRun(id: string) {
-  for (let i = 0; i < 2400; i++) {
+  const sequence = loadSequence;
+  const active = () => loadSequence === sequence && useStudio.getState().runIds.includes(id);
+  for (let i = 0; i < 2400 && active(); i++) {
     try {
       const r = await lab.run(id);
-      useStudio.setState((s) => ({ runs: { ...s.runs, [id]: r } }));
+      if (!active()) return;
+      if (r.run_id !== id || r.scenario_id !== useStudio.getState().scenarioId) throw new Error('运行响应身份不匹配');
+      useStudio.setState((s) => {
+        const { [id]: _error, ...runErrors } = s.runErrors;
+        return { runs: { ...s.runs, [id]: r }, runErrors };
+      });
       if (!['queued', 'running'].includes(r.state)) {
         const s = useStudio.getState();
         if (!s.manualFocus) useStudio.setState({ focusRun: pickBest(s.runIds.map((x) => s.runs[x])) });
         return;
       }
-    } catch {
-      /* transient: retry */
+    } catch (error) {
+      if (!active()) return;
+      useStudio.setState((s) => ({ runErrors: { ...s.runErrors, [id]: `运行状态读取失败，正在重试：${message(error)}` } }));
     }
     await new Promise((r) => setTimeout(r, i < 20 ? 300 : 1000));
   }
+  if (active()) useStudio.setState((s) => ({ runErrors: { ...s.runErrors, [id]: '运行状态跟踪已超时；请重新打开场景读取最新状态' } }));
 }
 
 /** Show a given set of runs (for example those an agent session produced) on the map, comparison and checks. */
@@ -435,7 +487,7 @@ export async function flushSave(): Promise<void> {
         if (origin === 'user') {
           stored = (await studio.saveScenario(originalId, { instance: submitted, base_revision: scenario.revision ?? 0 })) as unknown as Scenario;
         } else {
-          stored = await studio.forkScenario(originalId, { instance: submitted });
+          stored = await forkScenarioOnce(originalId, { instance: submitted });
         }
         const current = useStudio.getState();
         if (current.scenarioId !== originalId && current.scenarioId !== stored.id) return;
@@ -488,7 +540,7 @@ export async function saveDraftCopy(): Promise<void> {
   const { scenario, draft } = useStudio.getState();
   if (!scenario || !draft) return;
   const revision = draftRevision;
-  const copy = await studio.forkScenario(scenario.id, { instance: draft, title: `${scenario.title}（草稿副本）` });
+  const copy = await forkScenarioOnce(scenario.id, { instance: draft, title: `${scenario.title}（草稿副本）` }, 'draft-copy');
   if (useStudio.getState().scenarioId !== scenario.id) return;
   useStudio.setState({ scenarioId: copy.id, scenario: copy, saveError: null,
     ...(draftRevision === revision ? { draft: draftOf(copy), save: 'saved' as const } : { save: 'dirty' as const }) });

@@ -1,0 +1,440 @@
+{
+  "schema": "urp.ortools-wheel-members/1",
+  "wheel": "ortools-9.15.6755-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl",
+  "wheel_sha256": "033836c0eb33bc72697a299e0caedbb25fc9d1cee0b13832d69cb30405f57b3e",
+  "libraries": {
+    "ortools/.libs/libCbc.so.2": {
+      "sha256": "c4be8dc3d5f38faa0c49ced5dea178e5157dd090ee53ea9126cccb6a739de687",
+      "bytes": 1413992
+    },
+    "ortools/.libs/libCbcSolver.so.2": {
+      "sha256": "9752b8afaa3d753b4dfa15e918acca116b557bdd431bf52ebc6bcf1143a8c21f",
+      "bytes": 1210104
+    },
+    "ortools/.libs/libCgl.so.0": {
+      "sha256": "6fe97d8fe512b7e8cc36d92de74d808dd35d6b393ac02b7071f65673ad5f5a1c",
+      "bytes": 1305936
+    },
+    "ortools/.libs/libClp.so.1": {
+      "sha256": "7eb2d5f0d4f009435f55c72046de051195b64b17f324907a6edfd6a3334b4294",
+      "bytes": 2102920
+    },
+    "ortools/.libs/libClpSolver.so.1": {
+      "sha256": "b90b768c611e87c5e5eb8a8157fec250f879779c4bad692427c0671efca7ddeb",
+      "bytes": 543632
+    },
+    "ortools/.libs/libCoinUtils.so.2": {
+      "sha256": "912442a7b3564d50e80f2b0a4f242812ba238fc15de67eba8f026dc0ee9e1686",
+      "bytes": 1514304
+    },
+    "ortools/.libs/libOsi.so.0": {
+      "sha256": "f025e824d17b3930cd284cf8bd1512ed28a6f2de45415db555250cff853b038f",
+      "bytes": 421744
+    },
+    "ortools/.libs/libOsiCbc.so.2": {
+      "sha256": "4140676d66394fe618c08b86b0d94986b1a6d1afc794041588743cd58693adf7",
+      "bytes": 95744
+    },
+    "ortools/.libs/libOsiClp.so.1": {
+      "sha256": "6231babd5db1bdbb8129311cc1004caa6fbbb5f6fe9e6da2accdc399c1244a12",
+      "bytes": 426720
+    },
+    "ortools/.libs/libabsl_base.so.2508.0.0": {
+      "sha256": "d77f85c899eb00ba6f9723427c44d797f77ccd24cc6c0543f11a071a12622e6f",
+      "bytes": 25888
+    },
+    "ortools/.libs/libabsl_city.so.2508.0.0": {
+      "sha256": "6bbf9644308a5f8c147083bf86b363e76d9feb7c623b4dbd662e4734c7e470fe",
+      "bytes": 15904
+    },
+    "ortools/.libs/libabsl_civil_time.so.2508.0.0": {
+      "sha256": "51f754596a44ac9ce6f3229126ff324cfe74ed26e2ee1a239ad26539567d2db9",
+      "bytes": 31640
+    },
+    "ortools/.libs/libabsl_cord.so.2508.0.0": {
+      "sha256": "9e0b944d2076edc7793c27e68f59642ca16cf65c8a43645ff61e5c6dc9f3b92c",
+      "bytes": 153584
+    },
+    "ortools/.libs/libabsl_cord_internal.so.2508.0.0": {
+      "sha256": "f45ad5f14b3f2a08fbee5801ad8011012121acf68b131551901085fa90146716",
+      "bytes": 92240
+    },
+    "ortools/.libs/libabsl_cordz_functions.so.2508.0.0": {
+      "sha256": "d58e4dd53f2323582f1841173ee3fde152aa3f6c291cdeede75704ba81150162",
+      "bytes": 16672
+    },
+    "ortools/.libs/libabsl_cordz_handle.so.2508.0.0": {
+      "sha256": "9fe611bb439b820f58a05bd4adbabb1b3777cacf491430ed74c7149d1cad105c",
+      "bytes": 22456
+    },
+    "ortools/.libs/libabsl_cordz_info.so.2508.0.0": {
+      "sha256": "f847831ddca7095c872f06592644703a0e925d8eb85e3fcf8befe66ca88a9033",
+      "bytes": 28696
+    },
+    "ortools/.libs/libabsl_crc32c.so.2508.0.0": {
+      "sha256": "30aa6531a4265bdbaa5f545d315f6adbddc99342767dd2609a5065ed30d70baa",
+      "bytes": 25048
+    },
+    "ortools/.libs/libabsl_crc_cord_state.so.2508.0.0": {
+      "sha256": "d00894b416b0e797c905fd9633e785083042776e3aef33fd63a3b053a3a061f2",
+      "bytes": 36600
+    },
+    "ortools/.libs/libabsl_crc_cpu_detect.so.2508.0.0": {
+      "sha256": "3210473121c7cbafeb5e8483b8a33bf06d55c016e6d69eaa205d7ad8c8303a7e",
+      "bytes": 16552
+    },
+    "ortools/.libs/libabsl_crc_internal.so.2508.0.0": {
+      "sha256": "07aae25211b8edb3377de8f24350e77e74e66ee8f375b9200c4294a7b10422c7",
+      "bytes": 27680
+    },
+    "ortools/.libs/libabsl_debugging_internal.so.2508.0.0": {
+      "sha256": "413c758bd95486ec31e72389ff13d081f25b3e5cd3bb9f183886a37d077ac6ba",
+      "bytes": 28672
+    },
+    "ortools/.libs/libabsl_decode_rust_punycode.so.2508.0.0": {
+      "sha256": "b39acd5a6a3cdba802fdb7d3ea6f64c901741143fe0aa534f8764d662858bdd4",
+      "bytes": 15944
+    },
+    "ortools/.libs/libabsl_demangle_internal.so.2508.0.0": {
+      "sha256": "548a98eb374b53c64f30cd65bb8b66ee676dca352d4feae2df2edfcd208e9438",
+      "bytes": 72968
+    },
+    "ortools/.libs/libabsl_demangle_rust.so.2508.0.0": {
+      "sha256": "2cd595a0b09a3a0fa696d5e66cb56e5ab424d293dbb124e416350e230edd7426",
+      "bytes": 28496
+    },
+    "ortools/.libs/libabsl_die_if_null.so.2508.0.0": {
+      "sha256": "6621925ced300f0419b63658ff2a7e689b5f07c0dda9213225e0e70fc6d4ae93",
+      "bytes": 16792
+    },
+    "ortools/.libs/libabsl_examine_stack.so.2508.0.0": {
+      "sha256": "aa20c3c304b4cc5a5f643870b52b4b78b6ab79144ff5618854a139b62483dd81",
+      "bytes": 16704
+    },
+    "ortools/.libs/libabsl_exponential_biased.so.2508.0.0": {
+      "sha256": "116b77d5ac15aaba6db1ab3c98ce6812ebd8d12afaf0a0473a3b515101f6c5cf",
+      "bytes": 16120
+    },
+    "ortools/.libs/libabsl_flags_commandlineflag.so.2508.0.0": {
+      "sha256": "2d74ef82dadab9a21bca0161d0535745797ae06503efc81d6d3813eaa37a77b0",
+      "bytes": 16272
+    },
+    "ortools/.libs/libabsl_flags_commandlineflag_internal.so.2508.0.0": {
+      "sha256": "1eee110ece47a5766b965c3bd97ebfc493d00a1beb10ba3eef8bc30bc891c2f0",
+      "bytes": 16344
+    },
+    "ortools/.libs/libabsl_flags_config.so.2508.0.0": {
+      "sha256": "350662c8f445e9d75393d4d7eca3bdb2b3502bfb79d6ce71920b604e795294b8",
+      "bytes": 30024
+    },
+    "ortools/.libs/libabsl_flags_internal.so.2508.0.0": {
+      "sha256": "d4a6ee77f5ccdaf53f705ae7146eb7ad466f618516f4974f951d3c222cbd7653",
+      "bytes": 51640
+    },
+    "ortools/.libs/libabsl_flags_marshalling.so.2508.0.0": {
+      "sha256": "908ad6a218f87e40abf4ec4c45db9334b243aee2b4d7e42d1d0cb5c8b6618f37",
+      "bytes": 56248
+    },
+    "ortools/.libs/libabsl_flags_parse.so.2508.0.0": {
+      "sha256": "1635d18ba42db44be9fed372dba096c2909776a100dab47f0e4bdeee7b971bde",
+      "bytes": 94872
+    },
+    "ortools/.libs/libabsl_flags_private_handle_accessor.so.2508.0.0": {
+      "sha256": "b8dff71b6091eedba3a9a8c43830f610f04f2156fd8ca993510a639311f26eb7",
+      "bytes": 16624
+    },
+    "ortools/.libs/libabsl_flags_program_name.so.2508.0.0": {
+      "sha256": "253d677711afd144510279fe3128c8cf8f8d9cbf653652c34e2d76755043a323",
+      "bytes": 17696
+    },
+    "ortools/.libs/libabsl_flags_reflection.so.2508.0.0": {
+      "sha256": "7053e1842de38369cd7f598e55f4bfca94a1a573123b626466285c72d7e0b7c6",
+      "bytes": 59792
+    },
+    "ortools/.libs/libabsl_flags_usage.so.2508.0.0": {
+      "sha256": "4b420385eade115ac70166d432d7ba7083dc33456c69432bd15ad83e8165d268",
+      "bytes": 21448
+    },
+    "ortools/.libs/libabsl_flags_usage_internal.so.2508.0.0": {
+      "sha256": "4afc8332ef69af4e21bf6abdc5189dfe17764b8e2febd3a30cadcd1e38e3f364",
+      "bytes": 65656
+    },
+    "ortools/.libs/libabsl_graphcycles_internal.so.2508.0.0": {
+      "sha256": "0bb90cdafec03bd56891c16057324bc6f5f14c1b462e001ca8914c17bb2e53a4",
+      "bytes": 36472
+    },
+    "ortools/.libs/libabsl_hash.so.2508.0.0": {
+      "sha256": "da2ce4b119428b5cf591d6506b53462437820fda4e77cc3773aa4fa9ec779992",
+      "bytes": 16328
+    },
+    "ortools/.libs/libabsl_hashtablez_sampler.so.2508.0.0": {
+      "sha256": "b5a88326256bb1890a4e6c18952eb8ae3229be6b45e1af29a600c1dd17d801c0",
+      "bytes": 24608
+    },
+    "ortools/.libs/libabsl_int128.so.2508.0.0": {
+      "sha256": "26416f568a30afa9db84fd68505ae790e1daaf5b2f2716e6fc5835470f0a79f9",
+      "bytes": 27512
+    },
+    "ortools/.libs/libabsl_kernel_timeout_internal.so.2508.0.0": {
+      "sha256": "b3d2eba388645c1ee706bfafed4ffd0ce62ac2c47aae2aee8383d553f426e346",
+      "bytes": 21896
+    },
+    "ortools/.libs/libabsl_leak_check.so.2508.0.0": {
+      "sha256": "1292fac94ea9611389c026af359c32f9a7bb38d87bcbe39a0878e45d2c700dd2",
+      "bytes": 16192
+    },
+    "ortools/.libs/libabsl_log_entry.so.2508.0.0": {
+      "sha256": "75eeea7fff37538b3d6f24f5cffada5b2ce14c807e12694e2d4ebddae96c63b1",
+      "bytes": 21616
+    },
+    "ortools/.libs/libabsl_log_flags.so.2508.0.0": {
+      "sha256": "22b989db84ae40b9ac6a644905142d756a541afe5f37ee984df44a86f725fb07",
+      "bytes": 34952
+    },
+    "ortools/.libs/libabsl_log_globals.so.2508.0.0": {
+      "sha256": "2265a44848886f91524b4ad6ffd1691e760b3a27e8fb5df208444c1d87e7ef18",
+      "bytes": 24032
+    },
+    "ortools/.libs/libabsl_log_initialize.so.2508.0.0": {
+      "sha256": "5f472456bc23ce8f4345625a966ea4d83357255e43dd22dc6e6cec52711baac9",
+      "bytes": 15896
+    },
+    "ortools/.libs/libabsl_log_internal_check_op.so.2508.0.0": {
+      "sha256": "1577d97e70ecd6f4123453aa4e78adf8d5aad25d3a9529085639f12a5b84124c",
+      "bytes": 38888
+    },
+    "ortools/.libs/libabsl_log_internal_conditions.so.2508.0.0": {
+      "sha256": "288cf7ede39fa6d4df436e34d4d3ed7b9d034d24bc04d51d331cd1d6e327b937",
+      "bytes": 16192
+    },
+    "ortools/.libs/libabsl_log_internal_fnmatch.so.2508.0.0": {
+      "sha256": "6a8626e3d07f67d1e522432e21ee0db1778bbebcf2c341532b86a327b3dc2019",
+      "bytes": 15768
+    },
+    "ortools/.libs/libabsl_log_internal_format.so.2508.0.0": {
+      "sha256": "f67964fc0cfd5bea95d2e8d33651db55146e075a1871173bd181c50c48685402",
+      "bytes": 17704
+    },
+    "ortools/.libs/libabsl_log_internal_globals.so.2508.0.0": {
+      "sha256": "3b4bbfcb5a01c8376f062a7af6d13d22de2376eebed41d32231fa57ddfa5b397",
+      "bytes": 17688
+    },
+    "ortools/.libs/libabsl_log_internal_log_sink_set.so.2508.0.0": {
+      "sha256": "0c496a7060eb9272fe21dbffb2eebd517b69f235f93d575edfcf2355ee71e3d0",
+      "bytes": 25536
+    },
+    "ortools/.libs/libabsl_log_internal_message.so.2508.0.0": {
+      "sha256": "350a0e2f4e0a8cdc742e6276b726e09b31da926ce9bd83089e3c327f6d49b287",
+      "bytes": 70976
+    },
+    "ortools/.libs/libabsl_log_internal_nullguard.so.2508.0.0": {
+      "sha256": "6f52a2880191b2e6d76612b27b55c0ea60705412e3c2021c70603dbe3f4e21a2",
+      "bytes": 15736
+    },
+    "ortools/.libs/libabsl_log_internal_proto.so.2508.0.0": {
+      "sha256": "9d90b1a2e82e46ead8d6abd983afc02295fb5d8fb615d21d27d6c2883e8b92cf",
+      "bytes": 16384
+    },
+    "ortools/.libs/libabsl_log_internal_structured_proto.so.2508.0.0": {
+      "sha256": "0be2f7a1f3460d437055eed4a763d27bedc810dafae959708b3927e18a8d5ed7",
+      "bytes": 16168
+    },
+    "ortools/.libs/libabsl_log_severity.so.2508.0.0": {
+      "sha256": "7f1a233c30c44634f73be41ccc02153235755cc5bb3705d1b30372f72048ee0b",
+      "bytes": 16040
+    },
+    "ortools/.libs/libabsl_log_sink.so.2508.0.0": {
+      "sha256": "820bccec8340cc5609994d43a8c1fded5bc1f88188396526698812ad8dc78891",
+      "bytes": 16064
+    },
+    "ortools/.libs/libabsl_malloc_internal.so.2508.0.0": {
+      "sha256": "9bd38204f6a3c53ed44820eb90727996ea300a45dd7cf4b83264be3645347a46",
+      "bytes": 23488
+    },
+    "ortools/.libs/libabsl_random_distributions.so.2508.0.0": {
+      "sha256": "6155a1f3888c3ade4f3e2f8ba9cfac7f382cc1dc7b286043d48c8776a4d1c75b",
+      "bytes": 16728
+    },
+    "ortools/.libs/libabsl_random_internal_entropy_pool.so.2508.0.0": {
+      "sha256": "f5d464ae266d4289b1c6647f4f2edda675f6ee8af25e000611b069e5f6ba5790",
+      "bytes": 22176
+    },
+    "ortools/.libs/libabsl_random_internal_platform.so.2508.0.0": {
+      "sha256": "2304dddcaf66e0ba59c26a3970d80de23eabb60be391d855f01ac38e81355f30",
+      "bytes": 19776
+    },
+    "ortools/.libs/libabsl_random_internal_randen.so.2508.0.0": {
+      "sha256": "dd682e99662677a1a6034153f90626dfb8b2624dde8f75c0830dc4b44da9b4c1",
+      "bytes": 16896
+    },
+    "ortools/.libs/libabsl_random_internal_randen_hwaes.so.2508.0.0": {
+      "sha256": "5fd7ee7981c386493572c5a306bc590d38c5f376bed5b4270169bc92b5d0dec9",
+      "bytes": 15648
+    },
+    "ortools/.libs/libabsl_random_internal_randen_hwaes_impl.so.2508.0.0": {
+      "sha256": "0b1a6208d581602153e0aadf353eaf55f648e3d0b73383fde32d9607f03d5e53",
+      "bytes": 16144
+    },
+    "ortools/.libs/libabsl_random_internal_randen_slow.so.2508.0.0": {
+      "sha256": "e62c16cf35ce5daf0b74dc29b216518d4df29985eeb59e916e9274a2c38004f0",
+      "bytes": 20264
+    },
+    "ortools/.libs/libabsl_random_internal_seed_material.so.2508.0.0": {
+      "sha256": "32788b27abad45b069fae26c4d4566826b234b4eeed44636021166885de2509a",
+      "bytes": 17112
+    },
+    "ortools/.libs/libabsl_random_seed_gen_exception.so.2508.0.0": {
+      "sha256": "cc67d27d8754788fd23ab078903092635a23e47d6f169cfbfeb1bf2a702622d1",
+      "bytes": 16656
+    },
+    "ortools/.libs/libabsl_random_seed_sequences.so.2508.0.0": {
+      "sha256": "c9b11187ccbb68008f252c8e8882b4416905e4caac7156fcfda5da3782f4629e",
+      "bytes": 16416
+    },
+    "ortools/.libs/libabsl_raw_hash_set.so.2508.0.0": {
+      "sha256": "40e5614650659cb1f33d79da2c32f8c66935f27a76b8de421a68fcb2b2b01f44",
+      "bytes": 45968
+    },
+    "ortools/.libs/libabsl_raw_logging_internal.so.2508.0.0": {
+      "sha256": "7d65179cf75277e208462d2e532933097924c6223b1c0f8031fafe3271bfdd00",
+      "bytes": 17736
+    },
+    "ortools/.libs/libabsl_spinlock_wait.so.2508.0.0": {
+      "sha256": "56d4a2c9dc4c2590d3846ef06888586f0e3898f7cf5713a13cc47255a6e71b1c",
+      "bytes": 16112
+    },
+    "ortools/.libs/libabsl_stacktrace.so.2508.0.0": {
+      "sha256": "c69e2be6743da92472801ef0961731b461552503e33e5c1cc7114fee27dad0cf",
+      "bytes": 21488
+    },
+    "ortools/.libs/libabsl_status.so.2508.0.0": {
+      "sha256": "73d08e43e51fc3cd5bdc18f32cb23f898c2dc7fe9fc88e396ec18d378568a0da",
+      "bytes": 56392
+    },
+    "ortools/.libs/libabsl_statusor.so.2508.0.0": {
+      "sha256": "e3935801a15452751ab89786514df8b3fbf348515271e836793e551292ec156f",
+      "bytes": 23704
+    },
+    "ortools/.libs/libabsl_str_format_internal.so.2508.0.0": {
+      "sha256": "5a86f649ebf4baad79ed221c8a5524de1a13384534133fbd3d2c75542af29692",
+      "bytes": 148296
+    },
+    "ortools/.libs/libabsl_strerror.so.2508.0.0": {
+      "sha256": "8a3d601f706417bca0af06815de881c5d9aaacc01ae0c2ecd138a23879f3b9f3",
+      "bytes": 17064
+    },
+    "ortools/.libs/libabsl_string_view.so.2508.0.0": {
+      "sha256": "6e5bb04d49f0873955f69ddd6b5383b6e2d97b1d825357c7d6fd60f2477e30d3",
+      "bytes": 15440
+    },
+    "ortools/.libs/libabsl_strings.so.2508.0.0": {
+      "sha256": "8527cde2586b1a60ef46976371357cc7747f35188b150de4456340592d0a9116",
+      "bytes": 177056
+    },
+    "ortools/.libs/libabsl_strings_internal.so.2508.0.0": {
+      "sha256": "37f21a8913f475105e50d20c07ba97673a0ac4bf03a2cff75727eb94bb735ebf",
+      "bytes": 23728
+    },
+    "ortools/.libs/libabsl_symbolize.so.2508.0.0": {
+      "sha256": "91297fd6e466bee85ac17a7907f413c97b56118d2978bee038373130e29be033",
+      "bytes": 44040
+    },
+    "ortools/.libs/libabsl_synchronization.so.2508.0.0": {
+      "sha256": "dbcc802c14752ef291cb054b5df3f6625c4ec4c95436b884f91b9d1af54e87ce",
+      "bytes": 75400
+    },
+    "ortools/.libs/libabsl_throw_delegate.so.2508.0.0": {
+      "sha256": "7938bcdccd693d325d5cf3218ec51d216c0515fe0d16ff0a613978e4fa1ecb2c",
+      "bytes": 25592
+    },
+    "ortools/.libs/libabsl_time.so.2508.0.0": {
+      "sha256": "d82031d83996d1bc8805b164329b86e7fbb2977617337faa4e2ad846e7435eb6",
+      "bytes": 110680
+    },
+    "ortools/.libs/libabsl_time_zone.so.2508.0.0": {
+      "sha256": "9da99ca5a3d8b4312950cfbdf41777d2b54cdc05622c3457b17eb945d62f52b9",
+      "bytes": 156728
+    },
+    "ortools/.libs/libabsl_tracing_internal.so.2508.0.0": {
+      "sha256": "514f99cd1c62526bf95e93afc4af1ea6be6508633808dd2e2c6c96653460bfff",
+      "bytes": 15800
+    },
+    "ortools/.libs/libabsl_utf8_for_code_point.so.2508.0.0": {
+      "sha256": "50c8f3c8923fb8cfc3aeda6beeddf301c0458c6a5a040d45280c4ddeec063d35",
+      "bytes": 15816
+    },
+    "ortools/.libs/libabsl_vlog_config_internal.so.2508.0.0": {
+      "sha256": "3b672700fed89a9cfe0167fbbc1248bd7739ce99687adc908e90083d4f1a04d8",
+      "bytes": 37280
+    },
+    "ortools/.libs/libbz2.so.1": {
+      "sha256": "a3fcfee6efa9db9e9c29a9ac0d23873c0cd9f2e785d578eddea0a523d11fd781",
+      "bytes": 103888
+    },
+    "ortools/.libs/libhighs.so.1": {
+      "sha256": "f1950bebd88b271821c7924527021b738a2a6c1cd4516cf97463a0f5e8f82973",
+      "bytes": 5206408
+    },
+    "ortools/.libs/libortools.so.9": {
+      "sha256": "5190e6d7e163ac2975abb9d582b6d405396621f8a15f2ac7c3de3d50d6276887",
+      "bytes": 33175344
+    },
+    "ortools/.libs/libprotobuf.so.33.1.0": {
+      "sha256": "6686e3ef64b47c93e990335672d9e62028c7f471efcfbb0520836e9054561da0",
+      "bytes": 4215768
+    },
+    "ortools/.libs/libre2.so.11": {
+      "sha256": "cab89b5bbe3f27ce9596f2676645c6b00fe5b1ef9cd98f2d08984cddb316a56c",
+      "bytes": 592216
+    },
+    "ortools/.libs/libscip.so.10.0": {
+      "sha256": "b574f5d16450a97c4a5a8d7f0584c8bfc0c9e42e9e2a00871200474cf235a119",
+      "bytes": 13804440
+    },
+    "ortools/.libs/libutf8_validity.so.33.1.0": {
+      "sha256": "cfa54ab5a0e54c294a4e0719c49aa75c1c0ff7f7df0ef4aece836d76f936e5fb",
+      "bytes": 22009
+    },
+    "ortools/.libs/libz.so.1": {
+      "sha256": "04732421a545f37615865d44a17cc34c018d5c53565e7412e6e9e06b4eb4a57f",
+      "bytes": 129520
+    },
+    "ortools.libs/libabsl_base-d77f85c8.so.2508.0.0": {
+      "sha256": "840be4cf28484552371ca61ffe5eabf5b2da961b3cca4561a9b0b0f488229ae4",
+      "bytes": 43713
+    },
+    "ortools.libs/libabsl_int128-26416f56.so.2508.0.0": {
+      "sha256": "96d37b24344cba818015f9e326e5ab5c85746121f5ba119fa7c24574e8142c18",
+      "bytes": 39057
+    },
+    "ortools.libs/libabsl_log_severity-7f1a233c.so.2508.0.0": {
+      "sha256": "30d686f80a16ba3e5006c05b0c474869d845f88dbca107ea10494a0ba3d9d4c1",
+      "bytes": 21537
+    },
+    "ortools.libs/libabsl_raw_logging_internal-7d65179c.so.2508.0.0": {
+      "sha256": "ccb88537920c3c50d9bd1a73c4b9b5b3460831bd67225a44b4b27e94d9fe2100",
+      "bytes": 29769
+    },
+    "ortools.libs/libabsl_spinlock_wait-56d4a2c9.so.2508.0.0": {
+      "sha256": "b29debdbcb3527aaa0d4db788ec2e7ffcb39e73dd28cd8e0eba3dd286adc5792",
+      "bytes": 21553
+    },
+    "ortools.libs/libabsl_string_view-6e5bb04d.so.2508.0.0": {
+      "sha256": "c0f1f54e10caaaa884430331258d3c7752df66a142f28110c62de996feeca964",
+      "bytes": 25209
+    },
+    "ortools.libs/libabsl_strings-8527cde2.so.2508.0.0": {
+      "sha256": "a8f88641d5b74e2b55614ecedd75943e971b25f711c90fd47ac225fce27d7756",
+      "bytes": 227137
+    },
+    "ortools.libs/libabsl_strings_internal-37f21a89.so.2508.0.0": {
+      "sha256": "c8ce9ade49fd0d4d77588c36d7ce9cb37cec129a2cd5e1ba5e343a1d0da5d074",
+      "bytes": 35641
+    },
+    "ortools.libs/libabsl_throw_delegate-7938bcdc.so.2508.0.0": {
+      "sha256": "bbc2e4b12691b5f20823c68e8827960897d058b0418f72d3f1d75cc75d1b0e90",
+      "bytes": 44753
+    }
+  },
+  "status": "archive_hashes_only_not_an_ELF_closure_or_runtime_acceptance"
+}

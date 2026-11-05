@@ -81,6 +81,8 @@ class AgentRunner:
     # ------------------------------------------------------------- public --
     def recover(self):
         for s in self.store.by_state(('running',)):
+            if (s.get('restoration') or {}).get('read_only'):
+                continue
             s['state'] = 'interrupted'
             add_message(s, 'event', '网关重启时本会话正在执行，已中断；可点击“继续”从当前阶段恢复。', 'notice')
             self.store.save(s)
@@ -215,12 +217,18 @@ class AgentRunner:
         return {'record': record, 'integrity': {'algorithm': 'sha256', 'sha256': hashlib.sha256(canonical.encode()).hexdigest(),
                                                  'scope': 'record（规范化 JSON，键排序）；完整性校验，不是数字签名'}}
 
+    @staticmethod
+    def _require_writable(session: dict):
+        if (session.get('restoration') or {}).get('read_only'):
+            raise RunnerError(409, 'recovered_read_only', '此会话由不完整导出恢复，仅供查阅；重新执行请新建任务。')
+
     def message(self, session_id: str, text: str) -> dict:
         text = (text or '').strip()
         if not text or len(text) > 2000:
             raise RunnerError(400, 'invalid_message', '消息须为 1–2000 字')
         with self._mutex:
             s = self._load(session_id)
+            self._require_writable(s)
             if s['state'] == 'running':
                 raise RunnerError(409, 'busy', '智能体正在执行；可先暂停或取消')
             pending = s.get('pending')
@@ -248,6 +256,7 @@ class AgentRunner:
     def edit_contract(self, session_id: str, fields: dict) -> dict:
         with self._mutex:
             s = self._load(session_id)
+            self._require_writable(s)
             if s['state'] == 'running':
                 raise RunnerError(409, 'busy', '执行中不能修改任务合同；请先暂停')
             new, accepted, rejected = tc.apply(s['contract'], fields or {}, 'user_edit', note='用户在表单中修改')
@@ -267,6 +276,7 @@ class AgentRunner:
         payload = payload or {}
         with self._mutex:
             s = self._load(session_id)
+            self._require_writable(s)
             if action == 'pause':
                 if s['state'] != 'running':
                     raise RunnerError(409, 'not_running', '会话没有在执行')

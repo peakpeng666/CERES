@@ -147,10 +147,7 @@ def ompl_dubins_fallback(inst, stops_xy, min_radius, budget_s=0.5):
     from shapely.prepared import prep
     from ompl import base as ob, geometric as og, util as ou
     ou.setLogLevel(ou.LogLevel.LOG_NONE if hasattr(ou.LogLevel, 'LOG_NONE') else ou.LogLevel.LOG_ERROR)
-    try:
-        ou.RNG.setSeed(42)
-    except Exception:
-        pass
+    ou.RNG.setSeed(42)
     radius = float(inst['robot_radius'])
     boundary = Polygon(inst['boundary'])
     obstacles = [Polygon(o['polygon']) for o in inst.get('obstacles', [])]

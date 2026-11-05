@@ -34,6 +34,7 @@ export function DataPage() {
   return (
     <div className={s.page} style={{ height: '100%' }}>
       <div className={s.pageIn}>
+        <LocalData />
         <h2>数据包</h2>
         <p className={s.noteLine}>这些数据不随安装包提供，需要时再下载。下载后会先校验，再放进应用的数据目录。</p>
         {packs.error && <p className={s.docBad}>{packs.error.message}</p>}
@@ -49,6 +50,35 @@ export function DataPage() {
       </div>
     </div>
   );
+}
+
+function LocalData() {
+  const [info, setInfo] = useState<Awaited<ReturnType<NonNullable<typeof window.desktop>['data']['info']>> | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  useEffect(() => { void window.desktop?.data.info().then(setInfo).catch((e) => setMessage(String(e))); }, []);
+  if (!window.desktop) return null;
+  const act = async (action: 'export' | 'restore') => {
+    setBusy(true); setMessage('');
+    try {
+      const result = await window.desktop!.data[action]();
+      if (!result.canceled) setMessage(`已完成校验。SHA256：${result.sha256}`);
+      setInfo(await window.desktop!.data.info());
+    } catch (e) { setMessage(String(e)); }
+    finally { setBusy(false); }
+  };
+  return <>
+    <h2>本地工作数据</h2>
+    <p className={s.noteLine}>任务、会话和原始结果保存在此处，内置与容器后端共用。代码更新不会覆盖它们。备份与恢复会暂时停止后端，请先结束正在执行的任务。</p>
+    {info && <Kvs items={[[ '位置', info.root ], [ '数据集', info.dataset.dataset_id ]]} />}
+    <div className={s.nextRow} style={{ paddingTop: 10 }}>
+      <button type="button" className={s.btn} disabled={busy} onClick={() => void act('export')}>{busy ? '处理中…' : '备份数据'}</button>
+      <button type="button" className={s.btn} disabled={busy} onClick={() => void act('restore')}>从备份恢复到新目录</button>
+    </div>
+    <p className={s.noteLine}>数据包包含数据库和原始文件，恢复前逐项校验；密钥、ROS 和已编译环境需在目标机器另行配置。原数据目录会保留。</p>
+    {message && <p className={s.noteLine} role="status">{message}</p>}
+    {!message && info?.lastTransfer && <p className={info.lastTransfer.state === 'failed' ? s.docBad : s.noteLine} role="status">{info.lastTransfer.message}{info.lastTransfer.sha256 ? ` · SHA256：${info.lastTransfer.sha256}` : ''}</p>}
+  </>;
 }
 
 const UPDATE: Record<UpdateState['status'], string> = { unavailable: '开发版本不检查更新', idle: '尚未检查', checking: '正在检查', current: '已是最新版本', downloading: '正在下载更新', ready: '更新已下载', error: '检查失败' };

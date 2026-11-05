@@ -7,6 +7,7 @@
   touch-action: none;
   user-select: none;
 }
+.editor[data-tool="box"],
 .editor[data-tool="task"],
 .editor[data-tool="depot"],
 .editor[data-tool="unload"],
@@ -207,5 +208,260 @@
   paint-order: stroke;
   stroke: var(--map-halo);
   stroke-width: 3px;
+  pointer-events: none;
+}
+.panel {
+  flex: 0 0 auto;
+  padding: 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  font-size: 12px;
+  color: #333;
+  user-select: none;
+}
+.editorShell {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.editorShell[data-narrow="true"] {
+  flex-direction: column;
+}
+.editorShell > .editor {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  width: auto;
+  height: auto;
+}
+.panelStack {
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  overflow: auto;
+  background: #f4f5f1;
+  /* Left of the map, so the page's vehicle legend (top-right of the stage) never lands on it. */
+  order: -1;
+  border-right: 1px solid #d6d8d0;
+  -webkit-overflow-scrolling: touch;
+}
+.panelStack[hidden] {
+  display: none;
+}
+.editorShell[data-narrow="true"] .panelStack {
+  flex: 0 0 auto;
+  max-height: 42%;
+  order: 0;
+  border-right: 0;
+  border-top: 1px solid #d6d8d0;
+}
+.sideToggle {
+  position: absolute;
+  z-index: 2;
+  bottom: 40px;
+  left: 8px;
+  min-height: 32px;
+  padding: 4px 10px;
+  font: inherit;
+  font-size: 12px;
+  border: 1px solid #bbb;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.panelSummary {
+  font-weight: 600;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.panelStack .panel button,
+.panelStack .panel input[type="checkbox"] {
+  touch-action: manipulation;
+}
+@media (pointer: coarse) {
+  .panelSummary,
+  .sideToggle,
+  .panel button,
+  .layerGrid label {
+    min-height: 44px;
+  }
+  .layerGrid input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+  }
+  .numField input {
+    min-height: 36px;
+    font-size: 16px;
+  }
+}
+.panelTitle {
+  font-weight: 600;
+  margin: 4px 0;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.chips button,
+.fields button,
+.panel button {
+  font: inherit;
+  padding: 2px 6px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #fafafa;
+  cursor: pointer;
+}
+.hint {
+  color: #777;
+  margin-top: 4px;
+}
+.fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin-top: 4px;
+}
+.numField {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.numField input {
+  width: 64px;
+  font: inherit;
+  padding: 1px 3px;
+}
+.numField input[aria-invalid="true"] {
+  outline: 2px dashed #c0392b;
+}
+.numField em {
+  font-style: normal;
+  color: #777;
+}
+.marquee {
+  fill: rgba(40, 110, 220, 0.08);
+  stroke: #286edc;
+  stroke-dasharray: 4 3;
+  pointer-events: none;
+}
+.multiSel {
+  fill: none;
+  stroke: #286edc;
+  stroke-width: 2;
+  stroke-dasharray: 3 2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+.layerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 6px;
+}
+.layerGrid label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.legendList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.legendList li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 0;
+}
+.origin line,
+.axes line {
+  stroke: #1d1d1f;
+  stroke-width: 1.5;
+}
+.origin circle {
+  fill: none;
+  stroke: #1d1d1f;
+  stroke-width: 1.5;
+}
+.axes path {
+  fill: #1d1d1f;
+}
+.origin text,
+.axes text {
+  font-size: 10px;
+  fill: #1d1d1f;
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 3px;
+}
+.taskBadMark {
+  font-size: 11px;
+  font-weight: 700;
+  fill: #e5352b;
+  pointer-events: none;
+}
+.issueList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 220px;
+  overflow: auto;
+}
+.issueList button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  margin-top: 3px;
+  text-align: left;
+  border-left-width: 4px;
+}
+.issueList button[data-severity="error"] {
+  border-left-color: #e5352b;
+  border-left-style: solid;
+}
+.issueList button[data-severity="warning"] {
+  border-left-color: #d9922b;
+  border-left-style: dashed;
+}
+.issueList button[aria-current="true"] {
+  background: #e8f0fd;
+}
+.issueMark {
+  pointer-events: none;
+}
+.issueMark path {
+  stroke: #1d1d1f;
+  stroke-width: 1;
+}
+.issueMark[data-severity="error"] path {
+  fill: #e5352b;
+}
+.issueMark[data-severity="warning"] path {
+  fill: #f0b93a;
+}
+.issueMark text {
+  font-size: 9px;
+  font-weight: 700;
+  fill: #fff;
+  text-anchor: middle;
+}
+.issueFocus {
+  fill: none;
+  stroke: #e5352b;
+  stroke-width: 2;
+  stroke-dasharray: 6 3;
   pointer-events: none;
 }

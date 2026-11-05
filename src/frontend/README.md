@@ -17,6 +17,8 @@ bash scripts/console.sh test
 |---|---|
 | 页面与交互 | `src/` |
 | 智能体工作区（对话、任务合同、执行计划、调用记录） | `src/agent/`，接口见 [agent/README](../lab/urp_lab/agent/README.md) |
+| 科研对话（主线工具与批准协议） | `src/studio/agent/`，接口前缀 `/lab/api/research/agent` |
+| 桌面数据位置与备份 | `src/desk/DesktopPages.tsx`，IPC `desktop.data` |
 | 装箱回放与数据读取 | `core/` |
 | 路线检查与文件适配 | [core/routing](core/routing/README.md) |
 | 原始输入 | `inputs/` → `../../data/bpp/inputs` |

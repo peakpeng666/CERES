@@ -92,6 +92,9 @@ def _study_runs():
         for j, alg in enumerate(('pyvrp.fleet', 'ortools.fleet', 'panel.sweep')):
             r = _run(f'r{k}{j}', alg, scale=1 + 0.05 * j + 0.01 * k)
             r.update(scenario_id=f'sc{k}', instance_sha256=f'{k}' * 30)
+            # Distinct full inputs, not four aliases of one identical field.
+            r['instance']['boundary'][1][0] += k
+            r['instance']['boundary'][2][0] += k
             r['recommendation_at_submission'] = {'advice': {'policy': 'rules-v2', 'recommended': 'pyvrp.fleet',
                                                             'features': [{'key': 'n_tasks', 'name': '任务点', 'value': 6 + k},
                                                                          {'key': 'vehicles', 'name': '车辆', 'value': 2 + (k % 2)},
@@ -109,7 +112,7 @@ def ctx():
     c.study = {'study_id': 'st1', 'title': '测试课题', 'progress': {'finished': 12}}
     c.study_runs = _study_runs()
     c.analysis = analysis.analyze(c.study_runs)
-    c.space = {'points': []}
+    c.space = analysis.instance_space(c.study_runs)
     return c
 
 
@@ -120,7 +123,7 @@ def _pdf_fonts(pdf: bytes) -> tuple[bool, bool]:
 
 def test_every_figure_with_data_renders_at_journal_width(ctx):
     items = {i['key']: i for i in catalog(ctx)}
-    expected_missing = {'map_extraction'}            # no map asset in this context
+    expected_missing = {'map_extraction', 'cd_diagram'}            # no map asset; synthetic 4-block/3-algorithm study is descriptive only
     for s in SPECS:
         assert items[s.key]['available'] is (s.key not in expected_missing), (s.key, items[s.key]['reason'])
     for s in SPECS:
@@ -179,7 +182,7 @@ def test_traces_of_another_objective_are_not_plotted(ctx):
     assert not trace_matches(other) and trace_matches(ctx.runs[0])
     _, meta = render('convergence', ctx, Style(lang='en'), 'svg')
     assert {r['run_id'] for r in meta['table']['trace']} == {ctx.runs[0]['run_id']}
-    assert 'internal objective' in meta['caption']['en']
+    assert 'endpoint mismatch' in meta['caption']['en']
 
 
 def test_figure_history_uses_submitted_snapshot_and_rejects_mixed_sources(monkeypatch):
@@ -264,3 +267,54 @@ def test_track_map_does_not_index_pose_array_by_control_cycle_index(ctx):
     w = meta['table']['worst_point'][0]
     assert w['cross_track_m'] < .1  # map geometry, not the unrelated control index/value
     assert 'separately from control-cycle' in meta['caption']['en']
+
+
+def test_refresh_anytime_export_denominator_and_malformed_convergence(ctx):
+    import copy
+    from urp_lab.figures import study, charts
+    good = copy.deepcopy(ctx.runs[0])
+    failed = dict(copy.deepcopy(good), run_id='synthetic-error', state='error', trace=[])
+    ctx.analysis = analysis.analyze([good, failed])
+    _, cap, data = study.anytime_median(ctx, Style(lang='en'), {})
+    assert 'traces=1/2' in cap['en']
+    assert 'not infinity' in cap['en']
+    assert 'observed_trace_count' in data['anytime'][0]
+    assert data['telemetry_counts'][0]['failed_or_interrupted'] == 1
+    malformed = dict(copy.deepcopy(good), run_id='synthetic-malformed', trace=[[.1]])
+    ctx.runs = [good, malformed]
+    _, cap, data = charts.convergence(ctx, Style(lang='en'), {})
+    assert 'invalid structure/timing' in cap['en']
+    assert {r['run_id'] for r in data['trace']} == {good['run_id']}
+
+
+def test_refresh_space_export_renders_all_legal_panels_and_provenance(ctx):
+    import copy
+    from urp_lab.figures import study
+    second = copy.deepcopy(ctx.study_runs)
+    for r in second:
+        r['params']['time_limit_s'] = 10
+        r['run_id'] += '-10s'
+    ctx.space = analysis.instance_space([*ctx.study_runs, *second])
+    fig, cap, data = study.instance_space(ctx, Style(lang='en'), {})
+    assert len(fig.axes) == 2
+    assert len(data['panel_contracts']) == 2
+    assert all(p['run_ids'] and p['comparison_key'] for p in data['points'])
+    assert 'fleet_routing.features/1' in cap['en']
+    aliases = [dict(copy.deepcopy(ctx.study_runs[0]), scenario_id=f'alias-{k}', run_id=f'alias-{k}') for k in range(4)]
+    ctx.space = analysis.instance_space(aliases)
+    assert ctx.space['panels'][0]['projection_status'] == 'insufficient_instances'
+    with pytest.raises(ValueError):
+        study.instance_space(ctx, Style(), {})
+
+
+def test_fleet_feature_schema_rejects_degenerate_and_missing_capacity():
+    import copy
+    inst = _inst()
+    assert analysis.features({'problem_class': 'fleet_routing'}, inst)
+    for change in ('capacity', 'boundary'):
+        bad = copy.deepcopy(inst)
+        if change == 'capacity':
+            bad['vehicles'].pop('capacity')
+        else:
+            bad['boundary'] = [[0, 0], [1, 0], [2, 0]]
+        assert analysis.features({'problem_class': 'fleet_routing'}, bad) is None

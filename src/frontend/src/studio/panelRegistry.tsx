@@ -8,6 +8,7 @@ import { ConsolePanel, LegacyPlan, RunsPanel, ServicesPanel, SimPanel } from './
 import { useStudio } from './store';
 import { AgentChatPanel } from '../agent/AgentChat';
 
+const ResearchAgentPanel = lazy(() => import('./agent/AgentPanel').then((m) => ({ default: m.AgentPanel })));
 const lib = () => import('./panels/LibraryPanels');
 const research = () => import('./panels/ResearchPanels');
 const system = () => import('../desk/SystemPages');
@@ -46,6 +47,7 @@ function ClassicPanel() {
 export const PANELS = {
   agentChat: { title: '智能体', C: AgentChatPanel },
   agentTask: { title: '任务与执行', C: AgentTaskPanel },
+  researchAgent: { title: '科研对话', C: ResearchAgentPanel },
   map: { title: '地图', C: MapPanel },
   inspector: { title: '检查器', C: InspectorPanel },
   advisor: { title: '推荐与求解', C: AdvisorPanel },

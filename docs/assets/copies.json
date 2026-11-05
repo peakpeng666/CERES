@@ -1,0 +1,93 @@
+{
+  "schema": "urp.asset-copies/1",
+  "review_date": "2026-10-30",
+  "reviewed_base_commit": "aab3b42162da90a44879fe212ebccc146d0683d4",
+  "destination": {
+    "folder_id": "1RT2EE4UOE5qrbrSizstQDqfroMRwqKmo",
+    "parent_id": "1zs4eHCumbKPNV0ZnI9JWK6JnQHV1569T",
+    "url": "https://drive.google.com/drive/folders/1RT2EE4UOE5qrbrSizstQDqfroMRwqKmo",
+    "permission_types": [
+      "user",
+      "user"
+    ],
+    "permission_roles": [
+      "owner",
+      "writer"
+    ],
+    "public_access": false,
+    "permission_changes": 0
+  },
+  "copies": [
+    {
+      "asset_path": null,
+      "file_id": "1pmpWkp1GRSpI93rJAJOoIENo7rbBothv",
+      "name": "URP-private-papers-20261023.zip",
+      "url": "https://drive.google.com/file/d/1pmpWkp1GRSpI93rJAJOoIENo7rbBothv/view?usp=drivesdk",
+      "bytes": 19629355,
+      "state": "restore-blocked",
+      "error": "URLError: Tunnel connection failed: 403 Forbidden",
+      "attempt": "Connector raw-file reference -> cloud executor download; no file restored",
+      "members_verified": false
+    },
+    {
+      "asset_path": "docs/reports/URP项目研究进展报告_LaTeX源码.zip",
+      "file_id": "1-L785Vcnu0Xml5ElJBnAztqKIiF1tAo2",
+      "name": "URP项目研究进展报告_LaTeX源码.zip",
+      "url": "https://drive.google.com/file/d/1-L785Vcnu0Xml5ElJBnAztqKIiF1tAo2/view?usp=drivesdk",
+      "bytes": 18814049,
+      "state": "fetch-error-unclassified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/3"
+    },
+    {
+      "asset_path": "docs/reports/URP研究进展简报_LaTeX源码.zip",
+      "file_id": "1M6LD0XXxVmi4MMXx72nMQjKYa-8uvaNp",
+      "name": "URP研究进展简报_LaTeX源码.zip",
+      "url": "https://drive.google.com/file/d/1M6LD0XXxVmi4MMXx72nMQjKYa-8uvaNp/view?usp=drivesdk",
+      "bytes": 2444241,
+      "state": "restore-verified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/1",
+      "git_blob_sha1": "1477364bd78e3effbee2e740b49822eaf7f66488",
+      "sha256": "c15d8c2a42f0aa850a9a407f0684abad2d0a9a1910967c90372edcb13fca4463",
+      "restore_evidence": "drive-restoration-20261101.json#/records/1"
+    },
+    {
+      "asset_path": "docs/reports/URP项目研究进展报告.pdf",
+      "file_id": "1g7GOB6GodgEE2nK5S1Z1K4ZXlxvs4Hhm",
+      "name": "URP项目研究进展报告.pdf",
+      "url": "https://drive.google.com/file/d/1g7GOB6GodgEE2nK5S1Z1K4ZXlxvs4Hhm/view?usp=drivesdk",
+      "bytes": 15747930,
+      "state": "fetch-error-unclassified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/2"
+    },
+    {
+      "asset_path": "docs/reports/URP研究进展简报.pdf",
+      "file_id": "1PdG8IMobR0ewigFTw-FTUhgbZJQsgV1S",
+      "name": "URP研究进展简报.pdf",
+      "url": "https://drive.google.com/file/d/1PdG8IMobR0ewigFTw-FTUhgbZJQsgV1S/view?usp=drivesdk",
+      "bytes": 1935010,
+      "state": "restore-verified",
+      "last_attempt_checked_utc": "2026-11-01T06:36:13.325340+00:00",
+      "last_attempt_evidence": "drive-restoration-20261101.json#/records/0",
+      "git_blob_sha1": "9f13577b007930e25c1c3560ce30f6ee6b37f792",
+      "sha256": "7c67591c176a094cdcaa0a01fe6e63f3c7aa2dd8403fcb66472b929dc4aa2f15",
+      "restore_evidence": "drive-restoration-20261101.json#/records/0"
+    },
+    {
+      "asset_path": "docs/assets/inventory.json",
+      "file_id": "1jd5NCn-PFuFixEXaB6JYYbfm0W6nVTXn",
+      "name": "URP资产基线-85a7048.json",
+      "url": "https://drive.google.com/file/d/1jd5NCn-PFuFixEXaB6JYYbfm0W6nVTXn/view?usp=drivesdk",
+      "bytes": 826,
+      "state": "uploaded-not-restored",
+      "source_commit": "aab3b42162da90a44879fe212ebccc146d0683d4",
+      "metadata_verified": true,
+      "restore_evidence": null,
+      "git_blob_sha1": "810ddbbdd33f0540fd61b9b8df8afa2e3689d516",
+      "sha256": "53a1d685843953939c4897395cc108f4aea328c2ff1549737f96c81d654b18bb"
+    }
+  ],
+  "raw_assets_removed": 0
+}

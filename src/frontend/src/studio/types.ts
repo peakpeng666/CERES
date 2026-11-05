@@ -153,7 +153,7 @@ export type Selection =
   | { type: 'boundary' }
   | null;
 
-export type Tool = 'select' | 'pan' | 'task' | 'obstacle' | 'plot' | 'depot' | 'unload' | 'corridor';
+export type Tool = 'select' | 'box' | 'pan' | 'task' | 'obstacle' | 'plot' | 'depot' | 'unload' | 'corridor';
 
 export interface Reference {
   key: string;
@@ -239,12 +239,25 @@ export interface AnalysisSummary {
   success_rate: number | null;
   gap_mean: number | null;
   gap_sd: number | null;
+  gap_sd_status?: 'ok' | 'insufficient_samples' | 'out_of_range';
   gap_median: number | null;
   gap_best: number | null;
   time_mean: number | null;
   time_median: number | null;
   mean_rank: number | null;
   wins: number;
+}
+
+/** Terminal run counts, not independent seeds or equally weighted instances. */
+export interface GapCounts {
+  terminal_runs: number;
+  eligible_terminal_runs: number;
+  finite_gap_runs: number;
+  eligible_failed_runs: number;
+  eligible_nonfinite_gap_runs: number;
+  missing_reference_runs: number;
+  failed_runs: number;
+  failed_missing_reference_runs: number;
 }
 
 export interface Analysis {
@@ -254,30 +267,57 @@ export interface Analysis {
   n_complete_instances: number;
   algorithms: string[];
   summary: AnalysisSummary[];
-  per_instance: { instance: string; scenario_id: string; title: string; reference: number | null; reference_kind: string; cells: Record<string, { mean: number | null; gap_mean: number | null; rank: number | null; runs: number; failures: number; time_mean: number | null }> }[];
+  per_instance: { instance: string; scenario_id: string; title: string; reference: number | null; reference_kind: string; cells: Record<string, { mean: number | null; sd?: number | null; sd_status?: 'ok' | 'insufficient_samples' | 'out_of_range'; gap_mean: number | null; rank: number | null; runs: number; failures: number; time_mean: number | null }> }[];
   tests: {
     alpha: number;
     k: number;
     n: number;
-    friedman?: { statistic?: number; p_value?: number; significant?: boolean; error?: string };
-    nemenyi?: { q_alpha: number; critical_difference: number; mean_ranks: Record<string, number> };
-    wilcoxon_holm: { a: string; b: string; n: number; a_better: number; b_better: number; ties: number; p_value?: number; p_holm?: number; significant?: boolean }[];
+    protocol?: string;
+    protocol_note?: string;
+    sample_unit?: 'paired_instance_block';
+    mean_ranks?: Record<string, number>;
+    posthoc_reason?: string;
+    friedman?: { status?: 'ok' | 'not_testable'; testable?: boolean; reason?: string | null; reason_code?: string | null; method?: string; min_instances?: number; min_algorithms?: number; statistic?: number | null; p_value?: number | null; significant?: boolean | null; error?: string };
+    nemenyi?: { status?: 'ok'; q_alpha: number; critical_difference: number; mean_ranks: Record<string, number> };
+    holm_family_size?: number;
+    wilcoxon_holm: {
+      a: string; b: string; n: number; a_better: number; b_better: number; ties: number;
+      n_complete_blocks?: number; excluded_nonfinite_cost_pairs?: number; excluded_nonfinite_differences?: number;
+      status?: 'ok' | 'not_testable'; testable?: boolean; method?: string; reason?: string | null; reason_code?: string | null;
+      statistic?: number | null; p_value?: number | null; p_holm?: number | null; significant?: boolean | null;
+    }[];
   };
-  performance_profile: { taus: number[]; curves: Record<string, number[]> };
+  performance_profile: { taus: number[]; curves: Record<string, number[]>; n_instances?: number; note?: string };
   ecdf: Record<string, number[]>;
-  anytime: { grid: number[]; median: Record<string, (number | null)[]> };
+  ecdf_metadata?: {
+    schema: 'urp.gap-ecdf/1'; normalization: 'per_algorithm_eligible_terminal_runs';
+    weighting: 'one_terminal_run_one_observation'; denominator_field: 'eligible_terminal_runs';
+    counts: Record<string, GapCounts>; totals: GapCounts; note: string;
+  };
+  block_contract?: { schema: string; n_comparison_blocks: number; n_complete_blocks: number; n_declared_groups: number; alias_blocks_collapsed: number; inference_eligible: boolean; reason_code: string | null; note: string };
+  anytime: { grid: number[]; median: Record<string, (number | null)[]>; excluded?: number; note?: string;
+    schema?: string; conditioning?: string; observed_counts?: Record<string, number[]>;
+    counts?: Record<string, { terminal_runs: number; terminal_successes: number; valid_trace_runs: number; reasons: Record<string, number>; run_ids: string[] }> };
   scatter: { algorithm: string; time: number | null; gap: number | null; instance: string; run_id: string }[];
   reference_note: string;
+  comparison_note?: string;
 }
 
+export interface InstanceSpacePoint {
+  x?: number; y?: number; best: string | null; scenario_id: string; title: string;
+  comparison_key?: string; run_ids?: string[]; winner_status?: string; missing_algorithms?: string[];
+}
+export interface InstanceSpacePanel {
+  panel_id: string; problem_class: string; feature_schema: string; budget_s: number | null;
+  algorithms: string[]; points: InstanceSpacePoint[]; projection_status: string;
+  comparison_contract: { objective_rule?: string; objective_unit?: string; [key: string]: unknown };
+  features?: string[]; loadings?: number[][]; explained_variance?: number[]; method?: string; note?: string;
+}
 export interface InstanceSpace {
-  points: { x: number; y: number; best: string | null; scenario_id: string; title: string }[];
-  features?: string[];
-  loadings?: number[][];
-  explained_variance?: number[];
-  footprints?: Record<string, XY[]>;
-  method?: string;
-  note?: string;
+  schema?: string; panels?: InstanceSpacePanel[]; points: InstanceSpacePoint[];
+  omitted_runs?: { run_id: string; reason: string }[];
+  features?: string[]; loadings?: number[][]; explained_variance?: number[];
+  footprints?: Record<string, XY[]>; method?: string; note?: string;
 }
 
 export type FleetSolution = Solution & { routes: FleetRoute[]; trace?: [number, number][] };

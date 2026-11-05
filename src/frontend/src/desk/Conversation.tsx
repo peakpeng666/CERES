@@ -112,7 +112,7 @@ function ContractDoc({ msg, session, latest }: { msg: AgentMessage; session: Age
   const control = useAgent((x) => x.control);
   const busy = useAgent((x) => x.sending || x.pendingAction !== null);
   const d = msg.data as unknown as { cards: ContractCard[]; unsupported: string[]; revision: number };
-  const active = latest && session.state === 'awaiting_confirmation';
+  const active = latest && !session.restoration?.read_only && session.state === 'awaiting_confirmation';
   const sources: Record<string, number> = {};
   for (const c of d.cards) sources[c.source] = (sources[c.source] ?? 0) + 1;
   const shown = d.cards.filter((c) => c.source !== 'default');
@@ -151,7 +151,7 @@ function ApprovalDoc({ msg, next, session, latest }: { msg: AgentMessage; next?:
   const control = useAgent((x) => x.control);
   const busy = useAgent((x) => x.sending || x.pendingAction !== null);
   const d = msg.data as unknown as Pending & { reason?: string; contract_revision?: number };
-  const live = latest && session.state === 'awaiting_approval' && !!session.pending;
+  const live = latest && !session.restoration?.read_only && session.state === 'awaiting_approval' && !!session.pending;
   const verdict = approvalVerdict(next);
   const runId = (d.call?.arguments as { run_id?: string } | undefined)?.run_id;
   const run = useRun(runId);
@@ -231,7 +231,7 @@ function Item({ item, session, lastOf }: { item: TimelineItem; session: AgentSes
   if (msg.role === 'user') return <div className={s.me}>{msg.text}</div>;
   if (msg.role === 'event') return <div className={s.evt} data-kind={msg.kind}><span>{msg.text.replace(/start_simulation/g, TOOL.start_simulation)}</span></div>;
   if (msg.kind === 'confirmation') return <ContractDoc msg={msg} session={session} latest={latest} />;
-  if (msg.kind === 'questions') return <QuestionsDoc msg={msg} active={latest && session.state === 'awaiting_user'} />;
+  if (msg.kind === 'questions') return <QuestionsDoc msg={msg} active={latest && !session.restoration?.read_only && session.state === 'awaiting_user'} />;
   if (msg.kind === 'approval') return <ApprovalDoc msg={msg} next={next} session={session} latest={latest} />;
   if (msg.kind === 'report') return <ReportDoc msg={msg} session={session} />;
   if (msg.kind === 'simulation') return <SimDoc msg={msg} />;
@@ -349,7 +349,7 @@ function Running({ session }: { session: AgentSession }) {
 function Resumable({ session }: { session: AgentSession }) {
   const control = useAgent((x) => x.control);
   const busy = useAgent((x) => x.sending || x.pendingAction !== null);
-  if (!['paused', 'failed', 'cancelled', 'interrupted'].includes(session.state)) return null;
+  if (session.restoration?.read_only || !['paused', 'failed', 'cancelled', 'interrupted'].includes(session.state)) return null;
   return (
     <div className={s.doc} data-need>
       <header><b>{STATE_LABEL[session.state]}</b></header>
@@ -368,7 +368,7 @@ function NextStep({ session }: { session: AgentSession }) {
   const best = session.report?.evidence.best_verified;
   const control = useAgent((x) => x.control);
   const runs = currentRuns(session);
-  if (session.state !== 'done' || !best || !runs.includes(best.run_id)) return null;
+  if (session.restoration?.read_only || session.state !== 'done' || !best || !runs.includes(best.run_id)) return null;
   const verified = session.report!.evidence.runs.filter((r) => r.independent_recheck).length;
   const simulated = session.report!.evidence.simulation_started;
   const evidence = session.report!.evidence;
@@ -397,7 +397,7 @@ function PlanStrip({ session }: { session: AgentSession }) {
   const studioScenario = useStudio((x) => x.scenario);
   const studioRuns = useStudio((x) => x.runIds);
   const p = planSummary(session);
-  const idle = session.state !== 'running';
+  const idle = session.state !== 'running' && !session.restoration?.read_only;
   const userMap = studioScenario && studioScenario.problem_class === 'fleet_routing' && (studioScenario as { origin?: string }).origin === 'user' ? studioScenario.id : null;
   return (
     <Fold className={s.plan} summary={<>
@@ -508,8 +508,8 @@ export function Conversation() {
       <div className={s.scroll} ref={scroll}>
         <div className={s.col}>
           {timeline.map((item) => <Item key={item.key} item={item} session={session} lastOf={lastOf} />)}
-          <LiveSim session={session} />
-          {session.state === 'running' && <Running session={session} />}
+          {!session.restoration?.read_only && <LiveSim session={session} />}
+          {session.state === 'running' && !session.restoration?.read_only && <Running session={session} />}
           <Resumable session={session} />
           <NextStep session={session} />
         </div>
@@ -520,6 +520,7 @@ export function Conversation() {
           {actionError && <p className={s.actionError}>{actionError}</p>}
           <PlanStrip session={session} />
           <Composer session={session} />
+          {session.restoration?.read_only && <p className={s.noteLine}>{session.restoration.note}</p>}
           <p className={s.useLine}><button type="button" onClick={() => openRoot('trace')}>
             {session.provider ? `${u.calls} 次模型调用 · ${n0(u.input_tokens)} → ${n0(u.output_tokens)} tokens · ${n1(u.latency_s)} s` : `规则流程 · 未调用大模型 · ${session.tool_calls.length} 次工具调用`}
           </button></p>

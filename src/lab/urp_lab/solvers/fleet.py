@@ -71,15 +71,40 @@ class Graph:
         P = np.array(self.nodes, dtype=float)
         W = np.full((n, n), np.inf)
         simple = not inst.get('obstacles') and self.boundary.equals(self.boundary.convex_hull)
+        # Match the independent fleet checker's metre tolerance. The polygonal
+        # round buffer is only a fast broad-phase filter, not a clearance proof.
+        clearance = r - 1e-6
+        obstacle_polygons = [Polygon(o['polygon']) for o in inst.get('obstacles') or []]
+        boundary_ring = self.boundary.boundary
+        if simple:
+            # In a convex obstacle-free boundary, the disc-clear centre domain
+            # is convex: safe endpoints suffice, retaining the cheap fast path.
+            node_points = shapely.points(P)
+            safe_nodes = (shapely.covers(self.boundary, node_points)
+                          & (shapely.distance(node_points, boundary_ring) >= clearance))
         np.fill_diagonal(W, 0.0)
         ii, jj = np.triu_indices(n, 1)
         # Batch GEOS predicates instead of constructing/calling a Python geometry
         # for every pair. Bound each batch to avoid quadratic temporary geometries.
         for start in range(0, len(ii), 8192):
             i, j = ii[start:start + 8192], jj[start:start + 8192]
-            if not simple:
+            if simple:
+                visible = safe_nodes[i] & safe_nodes[j]
+                i, j = i[visible], j[visible]
+            else:
                 segments = shapely.linestrings(np.stack((P[i], P[j]), axis=1))
+                # Co-located service nodes are genuine zero-length edges; use
+                # points rather than invalid degenerate LineStrings in GEOS.
+                same = np.all(P[i] == P[j], axis=1)
+                segments[same] = shapely.points(P[i[same]])
                 visible = shapely.covers(pfree.context, segments)
+                i, j, segments = i[visible], j[visible], segments[visible]
+                visible = (shapely.covers(self.boundary, segments)
+                           & (shapely.distance(segments, boundary_ring) >= clearance))
+                # Keep GEOS operations batched without an edges × obstacles
+                # temporary array. Check original polygons, not inscribed arcs.
+                for obstacle in obstacle_polygons:
+                    visible &= shapely.distance(segments, obstacle) >= clearance
                 i, j = i[visible], j[visible]
             W[i, j] = W[j, i] = np.hypot(*(P[i] - P[j]).T)
         if ground_zones and risk_weight > 0:
@@ -570,14 +595,14 @@ def assign_trips(trip_times, K):
     return out
 
 
-def dispatch_algorithm(inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of):
+def dispatch_algorithm(inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=None):
     """Run one fleet algorithm; returns (trips, owner, trip_class, trip_depot, trace)."""
     trace, owner, trip_class, trip_depot, reload_at = [], None, None, None, None
     trips = None
     if algorithm_id == 'pyvrp.fleet':
         trips, trip_class, trip_depot, trace = metaheuristic('pyvrp', inst, D, demand, params, route_cap)
     elif algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan':
-        trips, owner, reload_at, trace = ortools_makespan(inst, D, demand, params, K, multi)
+        trips, owner, reload_at, trace = ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=trace_diagnostics)
         trip_class = [class_of[v] for v in owner] if owner is not None else None
         trip_depot = [v % len(depot_list(inst)) for v in owner] if owner is not None else None
     elif algorithm_id == 'ortools.fleet':
@@ -634,10 +659,11 @@ def solve(scenario, inst, algorithm_id, params):
         raise ValueError('构造基线（sweep / cluster_first / savings）只支持单车库；多车库请用 pyvrp.fleet 或 ortools.fleet')
     deadline = time.perf_counter() + float(params.get('time_limit_s', 3))
     route_cap = n if multi else K
+    trace_diagnostics = {}
     trips, owner, trip_class, trip_depot, reload_at, trace = dispatch_algorithm(
-        inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of)
+        inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=trace_diagnostics)
     if not trips:
-        return [], None, {}, {'reason': '求解器没有返回可行方案'}, 'no_solution', trace
+        return [], None, {}, {'reason': '求解器没有返回可行方案', 'trace_diagnostics': trace_diagnostics}, 'no_solution', trace
     reload_at = reload_at if reload_at is not None else [None] * len(trips)
     if trip_class is None:
         trip_class = [0] * len(trips)          # constructive baselines run on homogeneous fleets only
@@ -782,6 +808,8 @@ def solve(scenario, inst, algorithm_id, params):
            'trip_assignment': ('OR-Tools 直接为各车安排往返（车库卸载点），时间维度跨度代价最小化最晚完成'
                                if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
                                else '多趟：先求各趟路线，再按最长处理时间优先分配到各车' if multi else '单趟：每车一条路线')}
+    if trace_diagnostics:
+        raw['trace_diagnostics'] = trace_diagnostics
     raw['model_contract'] = {
         'schema': 'urp.fleet-model/2', 'frame': 'local planar metres',
         'geometry': {'footprint': 'circumscribed circle', 'radius_m': inst['robot_radius'],

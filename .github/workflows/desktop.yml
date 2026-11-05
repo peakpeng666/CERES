@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 concurrency:
   group: desktop-${{ github.ref }}
@@ -44,6 +45,7 @@ jobs:
         run: |
           npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
           npm run build --prefix src/frontend
+          node --test src/desktop/test/main.test.js
       - name: Stage the backend
         run: uv run --no-project --python 3.12 python src/desktop/scripts/stage_backend.py --target ${{ matrix.target }}
       - name: Check the staged backend on this operating system
@@ -78,16 +80,28 @@ jobs:
             src/desktop/dist/latest*.yml
           if-no-files-found: error
 
+  images:
+    needs: checks
+    uses: ./.github/workflows/images.yml
+    with:
+      checks_passed: true
+    permissions:
+      contents: read
+      packages: write
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: build
+    needs: [build, images]
     runs-on: ubuntu-22.04
     env:
       GH_TOKEN: ${{ github.token }}
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
           merge-multiple: true
+      - name: Verify optional data and installer publication metadata
+        run: python3 src/desktop/scripts/check_release.py --artifacts artifacts --version "${GITHUB_REF_NAME#v}"
       - name: Publish
         run: gh release create "$GITHUB_REF_NAME" artifacts/* --repo "$GITHUB_REPOSITORY" --title "工作台 $GITHUB_REF_NAME" --generate-notes --latest

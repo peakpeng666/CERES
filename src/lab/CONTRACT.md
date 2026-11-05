@@ -383,7 +383,7 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 
 ## 9. 任务智能体（2026-10-30）
 
-接口前缀 `/lab/api/agent`：`GET /providers`、`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages`、`POST /sessions/{id}/control`（`pause|resume|cancel|retry|confirm|approve|reject|takeover`）、`PATCH /sessions/{id}/contract`。SSE 事件 `agent_session` 携带 `session_id、state、phase、updated_utc`。会话存于 `runtime/agent.sqlite3`，不改写 `lab.sqlite3` 的结构。
+接口前缀 `/lab/api/agent`：`GET /providers`、`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages`、`POST /sessions/{id}/control`（`pause|resume|cancel|retry|confirm|approve|reject|takeover`）、`PATCH /sessions/{id}/contract`。SSE 事件 `agent_session` 携带 `session_id、state、phase、updated_utc`。会话存于 `runtime/agent.sqlite3`，与科研对话的 `lab.sqlite3/agent_sessions` 分开保存。
 
 - 任务合同 `urp.task-contract/1` 与会话 `urp.agent-session/1` 的字段、来源标签和状态机见 [agent/README](urp_lab/agent/README.md)。
 - 工具只调用本契约已有接口的同一实现（`compose`、`recommend`、`JobManager.submit`、`solvers.fleet.check`、`FieldSimManager.start`）；Gazebo 会话与改变任务本身的修复须经用户批准。
@@ -413,3 +413,12 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - **数据包**：`GET /lab/api/packs`、`POST /packs/{id}/install|cancel|remove`，SSE 事件 `pack`。清单 `urp_lab/data/packs.json` 写明 SHA256 和解压大小；下载支持续传，校验通过后解压到新目录再移入 `runtime/packs/<id>-<version>/`，路径越界、符号链接和超出声明大小的包一律拒绝。`/data/*` 优先读构建产物，其次读 `history` 包；`URP_PACKS_BASE_URL` 可替换下载地址。
 - **桌面进程**：`python -m urp_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `URP_DESKTOP=1`、`URP_NODE`（JS 基线使用的运行时）、`URP_MODELS_REFRESH=1`。`URP_DESKTOP=1` 时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；Gazebo 由容器后端提供，容器里没有这个变量。
 - **Windows**：`urp_lab/compat.py` 在 Windows 上提供 `signal.SIGKILL` 和基于 `taskkill` 的 `os.killpg`，因此 `services.py` 等进程代码不需要分支。`worker.py` 没有 `SIGALRM` 时用看门狗线程上报同样的超时结果。
+
+
+## 12. 主线科研对话与数据互通（2026-11-06）
+
+主线科研对话保留 `AgentManager`、原工具及批准/取消/预算/接地检查，统一接口为 `/lab/api/research/agent`：根 `GET` 状态，`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages|cancel|approval`（具体请求结构见 `agent/routes.py`）。UI 入口为算法实验中的「科研对话」。任务流程仍使用第 9 节 `/agent` 与独立的 `agent.sqlite3`；两类会话 schema 不互相冒充。科研对话复用已选择的模型服务配置，兼容旧环境变量；每轮固定模型，读取配置、启动与状态查询不调用模型。
+
+`python -m urp_lab data` 提供离线 `export|verify|restore|recover`；`urp.runtime-bundle/1` 清单含数据集 ID、来源版本、相对路径、逐文件大小和 SHA256、SQLite schema 指纹及表行数。完整备份保留状态、上下文与原文件；仅 JSON 导出恢复的会话带 `restoration.read_only=true`、缺失项与原件 SHA256，任务消息/控制/合同编辑返回 409 `recovered_read_only`。恢复仅写全新绝对目录，拒绝覆盖、未来 schema、路径和校验错误。操作与目录参数见唯一[使用入口](../../setup/README.md#本地与-github-的保存分工数据与恢复2026-11-06)。
+
+桌面 IPC `data:info|export|restore` 受同源限制，选择备份/恢复位置使用系统文件对话框。导入成功后才更新数据位置；失败保留原配置。`URP_DATA_HOME`、`URP_LAB_RUNTIME`、`URP_API_DB` 对应共享持久根、Lab 库和档案库，桌面 Compose 绑定同一目录并匹配宿主 UID/GID。

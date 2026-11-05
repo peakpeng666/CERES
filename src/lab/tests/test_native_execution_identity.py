@@ -297,7 +297,7 @@ def test_submission_snapshot_retains_native_artifact_evidence(native_tree, monke
     monkeypatch.setattr(recommend, 'recommend', lambda *args, **kwargs: {})
     source = jobs.execution_manifest()
     scenario = cvrp_scenarios()[0]
-    run = jobs.skeleton('job-native', scenario, scenario['instance'], {'id': 'pyvrp.hgs'}, {}, None, source)
+    run = jobs.skeleton('job-native', scenario, scenario['instance'], {'id': 'pyvrp.ils'}, {}, None, source)
     assert run['reproducibility']['native_dependencies'] == source['native_dependencies']
     source['native_dependencies'].clear()
     assert run['reproducibility']['native_dependencies']['ompl']['state'] == 'present'

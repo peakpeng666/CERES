@@ -9,11 +9,11 @@ import statistics as stt
 from collections import defaultdict
 
 import numpy as np
-from matplotlib.patches import Polygon as MPoly
 from matplotlib.ticker import LogLocator, NullFormatter
 
+from ..analysis import cd_unavailable_reason
 from . import data as D
-from .names import FEATURE_EN, alg_index, alg_label
+from .names import alg_index, alg_label
 from .style import Style, color, dash, figure, log_axis, marker, qlabel
 
 
@@ -56,9 +56,9 @@ def perf_profile(ctx: D.Context, st: Style, opts: dict):
     ax.legend(loc='lower right')
     cap = {
         'zh': f"性能曲线（Dolan & Moré 2002）：ρ(τ) 为该算法成本不超过每个实例最好成本 τ 倍的实例比例；曲线越靠左上越好，τ = 1 处为取得最好解的比例。"
-              f"基于 {_n_text(an, st)}，每个实例取各算法有效运行的平均成本。",
+              f"基于 {_n_text(an, st)}，只纳入所有算法齐全的实例，每个实例取各算法可行运行的平均成本；全失败的算法–实例单元保留在分母，在有限 τ 处不计成功。部分种子失败另见运行成功率。",
         'en': f"Performance profiles (Dolan & Moré 2002): ρ(τ) is the fraction of instances on which an algorithm's cost is within a factor τ of the best; "
-              f"higher and further left is better, ρ(1) is the share of wins. Based on {_n_text(an, st)}; per-instance cost is the mean over valid runs.",
+              f"higher and further left is better. Based on complete paired instances from {_n_text(an, st)}; per-instance cost is the mean over feasible runs. An algorithm-instance cell with no feasible run remains in the instance denominator but never counts at finite τ. Partial seed failures are reflected separately in run success rates.",
     }
     return fig, cap, {'profile': rows}
 
@@ -91,8 +91,8 @@ def gap_distribution(ctx: D.Context, st: Style, opts: dict):
     ax.grid(axis='x')
     ax.axvline(0, color='#888888', lw=0.5)
     cap = {
-        'zh': f"各算法相对参照解差距的分布（每点一次有效运行；箱体为四分位，须为 5–95 百分位）。参照：{an.get('reference_note')} {_n_text(an, st)}。",
-        'en': f"Distribution of the gap to the reference solution per algorithm (one point per valid run; boxes are quartiles, whiskers the 5th–95th percentiles). "
+        'zh': f"各算法相对参照解差距的分布（每点一次有有限差距的有效运行；失败和无正参照运行不画点；箱体为四分位，须为 5–95 百分位）。参照：{an.get('reference_note')} {_n_text(an, st)}。",
+        'en': f"Distribution of the gap to the reference solution per algorithm (one point per finite valid-run gap; failures and runs without a positive reference are not plotted; boxes are quartiles, whiskers the 5th–95th percentiles). "
               f"Reference: best-known solution for CVRPLIB instances, otherwise the best valid solution found by any algorithm. {_n_text(an, st)}.",
     }
     return fig, cap, {'gaps': rows}
@@ -102,6 +102,9 @@ def cd_diagram(ctx: D.Context, st: Style, opts: dict):
     """Critical-difference diagram (Demšar 2006): mean ranks on an axis, groups not significantly different joined by bars."""
     an = ctx.analysis
     tests = an['tests']
+    reason = cd_unavailable_reason(tests)
+    if reason:
+        raise ValueError(reason)
     nem = tests['nemenyi']
     names = _names(an, st)
     ranks = sorted(nem['mean_ranks'].items(), key=lambda kv: kv[1])
@@ -138,7 +141,7 @@ def cd_diagram(ctx: D.Context, st: Style, opts: dict):
     cliques = []
     for i in range(k):
         j = i
-        while j + 1 < k and vals[j + 1] - vals[i] < cd:
+        while j + 1 < k and vals[j + 1] - vals[i] <= cd:
             j += 1
         if j > i and not any(a <= i and j <= b for a, b in cliques):
             cliques.append((i, j))
@@ -149,9 +152,9 @@ def cd_diagram(ctx: D.Context, st: Style, opts: dict):
     ptxt = f"p = {fr['p_value']:.2g}" if fr.get('p_value') is not None else st.t('无法计算', 'not computable')
     cap = {
         'zh': f"临界差图（Demšar 2006）：轴上为各算法在 {tests['n']} 个实例上的平均秩（1 为最好），粗横线连接的算法之间差异不显著"
-              f"（Nemenyi 检验，α = {tests['alpha']}，CD = {cd:.2f}）。Friedman 检验 χ² = {fr.get('statistic', float('nan')):.2f}，{ptxt}。",
+              f"（Nemenyi 检验，α = {tests['alpha']}，CD = {cd:.2f}）。Friedman 检验 χ² = {fr.get('statistic'):.2f}，{ptxt}。",
         'en': f"Critical-difference diagram (Demšar 2006): mean ranks over {tests['n']} instances (1 = best); algorithms joined by a thick bar are not "
-              f"significantly different (Nemenyi, α = {tests['alpha']}, CD = {cd:.2f}). Friedman test χ² = {fr.get('statistic', float('nan')):.2f}, {ptxt}.",
+              f"significantly different (Nemenyi, α = {tests['alpha']}, CD = {cd:.2f}). Friedman test χ² = {fr.get('statistic'):.2f}, {ptxt}.",
     }
     rows = [{'algorithm': a, 'mean_rank': rk} for a, rk in ranks] + [{'algorithm': 'CD', 'mean_rank': cd}]
     return fig, cap, {'ranks': rows}
@@ -196,9 +199,9 @@ def pairwise(ctx: D.Context, st: Style, opts: dict):
     cb.outline.set_linewidth(0.4)
     cap = {
         'zh': f"两两比较：格中数字为行算法优于列算法的实例比例，星号为 Wilcoxon 符号秩检验经 Holm 校正后的显著性（* p<0.05，** p<0.01，*** p<0.001；"
-              f"实例数 < 5 的对不检验）。{_n_text(an, st)}。",
+              f"仅纳入双方成本及差值有限的配对；有效配对不足 5 个或全部平局时不检验）。{_n_text(an, st)}。",
         'en': f"Pairwise comparison: each cell is the share of instances on which the row algorithm beats the column algorithm; stars mark Wilcoxon signed-rank "
-              f"tests with Holm correction (* p<0.05, ** p<0.01, *** p<0.001; pairs with fewer than 5 instances are not tested). {_n_text(an, st)}.",
+              f"tests with Holm correction (* p<0.05, ** p<0.01, *** p<0.001; only finite-cost, finite-difference pairs are included; fewer than 5 such pairs or all ties are not tested). {_n_text(an, st)}.",
     }
     return fig, cap, {'pairs': an['tests']['wilcoxon_holm']}
 
@@ -217,21 +220,26 @@ def anytime_median(ctx: D.Context, st: Style, opts: dict):
         i = alg_index(a)
         y = np.array([np.nan if v is None or not math.isfinite(v) else v for v in med], float)
         ax.plot(grid, y, color=color(i), ls=dash(i), lw=1.1, label=names[a], drawstyle='steps-post')
-        rows += [{'algorithm': a, 't_s': float(t), 'median_gap_pct': None if np.isnan(v) else float(v)} for t, v in zip(grid, y)]
+        observed = an['anytime'].get('observed_counts', {}).get(a, [])
+        rows += [{'algorithm': a, 't_s': float(t), 'median_gap_pct': None if np.isnan(v) else float(v),
+                  'observed_trace_count': observed[k] if k < len(observed) else None}
+                 for k, (t, v) in enumerate(zip(grid, y))]
     log_axis(ax, 'x')
     ax.set_xlabel(qlabel(st, '计算时间', 'Wall-clock time', 's'))
     ax.set_ylabel(qlabel(st, '差距中位数', 'Median gap', '%'))
     ax.set_ylim(bottom=0)
     ax.grid(which='major')
     ax.legend(loc='upper right')
-    ex = int(an['anytime'].get('excluded') or 0)
+    counts = an['anytime'].get('counts') or {}
+    details = '; '.join(f"{a}: traces={c['valid_trace_runs']}/{c['terminal_runs']}, terminal successes={c['terminal_successes']}, exclusions={c['reasons']}"
+                        for a, c in counts.items())
     cap = {
-        'zh': f"各算法“当前最好解”相对参照差距的中位数随时间的变化（尚无可行解的运行按 +∞ 计，超过半数无解时不画）。{_n_text(an, st)}。"
-              + (f"另有 {ex} 次运行的过程轨迹记录的是求解器内部目标（终值与目标值不一致，如“尽快完成”任务中的 PyVRP），未计入。" if ex else ''),
-        'en': f"Median gap of the best-so-far solution over time (runs without a feasible solution count as +∞; not drawn while more than half have none). {_n_text(an, st)}."
-              + (f" {ex} runs whose trace records the solver's internal objective (final value ≠ objective, e.g. PyVRP on makespan task maps) are excluded." if ex else ''),
+        'zh': '条件质量曲线：仅最终验算成功且目标遥测合法的运行，各时刻分母为已观测到 incumbent 的轨迹数；首次记录前未知，不补无穷。不是全运行预算成功率。' + details,
+        'en': 'Conditional quality curve for successful validated runs with valid objective telemetry. Each time uses only observed incumbents; before the first sample is unknown, not infinity. Not an all-run budget success curve. ' + details,
     }
-    return fig, cap, {'anytime': rows}
+    count_rows = [{'algorithm': a, 'terminal_runs': c['terminal_runs'], 'terminal_successes': c['terminal_successes'],
+                   'valid_trace_runs': c['valid_trace_runs'], **c['reasons']} for a, c in counts.items()]
+    return fig, cap, {'anytime': rows, 'telemetry_counts': count_rows}
 
 
 def time_quality(ctx: D.Context, st: Style, opts: dict):
@@ -283,95 +291,41 @@ def _best(vals: dict[str, float]) -> tuple[str | None, list[str]]:
     return (ties[0] if len(ties) == 1 else None), ties
 
 
-def _advice_space(runs: list[dict]) -> dict:
-    """Instance space of the recommender's own input features (the state it saw at submission)."""
-    by = defaultdict(list)
-    for r in runs:
-        by[r['instance_sha256']].append(r)
-    rows, labels, ids, keys, names = [], [], [], None, None
-    for sha, rs in by.items():
-        adv = next((((r.get('recommendation_at_submission') or {}).get('advice')) for r in rs if (r.get('recommendation_at_submission') or {}).get('advice')), None)
-        if not adv:
-            continue
-        feats = [f for f in adv.get('features') or [] if isinstance(f.get('value'), (int, float))]
-        if not feats:
-            continue
-        ks = [f['key'] for f in feats]
-        if keys is None:
-            keys, names = ks, [f.get('name') or f['key'] for f in feats]
-        if ks != keys:
-            continue
-        vals = defaultdict(list)
-        for r in rs:
-            v = (r.get('objective') or {}).get('value')
-            if r.get('state') == 'done' and (r.get('check') or {}).get('valid') and v is not None:
-                vals[r['algorithm']['id']].append(v)
-        best, ties = _best({a: stt.mean(v) for a, v in vals.items()})
-        rows.append([float(f['value']) for f in feats])
-        labels.append(best if best else ('tie' if ties else None))
-        ids.append({'scenario_id': rs[0]['scenario_id'], 'recommended': adv.get('recommended'), 'ties': ties})
-    if len(rows) < 3:
-        return {'points': []}
-    X = np.asarray(rows, float)
-    sd = X.std(axis=0)
-    keep = sd > 0
-    Z = (X[:, keep] - X[:, keep].mean(axis=0)) / sd[keep]
-    U, S, Vt = np.linalg.svd(Z, full_matrices=False)
-    P = Z @ Vt[:2].T if Vt.shape[0] >= 2 else np.c_[Z @ Vt[:1].T, np.zeros(len(Z))]
-    var = (S ** 2) / max(1e-12, float((S ** 2).sum()))
-    return {'points': [{'x': float(p[0]), 'y': float(p[1]), 'best': b, **m} for p, b, m in zip(P, labels, ids)],
-            'features': [n for n, k in zip(names, keep) if k], 'feature_keys': [k for k, kk in zip(keys, keep) if kk],
-            'explained_variance': var[:2].tolist(), 'method': 'recommender features'}
-
-
 def instance_space(ctx: D.Context, st: Style, opts: dict):
-    space = ctx.space if (ctx.space or {}).get('points') else _advice_space(ctx.study_runs)
-    an = ctx.analysis or {}
-    names = _names(an, st) if an.get('algorithms') else {}
-    pts = space['points']
-    algs = sorted({p['best'] for p in pts if p['best'] and p['best'] != 'tie'}, key=alg_index)
-    fig, axs = figure(st, 0.85)
-    ax = axs[0][0]
-    for a in algs:
-        i = alg_index(a)
-        fp = (space.get('footprints') or {}).get(a)
-        if fp:
-            ax.add_patch(MPoly(fp, closed=True, fc=color(i), ec=color(i), alpha=0.12, lw=0.6))
-        mine = [p for p in pts if p['best'] == a]
-        ax.plot([p['x'] for p in mine], [p['y'] for p in mine], ls='none', marker=marker(i), ms=3.8, mfc=color(i), mec='white', mew=0.3,
-                label=names.get(a) or alg_label(a, st))
-    tie = [p for p in pts if p['best'] == 'tie']
-    if tie:
-        ax.plot([p['x'] for p in tie], [p['y'] for p in tie], ls='none', marker='o', ms=3.8, mfc='#BBBBBB', mec='#555555', mew=0.4,
-                label=st.t('多个算法并列最好', 'Several algorithms tie'))
-    none = [p for p in pts if not p['best']]
-    if none:
-        ax.plot([p['x'] for p in none], [p['y'] for p in none], ls='none', marker='x', ms=3.6, mec='#888888', label=st.t('无可行解', 'No feasible run'))
-    def missed(p):
-        rec = p.get('recommended')
-        return bool(rec) and p['best'] is not None and rec != p['best'] and rec not in (p.get('ties') or [])
-    wrong = [p for p in pts if missed(p)]
-    if wrong:
-        ax.plot([p['x'] for p in wrong], [p['y'] for p in wrong], ls='none', marker='o', ms=7.5, mfc='none', mec='#C0392B', mew=0.8,
-                label=st.t('推荐不是最好', 'Recommendation not best'))
-    ev = space.get('explained_variance') or [0, 0]
-    ax.set_xlabel(f'PC1 ({100 * ev[0]:.0f}%)')
-    ax.set_ylabel(f'PC2 ({100 * ev[1]:.0f}%)' if len(ev) > 1 else 'PC2')
-    ax.axhline(0, color='#DDDDDD', lw=0.4, zorder=0)
-    ax.axvline(0, color='#DDDDDD', lw=0.4, zorder=0)
-    ax.legend(loc='best', fontsize=st.fs - 1)
-    fz = space.get('features') or []
-    fe = [FEATURE_EN.get(k, k) for k in space.get('feature_keys') or []] or fz
+    """Render every legal panel; do not substitute a second winner contract."""
+    panels = [p for p in (ctx.space or {}).get('panels', []) if p.get('projection_status') == 'ok']
+    if not panels:
+        raise ValueError('至少需要一个同特征/比较合同内含 3 个实例的面板')
+    fig, axs = figure(st, nrows=len(panels), height_in=2.5 * len(panels))
+    rows, descriptions = [], []
+    for panel, axes in zip(panels, axs):
+        ax = axes[0]
+        pts = panel['points']
+        for j, a in enumerate(panel['algorithms']):
+            mine = [p for p in pts if p['best'] == a]
+            if mine:
+                ax.plot([p['x'] for p in mine], [p['y'] for p in mine], ls='none', marker=marker(j),
+                        ms=3.8, mfc=color(j), mec='white', mew=.3, label=a)
+        unspecified = [p for p in pts if not p['best']]
+        if unspecified:
+            ax.plot([p['x'] for p in unspecified], [p['y'] for p in unspecified], ls='none', marker='x',
+                    ms=3.6, mec='#888888', label=st.t('未指定唯一胜者', 'No unique winner'))
+        ev = panel.get('explained_variance') or [0, 0]
+        ax.set_xlabel(f'PC1 ({100 * ev[0]:.0f}%)')
+        ax.set_ylabel(f'PC2 ({100 * ev[1]:.0f}%)')
+        ax.set_title(f"{panel['feature_schema']} | {panel['budget_s']} s", fontsize=st.fs)
+        ax.axhline(0, color='#DDDDDD', lw=.4, zorder=0)
+        ax.axvline(0, color='#DDDDDD', lw=.4, zorder=0)
+        ax.legend(loc='best', fontsize=st.fs - 1)
+        rows += [{'panel_id': panel['panel_id'], 'feature_schema': panel['feature_schema'],
+                  'budget_s': panel['budget_s'], **p} for p in pts]
+        descriptions.append(f"{panel['feature_schema']}, {panel['budget_s']} s, n={len(pts)}, candidates={panel['algorithms']}")
+    detail = '; '.join(descriptions)
     cap = {
-        'zh': f"实例空间：{len(pts)} 个实例按标准化特征（{'、'.join(fz)}）做主成分投影，颜色 / 标记为该实例上平均成本最好的算法"
-              f"（相对差 < {TIE:.0e} 视为并列），阴影为其凸包{'；红圈为推荐算法不在最好之列的实例' if wrong else '；所有实例上推荐算法都在最好之列'}。"
-              f"（Smith-Miles 实例空间分析的线性简化）",
-        'en': f"Instance space: principal-component projection of {len(pts)} instances on standardised features ({', '.join(fe)}); colour / marker = algorithm with the "
-              f"best mean cost on that instance (relative differences < {TIE:.0e} count as ties), shaded = its convex hull"
-              f"{'; red circles: the recommended algorithm was not among the best' if wrong else '; the recommended algorithm was among the best on every instance'} "
-              f"(a linear simplification of Smith-Miles' instance space analysis).",
+        'zh': '实例空间按特征 schema、目标语义及预算分面；算法版本/参数分候选列。颜色为完整候选集合内的唯一最低平均成本；候选不齐全、单候选、全失败或并列不指定唯一胜者。投影与颜色不表示统计显著性。' + detail,
+        'en': 'Instance space faceted by feature schema, objective semantics and budget; versions and parameters remain distinct candidates. Colours indicate a unique minimum mean cost only with a complete candidate set. Missing candidates, single candidates, failures or ties have no unique winner. Projection and colour do not establish statistical significance. ' + detail,
     }
-    return fig, cap, {'points': pts}
+    return fig, cap, {'points': rows, 'panel_contracts': [{k: v for k, v in p.items() if k != 'points'} for p in panels]}
 
 
 def selection_eval(ctx: D.Context, st: Style, opts: dict):

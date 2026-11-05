@@ -1,0 +1,5 @@
+FAILED page.evaluate: Target crashed
+    at /workspace/URP/setup/2026-10-29/agent/browser_check.cjs:55:27 {
+  log: [],
+  name: 'Error'
+}

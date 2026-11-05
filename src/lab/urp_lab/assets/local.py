@@ -11,9 +11,9 @@ from defusedxml import ElementTree as ET
 from .. import paths
 
 ROOTS = {
-    'fuel': paths.REPO / 'setup/2026-10-15/cache/ignition-fuel',
-    'ros': Path('/opt/ros/humble/share'),
-    'gz': Path('/usr/share/ignition/ignition-gazebo6'),
+    'fuel': paths.FUEL_CACHE,
+    'ros': paths.ROS_SHARE,
+    'gz': paths.GAZEBO_SHARE,
 }
 GZ_WORLD_PICKS = ('diff_drive.sdf', 'diff_drive_skid.sdf', 'ackermann_steering.sdf', 'tracked_vehicle_simple.sdf',
                   'shapes.sdf', 'empty.sdf', 'heightmap.sdf', 'polylines.sdf')

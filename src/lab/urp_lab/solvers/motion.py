@@ -121,10 +121,7 @@ def plan_grid(world, inst, algorithm_id, params):
 def plan_ompl(world, inst, algorithm_id, params):
     from ompl import base as ob, geometric as og, util as ou
     ou.setLogLevel(ou.LogLevel.LOG_NONE if hasattr(ou.LogLevel, 'LOG_NONE') else ou.LogLevel.LOG_ERROR)
-    try:
-        ou.RNG.setSeed(int(params.get('seed', 42)))  # must precede any sampling in this (fresh worker) process
-    except Exception:
-        pass
+    ou.RNG.setSeed(int(params.get('seed', 42)))  # must precede any sampling in this (fresh worker) process
     _, cls, anytime, _ = OMPL_PLANNERS[algorithm_id]
     model = inst['motion_model']
     if algorithm_id == 'ompl.fmt' and model == 'dubins':

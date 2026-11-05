@@ -1,0 +1,6 @@
+{
+  "upstream_recipe_sha256": "4a25d5502957518c121fce1a9fc0d7907a052210bd9a0444e417077f84a46c3d",
+  "function": "build_command",
+  "change": "only out parameter replaces root/output assignment",
+  "retained_ast_body_sha256": "403fd931c2df165990a54779775f8be221d07f45c76bc2e409f4f833f6ae58eb"
+}

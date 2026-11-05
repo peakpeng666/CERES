@@ -1,0 +1,26 @@
+{
+  "tag": "desktop-data-1",
+  "url": "https://github.com/peakpeng666/URP/releases/tag/desktop-data-1",
+  "assets": [
+    {
+      "name": "history-1.zip",
+      "bytes": 51543685,
+      "digest": "sha256:c7dc7424abfd08480d20421ace01a8625d790709cd3d9b9c9b37b139177d816a",
+      "url": "https://github.com/peakpeng666/URP/releases/download/desktop-data-1/history-1.zip"
+    },
+    {
+      "name": "manifest.json",
+      "bytes": 450,
+      "digest": "sha256:80a9b06dc2042d188a30024d15fe1168baf663ec61259cf0d01fd87f66879c91",
+      "url": "https://github.com/peakpeng666/URP/releases/download/desktop-data-1/manifest.json"
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 80,
+      "digest": "sha256:87c00d06f069a85746165d729fec922689eaf7d69497dcfac660cf23621a6bf7",
+      "url": "https://github.com/peakpeng666/URP/releases/download/desktop-data-1/SHA256SUMS"
+    }
+  ],
+  "draft": false,
+  "source_commit": "82db23521565a27ffd585a70ed49f07a4eff165e"
+}

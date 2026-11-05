@@ -82,6 +82,7 @@
 
 /* compare */
 .compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 34%); gap: 12px; height: 100%; padding: 10px; overflow: auto; }
+.compare > * { min-width: 0; }
 .tableWrap { overflow: auto; min-width: 0; }
 .table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
 .table th { position: sticky; top: 0; z-index: 1; padding: 6px 8px; text-align: left; font-weight: 600; color: var(--mac-label-2); background: var(--mac-glass); box-shadow: inset 0 -0.5px 0 var(--mac-separator-strong); white-space: nowrap; }

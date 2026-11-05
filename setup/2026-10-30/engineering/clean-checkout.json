@@ -1,0 +1,43 @@
+{
+  "commit": "cf96ed9fd928e1b555dd49e327c2dc58e8811bb9",
+  "source": "fresh GitHub partial clone using setup/source-checkout.txt",
+  "installation": [
+    "uv sync --locked --extra solvers",
+    "cd src/lab && uv sync --locked --inexact",
+    "npm ci --prefix src/frontend --engine-strict --no-audit --no-fund"
+  ],
+  "git_clean_before": true,
+  "git_clean_after": true,
+  "http_smoke": {
+    "status": "passed",
+    "scenario_id": "task-sampling-20261030-072023-420",
+    "runs": [
+      {
+        "run_id": "run_20261030T072023_cd77bf",
+        "algorithm": "pyvrp.fleet",
+        "cost": 289.11821170368745,
+        "checked": true,
+        "returncode": 0
+      },
+      {
+        "run_id": "run_20261030T072023_bf4568",
+        "algorithm": "panel.savings_fleet",
+        "cost": 295.700255704067,
+        "checked": true,
+        "returncode": 0
+      }
+    ],
+    "scope": "Live HTTP gateway and real solvers/checkers; HTML entry, JSON exports and analysis."
+  },
+  "cvrplib": {
+    "case_id": "X-n101-k25",
+    "algorithm": "savings",
+    "seed": 42,
+    "budget_seconds": 1.0,
+    "status": "OK",
+    "feasible": true,
+    "cost": 28986,
+    "purpose": "acceptance_only"
+  },
+  "preserved_indexed_assets": 2439
+}

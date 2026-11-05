@@ -94,11 +94,9 @@ def import_geojson(obj: dict, title: str | None = None, vehicles: dict | None = 
                 tasks.append({'id': len(tasks) + 1, 'xy': project(g['coordinates']), 'demand': int(props.get('demand') or 1),
                               'label': str(props.get('label') or props.get('name') or f'T{len(tasks) + 1}')})
         if role == 'corridor' and g.get('type') == 'LineString':
-            width = props.get('width_m', props.get('width'))
-            try:
-                width = min(8.0, max(1.0, float(width)))
-            except (TypeError, ValueError):
-                width = 2.5
+            width = props.get('width_m', props.get('width', 2.5))
+            if isinstance(width, bool) or not isinstance(width, (int, float)) or not math.isfinite(width) or not 1 <= width <= 8:
+                raise ValueError('道路 width_m / width 须为 1–8 米的有限数值')
             from shapely.geometry import LineString
             line = LineString([project(p) for p in g['coordinates']]).buffer(width / 2)
             corridors.append({'id': f'C{len(corridors) + 1}', 'name': str(props.get('name') or ''), 'width_m': width,

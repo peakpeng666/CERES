@@ -4,11 +4,13 @@ from __future__ import annotations
 import re
 
 from .style import Style
+from ..algorithm_ids import canonical_algorithm_id
 
 ALG_EN = {
     'urp.turn_mode_dp': 'Turn-mode layered DP', 'urp.raw_oracle': 'Exact state search', 'urp.reset_dp': 'Heading-relaxed DP',
-    'pyvrp.hgs+urp.layered': 'PyVRP + turn layering', 'ortools.gls+urp.layered': 'OR-Tools GLS + turn layering',
-    'pyvrp.hgs': 'PyVRP ILS', 'ortools.gls': 'OR-Tools GLS', 'urp.js.savings': 'Clarke–Wright savings',
+    'pyvrp.ils+urp.layered': 'PyVRP ILS + turn layering',
+    'pyvrp.hgs+urp.layered': 'PyVRP (legacy ID) + turn layering', 'ortools.gls+urp.layered': 'OR-Tools GLS + turn layering',
+    'pyvrp.ils': 'PyVRP ILS', 'pyvrp.hgs': 'PyVRP (legacy ID)', 'ortools.gls': 'OR-Tools GLS', 'urp.js.savings': 'Clarke–Wright savings',
     'urp.js.nearest_neighbor': 'Nearest neighbour', 'f2c.full': 'Fields2Cover (full)', 'f2c.boustrophedon': 'Fields2Cover boustrophedon',
     'f2c.snake': 'Fields2Cover snake', 'panel.boustrophedon': 'Boustrophedon (baseline)', 'pyvrp.fleet': 'PyVRP fleet',
     'ortools.fleet': 'OR-Tools fleet', 'panel.savings_fleet': 'Savings + 2-opt', 'panel.sweep': 'Sweep', 'panel.cluster_first': 'Cluster-first',
@@ -16,8 +18,8 @@ ALG_EN = {
     'ompl.informed_rrt_star': 'Informed RRT*', 'ompl.bit_star': 'BIT*', 'ompl.prm_star': 'PRM*', 'ompl.fmt': 'FMT*', 'ompl.kpiece': 'KPIECE',
 }
 # fixed order → every algorithm keeps one colour / marker / dash across all figures of a paper
-ALG_ORDER = ['pyvrp.fleet', 'ortools.fleet', 'panel.savings_fleet', 'panel.sweep', 'panel.cluster_first', 'pyvrp.hgs', 'ortools.gls',
-             'urp.js.savings', 'urp.js.nearest_neighbor', 'urp.turn_mode_dp', 'urp.reset_dp', 'urp.raw_oracle', 'pyvrp.hgs+urp.layered',
+ALG_ORDER = ['pyvrp.fleet', 'ortools.fleet', 'panel.savings_fleet', 'panel.sweep', 'panel.cluster_first', 'pyvrp.ils', 'ortools.gls',
+             'urp.js.savings', 'urp.js.nearest_neighbor', 'urp.turn_mode_dp', 'urp.reset_dp', 'urp.raw_oracle', 'pyvrp.ils+urp.layered',
              'ortools.gls+urp.layered', 'f2c.full', 'f2c.boustrophedon', 'f2c.snake', 'panel.boustrophedon', 'grid.astar', 'grid.dijkstra',
              'grid.theta_star', 'ompl.rrt_connect', 'ompl.rrt_star', 'ompl.informed_rrt_star', 'ompl.bit_star', 'ompl.prm_star', 'ompl.fmt', 'ompl.kpiece']
 FEATURE_EN = {'n_tasks': 'tasks', 'vehicles': 'vehicles', 'min_trips': 'min. trips', 'obstacle_ratio': 'obstacle ratio', 'clark_evans': 'Clark–Evans R',
@@ -25,7 +27,7 @@ FEATURE_EN = {'n_tasks': 'tasks', 'vehicles': 'vehicles', 'min_trips': 'min. tri
 
 
 def alg_index(alg_id: str) -> int:
-    base = alg_id.partition(' @')[0]
+    base = canonical_algorithm_id(alg_id.partition(' @')[0])
     if base in ALG_ORDER:
         return ALG_ORDER.index(base)
     return len(ALG_ORDER) + sum(map(ord, base)) % 7
@@ -47,7 +49,15 @@ def alg_name(run: dict, st: Style) -> str:
     zh = a.get('name') or a.get('id', '')
     if a.get('id', '').startswith('pyvrp.') and a.get('version') == '0.14.0' and 'HGS' in zh:
         zh = zh.replace('HGS', 'ILS')          # older records carried the wrong method name
-    return zh if st.lang == 'zh' else ALG_EN.get(a.get('id', ''), a.get('id', ''))
+    if st.lang == 'zh':
+        return zh
+    aid = a.get('id', '')
+    if aid in ('pyvrp.hgs', 'pyvrp.hgs+urp.layered'):
+        if a.get('version') == '0.14.0':
+            return ALG_EN[canonical_algorithm_id(aid)]
+        # An old ID alone is not evidence of the historical solver method.
+        return a.get('name') or ALG_EN[aid]
+    return ALG_EN.get(aid, aid)
 
 
 def obstacle_name(kind: str, st: Style) -> str:

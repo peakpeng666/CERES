@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "scenario_id": "task-sampling-20261030-071000-420",
+  "runs": [
+    {
+      "run_id": "run_20261030T071000_e14a88",
+      "algorithm": "pyvrp.fleet",
+      "cost": 289.11821170368745,
+      "checked": true,
+      "returncode": 0
+    },
+    {
+      "run_id": "run_20261030T071000_5f3965",
+      "algorithm": "panel.savings_fleet",
+      "cost": 295.700255704067,
+      "checked": true,
+      "returncode": 0
+    }
+  ],
+  "scope": "Live HTTP gateway and real solvers/checkers; HTML entry, JSON exports and analysis."
+}

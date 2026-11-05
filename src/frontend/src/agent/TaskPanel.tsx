@@ -81,7 +81,7 @@ function ContractSection({ session }: { session: AgentSession }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [adding, setAdding] = useState('');
   const pending = useAgent((x) => x.sending || x.pendingAction !== null);
-  const locked = session.state === 'running';
+  const locked = session.state === 'running' || !!session.restoration?.read_only;
   const c = session.contract;
   const present = new Set(session.contract_cards.map((x) => x.key));
   const addable = Object.keys(OPTIONAL_LABEL).filter((k) => !present.has(k));
@@ -145,7 +145,7 @@ function PlanSection({ session }: { session: AgentSession }) {
   const control = useAgent((x) => x.control);
   const studioScenario = useStudio((x) => x.scenario);
   const studioRuns = useStudio((x) => x.runIds);
-  const idle = session.state !== 'running';
+  const idle = session.state !== 'running' && !session.restoration?.read_only;
   const userMap = studioScenario && studioScenario.problem_class === 'fleet_routing' && (studioScenario as { origin?: string }).origin === 'user'
     ? studioScenario.id : null;
   return (

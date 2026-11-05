@@ -1,0 +1,15 @@
+{
+  "status": "registry_manifest_bytes_verified_no_layers_pulled",
+  "repository": "docker.io/library/ubuntu",
+  "tag_observed": "22.04",
+  "index_digest": "sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+  "platform": "linux/amd64",
+  "platform_manifest_digest": "sha256:98510ac07bb4545e389be502a8918b385c018bfe4ceeb5ac7e0375c782268b04",
+  "config_digest": "sha256:cee13550f97b8a595506e8e4ca74263ba44924248779a4ba4f942e197652acff",
+  "sources": [
+    "https://registry-1.docker.io/v2/library/ubuntu/manifests/sha256:0a9887931b0e38af2e3487ed39e29436b0535c4f3f52e57745baaf79d1898956",
+    "https://registry-1.docker.io/v2/library/ubuntu/manifests/sha256:98510ac07bb4545e389be502a8918b385c018bfe4ceeb5ac7e0375c782268b04",
+    "https://hub.docker.com/v2/repositories/library/ubuntu/tags/22.04"
+  ],
+  "observed_utc": "2026-10-22T17:48:10.420207+00:00"
+}

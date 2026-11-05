@@ -13,5 +13,10 @@ export interface DesktopBridge {
   openLogs: () => Promise<void>;
   update: { state: () => Promise<UpdateState>; check: () => Promise<UpdateState>; install: () => Promise<void>; onChange: (fn: (s: UpdateState) => void) => () => void };
   sim: { status: () => Promise<SimBackendStatus>; enable: () => Promise<unknown>; disable: () => Promise<unknown> };
+  data: {
+    info: () => Promise<{ root: string; runtime: string; archiveDb: string; dataset: { dataset_id: string }; lastTransfer?: { state: string; message: string; sha256?: string } | null }>;
+    export: () => Promise<{ canceled?: boolean; path?: string; sha256?: string }>;
+    restore: () => Promise<{ canceled?: boolean; destination?: string; sha256?: string }>;
+  };
 }
 declare global { interface Window { desktop?: DesktopBridge } }

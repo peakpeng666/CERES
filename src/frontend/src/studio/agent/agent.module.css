@@ -1,0 +1,46 @@
+.agent { display: flex; flex-direction: column; height: 100%; min-height: 0; background: var(--mac-content); }
+.head { display: flex; align-items: center; gap: 8px; padding: 7px 10px; border-bottom: 0.5px solid var(--mac-separator); font-size: 12px; flex-wrap: wrap; }
+.model { font-family: var(--mac-mono); font-size: 11px; color: var(--mac-label-2); padding: 1px 7px; border-radius: 9px; background: var(--mac-inset); }
+.picker { max-width: 210px; font: 12px var(--mac-font); color: var(--mac-label); padding: 3px 6px; border-radius: var(--mac-r-control); border: 0.5px solid var(--mac-separator-strong); background: var(--mac-elevated); }
+.spacer { flex: 1; }
+.pad { padding: 10px 12px 0; }
+.setup { display: block; margin-top: 6px; font-family: var(--mac-mono); font-size: 11px; overflow-wrap: anywhere; }
+
+.timeline { flex: 1; min-height: 0; overflow: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.text { margin: 0; font-size: 13px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.user { align-self: flex-end; max-width: 88%; padding: 8px 11px; border-radius: 12px 12px 4px 12px; background: var(--mac-accent-soft); }
+.assistant { max-width: 96%; color: var(--mac-label); }
+.final { padding: 10px 12px; border-radius: var(--mac-r-card); background: var(--mac-elevated); box-shadow: var(--mac-shadow-card); display: flex; flex-direction: column; gap: 8px; }
+.working { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--mac-label-2); }
+
+.tool { padding: 7px 10px; border-radius: 9px; border: 0.5px solid var(--mac-separator); background: var(--mac-window); font-size: 12px; }
+.tool:not([data-ok]) { border-color: var(--mac-red); background: var(--mac-red-soft); }
+.toolHead { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.toolMark { display: inline-flex; width: 16px; height: 16px; align-items: center; justify-content: center; border-radius: 50%; color: #fff; background: var(--mac-green); }
+.tool:not([data-ok]) .toolMark { background: var(--mac-red); }
+.toolName { font-family: var(--mac-mono); font-size: 11px; color: var(--mac-label-3); }
+.toolLine { margin-top: 3px; color: var(--mac-label-2); line-height: 1.5; overflow-wrap: anywhere; }
+.details { margin-top: 4px; font-size: 11px; color: var(--mac-label-2); }
+.details summary { cursor: pointer; user-select: none; }
+.details pre { margin: 6px 0 0; max-height: 260px; overflow: auto; padding: 6px 8px; border-radius: 7px; background: var(--mac-inset); font-family: var(--mac-mono); font-size: 11px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+.approval { padding: 9px 11px; border-radius: var(--mac-r-card); border: 1px solid var(--mac-separator-strong); background: var(--mac-window); font-size: 12px; display: flex; flex-direction: column; gap: 6px; }
+.approval[data-live] { border-color: var(--mac-orange); background: var(--mac-orange-soft); }
+.args { font-family: var(--mac-mono); font-size: 11px; color: var(--mac-label-2); overflow-wrap: anywhere; }
+.hint { margin: 0; font-size: 12px; color: var(--mac-label-2); line-height: 1.55; }
+.meta { font-size: 11px; color: var(--mac-label-3); }
+.row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.idLink { border: 0; padding: 0 2px; background: transparent; color: var(--mac-accent); font: 12px var(--mac-mono); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.idLink:focus-visible { outline: 2px solid var(--mac-accent); outline-offset: 1px; border-radius: 3px; }
+.idCode { font-family: var(--mac-mono); font-size: 12px; color: var(--mac-label-2); }
+.evidence { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding-top: 4px; }
+
+.examples { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; max-width: 460px; }
+.example { text-align: left; border: 0.5px solid var(--mac-separator); background: var(--mac-window); border-radius: 9px; padding: 7px 10px; font: 12px/1.5 var(--mac-font); color: var(--mac-label); cursor: pointer; }
+.example:hover { background: var(--mac-hover); }
+
+.composer { border-top: 0.5px solid var(--mac-separator); padding: 8px 10px; display: flex; flex-direction: column; gap: 6px; }
+.input { width: 100%; box-sizing: border-box; resize: vertical; min-height: 56px; padding: 7px 9px; border-radius: var(--mac-r-control); border: 0.5px solid var(--mac-separator-strong); background: var(--mac-elevated); font: 13px/1.5 var(--mac-font); color: var(--mac-label); }
+.input:focus-visible { outline: 2px solid var(--mac-accent); outline-offset: 0; }
+.input:disabled { opacity: 0.6; }

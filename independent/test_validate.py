@@ -24,6 +24,15 @@ class IndependentChecks(unittest.TestCase):
     def test_failure_kept(self):
         r=check_result(self.p,{'status':'TIMEOUT','feasible':False},1)
         self.assertTrue(r['count_in_denominator']); self.assertFalse(r['eligible'])
+    def test_missing_status_and_success_without_feasibility_are_schema_errors(self):
+        for record in ({'feasible': False}, {'status': 'OK', 'feasible': False},
+                       {'status': 'TIMEOUT_WITH_FEASIBLE_INCUMBENT', 'feasible': False}):
+            with self.subTest(record=record):
+                report = check_result(self.p, record, 1)
+                self.assertTrue(report['schema_errors'])
+                self.assertTrue(report['count_in_denominator'])
+                self.assertFalse(report['eligible'])
+
     def test_late_incumbent_rejected(self):
         r=check_result(self.p,{'status':'OK','feasible':True,'routes':self.routes,'cost':12,'start_monotonic_ns':1,'incumbent_emitted_ns':3,'incumbent_received_ns':5,'deadline_monotonic_ns':4,'budget_seconds':1},1)
         self.assertFalse(r['eligible'])

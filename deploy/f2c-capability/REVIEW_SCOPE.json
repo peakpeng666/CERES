@@ -1,0 +1,199 @@
+{
+  "acceptance": [
+    "independent-source-review",
+    "source-and-index-only-hermetic-fixtures",
+    "complete-workflow-parity",
+    "authenticated-existing-tools-and-runtime",
+    "existing-multi-id-allocation",
+    "namespace-local-ownership-proof",
+    "nested-offline-namespace-proof",
+    "actual-kernel-namespace-fd-reference",
+    "unchanged-host-inputs",
+    "bounded-public-status-only",
+    "authenticated-permitted-nss-fallback",
+    "local-owner-and-loginuid-guards",
+    "rechecked-nscd-endpoint-absence",
+    "verified-final-capability-pass-receipt"
+  ],
+  "canonical_package_reproduction": {
+    "alias_owner": "libpython3.10-stdlib",
+    "alias_owner_archive_sha256": "ee09afbc981a4aaa00053f019eab6b45dcc4dbeb4ca4fcc4277eff539e09f228",
+    "architecture": "amd64",
+    "kind": "pure exact official archive data, not hosted-state attribution",
+    "old_verifier_result": "CAP_BYTES_REJECTED",
+    "terminal_owner": "libpython3.10-minimal",
+    "terminal_owner_archive_sha256": "ccbd08562769e0a38b34005dc8bde200838e6c6530cc04ac34525129ed42d847",
+    "version": "3.10.12-1~22.04.18"
+  },
+  "canonical_split_stdlib_policy": {
+    "exact_optional_mappings": {
+      "python3-distutils": "python3-stdlib-extensions",
+      "python3-lib2to3": "python3-stdlib-extensions",
+      "python3.10-venv": "python3.10"
+    },
+    "hosted_owner_identified": false,
+    "inventory_fixture": "inputs/canonical-python-stdlib-splits.json",
+    "python3.10_admitted": false,
+    "scanned_member_counts": {
+      "python3-distutils": 48,
+      "python3-lib2to3": 73,
+      "python3.10-venv": 3
+    },
+    "scope": "Canonical coverage correction only; no relaxed verification or installation"
+  },
+  "identity": "jammy-rootless-capability-v7",
+  "keyring_protocol": {
+    "direct_signer": "F6ECB3762474EDA9D21B7022871920D1991BC93C",
+    "host_keyring_authenticated": false,
+    "input_bytes": 3607,
+    "input_sha256": "80a36b0a6de2f69f49d2df75ef473ccde121e9e190b9ea01d20a4f63778d5c31",
+    "lock_schema": 3,
+    "protocol": "private-public-keyring-v1"
+  },
+  "not_claimed": [
+    "hosted-probe-success-before-observation",
+    "rootfs-package-preparation-success",
+    "native-build-success",
+    "scientific-validation",
+    "production-promotion",
+    "whole-host-authentication",
+    "remote-daemon-identity",
+    "support-for-every-valid-subordinate-allocation-form"
+  ],
+  "package_member_protocol": {
+    "lock_schema": 3,
+    "protocol": "signed-package-hop-attribution-v1",
+    "usrmerge": "unchanged four-root fixed layout policy, separately attributed; not claimed signed package members"
+  },
+  "preserved_capability_v1": {
+    "anchor": "PASS",
+    "authentication": "CAP_MODE_REJECTED",
+    "expected_fixture_count_from_source_review": 165,
+    "failed_object": "UNKNOWN",
+    "job": "119952469283",
+    "namespace": "SKIPPED",
+    "observed_helper_interpreter": "Python 3.10",
+    "observed_helper_stage": "PASS",
+    "observed_hosted_fixture_count": null,
+    "published_commit": "f17b6bb1eeca864be42265938faa692644111854",
+    "source_index_sha256": "29e4270541ca452c016f8a3f66ecc0024a465beecc5afa7b8dedb9b7db5ad3c1",
+    "workflow_run": "39815381470"
+  },
+  "preserved_capability_v3": {
+    "authentication_code": "CAP_MODE_REJECTED",
+    "check": "COMPONENT_WRITABLE",
+    "commit": "989f6a654d17b7d8633f87428e3431e555667329",
+    "job": "119972238938",
+    "namespace": "SKIPPED",
+    "observed_anchor": "PASS",
+    "observed_helper_stage": "PASS",
+    "observed_hosted_fixture_count": null,
+    "run": "39821091519",
+    "source_index_sha256": "ebcce3f5f973a1355d06acad1f853d76492f02eb07eae8a9fa93ab4d0a49e4bb",
+    "subject": "ARCHIVE_KEYRING"
+  },
+  "preserved_capability_v4": {
+    "authentication": "CAP_BYTES_REJECTED",
+    "commit": "4d9a23b04b7e11c40b0b826bc7d04a78fc1a5fdc",
+    "failed_host_object": "UNREPORTED",
+    "job": "119988438351",
+    "namespace": "SKIPPED",
+    "observed_anchor": "PASS",
+    "observed_helper_stage": "PASS",
+    "observed_hosted_fixture_count": null,
+    "run": "39825742401",
+    "source_index_sha256": "388968cd13a4a309e788ea7bb8de01509ac4a267258a21e4b67a9af28470645a"
+  },
+  "preserved_capability_v5": {
+    "anchor": "PASS",
+    "authentication": "FAIL",
+    "code": "CAP_RUNTIME_UNAUTHENTICATED",
+    "commit": "722fc07459c2ee55987c3d034bcd1d3b2ff491aa",
+    "failed_object": "UNREPORTED",
+    "helper_stage": "PASS",
+    "hosted_fixture_count": null,
+    "job_id": 120005121637,
+    "namespace": "NOT_RUN",
+    "run_id": 39830518530,
+    "source_index_sha256": "8e3d1cb8f1ca6bda2d36a652a9aed6ad8a89fe42c9c055ed9ed72fb06b2f1d75"
+  },
+  "preserved_capability_v6": {
+    "anchor": "PASS",
+    "authentication": "NOT_RUN",
+    "expected_fixture_count_from_source_review": 331,
+    "failed_test_or_precheck": "UNKNOWN",
+    "helper_tests": "HELPER_TESTS_FAILED",
+    "job": "120015179220",
+    "namespace": "NOT_RUN",
+    "observed_hosted_fixture_count": null,
+    "published_commit": "53a7b973d6c4fa6978d1186916e6814bea0ae080",
+    "source_index_sha256": "4e3584a9687f730c11eb7a31e9abf474e95b2dac6b4fd0a45cf13b8f6b4af8f0",
+    "workflow_run": "39833370249"
+  },
+  "preserved_unpublished_v2": {
+    "optimized_python_fixture_failures": 3,
+    "published": false,
+    "source_index_sha256": "4bdef2a86c69738a4685f0001dbda23ec7a84409471a90b3ade7d394f92694aa"
+  },
+  "prior_cohort": {
+    "authenticated_target": {
+      "architecture": "amd64",
+      "component": "main",
+      "package": "libpq-dev",
+      "snapshot": "20261021T000000Z",
+      "stanza": 1632,
+      "suite": "jammy-updates",
+      "version": "14.24-0ubuntu0.22.04.1"
+    },
+    "identity": "jammy-candidate-v7",
+    "job": "119900349167",
+    "outcome": "APT_CLOSURE_DOWNGRADE_REFUSED",
+    "workflow_run": "39800731973"
+  },
+  "prohibited": [
+    "host-package-installation",
+    "persistent-subordinate-id-changes",
+    "setuid-program-installation",
+    "host-security-setting-changes",
+    "rootfs-preparation",
+    "image-pull-or-publication",
+    "native-fields2cover-execution",
+    "scientific-test-relaxation",
+    "unknown-provider-acceptance",
+    "downgrade",
+    "raw-log-or-cache-upload"
+  ],
+  "publication": {
+    "branch": "fix/agriculture-compatibility-20261022",
+    "helpers": "deploy/f2c-capability",
+    "repository": "peakpeng666/URP",
+    "runner": "ubuntu-22.04",
+    "uploads": false,
+    "workflow": ".github/workflows/f2c-capability.yml"
+  },
+  "schema": 1,
+  "scientific_source_context": "18557cfc61f291e8ac5fa4a80d9df212e1df0030",
+  "scope": "diagnostic-only-existing-facilities",
+  "v2_change_scope": "finite-mode-subject-check-diagnostics-only",
+  "v3_change_scope": "explicit-equivalent-bootstrap-invariants-under-optimization",
+  "v7_change_scope": {
+    "authentication_and_namespace_bytes": "unchanged from v6",
+    "count_semantics": "Explicit COMPLETE/INCOMPLETE runner marker; incomplete counts are snapshots, not final totals",
+    "identity_manifest": "inputs/helper-test-identities.json",
+    "identity_manifest_role": "public-output-allowlist-only; does not gate collection or execution",
+    "kind": "bounded-helper-test-diagnostics-only",
+    "mixed_runtime_compatibility_replay": {
+      "full_fixture_count": 331,
+      "host_stdlib_result": "PASS",
+      "hosted_failure_explained": false,
+      "new_fixture_count": 24,
+      "official_python310_unittest_source_result": "PASS",
+      "source_archive_sha256": "ee09afbc981a4aaa00053f019eab6b45dcc4dbeb4ca4fcc4277eff539e09f228",
+      "target_python310_interpreter_executed": false,
+      "unittest_python_files": 13
+    },
+    "raw_test_output": "private ephemeral log only",
+    "stock_discovery_and_exit_semantics_preserved": true,
+    "subprocess_fixtures": "Fixed -I -B -S flags and clean environment"
+  }
+}

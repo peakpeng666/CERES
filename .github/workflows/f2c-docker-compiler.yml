@@ -1,0 +1,140 @@
+# GENERATED FIXED-PIN WRAPPER. Rendering does not publish or launch it.
+# Keep this generated file outside the candidate source index.
+name: Reviewed F2C Docker compiler stage (fixed push)
+on:
+  push:
+    branches:
+      - 'fix/agriculture-compatibility-20261022'
+    paths:
+      - '.github/workflows/f2c-docker-compiler.yml'
+permissions:
+  contents: read
+concurrency:
+  group: 'urp-f2c-compiler:fix/agriculture-compatibility-20261022:.github/workflows/f2c-docker-compiler.yml'
+  cancel-in-progress: false
+jobs:
+  compiler-build-only:
+    if: >-
+      ${{ github.event_name == 'push' &&
+          github.repository == 'peakpeng666/URP' &&
+          github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' &&
+          github.workflow_ref == 'peakpeng666/URP/.github/workflows/f2c-docker-compiler.yml@refs/heads/fix/agriculture-compatibility-20261022' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 'a5687dcbba54e563855dc6f3602031935ca785b3'
+          path: control-checkout
+          sparse-checkout: ci/f2c-docker-candidate
+          persist-credentials: false
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 3acf840d1a0c16ab1cfcca15744e4ea6609ddb35
+          path: application-checkout
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /src/lab/pyproject.toml
+            /src/lab/uv.lock
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: '0.12.23'
+          enable-cache: false
+      - name: Trusted preparation, then isolated compiler build only
+        env:
+          REVIEWED_REVISION: 'a5687dcbba54e563855dc6f3602031935ca785b3'
+          REVIEWED_SOURCE_INDEX: '8c24a0cd9c85dae1691e1cd3cb792bbdbd5916a43aa66ea9c8693a605db0e6ae'
+        run: |
+          set -euo pipefail
+          umask 077
+          [[ "$REVIEWED_REVISION" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$REVIEWED_SOURCE_INDEX" =~ ^[0-9a-f]{64}$ ]]
+          test "$(git -C control-checkout rev-parse HEAD)" = "$REVIEWED_REVISION"
+          candidate="$GITHUB_WORKSPACE/control-checkout/ci/f2c-docker-candidate"
+          state="$RUNNER_TEMP/urp-docker-first-stage"
+          mkdir "$state"
+          # Trusted workflow bootstrap verifies and copies held bytes BEFORE any candidate code.
+          if python3 -I -B - "$candidate" "$state/control" "$REVIEWED_SOURCE_INDEX" 2> "$state/source-verification-stderr.log" <<'PYVERIFY'
+          import hashlib, json, pathlib, stat, sys
+          source, target = map(pathlib.Path, sys.argv[1:3])
+          expected = sys.argv[3]
+          def require(ok, message):
+              if not ok:
+                  raise RuntimeError(message)
+          def read(path):
+              for part in (path, *path.parents):
+                  require(not part.is_symlink(), "source alias")
+              info = path.stat()
+              require(stat.S_ISREG(info.st_mode) and info.st_size < 64 * 1024 * 1024, "source type or size")
+              return path.read_bytes()
+          def unique(pairs):
+              result = {}
+              for key, value in pairs:
+                  require(key not in result, "duplicate key")
+                  result[key] = value
+              return result
+          raw = read(source / "source-index.json")
+          require(hashlib.sha256(raw).hexdigest() == expected, "source index hash")
+          index = json.loads(raw, object_pairs_hook=unique)
+          require(index["schema"] == 1 and index["status"] == "reviewed-source", "source schema")
+          require(index["application_commit"] == "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35", "application commit")
+          target.mkdir(mode=0o700)
+          for name, row in index["files"].items():
+              require(name and not name.startswith("/") and all(p not in ("", ".", "..") for p in name.split("/")), "source path")
+              data = read(source / name)
+              require(hashlib.sha256(data).hexdigest() == row["sha256"], "source member hash")
+              destination = target / name
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              with destination.open("xb") as stream:
+                  stream.write(data)
+              destination.chmod(0o644)
+          (target / "source-index.json").write_bytes(raw)
+          PYVERIFY
+          then
+            :
+          else
+            printf '{"schema":1,"outcome":"failed","failure_category":"SOURCE_VERIFICATION_FAILED","raw_logs_durably_archived":false}\n'
+            exit 1
+          fi
+          candidate="$state/control"
+          printf '%s\n' "$REVIEWED_SOURCE_INDEX" > "$state/reviewed-source.sha256"
+          phase=bootstrap
+          finish() {
+            code=$?
+            trap - EXIT
+            printf '{"phase":"%s","exit_code":%d}\n' "$phase" "$code" > "$state/terminal.json"
+            if python3 -I -B "$candidate/public_receipt.py" --state "$state" > "$state/public-receipt.json" 2> "$state/public-receipt-stderr.log"; then
+              cat "$state/public-receipt.json"
+            else
+              if [[ -s "$state/public-receipt.json" ]]; then
+                cat "$state/public-receipt.json"
+              else
+                printf '{"schema":1,"outcome":"public_receipt_failed","raw_logs_durably_archived":false}\n'
+              fi
+              if [[ "$code" -eq 0 ]]; then code=1; fi
+            fi
+            exit "$code"
+          }
+          trap finish EXIT
+          uv_binary="$(readlink -f "$(command -v uv)")"
+          bootstrap_sha="$(python3 -I -B "$candidate/preparation/bootstrap_tools.py" collect --uv "$uv_binary" --output "$state/bootstrap.json" 2> "$state/bootstrap-stderr.log")"
+          phase=preparation
+          python3 -I -B "$candidate/preparation/prepare_image.py" \
+            --execute-trusted-preparation --source "$candidate" \
+            --application "$GITHUB_WORKSPACE/application-checkout" \
+            --uv "$uv_binary" \
+            --bootstrap-lock "$state/bootstrap.json" --expected-bootstrap-sha256 "$bootstrap_sha" \
+            --expected-source-index-sha256 "$REVIEWED_SOURCE_INDEX" --output "$state/prepared" \
+            > "$state/preparation-result.json" 2> "$state/preparation-stderr.log"
+          input_sha="$(sha256sum "$state/prepared/inputs/input-index.json" | cut -d' ' -f1)"
+          image_id="$(cat "$state/prepared/prepared-image.id")"
+          phase=isolation_and_build
+          python3 -I -B "$candidate/engine_controller.py" --execute-authorized-run \
+            --inputs "$state/prepared/inputs" --expected-input-sha256 "$input_sha" \
+            --image "$image_id" --output "$state/build-evidence" --phase build \
+            --out-bytes 5368709120 --memory-bytes 6442450944 --timeout 3600 \
+            > "$state/build-controller.log" 2> "$state/build-controller-stderr.log"
+      # No raw artifact upload, cache publication, deployment or automatic retry.
+      # A zero exit establishes compilation only. Fresh runtime/ABI/provider/
+      # geometry/current full-suite acceptance must be separately reviewed and run.

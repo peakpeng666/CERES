@@ -18,6 +18,7 @@ import type {
   StudySpec,
 } from './types';
 import type { SimResult } from './experiment/replay';
+import type { AgentSession, AgentSessionSummary, AgentStatus } from './agent/types';
 
 const BASE = '/lab/api';
 
@@ -98,7 +99,8 @@ export const studio = {
   validateInstance: (scenario_id: string, instance: Instance) => call<{ instance: Instance; planning: PlanningContext }>('POST', '/planning/validate', { scenario_id, instance }),
   saveScenario: (id: string, body: { instance?: FleetInstance | unknown; title?: string; summary?: string; layers?: Record<string, unknown>; base_revision?: number }) =>
     call<FleetScenario>('PUT', `/scenarios/${encodeURIComponent(id)}`, body),
-  forkScenario: (id: string, body: { instance?: unknown; title?: string } = {}) =>
+  /** client_id makes the fork idempotent: same id + same content returns the stored copy. */
+  forkScenario: (id: string, body: { instance?: unknown; title?: string; client_id?: string } = {}) =>
     call<Scenario>('POST', `/scenarios/${encodeURIComponent(id)}/fork`, body),
   lanes: (instance: FleetInstance) => call<LaneInfo>('POST', '/fleet/lanes', { instance }),
   importGeojson: (geojson: unknown, title?: string) => call<FleetScenario>('POST', '/scenarios/import/geojson', { geojson, title }),
@@ -125,12 +127,20 @@ export const studio = {
     return call<{ references: Reference[]; topics: Record<string, string> }>('GET', `/references?${p}`);
   },
   source: (path: string) => call<{ path: string; language: string; text: string }>('GET', `/source?path=${encodeURIComponent(path)}`),
+  agentStatus: () => call<AgentStatus>('GET', '/research/agent'),
+  agentSessions: () => call<{ sessions: AgentSessionSummary[] }>('GET', '/research/agent/sessions'),
+  agentSession: (id: string, options: CallOptions = {}) => call<AgentSession>('GET', `/research/agent/sessions/${encodeURIComponent(id)}`, undefined, options),
+  agentStart: (message: string) => call<AgentSession>('POST', '/research/agent/sessions', { message }),
+  agentSend: (id: string, message: string) => call<AgentSession>('POST', `/research/agent/sessions/${encodeURIComponent(id)}/messages`, { message }),
+  agentDecide: (id: string, call_id: string, approve: boolean, note?: string) =>
+    call<AgentSession>('POST', `/research/agent/sessions/${encodeURIComponent(id)}/approval`, { call_id, approve, note }),
+  agentCancel: (id: string) => call<AgentSession>('POST', `/research/agent/sessions/${encodeURIComponent(id)}/cancel`, {}),
   studies: () => call<{ studies: Study[] }>('GET', '/studies'),
   study: (id: string) => call<Study>('GET', `/studies/${encodeURIComponent(id)}`),
   createStudy: (spec: StudySpec) => call<Study>('POST', '/studies', spec),
   cancelStudy: (id: string) => call<Study>('POST', `/studies/${encodeURIComponent(id)}/cancel`, {}),
-  analysis: (id: string) => call<Analysis>('GET', `/studies/${encodeURIComponent(id)}/analysis`),
-  instanceSpace: (id: string) => call<InstanceSpace>('GET', `/studies/${encodeURIComponent(id)}/instance-space`),
+  analysis: (id: string, signal?: AbortSignal) => call<Analysis>('GET', `/studies/${encodeURIComponent(id)}/analysis`, undefined, { signal }),
+  instanceSpace: (id: string, signal?: AbortSignal) => call<InstanceSpace>('GET', `/studies/${encodeURIComponent(id)}/instance-space`, undefined, { signal }),
   analyzeRuns: (run_ids: string[]) => call<Analysis>('POST', '/analysis', { run_ids }),
   fieldsim: () => call<FieldSimState>('GET', '/fieldsim'),
   fieldsimPhysics: () => call<FieldPhysicsResponse>('GET', '/fieldsim/physics'),

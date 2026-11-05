@@ -185,6 +185,7 @@ def test_recommendation_for_fleet():
     assert any(f['key'] == 'clark_evans' for f in rec['features'])
 
 
+@pytest.mark.requires_maps('maze')
 def test_motion_planners():
     sc = get_scenario('p2p-maze-cross')
     for aid in ('grid.astar', 'grid.theta_star'):
@@ -238,7 +239,7 @@ def test_gateway_compose_edit_solve(tmp_path, monkeypatch):
         assert len(upd['instance']['tasks']) == 11 and upd['instance']['vehicles']['count'] == 3
         bad = dict(inst, tasks=inst['tasks'] + [{'id': 999, 'xy': inst['obstacles'][0]['polygon'][0], 'demand': 1}])
         assert c.put(f"/lab/api/scenarios/{sc['id']}", json={'instance': bad}).status_code == 400
-        assert c.put('/lab/api/scenarios/maze-inspection', json={'title': 'x'}).status_code == 403
+        assert c.put('/lab/api/scenarios/bench-cvrp-uniform-n20', json={'title': 'x'}).status_code == 403
         rec = c.post('/lab/api/recommend', json={'scenario_id': sc['id']}).json()
         assert rec['recommended'] in {a['id'] for a in catalog()}
         assert c.get('/lab/api/references').json()['references']

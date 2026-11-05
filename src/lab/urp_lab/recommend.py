@@ -13,7 +13,7 @@ from .solvers import catalog
 # its scope so the reason is not mistaken for a guarantee on a new field.
 FLEET_EVIDENCE = {
     'total_distance': '开发侧审计（真实田块 274 个可解实例，3 s）：PyVRP 首选可行 271/274，可行时 261 例为逐实例最好、其余与最好差距可忽略（平均 1.000 倍）；'
-                      '被拒的 3 条只与障碍有毫米级擦碰（接口需求第 18 项），改用 OR-Tools 重试即可全部求解',
+                      '该历史批次被拒的 3 条与障碍有毫米级擦碰（接口需求第 18 项）；当次 OR-Tools 重试通过，不保证新任务也可求解',
     'makespan': '开发侧审计（真实田块 68 个可解实例，3 s）：最晚完成目标下 OR-Tools 在 65 个实例上最好，'
                 'PyVRP 只优化里程，平均最晚完成长 19%',
 }
@@ -90,20 +90,9 @@ def _fleet(inst):
 
 
 def _coverage_order(scenario, instance, score, why, params_hint):
-    """Learned coverage try-order (urp_lab.evolve.serve) behind fingerprint/profile/scope gates; rules otherwise."""
+    """Report the admission status; offline inspection never rewrites live rankings or parameters."""
     from .evolve import serve
-    from .evolve.plans import config_label
-    model = serve.recommend(scenario, instance)
-    if model['status'] == 'available':
-        order = model['prediction']['order']
-        first = order[0]
-        if first['algorithm_id'] in score:
-            score[first['algorithm_id']] += 5
-            label = '经验静态尝试顺序' if model['prediction'].get('kind') == 'static' else '学习型尝试顺序'
-            why[first['algorithm_id']].insert(0, f'{label}（开发侧留出田块评估，封存测试未运行）：先试 ' +
-                                              '，失败再试 '.join(config_label(s['config']) for s in order[:3]))
-            params_hint = dict(params_hint, **first['params'])
-    return model, params_hint
+    return serve.recommend(scenario, instance), params_hint
 
 
 def _depot_central(inst):
@@ -133,8 +122,8 @@ def recommend(scenario, instance, budget_s=None):
             if n <= 12:
                 score['urp.turn_mode_dp'] += 3
                 why['urp.turn_mode_dp'].append(f'任务数 {n} ≤ 12：优先尝试精确分层 DP，是否证最优以终态和预算为准')
-            score['pyvrp.hgs+urp.layered'] += 2
-            why['pyvrp.hgs+urp.layered'].append('规模较大时的首选：PyVRP 定顺序，项目分层 DP 补全转弯可行路径')
+            score['pyvrp.ils+urp.layered'] += 2
+            why['pyvrp.ils+urp.layered'].append('规模较大时的首选：PyVRP 定顺序，项目分层 DP 补全转弯可行路径')
             score['ortools.gls+urp.layered'] += 1.5
             why['ortools.gls+urp.layered'].append('与 PyVRP 方案互为对照')
             if n <= 8:
@@ -145,8 +134,8 @@ def recommend(scenario, instance, budget_s=None):
         elif pc == 'euclidean_cvrp':
             feats = [_feature('客户数', 'n_tasks', n), _feature('容量', 'capacity', instance['capacity']),
                      _feature('最少车辆', 'min_routes', math.ceil(sum(instance['demands']) / instance['capacity']))]
-            score['pyvrp.hgs'] += 3
-            why['pyvrp.hgs'].append('CVRP 迭代局部搜索对照；相对最优已知解的差距由本次求解实测，不预设性能数字')
+            score['pyvrp.ils'] += 3
+            why['pyvrp.ils'].append('CVRP 迭代局部搜索对照；相对最优已知解的差距由本次求解实测，不预设性能数字')
             score['ortools.gls'] += 2
             why['ortools.gls'].append('稳健的对照求解器')
             score['urp.js.savings'] += 1.5
@@ -163,13 +152,10 @@ def recommend(scenario, instance, budget_s=None):
         elif pc == 'coverage':
             frame = scenario['frame']['kind']
             feats = [_feature('作业幅宽', 'swath', instance['swath_width'], 'm'), _feature('转弯半径', 'turn', instance['turn_radius'], 'm')]
-            try:
-                from shapely.geometry import Polygon
-                poly = Polygon(instance['field'])
-                convexity = poly.area / poly.convex_hull.area
-                feats.append(_feature('凸性', 'convexity', round(convexity, 3), None, '1 为凸多边形'))
-            except Exception:
-                convexity = 1.0
+            from shapely.geometry import Polygon
+            poly = Polygon(instance['field'])
+            convexity = poly.area / poly.convex_hull.area
+            feats.append(_feature('凸性', 'convexity', round(convexity, 3), None, '1 为凸多边形'))
             if frame != 'map' or convexity < 0.97:
                 score['f2c.full'] += 3
                 why['f2c.full'].append('真实或凹形田块：自动分解后逐块规划，并统计作业/非作业距离')
@@ -180,7 +166,7 @@ def recommend(scenario, instance, budget_s=None):
             why['f2c.boustrophedon'].append('凸作业区的往复作业候选；须通过足迹、覆盖率与采样曲率检查，仿真适配另检')
             score['f2c.snake'] += 1
             why['f2c.snake'].append('隔行跳跃减少急转弯，适合转弯半径较大的机具')
-            why['panel.boustrophedon'].append('允许原地掉头的参照下限')
+            why['panel.boustrophedon'].append('允许原地转向的几何覆盖对照基线')
         elif pc == 'point_to_point':
             model_kind = instance['motion_model']
             feats = [_feature('运动模型', 'motion', {'holonomic': '全向', 'dubins': 'Dubins（只前进）', 'reeds_shepp': 'Reeds–Shepp（可倒车）'}[model_kind]),

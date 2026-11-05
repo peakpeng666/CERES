@@ -143,6 +143,7 @@ export interface ProviderInfo {
 }
 
 export interface AgentSession {
+  restoration?: { read_only: boolean; note: string; source_sha256: string; missing_run_ids: string[] };
   session_id: string;
   title: string;
   state: AgentState;

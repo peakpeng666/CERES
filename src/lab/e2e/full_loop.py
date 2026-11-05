@@ -18,6 +18,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 LAB = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(LAB))
+from urp_lab.execution_timing import (bounded_seconds,
+                                     execution_poll_wall_s, freeze_plan_budget, resolve_budget_policy)
+from urp_lab.simplan import to_sim_plan
+
+MAX_OVERALL_WALL_S = 21600.0
+READY_WALL_S = 1200.0
+SUBMIT_WALL_S = 30.0
 TERMINAL_RUN = {'done', 'error', 'timeout', 'canceled'}
 TERMINAL_SIM = {'succeeded', 'failed', 'canceled'}
 
@@ -61,9 +69,23 @@ def main() -> int:
     parser.add_argument('--keep-session', action='store_true', help='leave the simulation running afterwards')
     parser.add_argument('--skip-sim', action='store_true')
     parser.add_argument('--budget', type=float, default=1800, help='overall wall seconds')
+    parser.add_argument('--execution-time-basis', choices=['wall', 'simulation'], default='wall',
+                        help='explicitly opt into simulation-time execution; startup/cleanup remain wall-bounded')
+    parser.add_argument('--execution-budget', type=float, help='execution seconds in the selected time basis (max 1800)')
+    parser.add_argument('--execution-wall-watchdog', type=float,
+                        help='required finite wall seconds for simulation mode (max 7200)')
     parser.add_argument('--output', type=Path, help='Evidence directory (must not already exist)')
     parser.add_argument('--runtime', type=Path, default=LAB / 'runtime', help='The target gateway runtime directory')
     args = parser.parse_args()
+    modes = [m for m in args.modes.split(',') if m]
+    if not modes or any(m not in ('follow_path', 'nav2_waypoints') for m in modes):
+        parser.error('--modes must name follow_path and/or nav2_waypoints')
+    try:
+        bounded_seconds(args.budget, 'overall --budget', MAX_OVERALL_WALL_S)
+        resolve_budget_policy(90, budget_s=args.execution_budget, time_basis=args.execution_time_basis,
+                              wall_watchdog_s=args.execution_wall_watchdog)
+    except ValueError as exc:
+        parser.error(str(exc))
 
     started = time.monotonic()
     stamp = datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')
@@ -71,7 +93,9 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=False)
     api = Client(args.gateway)
     report = {'started_utc': datetime.now(timezone.utc).isoformat(), 'gateway': args.gateway, 'scenario': args.scenario,
-              'steps': [], 'status': 'INCOMPLETE'}
+              'steps': [], 'status': 'INCOMPLETE', 'overall_wall_budget_s': args.budget,
+              'execution_budget_requested': {'budget_s': args.execution_budget, 'time_basis': args.execution_time_basis,
+                                             'wall_watchdog_s': args.execution_wall_watchdog}}
 
     def step(name, ok, **detail):
         row = {'name': name, 'ok': bool(ok), 'wall_s': round(time.monotonic() - started, 2), **detail}
@@ -150,11 +174,21 @@ def main() -> int:
             report['sim_skipped'] = 'requested' if args.skip_sim else scenario.get('sim', {}).get('reason')
         else:
             sim = scenario['sim']
+            frozen_plans = {mode: freeze_plan_budget(to_sim_plan(best, scenario, mode),
+                budget_s=args.execution_budget, time_basis=args.execution_time_basis,
+                wall_watchdog_s=args.execution_wall_watchdog) for mode in modes}
+            required_wall = sum(SUBMIT_WALL_S + execution_poll_wall_s(frozen_plans[m]) for m in modes)
+            remaining_wall = started + args.budget - time.monotonic()
+            step('bounded simulation envelope', remaining_wall >= required_wall,
+                 required_execution_wall_s=required_wall, remaining_wall_s=remaining_wall,
+                 startup_cap_wall_s=READY_WALL_S, worst_case_with_startup_wall_s=READY_WALL_S+required_wall,
+                 policies={m: frozen_plans[m]['budget_policy'] for m in modes},
+                 note='submission + watchdogs + finalization; recheck after startup; shutdown is separately wall-bounded')
             code, state, _ = api.call('POST', '/lab/api/sim/session', {'world': sim['world'], 'spawn': sim['spawn'],
                                                                         'gui': args.gui, 'rviz': args.rviz,'localization':args.localization}, timeout=60)
             session_started = code in (200, 202)
             step('start simulation session', session_started, response=state)
-            end = deadline(420)
+            end = deadline(1200)  # Includes bounded 700s Undock; still capped by overall budget.
             phases = []
             while time.monotonic() < end:
                 code, state, _ = api.call('GET', '/lab/api/sim/state')
@@ -168,11 +202,19 @@ def main() -> int:
                  note=' → '.join(p for p in phases if p))
             report['session_id'] = state['session_id']
 
-            for mode in [m for m in args.modes.split(',') if m]:
-                code, sim_run, _ = api.call('POST', '/lab/api/sim/runs', {'run_id': best['run_id'], 'mode': mode})
+            for mode in modes:
+                expected = frozen_plans[mode]
+                poll_wall = execution_poll_wall_s(expected)
+                remaining_wall = started + args.budget - time.monotonic()
+                step(f'execution envelope ({mode})', remaining_wall >= poll_wall + SUBMIT_WALL_S,
+                     required_wall_s=poll_wall + SUBMIT_WALL_S, remaining_wall_s=remaining_wall)
+                code, sim_run, _ = api.call('POST', '/lab/api/sim/runs', {
+                    'run_id': best['run_id'], 'mode': mode, **expected['budget_policy']['requested']}, timeout=SUBMIT_WALL_S)
                 step(f'submit sim run ({mode})', code in (200, 202), response=sim_run)
                 sim_id = sim_run['sim_run_id']
-                end = deadline(sim_run.get('budget_s') or 1200)
+                step(f'frozen execution policy ({mode})', sim_run.get('budget_policy') == expected['budget_policy'],
+                     expected=expected['budget_policy'], actual=sim_run.get('budget_policy'))
+                end = deadline(execution_poll_wall_s(sim_run))
                 last = None
                 while time.monotonic() < end:
                     code, sim_run, _ = api.call('GET', f'/lab/api/sim/runs/{sim_id}')
@@ -184,8 +226,11 @@ def main() -> int:
                     time.sleep(2)
                 (out_dir / f'sim-{mode}.json').write_text(json.dumps(sim_run, ensure_ascii=False, indent=2))
                 metrics = sim_run.get('metrics', {})
-                step(f'sim run {mode} succeeded', sim_run.get('state') == 'succeeded', state=sim_run.get('state'), metrics=metrics,
+                step(f'terminal execution policy ({mode})', sim_run.get('budget_policy') == expected['budget_policy'],
+                     expected=expected['budget_policy'], actual=sim_run.get('budget_policy'))
+                step(f'sim run {mode} succeeded', sim_run.get('state') == 'succeeded' and bool(sim_run.get('finished_utc')), state=sim_run.get('state'), metrics=metrics,
                      sources=sim_run.get('sources'), error=sim_run.get('error'),
+                     budget_policy=sim_run.get('budget_policy'), execution_timing=sim_run.get('execution_timing'),
                      trajectory_samples=len(sim_run.get('actual', {}).get('ground_truth', [])),
                      note=f"tasks {metrics.get('tasks_reached')}/{metrics.get('tasks_total')}, "
                           f"cross-track mean {metrics.get('cross_track_mean_m')} max {metrics.get('cross_track_max_m')} m, "

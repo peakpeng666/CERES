@@ -1,0 +1,13 @@
+{
+  "schema": "urp.materials-archive/1",
+  "purpose": "Historical complete ZIP restore only; not the platform Release catalog or a Drive migration record.",
+  "source_commit": "66b2b8c742598378898d02643d4ddc2f58f1a686",
+  "source_path": "storage.json#/archive",
+  "archive": {
+    "name": "URP.zip",
+    "bytes": 10450371700,
+    "sha256": "9dc81fd8efd41b5c443101dc42773a32454c40fdc56cf8c87f28e821e41b3d38"
+  },
+  "recorded_status": "reported_verified_on_windows_not_readable_in_current_task",
+  "verification_scope": "Fingerprint transcribed from the recorded commit. The original ZIP is not present in this cleanup task and was not downloaded or reverified. Each restore invocation must verify its supplied ZIP before listing or writing materials."
+}

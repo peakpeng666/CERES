@@ -1,0 +1,693 @@
+{
+  "schema": "urp.license-evidence/1",
+  "reviewed_commit": "007388d5e012f6a901945eda3b0abaf1aedfeb0d",
+  "review_date": "2026-10-30",
+  "files": [
+    {
+      "path": "src/repos/EoH-S/code/LICENSE",
+      "blob_sha": "706fe7b361c14d5b295a001a2cb2679f0da2b908",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/EoH-S/code/LICENSE"
+    },
+    {
+      "path": "src/repos/EoH-S/README.md",
+      "blob_sha": "978b1e3d36c0e6b72d0cfa056802626cc3cb5a8d",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/EoH-S/README.md"
+    },
+    {
+      "path": "src/repos/QD-LHD/README.md",
+      "blob_sha": "5d2aa8aa457bc0bba9327eb652d3e0ee4169b8b9",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/QD-LHD/README.md"
+    },
+    {
+      "path": "src/repos/QD-LHD/pyproject.toml",
+      "blob_sha": "eb6b2aecb319c06c56a863c0fc3be034b4e04017",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/QD-LHD/pyproject.toml"
+    },
+    {
+      "path": "src/repos/aslib_data/README.md",
+      "blob_sha": "bbae808cc2f718b15b379b30ef6a9909933fc3d5",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/aslib_data/README.md"
+    },
+    {
+      "path": "src/repos/typesafe-router/package.json",
+      "blob_sha": "4b8657d2a17ac205af6d41dc13dbd54e71b2d461",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/typesafe-router/package.json"
+    },
+    {
+      "path": "src/repos/typesafe-router/README.md",
+      "blob_sha": "946465bab5b661f7e0dd9b823a1d450589648dc8",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/typesafe-router/README.md"
+    },
+    {
+      "path": "src/repos/QUBE/README.md",
+      "blob_sha": "ec1ca244fbfa0c8790ce25345c463780794974f1",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/QUBE/README.md"
+    },
+    {
+      "path": "src/repos/DR-ALNS/readme.md",
+      "blob_sha": "dcfd9ef1b90528ed10f17ee17ed29dfb4bada535",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/DR-ALNS/readme.md"
+    },
+    {
+      "path": "src/repos/DR-ALNS/code/src/routing/cvrp/alns_cvrp/setup.py",
+      "blob_sha": "5f65693acf75dbfcffc6129252d360b020c339d5",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/DR-ALNS/code/src/routing/cvrp/alns_cvrp/setup.py"
+    },
+    {
+      "path": "src/repos/JAIR2026-FrugalAS/README.md",
+      "blob_sha": "47c9f351a099aa2c875a804985c3a1a3151a1b60",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/JAIR2026-FrugalAS/README.md"
+    },
+    {
+      "path": "src/repos/QDAIF/README.md",
+      "blob_sha": "1eef66ad0e2fa02765c3f05ef5df73559d1934c5",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/QDAIF/README.md"
+    },
+    {
+      "path": "src/repos/VRPAgent/README.md",
+      "blob_sha": "baf1590cf5e564470bd5a5b52f9a0fa1e0adad51",
+      "source_url": "https://github.com/peakpeng666/URP/blob/007388d5e012f6a901945eda3b0abaf1aedfeb0d/src/repos/VRPAgent/README.md"
+    }
+  ],
+  "automl": {
+    "upstream": "google-research/google-research",
+    "ref": "d36068b845da4c2b24927fee2cea1e6ef98dadda",
+    "matches": 69,
+    "total": 69,
+    "license_blob": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+    "files": [
+      {
+        "path": "algorithm.h",
+        "blob_sha": "dbcac49196031f8c5a715a24b470be134190d796",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "algorithm_test_util.h",
+        "blob_sha": "828940cbba62658e4b00520ccb89e9b0a66bf3f7",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "algorithm_test_util.cc",
+        "blob_sha": "ac2da3af77dfc402492aba4da05ea08ba46a9baf",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "algorithm_test.cc",
+        "blob_sha": "62b8c76986fd6802ccfabbab81ec2ab6b4da7b99",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "compute_cost.cc",
+        "blob_sha": "d3386c3113f5e40ec8de0411bbd4057345ac95bf",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "algorithm.cc",
+        "blob_sha": "97ec7b49eea63b89ca3c4b3e22ebef6c5e335c0c",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "definitions.h",
+        "blob_sha": "716e34f8979108c3cf17c4c2e6851013a2f7e1e9",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "compute_cost.h",
+        "blob_sha": "83dd31121000527fa07a7027451f6faa25aadb92",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "evaluator_test.cc",
+        "blob_sha": "d2aab749a1eb30c0cb5f20980f24bd4e11fce74a",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "experiment_util.cc",
+        "blob_sha": "5d8425e78b616dc57265d4c4641bed2c53ef578b",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "experiment_util.h",
+        "blob_sha": "e5492ba2aa939889dccb08d731dafd82478421a5",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "evaluator.h",
+        "blob_sha": "f0cf87731477f2944ceb325b00b399c953286a97",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "evaluator.cc",
+        "blob_sha": "355cebfa99072d8c7546008449f4fd1e38cadb83",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "definitions_test.cc",
+        "blob_sha": "124e8c4def91b9be1efb4b6c8af4246703b9b6ed",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "executor_test.cc",
+        "blob_sha": "ca7c6b2bd7737602175cbbe973405761ba7c4205",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "executor.h",
+        "blob_sha": "5be53d2e6397dd7d4abf9451eeca2f1e202faccc",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "fec_cache.cc",
+        "blob_sha": "b4ef6b912ab6e204d4ede02924d4459f69e79582",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "fec_hashing_test.cc",
+        "blob_sha": "242c541fa431cd4891c92bad50de1b28f0dd1838",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "fec_hashing.h",
+        "blob_sha": "830d1d78cb6a92933816a130f0e932174e767e20",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "generate_datasets.py",
+        "blob_sha": "52d2bc3aa1b16cddebcc9a4b5db1d762a3d24c92",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "fec_cache.h",
+        "blob_sha": "f8185e8eaab5cfd1eb2a80588bbdcab2bd553473",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "fec_hashing.cc",
+        "blob_sha": "9def8e41239d5bc82351790c9e5437b7f09c3422",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "fec_cache_test.cc",
+        "blob_sha": "dd6502997c0312306583ff384cf653e27af2ead5",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "generator.cc",
+        "blob_sha": "c77c8480e31b9ed734c0f6f70cf0e844ddde0d9d",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "instruction.cc",
+        "blob_sha": "1045b6d7801b167e1faef03d11a9366a1ff91a11",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "generator.h",
+        "blob_sha": "2af9c7f8f71afb56cac10201346ad1c023aeba67",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "generator_test_util.cc",
+        "blob_sha": "d306463e1c343381076494640c0fdf5452589966",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "generator_test.cc",
+        "blob_sha": "43f906155800ac29c7c38001af5b86daf0f088dd",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "generator_test_util.h",
+        "blob_sha": "950ebaf21426704329387e9af96a42744d51c6fa",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "instruction.h",
+        "blob_sha": "8b023b2753dad92da0001a74c8a43280ca8ea60a",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "memory.cc",
+        "blob_sha": "8513f0e6c1b6382a9fb059ced5be199522252f12",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "instruction_test.cc",
+        "blob_sha": "4cccdf2a59787b764eabd12ceba98728a1fd64cd",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "random_generator.cc",
+        "blob_sha": "29bb06388c75461834dbc2b0c27b4bee2ba2f564",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "random_generator_test.cc",
+        "blob_sha": "cac5e9b4f96a245cd2d300665f1dd8caf8d4173c",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "memory.h",
+        "blob_sha": "fe125afbffd6b624e7a9eea2294a713c1bc86688",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "mutator_test.cc",
+        "blob_sha": "0f58d755f0038b618d1ea70c6cafa0a575b8a524",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "mutator.h",
+        "blob_sha": "dab8b9cd81de94bcb8be42432d5ddc58f64fdf76",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "mutator.cc",
+        "blob_sha": "aed97cd6aaeab4894db716007910d364e041de06",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "random_generator.h",
+        "blob_sha": "73ebc51198eeb6e2e845bda21b3d60113a2de477",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "memory_test.cc",
+        "blob_sha": "f0e37fd3bdee63b7c11667840a7d334a0ab6794c",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "regularized_evolution_test.cc",
+        "blob_sha": "b957c0f7a1d0b84b415f0cbfe2a0650a95169a92",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_demo.sh",
+        "blob_sha": "e870b7c5bb76394841b08dd8c95837e497b0714e",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "randomizer.cc",
+        "blob_sha": "053eae8c12122c43fc8325a70f09dd5184b6ff7b",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "regularized_evolution.cc",
+        "blob_sha": "d31e0ebc49121e5ceec1f369cfa687bc94b4eead",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "regularized_evolution.h",
+        "blob_sha": "941fcbbc96b419f4d7ee7232af9bbf2878754a37",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_baseline.sh",
+        "blob_sha": "4be22edb12c20c3d6464eafe82beeb62850fc129",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_integration_test_linear.sh",
+        "blob_sha": "da638e8925e65c53a61a3c09777f8047ec0b8d01",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "randomizer.h",
+        "blob_sha": "150d1d54695f9236d9092ec93574f66bdf2c48fc",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "task_pb2.py",
+        "blob_sha": "5a5f382059e0a2d45d80a6afff5bb849c1401328",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "task.h",
+        "blob_sha": "43d058f4b5fdce2500ee6eb526472ec0fee0e532",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_integration_tests.sh",
+        "blob_sha": "65c8c92a42a8687d18fb2023b916891dd7082225",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_integration_test_nonlinear.sh",
+        "blob_sha": "32bda88b7104e5e8ac783b141e62d87f9723b161",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "setup.sh",
+        "blob_sha": "9bf95834d57b8789ca19b74369d48767e3cb8280",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_search_experiment.cc",
+        "blob_sha": "f2e2ec3ab99c6b29960ff0f02aee75b6a52c5729",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "run_integration_test_projected_binary_datasets.sh",
+        "blob_sha": "29314ee49bc88b1a0d7230cfe27d3166339a2510",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "task_test.cc",
+        "blob_sha": "0b27d971e595286ce1f0f4dd9704650a2f98d8c3",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "task_util.cc",
+        "blob_sha": "d2a374ff8d99816c6681d6a90e6c1d2e8c4a5b52",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "test_util_test.cc",
+        "blob_sha": "84da3327c5d538cf732eb24c136bd9ddaf53fefb",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "task_util.h",
+        "blob_sha": "e633cf52c3d7910c8af4147cd21923b366364211",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "train_budget.cc",
+        "blob_sha": "aa041c289982e7a7bb39da43460b608522f62dfb",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "train_budget_test.cc",
+        "blob_sha": "80d034488f42b6d2e07ccf4826546d8a0a1fd488",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "test_util.h",
+        "blob_sha": "955fb2c3582b5168538c1a836fd50387b157f466",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "train_budget.h",
+        "blob_sha": "51c0151c190aa5ecb921aeae4cb38f98a78caa12",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "task_util_test.cc",
+        "blob_sha": "1b1f0084abf9b857eb2f5d20ce9aa5b9594065cc",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "util.cc",
+        "blob_sha": "461ceec971028d5d94f48d58e4251bab53ea828e",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "util.h",
+        "blob_sha": "6604a079be74480615be5f7c792dcfb4840bad89",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      },
+      {
+        "path": "util_test.cc",
+        "blob_sha": "6eb04a49a7892e92e3a80282f7633ebd125ce748",
+        "matches_tree": true,
+        "header_license": "Apache-2.0"
+      }
+    ]
+  },
+  "sisr": {
+    "upstream": "hankarudova/open-source-sisr-routing",
+    "branches": [
+      {
+        "branch": "ctop",
+        "upstream_commit": "e41f71885955e322324011abed0febc54b79d45e",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      },
+      {
+        "branch": "cvrp",
+        "upstream_commit": "fe1a33a6b5bf0dfaba87fb65565dcb4db2d9a89c",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      },
+      {
+        "branch": "main",
+        "upstream_commit": "e18b39677df0ddca2e03ef1e43758ac73b768386",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      },
+      {
+        "branch": "pdptw",
+        "upstream_commit": "2d28f88785b0eb745827fbf327b0fdba753b67c3",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      },
+      {
+        "branch": "top",
+        "upstream_commit": "90e1f7d8a2cb45447a8ad82f33515cc339f523e2",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      },
+      {
+        "branch": "toptw",
+        "upstream_commit": "b1f9a022516870d0fcfec7bcb2a8aa183847652b",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      },
+      {
+        "branch": "vrptw",
+        "upstream_commit": "857c8eeafd95cbdf8245620486d309369f1aab20",
+        "license_sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "matches_local": true
+      }
+    ],
+    "license_paths": [
+      {
+        "path": "ctop/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "ctop/lib/cxxopts_LICENSE.txt",
+        "sha": "9ac43d3e74413732736952be6ccda7c10619622c",
+        "license": "MIT"
+      },
+      {
+        "path": "ctop/lib/json_LICENSE.txt",
+        "sha": "f2c15fc47f6f8f0251dcd61cfbc818aa8b988fa5",
+        "license": "MIT"
+      },
+      {
+        "path": "cvrp/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "cvrp/lib/cxxopts_LICENSE.txt",
+        "sha": "9ac43d3e74413732736952be6ccda7c10619622c",
+        "license": "MIT"
+      },
+      {
+        "path": "cvrp/lib/json_LICENSE.txt",
+        "sha": "f2c15fc47f6f8f0251dcd61cfbc818aa8b988fa5",
+        "license": "MIT"
+      },
+      {
+        "path": "main/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "pdptw/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "pdptw/lib/cxxopts_LICENSE.txt",
+        "sha": "9ac43d3e74413732736952be6ccda7c10619622c",
+        "license": "MIT"
+      },
+      {
+        "path": "pdptw/lib/json_LICENSE.txt",
+        "sha": "f2c15fc47f6f8f0251dcd61cfbc818aa8b988fa5",
+        "license": "MIT"
+      },
+      {
+        "path": "top/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "top/lib/cxxopts_LICENSE.txt",
+        "sha": "9ac43d3e74413732736952be6ccda7c10619622c",
+        "license": "MIT"
+      },
+      {
+        "path": "top/lib/json_LICENSE.txt",
+        "sha": "f2c15fc47f6f8f0251dcd61cfbc818aa8b988fa5",
+        "license": "MIT"
+      },
+      {
+        "path": "toptw/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "toptw/lib/cxxopts_LICENSE.txt",
+        "sha": "9ac43d3e74413732736952be6ccda7c10619622c",
+        "license": "MIT"
+      },
+      {
+        "path": "toptw/lib/json_LICENSE.txt",
+        "sha": "f2c15fc47f6f8f0251dcd61cfbc818aa8b988fa5",
+        "license": "MIT"
+      },
+      {
+        "path": "vrptw/LICENSE.txt",
+        "sha": "55f9e58429ffd50a4c63ffec028500789886acbd",
+        "license": "Apache-2.0"
+      },
+      {
+        "path": "vrptw/lib/cxxopts_LICENSE.txt",
+        "sha": "9ac43d3e74413732736952be6ccda7c10619622c",
+        "license": "MIT"
+      },
+      {
+        "path": "vrptw/lib/json_LICENSE.txt",
+        "sha": "f2c15fc47f6f8f0251dcd61cfbc818aa8b988fa5",
+        "license": "MIT"
+      }
+    ]
+  },
+  "aslib": {
+    "upstream": "coseal/aslib_data",
+    "upstream_commit": "551b22beef8df17de59286b4822ef720e0aa4d6f",
+    "matching_files": 116,
+    "total_local_files": 116,
+    "readme_license": "GPLv3"
+  },
+  "upstream_unlicensed": [
+    {
+      "name": "QDAIF",
+      "repo": "qdaif/qdaif_scripts_data",
+      "commit": "9836aaf1a7703fdafb9560bd7a304ac1df4572fd",
+      "matched": 17,
+      "total": 17,
+      "license_named_files_found": 0
+    },
+    {
+      "name": "VRPAgent",
+      "repo": "ai4co/vrpagent",
+      "commit": "c0e37da7dc5eb2e0ab05490ca4bc23adcd7576ce",
+      "matched": 331,
+      "total": 331,
+      "license_named_files_found": 0
+    },
+    {
+      "name": "QUBE",
+      "repo": "zzjchen/QUBE_code",
+      "commit": "94245cdda8f21a7ceef0bea27d0312063cbbbbdf",
+      "matched": 1,
+      "total": 1,
+      "license_named_files_found": 0
+    },
+    {
+      "name": "DR-ALNS",
+      "repo": "RobbertReijnen/DR-ALNS",
+      "commit": "144e48f6912ad9967968561b6b0ce90cedcc14aa",
+      "matched": 13,
+      "total": 75,
+      "license_named_files_found": 0
+    }
+  ],
+  "blocked_reads": [
+    {
+      "target": "aslib/aslib_data/README.md",
+      "result": "404; superseded by independently identified official coseal/aslib_data, not retried"
+    },
+    {
+      "target": "https://zenodo.org/records/20095993",
+      "result": "web tool inaccessible; no alternate download attempted"
+    }
+  ],
+  "eoh_s": {
+    "upstream": "FeiLiu36/EoH-S",
+    "upstream_commit": "8310b056ab0d4ea83d194f1d9e8c7873c0a3b892",
+    "license_path": "code/LICENSE",
+    "license_blob": "706fe7b361c14d5b295a001a2cb2679f0da2b908",
+    "license": "MIT",
+    "local_blob_matches": true,
+    "project_declaration": "README.md explicitly states project MIT"
+  },
+  "summary": {
+    "code_license_confirmed": 3,
+    "project_license_declaration_confirmed": 2,
+    "readme_only_placeholder": 1,
+    "permission_basis_pending": 5
+  }
+}

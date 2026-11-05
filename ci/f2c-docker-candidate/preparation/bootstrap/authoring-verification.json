@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "status": "PURE_SYNTAX_AND_FIXTURE_TESTS_ONLY",
+  "unit_tests_passed": 23,
+  "unit_tests_failed": 0,
+  "predecessor_source_sha256": "3ef3c611be036f06331e4c2f0567fa75db27072270b075c72dc1231a4644f558",
+  "reviewed_anchor_literals_match_predecessor": true,
+  "retained_metadata_parsing": [
+    {
+      "input": "jammy-security.InRelease",
+      "sha256": "eaa0a9cb0ad5ea72dcaf84e81a1f13c82a5afbb08700bee189b9b7e2c638c5a9",
+      "size": 128927,
+      "parser_returncode": 0,
+      "selected_index_count": 2
+    },
+    {
+      "input": "jammy-updates.InRelease",
+      "sha256": "34beb69f860de8eb98f2315b4c38c2542b1b005153652e399d898c892431adda",
+      "size": 128049,
+      "parser_returncode": 0,
+      "selected_index_count": 2
+    },
+    {
+      "input": "jammy.InRelease",
+      "sha256": "c14060cd8c6d625874dfcb9523a35a395bf4865c28b6b6a82569ef326fe92dc6",
+      "size": 270087,
+      "parser_returncode": 0,
+      "selected_index_count": 2
+    },
+    {
+      "input": "jammy-security.main.amd64.Packages.xz",
+      "sha256": "193e21d53e0d7fbf97fed37314da94d75223d4575b769aa95891d8ea1592471a",
+      "size": 3643160,
+      "parser_returncode": 0,
+      "stanza_count": 20377
+    },
+    {
+      "input": "jammy-security.universe.amd64.Packages.xz",
+      "sha256": "461974c6adcabc19d3da15f47f6c8a63b327a680b21f8d934ed7e1a7bc665f13",
+      "size": 1054660,
+      "parser_returncode": 0,
+      "stanza_count": 5017
+    },
+    {
+      "input": "jammy-updates.main.amd64.Packages.xz",
+      "sha256": "0d1e4c9a8a5efe021366ad516bdb4c70da90752095f30f88c6716604f296174c",
+      "size": 3907652,
+      "parser_returncode": 0,
+      "stanza_count": 21642
+    },
+    {
+      "input": "jammy-updates.universe.amd64.Packages.xz",
+      "sha256": "8432a1997d6d37c2ddd228000ac758e3b23459892e892d2cf5d2c72235cad4ba",
+      "size": 1288484,
+      "parser_returncode": 0,
+      "stanza_count": 5960
+    },
+    {
+      "input": "jammy.main.amd64.Packages.xz",
+      "sha256": "37cb57f1554cbfa71c5a29ee9ffee18a9a8c1782bb0568e0874b7ff4ce8f9c11",
+      "size": 1394768,
+      "parser_returncode": 0,
+      "stanza_count": 6090
+    },
+    {
+      "input": "jammy.universe.amd64.Packages.xz",
+      "sha256": "d29cb24c93fec5f43255706bce7eb46d4779952039d8c68ac1bb14a6f3655ce2",
+      "size": 14090084,
+      "parser_returncode": 0,
+      "stanza_count": 58923
+    }
+  ],
+  "ca_seed_signed_record_match": true,
+  "new_signature_verification_performed": false,
+  "network_fetch_performed": false,
+  "docker_invoked": false,
+  "package_install_performed": false,
+  "native_build_performed": false,
+  "host_configuration_changed": false,
+  "full_closure_verified": false,
+  "remaining_execution_gates": [
+    "trusted-controller source/image binding",
+    "official pinned image native tools",
+    "CA seed actual .deb member grammar and certificate bundle",
+    "live HTTPS reachability",
+    "APT signature/date/Valid-Until acceptance",
+    "native APT transaction and no-download installation",
+    "post-install inventory and Python-APT checks",
+    "independent complete package-owned closure"
+  ]
+}

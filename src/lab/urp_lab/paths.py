@@ -8,13 +8,25 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 LAB = REPO / 'src' / 'lab'
-RUNTIME = Path(os.environ['URP_LAB_RUNTIME']).resolve() if os.environ.get('URP_LAB_RUNTIME') else LAB / 'runtime'
+
+
+def location(name: str, default: Path) -> Path:
+    return Path(os.environ.get(name) or default).expanduser().resolve()
+
+
+DATA_HOME = location('URP_DATA_HOME', REPO / '.local-state' / 'workbench-data')
+DATA_ROOT = location('URP_DATA_ROOT', REPO / 'data')
+# Explicit runtime wins; existing source checkouts retain their default until deliberately migrated.
+RUNTIME = location('URP_LAB_RUNTIME', DATA_HOME / 'runtime' if os.environ.get('URP_DATA_HOME') else LAB / 'runtime')
+ROS_SHARE = location('URP_ROS_SHARE', Path('/opt/ros/humble/share'))
+GAZEBO_SHARE = location('URP_GAZEBO_SHARE', Path('/usr/share/ignition/ignition-gazebo6'))
+FUEL_CACHE = location('URP_FUEL_CACHE', REPO / 'setup/2026-10-15/cache/ignition-fuel')
 RESEARCH_SRC = REPO / 'src' / 'research' / 'src'
 FRONTEND = REPO / 'src' / 'frontend'
 FRONTEND_DIST = FRONTEND / 'dist'
 FRONTEND_ROUTING = FRONTEND / 'core' / 'routing'
 DEPLOYMENT = REPO / 'setup' / '2026-10-15' / 'deployment'
-ROS_INSTALL_MAPS = Path('/opt/ros/humble/share/turtlebot4_navigation/maps')
+ROS_INSTALL_MAPS = ROS_SHARE / 'turtlebot4_navigation/maps'
 BUNDLED_MAPS = Path(__file__).resolve().parent / 'data' / 'maps'
 
 
@@ -29,7 +41,7 @@ def official_maps(installed: Path = ROS_INSTALL_MAPS) -> Path:
 
 ROS_MAPS = official_maps()
 USER_SCENARIOS = RUNTIME / 'scenarios'
-CVRP_SELECTION_DATA = REPO / 'data' / 'research' / 'cvrp-selection-crc'
+CVRP_SELECTION_DATA = DATA_ROOT / 'research' / 'cvrp-selection-crc'
 
 
 def node_command() -> list[str] | None:

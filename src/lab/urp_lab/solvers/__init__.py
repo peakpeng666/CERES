@@ -7,6 +7,7 @@ import math
 import time
 
 from .. import paths
+from ..algorithm_ids import canonical_algorithm_id
 from ..scenarios import maps
 from ..planning import context, trace_context, without_stale_reference
 from . import f2c_coverage, fleet, motion, routing
@@ -36,11 +37,11 @@ _TABLE = [
     ('urp.reset_dp', '方向松弛 DP', 'turn_routing', '本项目', 'relaxation', 'optimal_for_relaxation',
      '忽略进入方向的松弛问题最优解，是真实成本的下界；路线可能包含被禁止的转弯。', ['vidal2017turn'],
      'src/research/src/urp_research/turn_modes/solver.py', {'limits': {'max_tasks': 12}}),
-    ('pyvrp.hgs+urp.layered', 'PyVRP + 转弯分层补全', 'turn_routing', 'PyVRP', 'metaheuristic', 'none',
+    ('pyvrp.ils+urp.layered', 'PyVRP + 转弯分层补全', 'turn_routing', 'PyVRP', 'metaheuristic', 'none',
      'PyVRP 在方向松弛距离上决定任务分配与访问顺序，再由项目分层 DP 补全满足转弯约束的路径。', ['wouda2024pyvrp', 'vidal2017turn'], 'pyvrp', {}),
     ('ortools.gls+urp.layered', 'OR-Tools GLS + 转弯分层补全', 'turn_routing', 'OR-Tools', 'metaheuristic', 'none',
      'OR-Tools 引导局部搜索给出分配与顺序，项目分层 DP 补全转弯可行路径。', ['ortools', 'voudouris1999gls', 'vidal2017turn'], 'ortools', {}),
-    ('pyvrp.hgs', 'PyVRP 迭代局部搜索', 'euclidean_cvrp', 'PyVRP', 'metaheuristic', 'none',
+    ('pyvrp.ils', 'PyVRP 迭代局部搜索', 'euclidean_cvrp', 'PyVRP', 'metaheuristic', 'none',
      'PyVRP 0.14 的迭代局部搜索（含 SWAP* 邻域）；改进幅度以相同输入、预算与独立复算为准。', ['wouda2024pyvrp', 'vidal2022hgs', 'lourenco2003ils'], 'pyvrp', {}),
     ('ortools.gls', 'OR-Tools 引导局部搜索', 'euclidean_cvrp', 'OR-Tools', 'metaheuristic', 'none',
      'Google OR-Tools 路由求解器：最便宜弧构造 + 引导局部搜索。', ['ortools', 'voudouris1999gls'], 'ortools', {}),
@@ -58,7 +59,7 @@ _TABLE = [
     ('f2c.snake', 'Fields2Cover 蛇形行', 'coverage', 'Fields2Cover', 'coverage', 'none',
      '隔行跳跃的蛇形作业顺序，减少急转弯；凸作业区，Dubins 转弯。', ['mier2023f2c', 'dubins1957'], 'fields2cover', {}),
     ('panel.boustrophedon', '平行往复（面板实现）', 'coverage', '基线', 'baseline', 'none',
-     '按固定方向切出平行作业行并往复连接，转弯允许原地掉头，用作覆盖规划的参照下限。', ['choset2000boustrophedon', 'galceran2013cpp'], 'shapely', {}),
+     '按固定方向切出作业行，复用可见图绕障连接，接驳段另行规划；允许原地掉头，不约束转弯半径，不是全局最优下界。', ['choset2000boustrophedon', 'galceran2013cpp'], 'src/lab/urp_lab/solvers/coverage_baseline.py', {}),
 ]
 GROUND_POLICY = {**SELECT('ground_policy', '地面风险策略', 'ignore', [('ignore', '忽略地面风险'), ('risk_adjust', '风险加权与限速')]),
                  'description': 'risk_adjust：用 instance 声明的已知地面图（ground.zones）给低附着区加当量米风险成本并允许绕行；需自由通行与总里程目标'}
@@ -154,48 +155,13 @@ def map_check(world, routes):
 
 
 def coverage(inst):
-    """Panel boustrophedon baseline: parallel swaths along x, connected end to end (in-place turns allowed)."""
-    from shapely.geometry import Polygon, LineString
-    from shapely.ops import unary_union
-    area = Polygon(inst['field'], inst.get('obstacles', []))
-    interior = area.buffer(-inst['headland_width'])
-    if interior.is_empty:
-        return [], {'valid': False, 'errors': ['内缩作业区为空']}, {}
-    x0, y0, x1, y1 = interior.bounds
-    step = inst['swath_width']
-    points, strips = [], []
-    y, row = y0 + min(step / 2, (y1 - y0) / 2), 0
-    while y < y1:
-        cut = interior.intersection(LineString([(x0 - 1, y), (x1 + 1, y)]))
-        lines = [cut] if cut.geom_type == 'LineString' else list(getattr(cut, 'geoms', []))
-        for line in lines:
-            if line.geom_type != 'LineString' or line.is_empty:
-                continue
-            pair = list(line.coords)
-            if row % 2:
-                pair.reverse()
-            points.extend(pair)
-            strips.append(line.buffer(step / 2, cap_style=2))
-            row += 1
-        y += step
-    if len(points) < 2:
-        return [], {'valid': False, 'errors': ['没有作业行']}, {}
-    path = LineString(points)
-    footprint_valid = area.covers(path.buffer(inst['robot_width'] / 2))
-    covered = unary_union(strips).intersection(area).area
-    working_fraction = unary_union(strips).intersection(interior).area / interior.area
-    errors = ([] if footprint_valid else ['连接段或机器人足迹超出田块/穿越障碍'])
-    if working_fraction < .90:
-        errors.append('内缩作业区覆盖率低于 90%')
-    return [dict(vehicle=0, nodes=None, sequence=[], services=[], polyline=points, cost=path.length, load=0)], \
-        dict(valid=not errors, errors=errors, computed_cost=path.length,
-             checker='urp_lab.solvers.coverage · Shapely 扫掠足迹', source='panel_baseline'), \
-        dict(coverage_area_m2=covered, field_area_m2=area.area, coverage_fraction=covered / area.area,
-             working_area_fraction=working_fraction, coverage_required_fraction=.90,
-             turn_radius_enforced=False, coverage_scope='内缩作业区；地头不作业；不约束转弯半径')
+    """Compatibility entry point for the versioned polyline coverage baseline."""
+    from .coverage_baseline import coverage as solve_coverage
+    return solve_coverage(inst)
 
 
 def run_algorithm(scenario, instance, algorithm_id, params):
+    algorithm_id = canonical_algorithm_id(algorithm_id)
     scenario = without_stale_reference(scenario, instance)
     start, cpu = time.perf_counter(), time.process_time()
     alg = next(a for a in catalog() if a['id'] == algorithm_id)

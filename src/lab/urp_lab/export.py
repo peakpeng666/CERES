@@ -23,19 +23,24 @@ def export_run(sol, fmt):
     if fmt=='geojson' and sol.get('problem_class')=='fleet_routing':
         from .compose.geo import export_geojson
         return export_geojson(sol.get('scenario_snapshot') or {'instance':sol.get('instance')}, sol),'application/geo+json',stem+'.geojson'
-    if fmt=='csv' and sol.get('problem_class')=='fleet_routing':
+    if fmt=='tasks-csv':
+        if sol.get('problem_class') != 'fleet_routing':
+            raise ValueError('tasks-csv 仅适用于 fleet_routing；csv 保持几何点格式')
         inst=sol.get('instance') or {}
         tasks={t['id']:t for t in inst.get('tasks',[])}
-        rows=[dict(run_id=stem,vehicle=r.get('vehicle_name'),trip=k+1,order=i+1,task=tid,label=tasks.get(tid,{}).get('label'),
-                   x=tasks.get(tid,{}).get('xy',[None,None])[0],y=tasks.get(tid,{}).get('xy',[None,None])[1],demand=tasks.get(tid,{}).get('demand'))
+        rows=[dict(run_id=stem,instance_sha256=sol['instance_sha256'],units=sol['frame']['units'],
+                   row_kind='task_service',vehicle=r['vehicle'],vehicle_name=r.get('vehicle_name'),
+                   trip=k+1,order=i+1,task=tid,label=tasks[tid].get('label'),
+                   x=tasks[tid]['xy'][0],y=tasks[tid]['xy'][1],demand=tasks[tid].get('demand'))
               for r in sol['routes'] for k,trip in enumerate(r.get('trips') or [r['sequence']]) for i,tid in enumerate(trip)]
-        return rows_csv(rows,['run_id','vehicle','trip','order','task','label','x','y','demand'],stem)
+        return rows_csv(rows,['run_id','instance_sha256','units','row_kind','vehicle','vehicle_name',
+                              'trip','order','task','label','x','y','demand'],stem+'-tasks')
     if fmt=='geojson':
         # Explicit local-coordinate extension, never advertise WGS84 / RFC7946 geographic compatibility.
         obj={'type':'FeatureCollection','coordinate_reference':sol['frame'], 'warning':'Local coordinates; NOT WGS84 / RFC7946 geographic coordinates',
              'features':[{'type':'Feature','properties':{'run_id':stem,'vehicle':r['vehicle']},'geometry':{'type':'LineString','coordinates':r['polyline']}} for r in sol['routes'] if len(r['polyline'])>=2]}
         return json.dumps(obj,ensure_ascii=False).encode(),'application/json',stem+'.geojson'
-    raise ValueError('格式须为 json/csv/geojson')
+    raise ValueError('格式须为 json/csv/tasks-csv/geojson')
 
 def export_sim_run(run, fmt):
     if fmt=='json': return pack(run,fmt,run['sim_run_id'])

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, Upload } from 'lucide-react';
 import { Button } from '../lab/ui';
 import { studio } from './api';
+import { importGeojsonOnce, importScenarioOnce, UncertainImportError } from './scenarioWrites';
 import { useStudio } from './store';
 import type { ParseResult } from './types';
 import s from './studio.module.css';
@@ -33,11 +34,11 @@ export function ComposeBar() {
   async function onFile(f: File) {
     try {
       const obj = JSON.parse(await f.text());
-      const sc = obj.type === 'FeatureCollection' || obj.type === 'Feature' ? await studio.importGeojson(obj, f.name.replace(/\.(geo)?json$/i, '')) : await studio.importScenario(obj);
+      const sc = obj.type === 'FeatureCollection' || obj.type === 'Feature' ? await importGeojsonOnce(obj, f.name.replace(/\.(geo)?json$/i, '')) : await importScenarioOnce(obj);
       location.hash = `#/plan/${encodeURIComponent(sc.id)}`;
       notify('ok', `已导入 ${sc.title}`);
     } catch (e) {
-      notify('error', `导入失败：${(e as Error).message}`);
+      notify('error', e instanceof UncertainImportError ? e.message : `导入失败：${(e as Error).message}`);
     }
   }
   return (

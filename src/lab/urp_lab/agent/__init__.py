@@ -10,3 +10,8 @@ checkers decide). Components:
 - ``diagnose``  failure classification (implementation error / method not applicable / task infeasible) and repairs;
 - ``session``   persistent sessions and the phase-gated runner (understand → confirm → execute → report).
 """
+
+# Research dialogue shares the gateway but has a distinct session schema.
+from .research_llm import ModelError, OpenAICompatibleModel, Reply, model_from_env
+from .manager import AgentManager, POLICY
+from .research_tools import TOOLS

@@ -41,6 +41,7 @@ export function Palette() {
               <Command.Item onSelect={run(() => { location.hash = '#/assets'; useAssets.getState().openImport(); })}>导入资产（地图 / 车辆 / 设施）</Command.Item>
               <Command.Item onSelect={open('replay')}>回放仿真</Command.Item>
               <Command.Item onSelect={open('results')}>查看实验结果并导出</Command.Item>
+              <Command.Item onSelect={open('researchAgent')}>科研对话（目录、方案与记录分析）</Command.Item>
               <Command.Item onSelect={open('figures')}>科研图表（期刊版式 / 论文图包）</Command.Item>
               <Command.Item onSelect={run(() => void studio.solve())}>求解并对比推荐的算法</Command.Item>
               <Command.Item onSelect={run(() => window.dispatchEvent(new Event('studio:fit')))}>地图适配全图</Command.Item>

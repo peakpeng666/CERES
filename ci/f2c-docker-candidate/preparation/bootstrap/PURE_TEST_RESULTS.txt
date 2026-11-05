@@ -1,0 +1,28 @@
+test_certificate_links_traversal_duplicates_rejected (test_bootstrap.CertificateFixtures.test_certificate_links_traversal_duplicates_rejected) ... ok
+test_controller_is_syntax_only_and_not_executed (test_bootstrap.CertificateFixtures.test_controller_is_syntax_only_and_not_executed) ... ok
+test_public_pem_only (test_bootstrap.CertificateFixtures.test_public_pem_only) ... ok
+test_regular_certificates_only (test_bootstrap.CertificateFixtures.test_regular_certificates_only) ... ok
+test_exact_delta (test_bootstrap.InventoryFixtures.test_exact_delta) ... ok
+test_install_and_unchanged_package_delta (test_bootstrap.InventoryFixtures.test_install_and_unchanged_package_delta) ... ok
+test_installed_and_held (test_bootstrap.InventoryFixtures.test_installed_and_held) ... ok
+test_partial_and_foreign_and_duplicate_fail (test_bootstrap.InventoryFixtures.test_partial_and_foreign_and_duplicate_fail) ... ok
+test_signed_record (test_bootstrap.PackageFixtures.test_signed_record) ... ok
+test_unsafe_package_metadata (test_bootstrap.PackageFixtures.test_unsafe_package_metadata) ... ok
+test_duplicate_index_fails (test_bootstrap.ReleaseFixtures.test_duplicate_index_fails) ... ok
+test_expected_signed_payload_shape (test_bootstrap.ReleaseFixtures.test_expected_signed_payload_shape) ... ok
+test_identity_and_index_mutations_fail (test_bootstrap.ReleaseFixtures.test_identity_and_index_mutations_fail) ... ok
+test_install_and_upgrade (test_bootstrap.SimulationFixtures.test_install_and_upgrade) ... ok
+test_unsafe_simulations (test_bootstrap.SimulationFixtures.test_unsafe_simulations) ... ok
+test_base_digest_is_fixed (test_bootstrap.SyntaxAndPins.test_base_digest_is_fixed) ... ok
+test_release_pins_match_reviewed_predecessor (test_bootstrap.SyntaxAndPins.test_release_pins_match_reviewed_predecessor) ... ok
+test_security_guards_and_order (test_bootstrap.SyntaxAndPins.test_security_guards_and_order) ... ok
+test_seed_lock_and_script_agree (test_bootstrap.SyntaxAndPins.test_seed_lock_and_script_agree) ... ok
+test_shell_syntax_only (test_bootstrap.SyntaxAndPins.test_shell_syntax_only) ... ok
+test_cache_name_only (test_bootstrap.UriFixtures.test_cache_name_only) ... ok
+test_uri_path_and_collision_rejection (test_bootstrap.UriFixtures.test_uri_path_and_collision_rejection) ... ok
+test_url_decode_bounded (test_bootstrap.UriFixtures.test_url_decode_bounded) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.077s
+
+OK

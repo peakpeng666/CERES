@@ -8,10 +8,11 @@ import json
 import math
 import statistics as stats
 from . import paths
+from .algorithm_ids import canonical_algorithm_id, canonical_algorithm_values
 paths.ensure_research_path()
 from urp_research.cvrp_selection.experiment import features, crc, route
 
-ALGOS = ['pyvrp.hgs','ortools.gls']
+ALGOS = ['pyvrp.ils','ortools.gls']
 MODEL = paths.LAB/'models/cvrp-knn-v1.json'
 BUDGET = .25
 EVALUATED_OBJECTIVE = 'sum_unrounded_euclidean_distance'
@@ -21,7 +22,12 @@ EVALUATED_SCOPE = (
 )
 
 
+def _records_with_current_ids(records):
+    return [dict(r, costs=canonical_algorithm_values(r['costs'])) for r in records]
+
+
 def fit(records):
+    records = _records_with_current_ids(records)
     cols=list(zip(*(r['features']['values'] for r in records)))
     mu=list(map(stats.mean,cols));sd=[stats.pstdev(c) or 1 for c in cols]
     means={a:stats.mean(r['costs'][a]/r['features']['star_upper_bound'] for r in records) for a in ALGOS}
@@ -31,6 +37,10 @@ def fit(records):
 
 
 def predict(model,instance):
+    # Read-only adaptation: callers verify the original artifact hash first.
+    model = dict(model, sbs=canonical_algorithm_id(model['sbs']),
+                 train_means=canonical_algorithm_values(model.get('train_means', {})),
+                 train=[dict(r, targets=canonical_algorithm_values(r['targets'])) for r in model['train']])
     values=features(instance)['values'];scaled=[(v-m)/s for v,m,s in zip(values,model['mu'],model['sd'])]
     neighbors=sorted(model['train'],key=lambda r:(math.dist(r['scaled'],scaled),r['id']))[:model['k']]
     costs={a:stats.mean(r['targets'][a] for r in neighbors) for a in ALGOS}
@@ -40,6 +50,7 @@ def predict(model,instance):
 
 
 def build(records):
+    records = _records_with_current_ids(records)
     train=[r for r in records if r['split']=='train'];cal=[r for r in records if r['split']=='calibration']
     model=fit(train);predictions=[]
     for r in cal:

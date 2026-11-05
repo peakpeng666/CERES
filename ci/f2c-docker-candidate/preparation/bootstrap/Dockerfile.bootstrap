@@ -1,0 +1,13 @@
+# FUTURE REVIEWED PREPARATION ONLY. No build, pull, or execution is authorized
+# by the existence of this file. The external controller must attest the image.
+FROM --platform=linux/amd64 docker.io/library/ubuntu@sha256:98510ac07bb4545e389be502a8918b385c018bfe4ceeb5ac7e0375c782268b04 AS bootstrap
+COPY preparation/bootstrap/bootstrap.sh preparation/bootstrap/*.awk /usr/local/lib/urp-bootstrap/
+# Exact public Ubuntu package/metadata bytes only, materialized by the reviewed
+# controller according to ca-inputs.lock.json. No host CA directories are copied.
+COPY preparation/bootstrap-inputs/jammy-security.InRelease \
+    preparation/bootstrap-inputs/jammy-security.main.amd64.Packages.xz \
+    preparation/bootstrap-inputs/ca-certificates.deb /opt/urp-bootstrap-seed/
+RUN /usr/bin/env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C LANG=C HOME=/nonexistent \
+    /bin/sh /usr/local/lib/urp-bootstrap/bootstrap.sh --install-bootstrap
+# Deliberately no project source, Python 3.12 ABI selection, compiler, build hook,
+# workload entrypoint, host mount, image publication, or acceptance declaration.

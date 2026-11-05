@@ -2,8 +2,9 @@
 
 Split rule (fixed before any run, docs/持续进化决策与调度.md §6): Dutch fields and ``ee_field_130`` were already
 used by earlier studies and are development data; every other Estonian and Lithuanian field is a sealed test
-candidate. Builders refuse sealed fields unless given a token derived from a protocol file whose status line
-reads FROZEN, so exploratory code cannot touch the test side by accident.
+candidate. Sealed builders are disabled in this integration until an independently
+validated protocol-authorization gate exists. The historical token helper checks
+text only; it is advisory and does not verify a freeze or authorize sealed access.
 """
 from __future__ import annotations
 
@@ -29,7 +30,7 @@ def split_of(field_id: str) -> str:
 
 
 def sealed_token(protocol_path: str | Path) -> str:
-    """Access token for sealed fields: only a protocol whose text declares 状态：FROZEN yields one."""
+    """Legacy advisory digest, NOT proof of protocol approval or permission for sealed access."""
     text = Path(protocol_path).read_text(encoding='utf-8')
     if '状态：FROZEN' not in text and 'Status: FROZEN' not in text:
         raise PermissionError('协议尚未冻结：封存测试田块不可访问')
@@ -37,8 +38,8 @@ def sealed_token(protocol_path: str | Path) -> str:
 
 
 def _guard(field_id: str, token: str | None):
-    if split_of(field_id) == 'sealed' and not (token or '').startswith('FROZEN:'):
-        raise PermissionError(f'{field_id} 属于封存测试候选；协议冻结前不得生成实例或运行求解器')
+    if split_of(field_id) == 'sealed':
+        raise PermissionError(f'{field_id}: sealed execution disabled pending a verified protocol-authorization gate')
 
 
 def manifest() -> dict:

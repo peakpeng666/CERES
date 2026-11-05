@@ -3,6 +3,8 @@ from validate import *
 import argparse
 
 def audit(root, directory, planned):
+    if type(planned) is not int or planned < 0:raise ValueError('planned must be a nonnegative integer')
+    if not directory.is_dir():raise ValueError('directory must be an existing directory')
     cases={c['case_id']:c for c in json.loads((root/'src/research/configs/cvrplib_cases.json').read_text())['cases']}
     rows=[]; keys=[]
     for path in sorted(directory.glob('*.json')):
@@ -35,4 +37,7 @@ def audit(root, directory, planned):
 if __name__=='__main__':
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument('directory',type=Path);ap.add_argument('--planned',type=int,required=True);ap.add_argument('--output',type=Path,required=True)
     args=ap.parse_args();report=audit(Path(__file__).resolve().parents[1],args.directory,args.planned)
-    args.output.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({k:v for k,v in report.items() if k!='rows'}))
+    with args.output.open('x') as output:
+        output.write(json.dumps(report,indent=2)+'\n')
+    print(json.dumps({k:v for k,v in report.items() if k!='rows'}))
+    raise SystemExit(1 if report['audit_errors'] or report['duplicates'] else 0)

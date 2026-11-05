@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import { importScenarioOnce } from '../../pendingWrites';
 import { FileUp, RefreshCw } from 'lucide-react';
 import { buildHash, navigate } from '../../../app/router';
 import { lab } from '../../api';
@@ -49,7 +50,7 @@ export function ScenarioList({
       } catch {
         throw new Error(`${f.name} 不是有效的 JSON 文件`);
       }
-      const created = await lab.importScenario(parsed);
+      const created = await importScenarioOnce(parsed, (doc) => lab.importScenario(doc));
       onReload();
       navigate(buildHash('plan', created.id));
     } catch (e) {

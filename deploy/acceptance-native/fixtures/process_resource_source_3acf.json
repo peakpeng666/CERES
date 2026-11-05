@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "application_commit": "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35",
+  "sources": [
+    {
+      "path": "src/lab/ros/processes.py",
+      "git_blob": "76fc5859b81e9e6e8f7cbafeb8ffb1c7eb3123ad",
+      "sha256": "ffd373a85cd7ef903fd66e67b1dc4580b284ce3a11474e81b05c57daad2489b1",
+      "excerpts": {
+        "sampling": "def sample(self):\n        ids = {p.pid for _, p, _, _ in self.children}\n        rss, cpu_ticks, rows = 0, 0, []\n        for path in Path('/proc').glob('[0-9]*/stat'):\n            try:\n                raw = path.read_text(); f = raw[raw.rfind(')') + 2:].split()\n                if int(f[2]) in ids:\n                    rows.append({'pid': int(path.parent.name), 'group': int(f[2]),\n                                 'state': f[0], 'start_ticks': int(f[19])})\n                    rss += int(f[21]) * os.sysconf('SC_PAGE_SIZE') // 1024\n                    cpu_ticks += int(f[11])+int(f[12])\n            except (OSError, ValueError):\n                continue\n        self.peak_rss_kib = max(self.peak_rss_kib, rss)\n        self.resources.append({'utc':datetime.now(timezone.utc).isoformat(), 'rss_kib':rss,\n                               'cpu_seconds_live_processes':cpu_ticks/os.sysconf('SC_CLK_TCK'),\n                               'process_count':len(rows)})\n        return rows"
+      }
+    },
+    {
+      "path": "src/lab/ros/urp_sim_session.py",
+      "git_blob": "0e92e23fa08b6c4334fec02dd03aa0c7da7215b0",
+      "sha256": "b6e990e0412520fc01c5466091bce9ffa5170df22ea11a0ecffe0779505d5535",
+      "excerpts": {
+        "origin": "self.report=dict(session_id=args.session_id,started_utc=now(),world=args.world,spawn=args.spawn,errors=[],\n                         compatibility={k:str(v) if v else None for k,v in [('tf',self.tf_fix),('gui',self.gui_fix)]})",
+        "persistence": "self.report.update(finished_utc=now(),counts=self.counts,stages=self.st['stages'],resources=self.processes.resources)"
+      }
+    }
+  ]
+}

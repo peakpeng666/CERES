@@ -1,0 +1,24 @@
+{
+  "application_source": "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35",
+  "sources": [
+    {
+      "path": "src/lab/urp_lab/simclient.py",
+      "blob": "307d174951a4d64b0f6f4bc66d21fb2f90898c6f",
+      "sha256": "04989f0dab9c11fb71d3c389107294326b7a9b46a6deb6f06dadc2ff36746fcd",
+      "functions": {
+        "stopped_state": "def stopped_state(errors=None, warnings=None) -> dict:\n    return {'session_id': None, 'phase': 'stopped', 'world': None, 'spawn': None, 'components': {}, 'robot': None,\n            'execution': None, 'errors': errors or [], 'warnings': warnings or [], 'stages': [],\n            'known_issues': bridge_known_issues()}",
+        "SimClient.poll_once": "def poll_once(self):\n        status, st = http_json('GET', f'{self.url}/state', timeout=1.0)\n        if status == 200 and isinstance(st, dict):\n            self._fails = 0\n            st.setdefault('known_issues', [])\n            self._handle_execution(st.get('execution'))\n            with self.services._lock:\n                meta = self.services.sim_meta or self.services.sim_adopted or {}\n                if meta.get('session_id') and st.get('session_id') != meta['session_id']:\n                    return  # A response from the previous session arrived after restart.\n                self._set_state(st)\n            return\n        self._fails += 1\n        meta = self.services.sim_meta or self.services.sim_adopted or {}\n        if self.state.get('session_id') != meta.get('session_id'):  # control API not up yet\n            self._set_state({**stopped_state(), 'session_id': meta.get('session_id'), 'phase': 'starting',\n                             'world': meta.get('world'), 'spawn': meta.get('spawn')})\n        elif self._fails >= 3:\n            self._set_state({**self.state, 'errors': [f'会话控制接口暂无响应：{st}']})",
+        "SimClient._set_state": "def _set_state(self, st: dict):\n        text = json.dumps(st, ensure_ascii=False, sort_keys=True)\n        changed = text != self._last_json\n        prev_phase = self.state.get('phase')\n        self.state, self._last_json = st, text\n        if changed and self.bus:\n            self.bus.publish('sim_state', st)\n        if prev_phase != st.get('phase'):\n            self.services.changed()",
+        "SimClient.current_state": "def current_state(self) -> dict:\n        with self.services._lock:\n            st = dict(self.state)\n            alive = self.services.sim_alive()\n            meta = self.services.sim_meta or self.services.sim_adopted or {}\n            if alive and st.get('session_id') != meta.get('session_id'):\n                st = {**stopped_state(), 'session_id': meta.get('session_id'), 'phase': 'starting',\n                      'world': meta.get('world'), 'spawn': meta.get('spawn')}\n            if self.services._busy.get('sim') == 'stopping' and st.get('session_id'):\n                st['phase'] = 'stopping'\n            elif not alive and st.get('phase') not in ('stopped','failed'):\n                st = stopped_state(errors=st.get('errors'))\n                if st['errors']:st['phase']='failed'\n            return st"
+      }
+    },
+    {
+      "path": "src/lab/ros/urp_sim_session.py",
+      "blob": "0e92e23fa08b6c4334fec02dd03aa0c7da7215b0",
+      "sha256": "b6e990e0412520fc01c5466091bce9ffa5170df22ea11a0ecffe0779505d5535",
+      "functions": {
+        "Session.state": "def state(self):\n        with self.lock:\n            st=copy.deepcopy(self.st); st['execution']=copy.deepcopy(self.execution)\n            st['telemetry']=dict(counts=dict(self.counts),age_s={k:round(time.monotonic()-v,3) for k,v in self.at.items()})\n            st['telemetry']['map_base_tf_age_s']=self.tf_age\n            return st"
+      }
+    }
+  ]
+}

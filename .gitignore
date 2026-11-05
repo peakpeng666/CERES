@@ -75,7 +75,11 @@ setup/2026-10-17/critique/mu2-study/*/
 /setup/2026-10-17/integration-closeout/browser-profile*/
 /setup/2026-10-17/integration-closeout/*-record.json
 /.local-state/
+/.claude/launch.json
 /user-runs/
+# New CLI output; committed protocols and results stay visible in experiments/.
+/experiments/runs/cvrplib-run-registry/
+/experiments/runs/replay/
 # Source-stamped raw physical probes remain local; summaries, logs and checks are committed.
 /setup/2026-10-18/physics-consistency/baseline/*-0/
 /setup/2026-10-18/physics-consistency/contact-diagnosis/*-0/

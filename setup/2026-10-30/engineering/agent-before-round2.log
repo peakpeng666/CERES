@@ -1,0 +1,174 @@
+FF.FFF                                                                   [100%]
+=================================== FAILURES ===================================
+______ test_cancel_during_model_call_overrides_late_final_or_error[False] ______
+
+workbench = <function workbench.<locals>.make at 0x7f401643ef20>, failed = False
+
+    @pytest.mark.parametrize('failed', [False, True])
+    def test_cancel_during_model_call_overrides_late_final_or_error(workbench, failed):
+        entered, release = threading.Event(), threading.Event()
+
+        def delayed(_messages):
+            entered.set()
+            assert release.wait(5)
+            if failed:
+                raise ModelError('late provider failure')
+            return Reply('迟到的最终答复', [])
+
+        client = workbench(ScriptedModel(delayed))
+        sid = client.post('/lab/api/agent/sessions', json={'message': '先分析'}).json()['session_id']
+        try:
+            assert entered.wait(2)
+            client.post(f'/lab/api/agent/sessions/{sid}/cancel', json={})
+        finally:
+            release.set()
+        session = settle(client, sid)
+>       assert session['state'] == 'canceled'
+E       AssertionError: assert 'idle' == 'canceled'
+E
+E         - canceled
+E         + idle
+
+tests/test_agent.py:344: AssertionError
+----------------------------- Captured stderr call -----------------------------
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+Fontconfig error: No writable cache directories
+------------------------------ Captured log call -------------------------------
+WARNING  matplotlib:__init__.py:573 mkdir -p failed for path /home/agent/.config/matplotlib: [Errno 30] Read-only file system: '/home/agent/.config/matplotlib'
+WARNING  matplotlib:__init__.py:596 Matplotlib created a temporary cache directory at /tmp/matplotlib-4saas9gg because there was an issue with the default path (/home/agent/.config/matplotlib); it is highly recommended to set the MPLCONFIGDIR environment variable to a writable directory, in particular to speed up the import of Matplotlib and to better support multiprocessing.
+______ test_cancel_during_model_call_overrides_late_final_or_error[True] _______
+
+workbench = <function workbench.<locals>.make at 0x7f4000b347c0>, failed = True
+
+    @pytest.mark.parametrize('failed', [False, True])
+    def test_cancel_during_model_call_overrides_late_final_or_error(workbench, failed):
+        entered, release = threading.Event(), threading.Event()
+
+        def delayed(_messages):
+            entered.set()
+            assert release.wait(5)
+            if failed:
+                raise ModelError('late provider failure')
+            return Reply('迟到的最终答复', [])
+
+        client = workbench(ScriptedModel(delayed))
+        sid = client.post('/lab/api/agent/sessions', json={'message': '先分析'}).json()['session_id']
+        try:
+            assert entered.wait(2)
+            client.post(f'/lab/api/agent/sessions/{sid}/cancel', json={})
+        finally:
+            release.set()
+        session = settle(client, sid)
+>       assert session['state'] == 'canceled'
+E       AssertionError: assert 'error' == 'canceled'
+E
+E         - canceled
+E         + error
+
+tests/test_agent.py:344: AssertionError
+___ test_provider_error_cannot_record_api_key[401-invalid key test-only-key] ___
+
+status = 401, body = 'invalid key test-only-key'
+
+    @pytest.mark.parametrize('status,body', [(401, 'invalid key test-only-key'), (200, 'test-only-key is not JSON')])
+    def test_provider_error_cannot_record_api_key(status, body):
+        model = OpenAICompatibleModel('https://example.test/v1', 'test', 'test-only-key',
+                                      transport=httpx.MockTransport(lambda request: httpx.Response(status, text=body)))
+        with pytest.raises(ModelError) as raised:
+            model.complete([], [])
+>       assert 'test-only-key' not in str(raised.value)
+E       AssertionError: assert 'test-only-key' not in '模型接口返回 HTTP...est-only-key'
+E
+E         'test-only-key' is contained here:
+E           模型接口返回 HTTP 401：invalid key test-only-key
+E         ?                             +++++++++++++
+
+tests/test_agent.py:367: AssertionError
+___ test_provider_error_cannot_record_api_key[200-test-only-key is not JSON] ___
+
+status = 200, body = 'test-only-key is not JSON'
+
+    @pytest.mark.parametrize('status,body', [(401, 'invalid key test-only-key'), (200, 'test-only-key is not JSON')])
+    def test_provider_error_cannot_record_api_key(status, body):
+        model = OpenAICompatibleModel('https://example.test/v1', 'test', 'test-only-key',
+                                      transport=httpx.MockTransport(lambda request: httpx.Response(status, text=body)))
+        with pytest.raises(ModelError) as raised:
+            model.complete([], [])
+>       assert 'test-only-key' not in str(raised.value)
+E       AssertionError: assert 'test-only-key' not in '模型接口返回了无法解析... is not JSON'
+E
+E         'test-only-key' is contained here:
+E           模型接口返回了无法解析的内容：test-only-key is not JSON
+E         ?                +++++++++++++
+
+tests/test_agent.py:367: AssertionError
+______ test_clean_shutdown_closes_pending_approval_and_requires_new_turn _______
+
+workbench = <function workbench.<locals>.make at 0x7f4000162d40>
+tmp_path = PosixPath('/tmp/pytest-of-agent/pytest-7/test_clean_shutdown_closes_pen0')
+
+    def test_clean_shutdown_closes_pending_approval_and_requires_new_turn(workbench, tmp_path):
+        model = ScriptedModel(Reply('', [call('start_field_simulation', {'run_id': 'run_x'})]))
+        client = workbench(model, runtime='clean-shutdown')
+        sid = client.post('/lab/api/agent/sessions', json={'message': '申请执行'}).json()['session_id']
+        pending = settle(client, sid)['pending']['call_id']
+        client.__exit__(None, None, None)
+
+        later = ScriptedModel(Reply('请重新选择要执行的方案。', []))
+        restarted = workbench(later, runtime='clean-shutdown')
+        session = restarted.get(f'/lab/api/agent/sessions/{sid}', params={'messages': True}).json()
+>       assert session['state'] == 'error' and session['pending'] is None
+E       AssertionError: assert ('awaiting_approval' == 'error'
+E
+E         - error
+E         + awaiting_approval)
+
+tests/test_agent.py:380: AssertionError
+=============================== warnings summary ===============================
+.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+tests/test_agent.py::test_configured_startup_and_status_reads_do_not_call_model
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/openapi/utils.py:303: UserWarning: Duplicate Operation ID api_not_found_lab_api__rest__delete for function api_not_found at /workspace/URP/src/lab/urp_lab/gateway.py
+    warnings.warn(message, stacklevel=1)
+
+tests/test_agent.py::test_configured_startup_and_status_reads_do_not_call_model
+  /workspace/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/openapi/utils.py:303: UserWarning: Duplicate Operation ID archive_proxy_api__rest__delete for function archive_proxy at /workspace/URP/src/lab/urp_lab/gateway.py
+    warnings.warn(message, stacklevel=1)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/test_agent.py::test_cancel_during_model_call_overrides_late_final_or_error[False]
+FAILED tests/test_agent.py::test_cancel_during_model_call_overrides_late_final_or_error[True]
+FAILED tests/test_agent.py::test_provider_error_cannot_record_api_key[401-invalid key test-only-key]
+FAILED tests/test_agent.py::test_provider_error_cannot_record_api_key[200-test-only-key is not JSON]
+FAILED tests/test_agent.py::test_clean_shutdown_closes_pending_approval_and_requires_new_turn
+5 failed, 1 passed, 11 deselected, 3 warnings in 3.32s

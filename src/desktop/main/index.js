@@ -5,6 +5,7 @@ const { Backend } = require('./backend');
 const { Container } = require('./container');
 const { Settings } = require('./settings');
 const { Updater } = require('./updater');
+const { DataTransfer } = require('./data-transfer');
 
 const TITLE = '农业机器人路径规划工作台';
 const SPLASH = path.join(__dirname, '..', 'splash.html');
@@ -17,11 +18,14 @@ let settings = null;
 let backend = null;
 let container = null;
 let updater = null;
+let dataTransfer = null;
+let transitioning = false;
 let origin = null;
 let quitting = false;
 
 const send = (channel, value) => { if (win && !win.isDestroyed()) win.webContents.send(channel, value); };
 const status = (text) => send('boot:status', text);
+const atOrigin = (url) => { try { return origin !== null && new URL(url).origin === origin; } catch { return false; } };
 
 function createWindow() {
   const bounds = settings.get('bounds', {});
@@ -36,11 +40,11 @@ function createWindow() {
   win.on('closed', () => { win = null; });
   win.on('page-title-updated', (event) => { event.preventDefault(); win.setTitle(TITLE); });
   win.webContents.setWindowOpenHandler(({ url }) => {
-    if (/^https?:/.test(url) && !url.startsWith(origin ?? '\0')) void shell.openExternal(url);
-    return { action: url.startsWith(origin ?? '\0') ? 'allow' : 'deny' };
+    if (/^https?:/.test(url) && !atOrigin(url)) void shell.openExternal(url);
+    return { action: atOrigin(url) ? 'allow' : 'deny' };
   });
   win.webContents.on('will-navigate', (event, url) => {
-    if (url.startsWith('file:') || url.startsWith(origin ?? '\0')) return;
+    if (url.startsWith('file:') || atOrigin(url)) return;
     event.preventDefault();
     if (/^https?:/.test(url)) void shell.openExternal(url);
   });
@@ -48,7 +52,7 @@ function createWindow() {
 }
 
 /** Start whichever backend is chosen and show it. A failure stays on the splash page with what went wrong. */
-async function boot() {
+async function boot(hash = '') {
   const mode = settings.get('backend', 'native');
   try {
     if (mode === 'container') {
@@ -57,25 +61,61 @@ async function boot() {
     } else {
       origin = await backend.start(status);
     }
-    await win.loadURL(`${origin}/`);
+    await win.loadURL(`${origin}/${hash.startsWith('#/') ? hash : ''}`);
   } catch (error) {
     send('boot:error', { message: String(error.message ?? error), log: backend.logPath, mode });
   }
 }
 
 async function switchBackend(mode) {
-  settings.set('backend', mode);
+  if (transitioning) throw new Error('正在切换或迁移，请稍候');
+  transitioning = true;
+  try {
   origin = null;
   await win.loadFile(SPLASH);
   if (mode === 'container') await backend.stop();
   else await container.stop();
+  settings.set('backend', mode);
   await boot();
   return { mode };
+  } finally { transitioning = false; }
+}
+
+async function transferData(action) {
+  if (transitioning) throw new Error('正在切换或迁移，请稍候');
+  const date = new Date().toISOString().replace(/[:.]/g, '-');
+  let file, destination;
+  if (action === 'export') {
+    const picked = await dialog.showSaveDialog(win, { title: '备份工作台数据', defaultPath: `urp-data-${date}.zip`, filters: [{ name: 'URP 数据包', extensions: ['zip'] }] });
+    if (picked.canceled) return { canceled: true };
+    file = picked.filePath;
+  } else {
+    const picked = await dialog.showOpenDialog(win, { title: '选择工作台数据包', properties: ['openFile'], filters: [{ name: 'URP 数据包', extensions: ['zip'] }] });
+    if (picked.canceled) return { canceled: true };
+    file = picked.filePaths[0];
+    const folder = await dialog.showOpenDialog(win, { title: '选择恢复位置的上级目录（将在其中新建数据目录）', properties: ['openDirectory', 'createDirectory'] });
+    if (folder.canceled) return { canceled: true };
+    destination = path.join(folder.filePaths[0], `urp-data-${date}`);
+  }
+  // Dialogs are asynchronous; recheck before taking ownership of the transition.
+  if (transitioning) throw new Error('正在切换或迁移，请稍候');
+  transitioning = true;
+  const hash = new URL(win.webContents.getURL()).hash;
+  try {
+    if (settings.get('backend', 'native') === 'container') await container.stop();
+    else await backend.stop();
+    status(action === 'export' ? '正在备份并校验数据' : '正在校验并恢复到新目录');
+    return await (action === 'export' ? dataTransfer.export(file) : dataTransfer.restore(file, destination));
+  } finally {
+    transitioning = false;
+    await boot(hash);
+  }
 }
 
 function trusted(event) {
   const url = event.senderFrame?.url ?? '';
-  return url.startsWith('file:') || (origin !== null && url.startsWith(origin));
+  const { pathToFileURL } = require('node:url');
+  return url === pathToFileURL(SPLASH).href || atOrigin(url);
 }
 
 function handle(channel, fn) {
@@ -96,6 +136,9 @@ function wire() {
   handle('sim:status', () => container.status());
   handle('sim:enable', () => switchBackend('container'));
   handle('sim:disable', () => switchBackend('native'));
+  handle('data:info', () => dataTransfer.info());
+  handle('data:export', () => transferData('export'));
+  handle('data:restore', () => transferData('restore'));
 }
 
 function menu() {
@@ -121,7 +164,8 @@ app.on('second-instance', () => {
 app.whenReady().then(async () => {
   settings = new Settings(path.join(app.getPath('userData'), 'desktop.json'));
   backend = new Backend(app, settings);
-  container = new Container(app);
+  container = new Container(app, { settings });
+  dataTransfer = new DataTransfer(app, settings);
   updater = new Updater(app, (state) => send('update:state', state));
   session.defaultSession.setPermissionRequestHandler((_wc, permission, done) => done(permission === 'clipboard-sanitized-write'));
   menu();

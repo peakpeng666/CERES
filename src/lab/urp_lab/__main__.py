@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -62,6 +63,10 @@ def serve(args) -> int:
     url = f'http://127.0.0.1:{args.port}/'
     status, data = http_json('GET', f'{url}lab/api/health', timeout=1.0)
     if status == 200 and isinstance(data, dict) and data.get('status') == 'ok':
+        wanted = hashlib.sha256(str(paths.RUNTIME.resolve()).encode()).hexdigest()
+        if data.get('runtime_id') != wanted:
+            print(f'端口 {args.port} 上的工作台使用另一份或未标识的运行数据；请先有序关闭再切换，未改动现有服务。', file=sys.stderr)
+            return 1
         print(f'工作台网关已在 {url} 运行。', flush=True)
         if args.open:
             open_browser(url)
@@ -187,8 +192,10 @@ def solve(args) -> int:
 
 
 def main(argv=None) -> int:
+    from .runtime_transfer import configure_cli, run_cli
     parser = argparse.ArgumentParser(prog='python -m urp_lab', description='农业机器人路径规划工作台')
     sub = parser.add_subparsers(dest='command', required=True)
+    configure_cli(sub)
     p = sub.add_parser('serve', help='启动网关（默认只监听 127.0.0.1）')
     p.add_argument('--port', type=int, default=int(os.environ.get('URP_PORT', '4100')))
     p.add_argument('--host', default=os.environ.get('URP_BIND_HOST', '127.0.0.1'),
@@ -205,7 +212,7 @@ def main(argv=None) -> int:
     p.add_argument('--no-save', action='store_true', help='不写入运行历史')
     p.add_argument('--compact', action='store_true')
     args = parser.parse_args(argv)
-    return {'serve': serve, 'doctor': doctor, 'solve': solve}[args.command](args)
+    return {'serve': serve, 'doctor': doctor, 'solve': solve, 'data': run_cli}[args.command](args)
 
 
 if __name__ == '__main__':

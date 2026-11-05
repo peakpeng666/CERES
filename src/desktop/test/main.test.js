@@ -8,6 +8,7 @@ const path = require('node:path');
 const { test } = require('node:test');
 const { choosePort, healthy, portIsFree, request } = require('../main/backend');
 const { Settings } = require('../main/settings');
+const { prepareDataHome } = require('../main/data-home');
 
 const listen = (handler) => new Promise((resolve) => {
   const server = http.createServer(handler);
@@ -73,7 +74,10 @@ function fakeDocker(script) {
   process.env.PATH = `${dir}${path.delimiter}${before}`;
   return { dir, calls: () => fs.readFileSync(path.join(dir, 'calls'), 'utf8'), env: () => fs.readFileSync(path.join(dir, 'env'), 'utf8'), done: () => { process.env.PATH = before; fs.rmSync(dir, { recursive: true }); } };
 }
-const app = { isPackaged: false, getVersion: () => '0.2.0' };
+const testData = fs.mkdtempSync(path.join(os.tmpdir(), 'desktop-data-'));
+const { after } = require('node:test');
+after(() => fs.rmSync(testData, { recursive: true, force: true }));
+const app = { isPackaged: false, getVersion: () => '0.2.0', getPath: () => testData };
 
 test('a machine with Docker and the image reports what it has', { skip: process.platform === 'win32' }, async () => {
   const d = fakeDocker(`case "$1 $2" in "version --format") echo 29.9.0;; "compose version") echo 2.30.1;; "image inspect") echo 9000000000;; esac`);
@@ -93,7 +97,8 @@ test('a machine without Docker says so instead of failing', { skip: process.plat
 });
 
 test('starting passes both compose files and the shared configuration, then waits for the gateway', { skip: process.platform === 'win32' }, async () => {
-  const server = await listen((_req, res) => res.end('{"status":"ok"}'));
+  const dataset = prepareDataHome(app).dataset;
+  const server = await listen((_req, res) => res.end(JSON.stringify({ status: 'ok', dataset_id: dataset.dataset_id })));
   const d = fakeDocker('exit 0');
   const c = new Container(app, { port: server.address().port });
   const lines = [];
@@ -105,10 +110,14 @@ test('starting passes both compose files and the shared configuration, then wait
   assert.match(calls, /compose -f .*docker-compose\.sim\.yml -f .*docker-compose\.desktop\.yml up -d/);
   assert.match(env, /URP_IMAGE_TAG=deploy/);
   assert.match(env, /URP_HOST_CONFIG=.*urp-workbench/);
+  assert.match(env, /URP_HOST_RUNTIME=.*runtime/);
+  assert.match(env, /URP_HOST_ARCHIVE=.*archive/);
+  assert.match(env, new RegExp(`URP_HOST_UID=${os.userInfo().uid}`));
 });
 
 test('starting creates the shared configuration folder before docker can', { skip: process.platform === 'win32' }, async () => {
-  const server = await listen((_req, res) => res.end('{"status":"ok"}'));
+  const dataset = prepareDataHome(app).dataset;
+  const server = await listen((_req, res) => res.end(JSON.stringify({ status: 'ok', dataset_id: dataset.dataset_id })));
   const d = fakeDocker('exit 0');
   const home = fs.mkdtempSync(path.join(os.tmpdir(), 'home-'));
   const before = process.env.HOME;
@@ -120,6 +129,7 @@ test('starting creates the shared configuration folder before docker can', { ski
     process.env.HOME = before;
     d.done();
     server.close();
+    fs.rmSync(home, { recursive: true, force: true });
   }
 });
 
@@ -131,7 +141,39 @@ test('a failed start reports what docker said', { skip: process.platform === 'wi
 
 test('a packaged app asks for the image of its own version', () => {
   process.resourcesPath = os.tmpdir();
-  const c = new Container({ isPackaged: true, getVersion: () => '0.2.0' });
+  const c = new Container({ ...app, isPackaged: true });
   delete process.resourcesPath;
   assert.equal(c.env().URP_IMAGE_TAG, 'v0.2.0');
+});
+
+test('native and container modes use the same dataset after moving it', () => {
+  const { childEnv } = require('../main/backend');
+  const { prepareDataHome } = require('../main/data-home');
+  const settings = new Settings(path.join(testData, 'move-settings.json'));
+  settings.set('dataRoot', path.join(testData, 'moved', 'data'));
+  const first = prepareDataHome(app, settings);
+  const native = childEnv(app, 4100, settings);
+  const container = new Container(app, { settings }).env();
+  assert.equal(native.URP_LAB_RUNTIME, container.URP_HOST_RUNTIME);
+  assert.equal(path.dirname(native.URP_API_DB), container.URP_HOST_ARCHIVE);
+  assert.equal(prepareDataHome(app, settings).dataset.dataset_id, first.dataset.dataset_id);
+  assert.equal(new Settings(settings.file).get('dataRoot'), first.root);
+});
+
+test('a healthy container with another dataset cannot be presented as this workbench', { skip: process.platform === 'win32' }, async () => {
+  const server = await listen((_req, res) => res.end('{"status":"ok","dataset_id":"another-dataset"}'));
+  const docker = fakeDocker('exit 0');
+  try { await assert.rejects(new Container(app, { port: server.address().port }).start(), /未使用当前数据集/); }
+  finally { docker.done(); server.close(); }
+});
+
+test('an unsuccessful restore cannot advance the data setting', async () => {
+  const { DataTransfer } = require('../main/data-transfer');
+  const settings = new Settings(path.join(testData, 'failed-import-settings.json'));
+  const data = new DataTransfer(app, settings);
+  const before = data.info().dataset.dataset_id;
+  data.command = async () => { throw new Error('hash mismatch'); };
+  await assert.rejects(data.restore('/missing.zip', path.join(testData, 'should-not-exist')), /hash mismatch/);
+  assert.equal(settings.get('dataRoot'), undefined);
+  assert.equal(data.info().dataset.dataset_id, before);
 });

@@ -121,13 +121,15 @@ def check_result(p, result, vehicle_limit):
     if not isinstance(result,dict):
         result={}
         schema_errors.append('result must be an object')
-    status = result.get('status','INVALID_RESULT')
+    status = result.get('status')
     if not isinstance(status,str) or not status:
         status='INVALID_STATUS'
         schema_errors.append('status must be a nonempty string')
     if type(result.get('feasible')) is not bool:
         schema_errors.append('feasible must be a boolean')
     claimed = result.get('feasible') is True
+    if not claimed and status in {'OK', 'TIMEOUT_WITH_FEASIBLE_INCUMBENT'}:
+        schema_errors.append('feasible/status contradiction')
     validation = check(p, result.get('routes'), result.get('cost'), vehicle_limit)
     timing_errors = []
     if claimed:

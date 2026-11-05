@@ -23,7 +23,7 @@ export const SURFACES: Record<SurfaceName, SurfaceDef> = {
     more: [{ id: 'results' }, { id: 'replay' }, { id: 'decision' }, { id: 'figures' }, { id: 'scenarios' }, { id: 'console' }, { id: 'classic' }],
   },
   assets: { main: [{ id: 'assets' }], pane0: true, pane: [{ id: 'assetPreview', label: '预览' }, { id: 'assetInspector', label: '检查器' }] },
-  experiments: { main: [{ id: 'studies' }, { id: 'runs' }], pane0: true, pane: [{ id: 'analysis' }, { id: 'figures' }], more: [{ id: 'results' }, { id: 'code' }] },
+  experiments: { main: [{ id: 'studies' }, { id: 'runs' }], pane0: true, pane: [{ id: 'analysis' }, { id: 'figures' }], more: [{ id: 'researchAgent' }, { id: 'results' }, { id: 'code' }] },
   sim: {
     main: [{ id: 'rosview' }, { id: 'gazebo' }], bottom: [{ id: 'telemetry' }, { id: 'console' }], pane0: true,
     pane: [{ id: 'fieldsim' }, { id: 'physics' }, { id: 'sim', label: 'TurtleBot4' }, { id: 'replay', label: '回放' }, { id: 'results', label: '结果' }],

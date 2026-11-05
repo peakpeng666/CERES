@@ -20,6 +20,8 @@ import { trafficStatus } from './traffic';
 import { SessionEvidence } from './SessionEvidence';
 import { downloadServerRecord } from './export';
 import { requiresCoverageRecheck } from '../comparison';
+import { identityState } from '../../lab/views/plan/resultIntegrity';
+import { IntegrityNotice } from '../../lab/views/plan/IntegrityNotice';
 import p from '../panels/panels.module.css';
 import a from '../assets/assets.module.css';
 
@@ -87,7 +89,8 @@ export function ExperimentPanel() {
           <h3>{run.algorithm.name} · 实验结果</h3>
           <ExportButton run={run} />
         </div>
-        {run.state !== 'done'
+        <IntegrityNotice run={run} />
+        {identityState(run) === 'quarantined' ? null : run.state !== 'done'
           ? <Notice tone={stateDetail[run.state].tone}>{stateDetail[run.state].text} 可导出本次运行记录。</Notice>
           : fleet ? <FleetMetrics run={run} sim={simHere} simLoading={simLoading} hasSims={!!simsHere?.length} simError={simError} /> : <GenericMetrics run={run} />}
         <AssetBinding run={run} />

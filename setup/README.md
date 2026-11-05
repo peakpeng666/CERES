@@ -2,6 +2,23 @@
 
 面向农业机器人的路径规划算法库与智能推荐研究工作台。以多车任务访问为主线，同时支持点到点运动规划、转弯约束路网与覆盖任务：编辑问题、查看算法适用条件、同口径比较、独立验算，再把已适配的几何路径交给 ROS 2 / Gazebo，核对实际执行与原始记录。
 
+## 获取源码与开发环境
+
+main 是完整集成入口。普通开发可按[源码检出清单](source-checkout.txt)省去大资料，历史原件仍由[现行资产索引](../docs/assets/README.md)关联：
+
+```sh
+git clone --filter=blob:none --no-checkout --branch main https://github.com/peakpeng666/URP.git
+cd URP
+git show HEAD:setup/source-checkout.txt | git sparse-checkout set --no-cone --stdin
+git checkout
+uv sync --locked --extra solvers
+(cd src/lab && uv sync --locked --inexact)
+npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
+bash setup/run.sh lab-code --open
+```
+
+开发使用 Python 3.12、Node 24 与 uv；根和 Lab 各有独立的 uv 锁文件。`lab-code` 启动普通代码工作台；已配置 ROS 的机器使用 `lab` 准备本机仿真组件。两者均重新构建前端并使用同一 4100 入口。系统 Python 和 `/opt/ros` 不作替换。
+
 ## 安装与启动
 
 新机器统一使用 [DEPLOY.md](../DEPLOY.md) 的安装入口。默认安装工作台、ROS 2 Humble / Gazebo Fortress、CVRP 基线和 Fields2Cover；支持 Docker Desktop 的 WSL2 后端、WSL2 Ubuntu 22.04 x86_64，以及原生 Ubuntu 22.04 x86_64。
@@ -32,7 +49,7 @@ bash setup/run.sh lab --open
 
 ## 桌面应用（2026-11-05）
 
-**当前发布状态：** 以下 0.2.0 功能的源码已在 `agent/workbench-20261029` 推送并完成所列本机验收；正式桌面 Release、`desktop-data-1` 数据包和 `urp-sim:v0.2.0` 镜像尚未发布，main 仍需与工作台分支整合。不能把本地安装测试视为已经提供 GitHub 下载与更新。实际成品位置、数据去向和同步缺口见[本轮调研](2026-10-15/integration/REPORT.md#本地与-github-同步数据互通调研2026-11-05)。
+**当前发布状态：** `desktop-data-1` 历史数据包已[发布并完成实际下载校验](https://github.com/peakpeng666/URP/releases/tag/desktop-data-1)。新的桌面与容器版本由同一次发布流程构建，须同时通过代码检查、两系统后端检查、镜像验收及匿名拉取、安装包与更新清单校验，才会成为 latest。具体已完成与待验收范围以[最新集成记录](2026-10-15/integration/REPORT.md)为准。
 
 安装包自带 Python 后端和全部算法依赖，不需要开终端，也不需要装 Python、Node 或 ROS。
 
@@ -46,7 +63,7 @@ bash setup/run.sh lab --open
 
 - **内置后端能做的**：智能体全流程、算法库、地图、课题实验、MuJoCo 物理预演。Windows 上 OMPL 的 7 个采样规划器和 Fields2Cover 显示未安装，A*、Theta* 等栅格规划器和平行往复基线可用；CVRP 数值任务的进程监督只支持 Linux，这一页在 Windows 上列出算法但不能提交，需要时走容器后端。没有 ROS 的电脑用内置的官方地图副本。
 - **数据**：`设置 → 数据` 里按需下载历史实验档案（约 50 MB，校验后解压，档案后端随之启动）。CVRPLIB 和真实田块在打开时从原始站点下载。运行库在应用数据目录，Linux 是 `~/.config/agri-route-workbench/runtime`，Windows 是 `%APPDATA%\agri-route-workbench\runtime`。模型 Key 在 `~/.config/urp-workbench/`。
-- **Gazebo 与 ROS**：安装版一律走容器后端，Linux 也一样，因为 ROS 桥接要在运行它的机器上编译和验收。`设置 → 桌面应用 → 仿真后端` 检测 Docker，开启后把工作台切到 `ghcr.io/peakpeng666/urp-sim` 容器，Fields2Cover 和 CVRP 数值任务也在里面。Windows 需要 Docker Desktop（WSL2 后端）。容器和内置后端的任务记录各自保存，模型连接共用；容器以 uid 1000 运行，Linux 上用其他 uid 登录时它读不到已保存的 Key。用源码运行的工作台仍然直接使用本机 ROS。
+- **Gazebo 与 ROS**：安装版一律走容器后端，Linux 也一样，因为 ROS 桥接要在运行它的机器上编译和验收。`设置 → 桌面应用 → 仿真后端` 检测 Docker，开启后把工作台切到 `ghcr.io/peakpeng666/urp-sim` 容器，Fields2Cover 和 CVRP 数值任务也在里面。Windows 需要 Docker Desktop（WSL2 后端）。容器和内置后端共用同一持久运行库、档案库和模型连接，切换前先停止当前后端；Linux 容器使用当前用户的 UID/GID，保留密钥文件的 0600 权限。用源码运行的工作台仍然直接使用本机 ROS。
 - **更新**：应用每 6 小时检查仓库最新 Release，下载后在 `设置 → 桌面应用` 点「重启并更新」。deb 安装时更新需要系统授权。
 
 **构建**（Node 24、uv，当前操作系统对应一种安装包）：
@@ -60,7 +77,7 @@ npm ci --prefix src/desktop && npm run dist:linux --prefix src/desktop
 
 验收脚本都在 `src/desktop/test/`：`backend_smoke.py` 走一遍后端和全部只读接口，`pages_crawl.mjs` 打开每一页，`app_e2e.mjs` 驱动安装后的应用，`container_e2e.mjs` 用真实 Docker 走容器后端和 Gazebo。这台机器有 ROS，只在这里测会漏掉依赖 ROS 的问题；`electronuserland/builder:wine` 镜像是没有 ROS 的 Ubuntu 22.04，暂存的 Linux 后端和 Wine 下的 Windows 后端都可以放进去跑。Windows 安装包也在这个镜像里构建。Wine 的 PowerShell 是总返回成功的空壳，安装程序会误判应用正在运行，测试时要先删掉它；这个镜像没有中文字体，安装程序窗口里的中文显示成方块，应用界面有内置字体回退。
 
-打 `v*` 标签后，`.github/workflows/desktop.yml` 在 Linux 和 Windows 上分别构建、在该系统上跑后端检查，再发布为仓库的最新 Release。Windows 代码签名读取仓库密钥 `WIN_CSC_LINK`、`WIN_CSC_KEY_PASSWORD`，没有证书时安装包照常生成，但 Windows 会提示未知发布者。历史档案用 `python3 src/desktop/scripts/build_data_pack.py` 生成，校验值写入 `src/lab/urp_lab/data/packs.json`，zip 上传到清单里 `base_url` 指向的 Release。
+打 `v*` 标签后，`.github/workflows/desktop.yml` 在 Linux 和 Windows 上分别构建并运行后端与安装检查；同一次流程构建并验收两个镜像，验证匿名拉取及固定历史包，再校验安装器体积、版本、更新 SHA512 并生成 SHA256SUMS，通过后发布为最新 Release。Windows 代码签名读取仓库密钥 `WIN_CSC_LINK`、`WIN_CSC_KEY_PASSWORD`，没有证书时安装包照常生成，但 Windows 会提示未知发布者。历史档案用 `python3 src/desktop/scripts/build_data_pack.py` 生成，校验值写入 `src/lab/urp_lab/data/packs.json`，zip 上传到清单里 `base_url` 指向的 Release。
 
 ## 智能体：从需求到经复核、可执行的方案（2026-11-05）
 
@@ -184,19 +201,32 @@ Gazebo 场景中「已连接」表示通信握手完成；资源计数达到完�
 
 开发接口见 [CONTRACT](../src/lab/CONTRACT.md)；部署与验收记录见 [集成报告](2026-10-15/integration/REPORT.md)、[部署报告](2026-10-15/deployment/REPORT.md)。
 
-## 本地与 GitHub 的保存分工（2026-11-05）
+## 本地与 GitHub 的保存分工、数据与恢复（2026-11-06）
 
-本地保留必须依赖本机的 ROS/Gazebo、仿真资产、密钥、运行环境、当前状态，以及用户指定的大体积原始数据。源码、文档、依赖锁、可复现配置、实验摘要和数据身份/恢复清单进入 GitHub；正式安装包和需分发的大数据包使用固定版本 Release。已有冻结证据和历史失败保持原件，不能用新的忽略规则直接清退。
+本地保留 ROS/Gazebo、仿真资产、密钥、运行环境、当前状态和大体积原始数据；GitHub 保存源码、文档、依赖锁、可复现配置、实验摘要、身份与恢复索引。现有冻结证据和历史失败保持原件，沿用[资产与副本登记](../docs/assets/README.md)。运行需要的源码和安装包是本地工作副本。
 
-当前应用功能基线为本地与 GitHub 工作台分支共有的 `82db2352`，本轮调研另作仅含文档/清单的同步提交，main 尚未整合。数据位置可以不同，需同时记录版本、SHA256、位置和真实恢复结果；仅有清单不表示云端已经取得本地原始数据。现行资产索引在 main，后续同步应保留并接入该索引。[完整状态、逐文件证据与执行顺序](2026-10-15/integration/REPORT.md#本地与-github-同步数据互通调研2026-11-05)。
+`URP_DATA_HOME=/绝对路径` 将新运行集中在 `runtime/` 与 `archive/research.sqlite3`；不设置时，源码版兼容原来的 `src/lab/runtime/` 和 `.local-state/research.sqlite3`。`URP_LAB_RUNTIME`、`URP_API_DB` 可单独覆盖。桌面默认仍为应用数据目录，也可在启动前设置 `URP_DATA_HOME`；内置和容器挂载同一位置，并避免两个网关同时持有运行库。`dataset.json` 标识数据集；改变路径不改变记录的 ID、种子、失败、单位与来源。历史绝对路径是来源记录，不自动改写。
 
-源码版运行目录可用 `URP_LAB_RUNTIME` 指定；官方地图可用 `URP_ROS_MAPS` 指定，历史包下载源可用 `URP_PACKS_BASE_URL` 指定。桌面版使用应用数据目录，容器使用独立数据卷，切换后端不会自动合并记录。当前支持地图导入和会话/方案导出，完整运行库的跨版本导入与双向同步尚未实现；也没有能覆盖全部研究资料位置的统一数据根配置。运行库恢复使用一致备份并先写新目录，不覆盖已有数据。
+桌面「设置 → 数据」可备份，或从备份恢复到新目录后切换数据位置。CLI 在 `src/lab` 下使用：
 
-日常运行数据应放持久目录。当前 Claude 启动配置指向失效临时路径，另一 scratchpad 中仍有本轮运行记录和真正参加验收的 Windows 安装包，尚未迁入持久归档；具体位置与身份在调研证据中。本轮只盘点，没有移动或删除这些数据。
+```sh
+# 先有序停止所有使用这份数据的内置、源码及容器后端。
+.venv/bin/python -m urp_lab data export --runtime /原目录/runtime --archive-db /原目录/archive/research.sqlite3 --out /备份位置/urp-data.zip
+.venv/bin/python -m urp_lab data verify --bundle /备份位置/urp-data.zip --sha256 <导出回执中的SHA256>
+.venv/bin/python -m urp_lab data restore --bundle /备份位置/urp-data.zip --sha256 <SHA256> --dest /尚不存在的新数据目录
+```
+
+档案库不存在时省去 `--archive-db`。数据包使用 Zip64；SQLite 通过备份 API 纳入 WAL 内容，校验清单、SHA256、结构和表行数后才接受恢复。运行库被执行服务占用、文件改写、路径越界、重复/大小写冲突、符号链接、凭据和损坏包会明确拒绝。原目录不被覆盖。原始包保留本地或私有大容量存储，不会自动上传；回执可以随代码保存。编译的 `runtime/native/`、已下载的调试工具及锁/SQLite sidecar 不随数据包搬迁，环境在目标机器重建。
+
+仅剩公开会话 JSON 时，可用 `data recover --runtime /新数据目录/runtime --source /会话.json`（`--source` 可多次指定）补回查阅索引。带完整性信封的导出先验证摘要；原 JSON 逐字节保存。缺少模型上下文、轨迹或附件的会话标为只读，拒绝继续/重试/编辑合同；不会生成虚假的成功、轨迹或上下文，也不覆盖已有会话、场景和运行。完整运行库备份则保留真实上下文。
+
+研究基准根可设 `URP_DATA_ROOT`（包含 `research/`）；可读资产根可设 `URP_FUEL_CACHE`、`URP_ROS_SHARE`、`URP_GAZEBO_SHARE`，地图可设 `URP_ROS_MAPS`，固定包镜像源可设 `URP_PACKS_BASE_URL`。这些参数调整数据入口，不能代替安装环境，也不表示所有冻结实验脚本都支持任意重排。容器独立部署默认仍使用命名卷；已有旧卷先备份、校验、恢复到新目录，再改为桌面绑定目录，勿用 `down -v` 做同步。
+
+本机本轮把原运行库复制恢复到 `.local-state/workbench-data/`，并从 25 份完整性信封、6 份会话快照补回 31 个只读会话与 75 条求解记录。原默认运行库和一致备份均保留。此前 `/tmp/claude-1000` 临时目录已消失，其中约 1.72 GB 的完整运行原始文件及临时验收脚本没有完整副本，不能把上述部分恢复称为全量找回。[逐项证据、哈希与验收](2026-10-15/integration/REPORT.md)。
 
 ## 云端 Agent 接续
 
-接续开发先读根目录 [AGENTS.md](../AGENTS.md)。普通工程验证使用根 uv 锁文件与前端 npm 锁文件，`tools/check_project.py` 汇集 15 项门禁；无 ROS/Gazebo 的环境验证代码与数值结果，仿真执行另行测试。GitHub CI 另运行田间物理配置、非理想观测与因果重建的纯代码回归（`nonideal-model-contracts`），不会启动 ROS。需要田间全量测试时在 `src/lab` 运行 `uv sync --locked --inexact`、`.venv/bin/python -m pytest -q`；Fields2Cover 与现场资源按实际安装情况检查。运行目录和模型缓存不进入 Git 历史；完整平台附件的下载与验证见下文。
+接续开发先读根目录 [AGENTS.md](../AGENTS.md)。普通工程验证使用根 uv 锁文件与前端 npm 锁文件，`tools/check_project.py` 汇集 16 项门禁；无 ROS/Gazebo 的环境验证代码与数值结果，仿真执行另行测试。GitHub CI 运行全量 Lab、农业构建器、桌面、工程、部署和 Windows 启动契约；普通代码回归不启动 ROS。需要田间全量测试时在 `src/lab` 运行 `uv sync --locked --inexact`、`.venv/bin/python -m pytest -q`；Fields2Cover 与现场资源按实际安装情况检查。运行目录和模型缓存不进入 Git 历史；完整平台附件的下载与验证见下文。
 
 ## 历史平台复现（2026-10-18）
 
@@ -262,3 +292,19 @@ python3 tools/restore_local_preservation.py --cache "$PWD/.local-state/preserved
 python3 tools/restore_local_preservation.py --cache "$PWD/.local-state/preserved-downloads" --prefix project/experiments/ --destination "$PWD/.local-state/restored-experiments-20261026"
 ```
 
+
+### 历史完整 ZIP 资料入口
+
+`tools/restore_materials.py` 仅用于旧的完整 `URP.zip`。其 [独立清单](materials-archive.json) 保留 `66b2b8c742598378898d02643d4ddc2f58f1a686:storage.json#/archive` 中的大小 **10,450,371,700 字节**和 SHA256，也保留原记录“Windows 报告已验证、当次任务不可读”的状态；本轮没有取得或重验这份 ZIP。现行 `storage.json` 登记位置与副本，不含旧 `archive` 键。
+
+持有对应原件时先检查，确认后再去掉 `--list` 恢复所选目录：
+
+```sh
+python3 tools/restore_materials.py /absolute/path/to/URP.zip --list --include papers
+```
+
+列出与恢复均先严格核对大小和 SHA256；仅恢复允许目录内未受 Git 跟踪的文件，遇到内容不同的本地文件即失败。`--manifest` 可显式指定同 schema 的历史指纹清单；缺失或不合法时明确报错。此入口不接受平台补充包，也不下载 Drive 文件或登记迁移；平台 Release 使用上面的 `platform_snapshot.py` 流程。
+
+写入前完整预检所选材料：归档须有 `URP/` 根目录及匹配文件；重复规范化目标、文件/子路径冲突、归档符号链接和本地目标任一符号链接组件均拒绝。已有材料逐字节比对；只包含已存在材料时状态为 `already-present`，只包含 Git 管理文件时为 `tracked-only`，均不报告“已恢复”。`--list` 的非空计划为 `planned`；只有实际完成全部计划写入才报告 `restored`。
+
+恢复使用同一个已校验的打开文件读取 ZIP，新目标以排他方式创建，预检后出现的文件也不会被覆盖。请串行使用，不要同时修改 ZIP、恢复目录或其链接。解压、权限或存储错误会非零退出，并给出已完成文件数及可能残留的新文件；它不回滚此前完成的新材料，也不自动删除失败残留。检查后再处理残留，不能把部分写入当作整批成功。`--list` 不读取尚未恢复成员的全部解压内容，CRC/解压错误仍可能在实际恢复时发现。

@@ -178,6 +178,21 @@ try:
     proc.wait(30)
     step('有序退出', code=proc.returncode)
     assert proc.returncode == 0
+    # Exercise the shipped CLI, SQLite WAL handling and Windows paths, not only the host's source environment.
+    transfer = [*([args.launcher] if args.launcher else []), str(python), '-m', 'urp_lab', 'data']
+    def transfer_call(*words):
+        result = subprocess.run([*transfer, *words], cwd=lab, env=env, capture_output=True, text=True, encoding='utf-8', timeout=120)
+        assert result.returncode == 0, result.stderr
+        return json.loads(result.stdout)
+    backup = out / 'runtime-backup.zip'
+    receipt = transfer_call('export', '--runtime', str(out / 'runtime'), '--out', str(backup))
+    restored = out / 'relocated-data'
+    checked = transfer_call('restore', '--bundle', str(backup), '--sha256', receipt['sha256'], '--dest', str(restored))
+    assert receipt['dataset'] == checked['dataset']
+    import sqlite3
+    with sqlite3.connect(out / 'runtime/agent.sqlite3') as original, sqlite3.connect(restored / 'runtime/agent.sqlite3') as relocated:
+        assert original.execute('SELECT session_id,json FROM sessions ORDER BY session_id').fetchall() == relocated.execute('SELECT session_id,json FROM sessions ORDER BY session_id').fetchall()
+    step('安装内数据迁移：导出、校验、异地恢复，完整会话相同', sha256=receipt['sha256'], files=receipt['files'])
 except Exception as exc:  # noqa: BLE001 - the record is the point
     failed = f'{type(exc).__name__}: {exc}'
     print('✗', failed, flush=True)

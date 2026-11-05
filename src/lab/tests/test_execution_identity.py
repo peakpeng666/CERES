@@ -63,7 +63,7 @@ def test_queue_rejects_dependency_changed_after_submission(tmp_path, monkeypatch
     db = Store(tmp_path / 'lab.sqlite3')
     manager = jobs.JobManager(db, command=[str(tmp_path / 'must-not-start')], concurrency=1)
     scenario = cvrp_scenarios()[0]
-    algorithm = next(a for a in catalog() if a['id'] == 'pyvrp.hgs')
+    algorithm = next(a for a in catalog() if a['id'] == 'pyvrp.ils')
     params = jobs.resolve_params(algorithm, {'time_limit_s': .25, 'seed': 11})
     try:
         _, ids = manager.submit(scenario, scenario['instance'], [(algorithm, params)])
@@ -116,7 +116,7 @@ def test_source_change_during_child_invalidates_published_result(tmp_path, monke
     db = Store(tmp_path / 'lab.sqlite3')
     manager = jobs.JobManager(db, command=[sys.executable, '-c', code], concurrency=1)
     scenario = cvrp_scenarios()[0]
-    algorithm = next(a for a in catalog() if a['id'] == 'pyvrp.hgs')
+    algorithm = next(a for a in catalog() if a['id'] == 'pyvrp.ils')
     try:
         _, ids = manager.submit(scenario, scenario['instance'], [(algorithm, jobs.resolve_params(algorithm, {}))])
         sol, request, budget = manager._queue.get_nowait()
@@ -143,7 +143,7 @@ def test_loaded_gateway_rejects_changed_dependency_before_new_submission(tmp_pat
     db = Store(tmp_path / 'lab.sqlite3')
     manager = jobs.JobManager(db, concurrency=1)
     scenario = cvrp_scenarios()[0]
-    algorithm = next(a for a in catalog() if a['id'] == 'pyvrp.hgs')
+    algorithm = next(a for a in catalog() if a['id'] == 'pyvrp.ils')
     try:
         extra.write_text('VERSION = 2\n')
         with pytest.raises(jobs.SourceChangedError):

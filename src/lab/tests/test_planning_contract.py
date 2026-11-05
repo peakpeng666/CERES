@@ -184,13 +184,13 @@ def test_seed_roles_and_frozen_override_input():
     from urp_lab.jobs import skeleton
     from urp_lab.solvers import catalog
     algorithms = {a['id']: a for a in catalog()}
-    assert algorithms['pyvrp.hgs']['randomness']['uses_seed']
+    assert algorithms['pyvrp.ils']['randomness']['uses_seed']
     assert not algorithms['ortools.gls']['randomness']['uses_seed']
     assert not algorithms['urp.turn_mode_dp']['randomness']['uses_seed']
     sc = get_scenario('bench-cvrp-uniform-n20')
     edited = copy.deepcopy(sc['instance'])
     edited['capacity'] += 1
-    r = skeleton('job', sc, edited, algorithms['pyvrp.hgs'], {}, None)
+    r = skeleton('job', sc, edited, algorithms['pyvrp.ils'], {}, None)
     assert r['instance'] == r['scenario_snapshot']['instance'] == edited
     assert r['scenario_snapshot']['source_instance_sha256'] != r['instance_sha256']
     assert sc['instance']['capacity'] + 1 == edited['capacity']

@@ -17,10 +17,13 @@ from urp_lab.scenarios import get_scenario, validate_instance
 from urp_lab.scenarios.maps import MapGrid, segment_clearance
 
 @pytest.mark.parametrize('sid,aid',[
- ('maze-inspection','urp.turn_mode_dp'),('maze-inspection','urp.raw_oracle'),
- ('maze-inspection','pyvrp.hgs+urp.layered'),('maze-inspection','ortools.gls+urp.layered'),
- ('farm-rows-warehouse','urp.turn_mode_dp'),('bench-cvrp-uniform-n20','pyvrp.hgs'),
- ('bench-cvrp-uniform-n20','ortools.gls'),('field-coverage-depot','panel.boustrophedon')])
+ pytest.param('maze-inspection','urp.turn_mode_dp', marks=pytest.mark.requires_maps('maze')),
+ pytest.param('maze-inspection','urp.raw_oracle', marks=pytest.mark.requires_maps('maze')),
+ pytest.param('maze-inspection','pyvrp.ils+urp.layered', marks=pytest.mark.requires_maps('maze')),
+ pytest.param('maze-inspection','ortools.gls+urp.layered', marks=pytest.mark.requires_maps('maze')),
+ pytest.param('farm-rows-warehouse','urp.turn_mode_dp', marks=pytest.mark.requires_maps('warehouse')),
+ ('bench-cvrp-uniform-n20','pyvrp.ils'), ('bench-cvrp-uniform-n20','ortools.gls'),
+ pytest.param('field-coverage-depot','panel.boustrophedon', marks=pytest.mark.requires_maps('depot'))])
 def test_actual_solver_witnesses(sid,aid):
     s=get_scenario(sid);r=run_algorithm(s,s['instance'],aid,{'time_limit_s':.15,'seed':42})
     assert r['routes'] and r['check']['valid'],r
@@ -43,6 +46,7 @@ def solved():
     s=get_scenario('maze-inspection');a=catalog()[0];sol=skeleton('test',s,s['instance'],a,{},None)
     sol.update(run_algorithm(s,s['instance'],a['id'],{}),state='done');return s,sol
 
+@pytest.mark.requires_maps('maze')
 def test_simulation_uses_immutable_edited_input():
     s,sol=solved();s['instance']['customers'][0]['node']=2
     plan=to_sim_plan(sol,s,'follow_path')
@@ -50,6 +54,7 @@ def test_simulation_uses_immutable_edited_input():
     assert len(plan['legs'])==4 # closed route must not be prematurely accepted at its start
 
 @pytest.mark.parametrize('mutation',[lambda r:r.update(frame={'kind':'benchmark','units':'unitless'}),lambda r:r.update(check=None),lambda r:r.update(map_check={'collision_free':False})])
+@pytest.mark.requires_maps('maze')
 def test_invalid_simulation_rejected(mutation):
     s,r=solved();mutation(r)
     with pytest.raises(NotSimulatable):to_sim_plan(r,s,'follow_path')
@@ -60,7 +65,7 @@ def test_nonfinite_budget(v):
 
 def job(tmp_path, code):
     store=Store(tmp_path/'test.sqlite');manager=JobManager(store,command=[sys.executable,'-c',code],recover=False)
-    s=get_scenario('maze-inspection');sol=skeleton('test',s,s['instance'],catalog()[0],{},None)
+    s=get_scenario('bench-cvrp-uniform-n20');sol=skeleton('test',s,s['instance'],catalog()[0],{},None)
     return manager,store,sol
 
 def test_nonzero_exit_never_becomes_done(tmp_path):
@@ -86,8 +91,8 @@ def test_gateway_validation_and_snapshot(tmp_path):
         assert c.post('/lab/api/solve',json={},headers={'Origin':'http://evil.invalid'}).status_code==403
         assert c.post('/lab/api/solve',content='{}').status_code==415
         assert c.post('/lab/api/solve',json={'scenario_id':'missing','algorithms':['urp.turn_mode_dp']}).status_code==404
-        assert c.post('/lab/api/solve',json={'scenario_id':'maze-inspection','algorithms':['missing']}).status_code==400
-        j=c.post('/lab/api/solve',json={'scenario_id':'maze-inspection','algorithms':['urp.turn_mode_dp']})
+        assert c.post('/lab/api/solve',json={'scenario_id':'bench-cvrp-uniform-n20','algorithms':['missing']}).status_code==400
+        j=c.post('/lab/api/solve',json={'scenario_id':'bench-cvrp-uniform-n20','algorithms':['urp.js.savings']})
         assert j.status_code==202
         rid=j.json()['runs'][0];end=time.monotonic()+8
         while time.monotonic()<end:
@@ -96,7 +101,7 @@ def test_gateway_validation_and_snapshot(tmp_path):
             time.sleep(.05)
         assert r['state']=='done' and r['check']['valid']
         exported=c.get(f'/lab/api/runs/{rid}/export?format=json').json()
-        assert exported['instance']==r['instance'] and exported['scenario_snapshot']['id']=='maze-inspection'
+        assert exported['instance']==r['instance'] and exported['scenario_snapshot']['id']=='bench-cvrp-uniform-n20'
         assert r['process']['returncode']==0
         app.state.lab.store.put_sim_run({'sim_run_id':'sim_export_test','run_id':rid,'state':'succeeded','actual':{},'created_utc':r['created_utc']})
         experiment=c.get('/lab/api/sim/runs/sim_export_test/export?format=json').json()

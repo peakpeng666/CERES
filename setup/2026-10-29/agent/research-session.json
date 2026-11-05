@@ -1,0 +1,1079 @@
+{
+ "session_id": "agent_20261029T111652_44ae04",
+ "title": "在 200×120 米的果园里，3 台机器人从西南角车库出发，给 40 个点采样",
+ "created_utc": "2026-10-29T11:16:52.909Z",
+ "updated_utc": "2026-10-29T11:17:05.783Z",
+ "state": "idle",
+ "model": {
+  "provider": "openai-compatible",
+  "endpoint": "127.0.0.1",
+  "model": "stub-script",
+  "temperature": 0.2,
+  "max_tokens": null,
+  "timeout_s": 120.0
+ },
+ "prompt": {
+  "id": "urp.agent.system/1",
+  "sha256": "66b9e0d67e26f8e192314aba40b71de6198d8ceef2b42965dad1dba9a2526010"
+ },
+ "policy": {
+  "id": "urp.agent/1",
+  "max_model_calls_per_turn": 16,
+  "max_tool_calls_per_turn": 30,
+  "max_turn_s": 900,
+  "tool_result_chars": 6000,
+  "step_result_chars": 20000,
+  "max_sessions_running": 2
+ },
+ "messages": [
+  {
+   "role": "system",
+   "content": "你是“农业机器人路径规划与智能推荐工作台”的科研智能体。你不直接计算路线，而是调用工作台工具：查场景、按描述生成任务地图、取得规则推荐、提交求解、等待并读取结果、比较方案、建立批量课题；需要时申请执行田间仿真。\n\n工具分三档：只读（read）不改变任何东西；计算（compute）会新建任务地图、求解运行或课题；执行（actuate）会启动仿真，调用后暂停，等用户在界面上批准或拒绝。\n\n必须遵守：\n1. 事实只来自工具结果。答复中的数值、运行编号和可行性判断都要能在本会话的工具结果里找到；没有数据就直说，不估计、不编造。\n2. 解是否有效以独立检查为准：只有 state=done 且 check.valid=true 的运行才算有效方案。不可行、无解、超时和报错如实说明，并给出运行编号。\n3. 区分口径：benchmark 坐标没有物理单位，不能当作米；规划指标（路线长度、计划工期）不是仿真执行结果，更不是真实农机作业效果。\n4. 推荐默认是规则策略（policy 以 rules- 开头），不是学习模型；policy 为 knn-crc-local-v1 时才用了本地学习选择器，它在测试中相对固定 PyVRP 的平均收益为 0。不能声称推荐优于基线；要下结论就在同一实例、同一预算下提交对比求解。\n5. 只对已完成且通过检查的多车方案申请田间仿真；仿真需要本机 ROS 2 / Gazebo，失败时如实报告原因。\n6. 节省预算：一次对比不超过 6 个算法，单算法时间预算一般 1–10 秒；先小规模试跑，再决定是否建课题。\n7. 用中文回答。最终答复分三部分：结论；依据（列出运行编号和关键指标）；局限与下一步。不要输出工具没有提供的链接。"
+  },
+  {
+   "role": "user",
+   "content": "在 200×120 米的果园里，3 台机器人从西南角车库出发，给 40 个点采样，每台最多装 10 个样本，避开两个池塘和一栋房子。生成地图后比较 PyVRP 和 OR-Tools，各给 3 秒。"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c1a",
+     "type": "function",
+     "function": {
+      "name": "compose_scenario",
+      "arguments": "{\"text\": \"在 200×120 米的果园里，3 台机器人从西南角车库出发，给 40 个点采样，每台最多装 10 个样本，避开两个池塘和一栋房子\", \"seed\": 7}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1a",
+   "content": "{\"scenario_id\": \"task-sampling-20261029-111652-007\", \"title\": \"在 200×120 米的果园里，3 台机器人…\", \"summary\": \"3 台车 · 40 个采样点 · 200×120 m · 4 块地 · 3 处障碍\", \"problem_class\": \"fleet_routing\", \"cards\": [{\"key\": \"kind\", \"label\": \"作业\", \"value\": \"采样\"}, {\"key\": \"size\", \"label\": \"场地\", \"value\": \"200 × 120 m\"}, {\"key\": \"plots\", \"label\": \"地块\", \"value\": \"4 块\"}, {\"key\": \"tasks\", \"label\": \"任务点\", \"value\": \"40 个 · 均匀分布\"}, {\"key\": \"vehicles\", \"label\": \"车队\", \"value\": \"3 台 · 每台容量 10\"}, {\"key\": \"obstacles\", \"label\": \"障碍\", \"value\": \"2 处池塘、1 处建筑\"}, {\"key\": \"depot\", \"label\": \"车库\", \"value\": \"西南角\"}, {\"key\": \"objective\", \"label\": \"目标\", \"value\": \"总里程最短\"}, {\"key\": \"speed_mps\", \"label\": \"车速\", \"value\": \"1 m/s\"}], \"seed\": 7, \"instance\": {\"tasks\": 40, \"demand_total\": 40, \"vehicles\": {\"count\": 3, \"capacity\": 10, \"speed_mps\": 1.0, \"trips\": \"multi\"}, \"vehicle_classes\": 1, \"objective\": \"total_distance\", \"obstacles\": 3, \"plots\": 4, \"bbox_m\": [200.0, 120.0]}}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c1b",
+     "type": "function",
+     "function": {
+      "name": "recommend",
+      "arguments": "{\"scenario_id\": \"task-sampling-20261029-111652-007\"}"
+     }
+    },
+    {
+     "id": "c1c",
+     "type": "function",
+     "function": {
+      "name": "list_algorithms",
+      "arguments": "{\"problem_class\": \"fleet_routing\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1b",
+   "content": "{\"policy\": \"rules-v2\", \"recommended\": \"pyvrp.fleet\", \"explanation\": \"推荐 PyVRP 固定车队：规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估\", \"features\": [{\"name\": \"任务点\", \"key\": \"n_tasks\", \"value\": 40, \"unit\": null}, {\"name\": \"车辆\", \"key\": \"vehicles\", \"value\": 3, \"unit\": null}, {\"name\": \"至少需要的趟数\", \"key\": \"min_trips\", \"value\": 4, \"unit\": null}, {\"name\": \"车型类别\", \"key\": \"fleet_classes\", \"value\": 1, \"unit\": null}, {\"name\": \"障碍占地\", \"key\": \"obstacle_ratio\", \"value\": 2.05, \"unit\": \"%\"}, {\"name\": \"聚集度 R\", \"key\": \"clark_evans\", \"value\": 0.7, \"unit\": null}, {\"name\": \"目标\", \"key\": \"objective\", \"value\": \"总里程\", \"unit\": null}], \"ranking\": [{\"algorithm_id\": \"pyvrp.fleet\", \"rank\": 1, \"suitability\": \"推荐\", \"reasons\": [\"规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估\", \"总量需要至少 4 趟，多趟往返会分配到 3 台车上\"], \"suggested_params\": {\"time_limit_s\": 5, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}, {\"algorithm_id\": \"ortools.fleet\", \"rank\": 2, \"suitability\": \"可用\", \"reasons\": [\"采用不同搜索实现的对照，需用相同实例和预算比较\", \"总量需要至少 4 趟，多趟往返会分配到 3 台车上\"], \"suggested_params\": {\"time_limit_s\": 5, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}, {\"algorithm_id\": \"panel.cluster_first\", \"rank\": 3, \"suitability\": \"可用\", \"reasons\": [\"任务成片聚集（R=0.70），可尝试按空间聚类分配；交叉通行仍需交通调度\"], \"suggested_params\": {\"time_limit_s\": 5, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}, {\"algorithm_id\": \"panel.savings_fleet\", \"rank\": 4, \"suitability\": \"可用\", \"reasons\": [\"确定性构造基线，可作为改进幅度的参照；耗时以实测为准\"], \"suggested_params\": {\"time_limit_s\": 5, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}, {\"algorithm_id\": \"panel.sweep\", \"rank\": 5, \"suitability\": \"可用\", \"reasons\": [\"按车库方位进行扫描切分的构造基线\"], \"suggested_params\": {\"time_limit_s\": 5, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}], \"learned_selector\": {\"id\": \"urp.cvrp_selection.knn_crc\", \"status\": \"not_applicable\", \"reason\": null}, \"note\": \"policy 以 rules- 开头时是规则建议，不是学习模型；收益需在同实例同预算的对比求解中验证\"}"
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1c",
+   "content": "{\"algorithms\": [{\"id\": \"pyvrp.fleet\", \"name\": \"PyVRP 固定车队\", \"problem_classes\": [\"fleet_routing\"], \"family\": \"metaheuristic\", \"source\": \"third_party\", \"origin\": \"PyVRP 0.14.0\", \"guarantee\": \"none\", \"available\": true, \"unavailable_reason\": null, \"limits\": {}, \"params\": [{\"name\": \"time_limit_s\", \"type\": \"number\", \"default\": 5, \"min\": 0.05, \"max\": 600}, {\"name\": \"seed\", \"type\": \"integer\", \"default\": 42, \"min\": 0, \"max\": 2147483647}, {\"name\": \"ground_policy\", \"type\": \"select\", \"default\": \"ignore\", \"min\": null, \"max\": null}, {\"name\": \"ground_risk_weight\", \"type\": \"number\", \"default\": 1.0, \"min\": 0.0, \"max\": 10.0}]}, {\"id\": \"ortools.fleet\", \"name\": \"OR-Tools 车队调度\", \"problem_classes\": [\"fleet_routing\"], \"family\": \"metaheuristic\", \"source\": \"third_party\", \"origin\": \"OR-Tools 9.15.6755\", \"guarantee\": \"none\", \"available\": true, \"unavailable_reason\": null, \"limits\": {}, \"params\": [{\"name\": \"time_limit_s\", \"type\": \"number\", \"default\": 5, \"min\": 0.05, \"max\": 600}, {\"name\": \"seed\", \"type\": \"integer\", \"default\": 42, \"min\": 0, \"max\": 2147483647}, {\"name\": \"ground_policy\", \"type\": \"select\", \"default\": \"ignore\", \"min\": null, \"max\": null}, {\"name\": \"ground_risk_weight\", \"type\": \"number\", \"default\": 1.0, \"min\": 0.0, \"max\": 10.0}]}, {\"id\": \"panel.savings_fleet\", \"name\": \"节约算法 + 2-opt\", \"problem_classes\": [\"fleet_routing\"], \"family\": \"heuristic\", \"source\": \"panel_baseline\", \"origin\": \"src/lab/urp_lab/solvers/fleet.py\", \"guarantee\": \"none\", \"available\": true, \"unavailable_reason\": null, \"limits\": {}, \"params\": [{\"name\": \"time_limit_s\", \"type\": \"number\", \"default\": 5, \"min\": 0.05, \"max\": 600}, {\"name\": \"ground_policy\", \"type\": \"select\", \"default\": \"ignore\", \"min\": null, \"max\": null}, {\"name\": \"ground_risk_weight\", \"type\": \"number\", \"default\": 1.0, \"min\": 0.0, \"max\": 10.0}]}, {\"id\": \"panel.sweep\", \"name\": \"扫描算法\", \"problem_classes\": [\"fleet_routing\"], \"family\": \"heuristic\", \"source\": \"panel_baseline\", \"origin\": \"src/lab/urp_lab/solvers/fleet.py\", \"guarantee\": \"none\", \"available\": true, \"unavailable_reason\": null, \"limits\": {}, \"params\": [{\"name\": \"time_limit_s\", \"type\": \"number\", \"default\": 5, \"min\": 0.05, \"max\": 600}, {\"name\": \"ground_policy\", \"type\": \"select\", \"default\": \"ignore\", \"min\": null, \"max\": null}, {\"name\": \"ground_risk_weight\", \"type\": \"number\", \"default\": 1.0, \"min\": 0.0, \"max\": 10.0}]}, {\"id\": \"panel.cluster_first\", \"name\": \"先聚类后排程\", \"problem_classes\": [\"fleet_routing\"], \"family\": \"heuristic\", \"source\": \"panel_baseline\", \"origin\": \"src/lab/urp_lab/solvers/fleet.py\", \"guarantee\": \"none\", \"available\": true, \"unavailable_reason\": null, \"limits\": {}, \"params\": [{\"name\": \"time_limit_s\", \"type\": \"number\", \"default\": 5, \"min\": 0.05, \"max\": 600}, {\"name\": \"seed\", \"type\": \"integer\", \"default\": 42, \"min\": 0, \"max\": 2147483647}, {\"name\": \"ground_policy\", \"type\": \"select\", \"default\": \"ignore\", \"min\": null, \"max\": null}, {\"name\": \"ground_risk_weight\", \"type\": \"number\", \"default\": 1.0, \"min\": 0.0, \"max\": 10.0}]}]}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c1d",
+     "type": "function",
+     "function": {
+      "name": "solve",
+      "arguments": "{\"scenario_id\": \"task-sampling-20261029-111652-007\", \"algorithms\": [{\"id\": \"pyvrp.fleet\", \"params\": {\"time_limit_s\": 3}}, {\"id\": \"ortools.fleet\", \"params\": {\"time_limit_s\": 3}}]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1d",
+   "content": "{\"job_id\": \"job_20261029T111653_7e896d\", \"run_ids\": [\"run_20261029T111653_f67cf5\", \"run_20261029T111653_3ce30d\"], \"scenario_id\": \"task-sampling-20261029-111652-007\", \"algorithms\": [{\"id\": \"pyvrp.fleet\", \"params\": {\"time_limit_s\": 3, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}, {\"id\": \"ortools.fleet\", \"params\": {\"time_limit_s\": 3, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}}], \"note\": \"运行已排队；用 wait_for_runs 等待结果\"}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c1e",
+     "type": "function",
+     "function": {
+      "name": "wait_for_runs",
+      "arguments": "{\"run_ids\": [\"run_20261029T111653_f67cf5\", \"run_20261029T111653_3ce30d\"], \"timeout_s\": 90}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1e",
+   "content": "{\"all_finished\": true, \"waited_limit_s\": 90.0, \"runs\": [{\"run_id\": \"run_20261029T111653_f67cf5\", \"job_id\": \"job_20261029T111653_7e896d\", \"scenario_id\": \"task-sampling-20261029-111652-007\", \"problem_class\": \"fleet_routing\", \"algorithm\": {\"id\": \"pyvrp.fleet\", \"name\": \"PyVRP 固定车队\", \"source\": \"third_party\", \"version\": \"0.14.0\"}, \"params\": {\"time_limit_s\": 3, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}, \"state\": \"done\", \"status\": \"feasible\", \"objective\": {\"value\": 1778.9864680067512, \"unit\": \"m\"}, \"check\": {\"valid\": true, \"errors\": [], \"checker\": \"urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）\"}, \"map_check\": null, \"metrics\": {\"cost\": 1778.9865, \"length\": 1778.9865, \"length_unit\": \"m\", \"n_routes\": 3, \"n_tasks\": 40, \"wall_s\": 3.2027, \"cpu_s\": 3.1964, \"process_wall_s\": 3.465, \"total_distance_m\": 1778.9865, \"makespan_s\": 776.0057, \"longest_route_m\": 776.0057, \"vehicles_used\": 3, \"fleet_size\": 3, \"trips\": 4, \"balance_cv\": 0.2182, \"capacity_utilization\": 1.0, \"detour_ratio\": 1.3441, \"graph_nodes\": 235, \"graph_build_s\": 0.0852, \"objective_mode\": \"total_distance\"}, \"error\": null, \"finished_utc\": \"2026-10-29T11:16:56.576Z\"}, {\"run_id\": \"run_20261029T111653_3ce30d\", \"job_id\": \"job_20261029T111653_7e896d\", \"scenario_id\": \"task-sampling-20261029-111652-007\", \"problem_class\": \"fleet_routing\", \"algorithm\": {\"id\": \"ortools.fleet\", \"name\": \"OR-Tools 车队调度\", \"source\": \"third_party\", \"version\": \"9.15.6755\"}, \"params\": {\"time_limit_s\": 3, \"seed\": 42, \"ground_policy\": \"ignore\", \"ground_risk_weight\": 1.0}, \"state\": \"done\", \"status\": \"feasible\", \"objective\": {\"value\": 1778.9864680067512, \"unit\": \"m\"}, \"check\": {\"valid\": true, \"errors\": [], \"checker\": \"urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）\"}, \"map_check\": null, \"metrics\": {\"cost\": 1778.9865, \"length\": 1778.9865, \"length_unit\": \"m\", \"n_routes\": 3, \"n_tasks\": 40, \"wall_s\": 3.2561, \"cpu_s\": 3.2426, \"process_wall_s\": 3.518, \"total_distance_m\": 1778.9865, \"makespan_s\": 776.0057, \"longest_route_m\": 776.0057, \"vehicles_used\": 3, \"fleet_size\": 3, \"trips\": 4, \"balance_cv\": 0.2182, \"capacity_utilization\": 1.0, \"detour_ratio\": 1.3441, \"graph_nodes\": 235, \"graph_build_s\": 0.1062, \"objective_mode\": \"total_distance\"}, \"error\": null, \"finished_utc\": \"2026-10-29T11:17:00.138Z\"}], \"note\": null}"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c1f",
+     "type": "function",
+     "function": {
+      "name": "compare_runs",
+      "arguments": "{\"run_ids\": [\"run_20261029T111653_f67cf5\", \"run_20261029T111653_3ce30d\"]}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c1f",
+   "content": "{\"n_runs\": 2, \"n_instances\": 1, \"n_complete_instances\": 1, \"algorithms\": [{\"algorithm\": \"ortools.fleet\", \"id\": \"ortools.fleet\", \"name\": \"OR-Tools 车队调度\", \"instances\": 1, \"runs\": 1, \"successes\": 1, \"success_rate\": 1.0, \"gap_mean\": 0.0, \"gap_median\": 0.0, \"gap_best\": 0.0, \"time_median\": 3.256062319999728, \"mean_rank\": 1.5, \"wins\": 1}, {\"algorithm\": \"pyvrp.fleet\", \"id\": \"pyvrp.fleet\", \"name\": \"PyVRP 固定车队\", \"instances\": 1, \"runs\": 1, \"successes\": 1, \"success_rate\": 1.0, \"gap_mean\": 0.0, \"gap_median\": 0.0, \"gap_best\": 0.0, \"time_median\": 3.202689435999673, \"mean_rank\": 1.5, \"wins\": 1}], \"reference_note\": \"有有效 BKS 的算例以 BKS 为参照，其余以本组最好可行解为参照；相对差距只用于有限正参照。成功率按全部终态运行计算；性能剖面按齐全实例计数，各算法取可行运行均值，全失败单元不计为有限 τ 下的成功。\", \"note\": \"gap 为相对参照的百分比差距（1.5 即 1.5%）；成功指运行结束且通过独立检查\"}"
+  },
+  {
+   "role": "assistant",
+   "content": "结论：场景 task-sampling-20261029-111652-007 上 pyvrp.fleet、ortools.fleet 并列总里程最短（1779.0 m）。\n\n依据：\n- pyvrp.fleet（run_20261029T111653_f67cf5）：目标值 1779.0 m，通过独立检查\n- ortools.fleet（run_20261029T111653_3ce30d）：目标值 1779.0 m，通过独立检查\n\n局限：每个算法只运行一次、各 3 秒，没有重复种子，不能据此推断统计显著性；这是规划层面的米制路径，没有在 Gazebo 中执行。"
+  },
+  {
+   "role": "user",
+   "content": "用最好的方案启动田间仿真"
+  },
+  {
+   "role": "assistant",
+   "content": "",
+   "tool_calls": [
+    {
+     "id": "c2s",
+     "type": "function",
+     "function": {
+      "name": "start_field_simulation",
+      "arguments": "{\"run_id\": \"run_20261029T111653_f67cf5\"}"
+     }
+    }
+   ]
+  },
+  {
+   "role": "tool",
+   "tool_call_id": "c2s",
+   "content": "{\"denied\": true, \"message\": \"用户拒绝了这项执行操作\"}"
+  },
+  {
+   "role": "assistant",
+   "content": "结论：你没有批准，所以没有启动田间仿真。\n\n依据：工具调用被拒绝，规划结果保持不变。\n\n局限：方案目前只经过规划层面的独立检查，执行层面尚未验证。"
+  }
+ ],
+ "steps": [
+  {
+   "i": 0,
+   "utc": "2026-10-29T11:16:52.909Z",
+   "kind": "user",
+   "text": "在 200×120 米的果园里，3 台机器人从西南角车库出发，给 40 个点采样，每台最多装 10 个样本，避开两个池塘和一栋房子。生成地图后比较 PyVRP 和 OR-Tools，各给 3 秒。"
+  },
+  {
+   "i": 1,
+   "utc": "2026-10-29T11:16:52.942Z",
+   "kind": "assistant",
+   "text": "",
+   "reasoning": "先按描述生成任务地图。",
+   "model_s": 0.032,
+   "tool_calls": [
+    {
+     "id": "c1a",
+     "name": "compose_scenario"
+    }
+   ]
+  },
+  {
+   "i": 2,
+   "utc": "2026-10-29T11:16:52.965Z",
+   "kind": "tool",
+   "call_id": "c1a",
+   "name": "compose_scenario",
+   "tier": "compute",
+   "label": "生成任务地图",
+   "arguments": {
+    "text": "在 200×120 米的果园里，3 台机器人从西南角车库出发，给 40 个点采样，每台最多装 10 个样本，避开两个池塘和一栋房子",
+    "seed": 7
+   },
+   "ok": true,
+   "error": null,
+   "result": {
+    "scenario_id": "task-sampling-20261029-111652-007",
+    "title": "在 200×120 米的果园里，3 台机器人…",
+    "summary": "3 台车 · 40 个采样点 · 200×120 m · 4 块地 · 3 处障碍",
+    "problem_class": "fleet_routing",
+    "cards": [
+     {
+      "key": "kind",
+      "label": "作业",
+      "value": "采样"
+     },
+     {
+      "key": "size",
+      "label": "场地",
+      "value": "200 × 120 m"
+     },
+     {
+      "key": "plots",
+      "label": "地块",
+      "value": "4 块"
+     },
+     {
+      "key": "tasks",
+      "label": "任务点",
+      "value": "40 个 · 均匀分布"
+     },
+     {
+      "key": "vehicles",
+      "label": "车队",
+      "value": "3 台 · 每台容量 10"
+     },
+     {
+      "key": "obstacles",
+      "label": "障碍",
+      "value": "2 处池塘、1 处建筑"
+     },
+     {
+      "key": "depot",
+      "label": "车库",
+      "value": "西南角"
+     },
+     {
+      "key": "objective",
+      "label": "目标",
+      "value": "总里程最短"
+     },
+     {
+      "key": "speed_mps",
+      "label": "车速",
+      "value": "1 m/s"
+     }
+    ],
+    "seed": 7,
+    "instance": {
+     "tasks": 40,
+     "demand_total": 40,
+     "vehicles": {
+      "count": 3,
+      "capacity": 10,
+      "speed_mps": 1.0,
+      "trips": "multi"
+     },
+     "vehicle_classes": 1,
+     "objective": "total_distance",
+     "obstacles": 3,
+     "plots": 4,
+     "bbox_m": [
+      200.0,
+      120.0
+     ]
+    }
+   },
+   "duration_s": 0.022
+  },
+  {
+   "i": 3,
+   "utc": "2026-10-29T11:16:52.994Z",
+   "kind": "assistant",
+   "text": "",
+   "reasoning": "同时读取规则推荐和算法目录。",
+   "model_s": 0.029,
+   "tool_calls": [
+    {
+     "id": "c1b",
+     "name": "recommend"
+    },
+    {
+     "id": "c1c",
+     "name": "list_algorithms"
+    }
+   ]
+  },
+  {
+   "i": 4,
+   "utc": "2026-10-29T11:16:53.001Z",
+   "kind": "tool",
+   "call_id": "c1b",
+   "name": "recommend",
+   "tier": "read",
+   "label": "规则推荐",
+   "arguments": {
+    "scenario_id": "task-sampling-20261029-111652-007"
+   },
+   "ok": true,
+   "error": null,
+   "result": {
+    "policy": "rules-v2",
+    "recommended": "pyvrp.fleet",
+    "explanation": "推荐 PyVRP 固定车队：规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估",
+    "features": [
+     {
+      "name": "任务点",
+      "key": "n_tasks",
+      "value": 40,
+      "unit": null
+     },
+     {
+      "name": "车辆",
+      "key": "vehicles",
+      "value": 3,
+      "unit": null
+     },
+     {
+      "name": "至少需要的趟数",
+      "key": "min_trips",
+      "value": 4,
+      "unit": null
+     },
+     {
+      "name": "车型类别",
+      "key": "fleet_classes",
+      "value": 1,
+      "unit": null
+     },
+     {
+      "name": "障碍占地",
+      "key": "obstacle_ratio",
+      "value": 2.05,
+      "unit": "%"
+     },
+     {
+      "name": "聚集度 R",
+      "key": "clark_evans",
+      "value": 0.7,
+      "unit": null
+     },
+     {
+      "name": "目标",
+      "key": "objective",
+      "value": "总里程",
+      "unit": null
+     }
+    ],
+    "ranking": [
+     {
+      "algorithm_id": "pyvrp.fleet",
+      "rank": 1,
+      "suitability": "推荐",
+      "reasons": [
+       "规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估",
+       "总量需要至少 4 趟，多趟往返会分配到 3 台车上"
+      ],
+      "suggested_params": {
+       "time_limit_s": 5,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "algorithm_id": "ortools.fleet",
+      "rank": 2,
+      "suitability": "可用",
+      "reasons": [
+       "采用不同搜索实现的对照，需用相同实例和预算比较",
+       "总量需要至少 4 趟，多趟往返会分配到 3 台车上"
+      ],
+      "suggested_params": {
+       "time_limit_s": 5,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "algorithm_id": "panel.cluster_first",
+      "rank": 3,
+      "suitability": "可用",
+      "reasons": [
+       "任务成片聚集（R=0.70），可尝试按空间聚类分配；交叉通行仍需交通调度"
+      ],
+      "suggested_params": {
+       "time_limit_s": 5,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "algorithm_id": "panel.savings_fleet",
+      "rank": 4,
+      "suitability": "可用",
+      "reasons": [
+       "确定性构造基线，可作为改进幅度的参照；耗时以实测为准"
+      ],
+      "suggested_params": {
+       "time_limit_s": 5,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "algorithm_id": "panel.sweep",
+      "rank": 5,
+      "suitability": "可用",
+      "reasons": [
+       "按车库方位进行扫描切分的构造基线"
+      ],
+      "suggested_params": {
+       "time_limit_s": 5,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     }
+    ],
+    "learned_selector": {
+     "id": "urp.cvrp_selection.knn_crc",
+     "status": "not_applicable",
+     "reason": null
+    },
+    "note": "policy 以 rules- 开头时是规则建议，不是学习模型；收益需在同实例同预算的对比求解中验证"
+   },
+   "duration_s": 0.007
+  },
+  {
+   "i": 5,
+   "utc": "2026-10-29T11:16:53.002Z",
+   "kind": "tool",
+   "call_id": "c1c",
+   "name": "list_algorithms",
+   "tier": "read",
+   "label": "查看算法库",
+   "arguments": {
+    "problem_class": "fleet_routing"
+   },
+   "ok": true,
+   "error": null,
+   "result": {
+    "algorithms": [
+     {
+      "id": "pyvrp.fleet",
+      "name": "PyVRP 固定车队",
+      "problem_classes": [
+       "fleet_routing"
+      ],
+      "family": "metaheuristic",
+      "source": "third_party",
+      "origin": "PyVRP 0.14.0",
+      "guarantee": "none",
+      "available": true,
+      "unavailable_reason": null,
+      "limits": {},
+      "params": [
+       {
+        "name": "time_limit_s",
+        "type": "number",
+        "default": 5,
+        "min": 0.05,
+        "max": 600
+       },
+       {
+        "name": "seed",
+        "type": "integer",
+        "default": 42,
+        "min": 0,
+        "max": 2147483647
+       },
+       {
+        "name": "ground_policy",
+        "type": "select",
+        "default": "ignore",
+        "min": null,
+        "max": null
+       },
+       {
+        "name": "ground_risk_weight",
+        "type": "number",
+        "default": 1.0,
+        "min": 0.0,
+        "max": 10.0
+       }
+      ]
+     },
+     {
+      "id": "ortools.fleet",
+      "name": "OR-Tools 车队调度",
+      "problem_classes": [
+       "fleet_routing"
+      ],
+      "family": "metaheuristic",
+      "source": "third_party",
+      "origin": "OR-Tools 9.15.6755",
+      "guarantee": "none",
+      "available": true,
+      "unavailable_reason": null,
+      "limits": {},
+      "params": [
+       {
+        "name": "time_limit_s",
+        "type": "number",
+        "default": 5,
+        "min": 0.05,
+        "max": 600
+       },
+       {
+        "name": "seed",
+        "type": "integer",
+        "default": 42,
+        "min": 0,
+        "max": 2147483647
+       },
+       {
+        "name": "ground_policy",
+        "type": "select",
+        "default": "ignore",
+        "min": null,
+        "max": null
+       },
+       {
+        "name": "ground_risk_weight",
+        "type": "number",
+        "default": 1.0,
+        "min": 0.0,
+        "max": 10.0
+       }
+      ]
+     },
+     {
+      "id": "panel.savings_fleet",
+      "name": "节约算法 + 2-opt",
+      "problem_classes": [
+       "fleet_routing"
+      ],
+      "family": "heuristic",
+      "source": "panel_baseline",
+      "origin": "src/lab/urp_lab/solvers/fleet.py",
+      "guarantee": "none",
+      "available": true,
+      "unavailable_reason": null,
+      "limits": {},
+      "params": [
+       {
+        "name": "time_limit_s",
+        "type": "number",
+        "default": 5,
+        "min": 0.05,
+        "max": 600
+       },
+       {
+        "name": "ground_policy",
+        "type": "select",
+        "default": "ignore",
+        "min": null,
+        "max": null
+       },
+       {
+        "name": "ground_risk_weight",
+        "type": "number",
+        "default": 1.0,
+        "min": 0.0,
+        "max": 10.0
+       }
+      ]
+     },
+     {
+      "id": "panel.sweep",
+      "name": "扫描算法",
+      "problem_classes": [
+       "fleet_routing"
+      ],
+      "family": "heuristic",
+      "source": "panel_baseline",
+      "origin": "src/lab/urp_lab/solvers/fleet.py",
+      "guarantee": "none",
+      "available": true,
+      "unavailable_reason": null,
+      "limits": {},
+      "params": [
+       {
+        "name": "time_limit_s",
+        "type": "number",
+        "default": 5,
+        "min": 0.05,
+        "max": 600
+       },
+       {
+        "name": "ground_policy",
+        "type": "select",
+        "default": "ignore",
+        "min": null,
+        "max": null
+       },
+       {
+        "name": "ground_risk_weight",
+        "type": "number",
+        "default": 1.0,
+        "min": 0.0,
+        "max": 10.0
+       }
+      ]
+     },
+     {
+      "id": "panel.cluster_first",
+      "name": "先聚类后排程",
+      "problem_classes": [
+       "fleet_routing"
+      ],
+      "family": "heuristic",
+      "source": "panel_baseline",
+      "origin": "src/lab/urp_lab/solvers/fleet.py",
+      "guarantee": "none",
+      "available": true,
+      "unavailable_reason": null,
+      "limits": {},
+      "params": [
+       {
+        "name": "time_limit_s",
+        "type": "number",
+        "default": 5,
+        "min": 0.05,
+        "max": 600
+       },
+       {
+        "name": "seed",
+        "type": "integer",
+        "default": 42,
+        "min": 0,
+        "max": 2147483647
+       },
+       {
+        "name": "ground_policy",
+        "type": "select",
+        "default": "ignore",
+        "min": null,
+        "max": null
+       },
+       {
+        "name": "ground_risk_weight",
+        "type": "number",
+        "default": 1.0,
+        "min": 0.0,
+        "max": 10.0
+       }
+      ]
+     }
+    ]
+   },
+   "duration_s": 0.0
+  },
+  {
+   "i": 6,
+   "utc": "2026-10-29T11:16:53.030Z",
+   "kind": "assistant",
+   "text": "",
+   "reasoning": null,
+   "model_s": 0.028,
+   "tool_calls": [
+    {
+     "id": "c1d",
+     "name": "solve"
+    }
+   ]
+  },
+  {
+   "i": 7,
+   "utc": "2026-10-29T11:16:53.088Z",
+   "kind": "tool",
+   "call_id": "c1d",
+   "name": "solve",
+   "tier": "compute",
+   "label": "提交求解",
+   "arguments": {
+    "scenario_id": "task-sampling-20261029-111652-007",
+    "algorithms": [
+     {
+      "id": "pyvrp.fleet",
+      "params": {
+       "time_limit_s": 3
+      }
+     },
+     {
+      "id": "ortools.fleet",
+      "params": {
+       "time_limit_s": 3
+      }
+     }
+    ]
+   },
+   "ok": true,
+   "error": null,
+   "result": {
+    "job_id": "job_20261029T111653_7e896d",
+    "run_ids": [
+     "run_20261029T111653_f67cf5",
+     "run_20261029T111653_3ce30d"
+    ],
+    "scenario_id": "task-sampling-20261029-111652-007",
+    "algorithms": [
+     {
+      "id": "pyvrp.fleet",
+      "params": {
+       "time_limit_s": 3,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "id": "ortools.fleet",
+      "params": {
+       "time_limit_s": 3,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     }
+    ],
+    "note": "运行已排队；用 wait_for_runs 等待结果"
+   },
+   "duration_s": 0.057
+  },
+  {
+   "i": 8,
+   "utc": "2026-10-29T11:16:53.119Z",
+   "kind": "assistant",
+   "text": "",
+   "reasoning": null,
+   "model_s": 0.03,
+   "tool_calls": [
+    {
+     "id": "c1e",
+     "name": "wait_for_runs"
+    }
+   ]
+  },
+  {
+   "i": 9,
+   "utc": "2026-10-29T11:17:00.404Z",
+   "kind": "tool",
+   "call_id": "c1e",
+   "name": "wait_for_runs",
+   "tier": "compute",
+   "label": "等待结果",
+   "arguments": {
+    "run_ids": [
+     "run_20261029T111653_f67cf5",
+     "run_20261029T111653_3ce30d"
+    ],
+    "timeout_s": 90
+   },
+   "ok": true,
+   "error": null,
+   "result": {
+    "all_finished": true,
+    "waited_limit_s": 90.0,
+    "runs": [
+     {
+      "run_id": "run_20261029T111653_f67cf5",
+      "job_id": "job_20261029T111653_7e896d",
+      "scenario_id": "task-sampling-20261029-111652-007",
+      "problem_class": "fleet_routing",
+      "algorithm": {
+       "id": "pyvrp.fleet",
+       "name": "PyVRP 固定车队",
+       "source": "third_party",
+       "version": "0.14.0"
+      },
+      "params": {
+       "time_limit_s": 3,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      },
+      "state": "done",
+      "status": "feasible",
+      "objective": {
+       "value": 1778.9864680067512,
+       "unit": "m"
+      },
+      "check": {
+       "valid": true,
+       "errors": [],
+       "checker": "urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）"
+      },
+      "map_check": null,
+      "metrics": {
+       "cost": 1778.9865,
+       "length": 1778.9865,
+       "length_unit": "m",
+       "n_routes": 3,
+       "n_tasks": 40,
+       "wall_s": 3.2027,
+       "cpu_s": 3.1964,
+       "process_wall_s": 3.465,
+       "total_distance_m": 1778.9865,
+       "makespan_s": 776.0057,
+       "longest_route_m": 776.0057,
+       "vehicles_used": 3,
+       "fleet_size": 3,
+       "trips": 4,
+       "balance_cv": 0.2182,
+       "capacity_utilization": 1.0,
+       "detour_ratio": 1.3441,
+       "graph_nodes": 235,
+       "graph_build_s": 0.0852,
+       "objective_mode": "total_distance"
+      },
+      "error": null,
+      "finished_utc": "2026-10-29T11:16:56.576Z"
+     },
+     {
+      "run_id": "run_20261029T111653_3ce30d",
+      "job_id": "job_20261029T111653_7e896d",
+      "scenario_id": "task-sampling-20261029-111652-007",
+      "problem_class": "fleet_routing",
+      "algorithm": {
+       "id": "ortools.fleet",
+       "name": "OR-Tools 车队调度",
+       "source": "third_party",
+       "version": "9.15.6755"
+      },
+      "params": {
+       "time_limit_s": 3,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      },
+      "state": "done",
+      "status": "feasible",
+      "objective": {
+       "value": 1778.9864680067512,
+       "unit": "m"
+      },
+      "check": {
+       "valid": true,
+       "errors": [],
+       "checker": "urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）"
+      },
+      "map_check": null,
+      "metrics": {
+       "cost": 1778.9865,
+       "length": 1778.9865,
+       "length_unit": "m",
+       "n_routes": 3,
+       "n_tasks": 40,
+       "wall_s": 3.2561,
+       "cpu_s": 3.2426,
+       "process_wall_s": 3.518,
+       "total_distance_m": 1778.9865,
+       "makespan_s": 776.0057,
+       "longest_route_m": 776.0057,
+       "vehicles_used": 3,
+       "fleet_size": 3,
+       "trips": 4,
+       "balance_cv": 0.2182,
+       "capacity_utilization": 1.0,
+       "detour_ratio": 1.3441,
+       "graph_nodes": 235,
+       "graph_build_s": 0.1062,
+       "objective_mode": "total_distance"
+      },
+      "error": null,
+      "finished_utc": "2026-10-29T11:17:00.138Z"
+     }
+    ],
+    "note": null
+   },
+   "duration_s": 7.284
+  },
+  {
+   "i": 10,
+   "utc": "2026-10-29T11:17:00.435Z",
+   "kind": "assistant",
+   "text": "",
+   "reasoning": null,
+   "model_s": 0.03,
+   "tool_calls": [
+    {
+     "id": "c1f",
+     "name": "compare_runs"
+    }
+   ]
+  },
+  {
+   "i": 11,
+   "utc": "2026-10-29T11:17:00.439Z",
+   "kind": "tool",
+   "call_id": "c1f",
+   "name": "compare_runs",
+   "tier": "read",
+   "label": "对比运行",
+   "arguments": {
+    "run_ids": [
+     "run_20261029T111653_f67cf5",
+     "run_20261029T111653_3ce30d"
+    ]
+   },
+   "ok": true,
+   "error": null,
+   "result": {
+    "n_runs": 2,
+    "n_instances": 1,
+    "n_complete_instances": 1,
+    "algorithms": [
+     {
+      "algorithm": "ortools.fleet",
+      "id": "ortools.fleet",
+      "name": "OR-Tools 车队调度",
+      "instances": 1,
+      "runs": 1,
+      "successes": 1,
+      "success_rate": 1.0,
+      "gap_mean": 0.0,
+      "gap_median": 0.0,
+      "gap_best": 0.0,
+      "time_median": 3.256062319999728,
+      "mean_rank": 1.5,
+      "wins": 1
+     },
+     {
+      "algorithm": "pyvrp.fleet",
+      "id": "pyvrp.fleet",
+      "name": "PyVRP 固定车队",
+      "instances": 1,
+      "runs": 1,
+      "successes": 1,
+      "success_rate": 1.0,
+      "gap_mean": 0.0,
+      "gap_median": 0.0,
+      "gap_best": 0.0,
+      "time_median": 3.202689435999673,
+      "mean_rank": 1.5,
+      "wins": 1
+     }
+    ],
+    "reference_note": "有有效 BKS 的算例以 BKS 为参照，其余以本组最好可行解为参照；相对差距只用于有限正参照。成功率按全部终态运行计算；性能剖面按齐全实例计数，各算法取可行运行均值，全失败单元不计为有限 τ 下的成功。",
+    "note": "gap 为相对参照的百分比差距（1.5 即 1.5%）；成功指运行结束且通过独立检查"
+   },
+   "duration_s": 0.003
+  },
+  {
+   "i": 12,
+   "utc": "2026-10-29T11:17:00.469Z",
+   "kind": "final",
+   "text": "结论：场景 task-sampling-20261029-111652-007 上 pyvrp.fleet、ortools.fleet 并列总里程最短（1779.0 m）。\n\n依据：\n- pyvrp.fleet（run_20261029T111653_f67cf5）：目标值 1779.0 m，通过独立检查\n- ortools.fleet（run_20261029T111653_3ce30d）：目标值 1779.0 m，通过独立检查\n\n局限：每个算法只运行一次、各 3 秒，没有重复种子，不能据此推断统计显著性；这是规划层面的米制路径，没有在 Gazebo 中执行。",
+   "reasoning": null,
+   "model_s": 0.028,
+   "grounding": {
+    "method": "heuristic-v1",
+    "checked": 3,
+    "grounded": 3,
+    "skipped": 1,
+    "not_found": [],
+    "unknown_ids": [],
+    "note": "启发式核对：数字须出现在本会话工具结果或用户消息中（容差 0.5% 或按所写位数舍入一致）；≤10 的整数与年份不核对；推算得到的数字会列为未直接找到。"
+   }
+  },
+  {
+   "i": 13,
+   "utc": "2026-10-29T11:17:03.993Z",
+   "kind": "user",
+   "text": "用最好的方案启动田间仿真"
+  },
+  {
+   "i": 14,
+   "utc": "2026-10-29T11:17:04.026Z",
+   "kind": "assistant",
+   "text": "",
+   "reasoning": "启动仿真会驱动 Gazebo，需要用户批准。",
+   "model_s": 0.03,
+   "tool_calls": [
+    {
+     "id": "c2s",
+     "name": "start_field_simulation"
+    }
+   ]
+  },
+  {
+   "i": 15,
+   "utc": "2026-10-29T11:17:04.027Z",
+   "kind": "approval",
+   "call_id": "c2s",
+   "name": "start_field_simulation",
+   "label": "启动田间仿真",
+   "arguments": {
+    "run_id": "run_20261029T111653_f67cf5"
+   },
+   "decision": "denied",
+   "note": null,
+   "decided_utc": "2026-10-29T11:17:05.742Z"
+  },
+  {
+   "i": 16,
+   "utc": "2026-10-29T11:17:05.742Z",
+   "kind": "tool",
+   "call_id": "c2s",
+   "name": "start_field_simulation",
+   "tier": "actuate",
+   "label": "启动田间仿真",
+   "arguments": {
+    "run_id": "run_20261029T111653_f67cf5"
+   },
+   "ok": false,
+   "error": "用户拒绝执行",
+   "duration_s": 0.0
+  },
+  {
+   "i": 17,
+   "utc": "2026-10-29T11:17:05.783Z",
+   "kind": "final",
+   "text": "结论：你没有批准，所以没有启动田间仿真。\n\n依据：工具调用被拒绝，规划结果保持不变。\n\n局限：方案目前只经过规划层面的独立检查，执行层面尚未验证。",
+   "reasoning": null,
+   "model_s": 0.037,
+   "grounding": {
+    "method": "heuristic-v1",
+    "checked": 0,
+    "grounded": 0,
+    "skipped": 0,
+    "not_found": [],
+    "unknown_ids": [],
+    "note": "启发式核对：数字须出现在本会话工具结果或用户消息中（容差 0.5% 或按所写位数舍入一致）；≤10 的整数与年份不核对；推算得到的数字会列为未直接找到。"
+   }
+  }
+ ],
+ "queue": [],
+ "pending": null,
+ "grounding": {
+  "method": "heuristic-v1",
+  "checked": 0,
+  "grounded": 0,
+  "skipped": 0,
+  "not_found": [],
+  "unknown_ids": [],
+  "note": "启发式核对：数字须出现在本会话工具结果或用户消息中（容差 0.5% 或按所写位数舍入一致）；≤10 的整数与年份不核对；推算得到的数字会列为未直接找到。"
+ },
+ "error": null,
+ "usage": {
+  "model_calls": 8,
+  "tool_calls": 6,
+  "prompt_tokens": 10320,
+  "completion_tokens": 480,
+  "total_tokens": 10800
+ },
+ "evidence": {
+  "scenarios": [
+   "task-sampling-20261029-111652-007"
+  ],
+  "runs": [
+   "run_20261029T111653_f67cf5",
+   "run_20261029T111653_3ce30d"
+  ],
+  "jobs": [
+   "job_20261029T111653_7e896d"
+  ],
+  "studies": [],
+  "field_sessions": []
+ }
+}

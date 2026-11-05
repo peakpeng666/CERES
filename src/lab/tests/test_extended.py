@@ -8,6 +8,7 @@ from urp_lab.execution_check import check
 
 @pytest.mark.skipif(not available()['available'],reason='optional F2C missing')
 @pytest.mark.parametrize('name',['boustrophedon','snake'])
+@pytest.mark.requires_maps('depot')
 def test_f2c_segments_curvature_and_execution_legs(name):
     s=get_scenario('field-coverage-depot');r=run_algorithm(s,s['instance'],'f2c.'+name,{})
     assert r['check']['valid'] and r['map_check']['collision_free']
@@ -30,6 +31,7 @@ def test_coverage_checker_rejects_corner_and_crossing_hole():
     c,_=check_path(inst,[[2,2],[2.1,2],[2.1,2.1]],[[[2,2],[2.1,2]]])
     assert not c['valid'] and any('曲率' in x for x in c['errors'])
 
+@pytest.mark.requires_maps('depot')
 def test_partial_actual_coverage_is_not_complete():
     s=get_scenario('field-coverage-depot');i=s['instance']
     e=dict(tracking_trajectory=[[0,-12.7,-1,0],[1,-12.5,-1,0]])

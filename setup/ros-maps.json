@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/turtlebot/turtlebot4",
+  "commit": "a6ee13b63cbd524500cc6a68cd20dbef69f326a9",
+  "raw_base_url": "https://raw.githubusercontent.com/turtlebot/turtlebot4/a6ee13b63cbd524500cc6a68cd20dbef69f326a9/turtlebot4_navigation/maps",
+  "license": "Apache-2.0",
+  "license_path": "https://github.com/turtlebot/turtlebot4/blob/a6ee13b63cbd524500cc6a68cd20dbef69f326a9/LICENSE",
+  "verified_against": "setup/2026-10-19/delivery-review/map-assets.json",
+  "files": [
+    {"name": "depot.pgm", "bytes": 286915, "sha256": "df4cf00eda944c6ab259449400451ac837afc0642110bcaadf45c27402f5819c"},
+    {"name": "depot.yaml", "bytes": 124, "sha256": "5aca76bc788429c8d2b5372551e659e62baef3590b0aee72932d0868fcf25cff"},
+    {"name": "maze.pgm", "bytes": 448291, "sha256": "02f070e256b7f1f3842b99340a6c5a49866d1289ac4a78ca08da5f47745830cf"},
+    {"name": "maze.yaml", "bytes": 120, "sha256": "bf03c81310d17daec4703c1f6f3243cb683264ebe63544c377e684824355081d"},
+    {"name": "warehouse.pgm", "bytes": 1684107, "sha256": "934ce2ca1feacc2216b68142349c6ebb3e46cc7c76fd80a9c2d2a6fb85ba7ff7"},
+    {"name": "warehouse.yaml", "bytes": 125, "sha256": "ec00d3d25912028e3debed9ded3d6471f70a3bf0f0d1a3f9470458f3068cc585"}
+  ]
+}

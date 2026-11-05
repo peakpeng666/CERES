@@ -1,0 +1,232 @@
+# TEMPLATE ONLY. Root must review and authorize the bounded publication-triggered run.
+# Prospective helper location: deploy/f2c-candidate. No PR or main trigger.
+name: Fields2Cover Jammy candidate validation
+on:
+  workflow_dispatch:
+  push:
+    branches: [fix/agriculture-compatibility-20261022]
+    paths: [.github/workflows/f2c-candidate.yml]
+permissions:
+  contents: read
+concurrency:
+  group: f2c-jammy-candidate-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  measured-candidate:
+    if: github.repository == 'peakpeng666/URP' && github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    env:
+      SOURCE_COMMIT: 18557cfc61f291e8ac5fa4a80d9df212e1df0030
+      # Filled only after independent review of every source-index entry.
+      REVIEWED_SOURCE_INDEX_SHA256: b706328f71ecd03cee3e2fd3ff9f369110a6da94f25fbec2474f27f8b29c3e81
+      PYTHONDONTWRITEBYTECODE: '1'
+      UV_NO_CACHE: '1'
+    steps:
+      - name: Check out reviewed candidate helpers
+        id: helpers_checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: ${{ github.sha }}
+          path: recipe-source
+          persist-credentials: false
+          sparse-checkout: deploy/f2c-candidate
+      - name: Check out unchanged scientific source
+        id: source_checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 18557cfc61f291e8ac5fa4a80d9df212e1df0030
+          path: application
+          persist-credentials: false
+      - name: Select matching uv
+        id: uv_bootstrap
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4
+        with:
+          version: '0.12.23'
+          enable-cache: false
+      - name: Select application Node major
+        id: node_bootstrap
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Establish reviewed source anchor and fresh private paths
+        id: source_anchor
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          CANDIDATE_ROOT="$RUNNER_TEMP/f2c-candidate"
+          test ! -e "$CANDIDATE_ROOT"
+          mkdir "$CANDIDATE_ROOT"
+          export CANDIDATE_ROOT
+          /usr/bin/python3 -I -B - <<'PY'
+          import hashlib,json,os,pathlib,re,shutil
+          source=pathlib.Path(os.environ['GITHUB_WORKSPACE'])/'recipe-source/deploy/f2c-candidate'
+          target=pathlib.Path(os.environ['CANDIDATE_ROOT'])
+          expected=os.environ['REVIEWED_SOURCE_INDEX_SHA256']
+          assert re.fullmatch('[0-9a-f]{64}',expected), 'Source review anchor absent'
+          raw=(source/'source-index.json').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()==expected, 'Source review anchor mismatch'
+          def unique(pairs):
+              out={}
+              for key,value in pairs:
+                  assert key not in out, 'Duplicate index key'
+                  out[key]=value
+              return out
+          index=json.loads(raw,object_pairs_hook=unique)
+          assert index['schema']==1 and index['status']=='reviewed-source'
+          for name,entry in index['files'].items():
+              path=pathlib.PurePosixPath(name)
+              assert not path.is_absolute() and all(x not in ('','.','..') for x in name.split('/'))
+              item=source
+              for part in path.parts:
+                  item=item/part
+                  assert not item.is_symlink(), 'Source symlink prohibited'
+              assert item.is_file() and hashlib.sha256(item.read_bytes()).hexdigest()==entry['sha256']
+              dest=target/path; dest.parent.mkdir(parents=True,exist_ok=True)
+              shutil.copyfile(item,dest)
+          (target/'source-index.json').write_bytes(raw)
+          PY
+          mkdir "$CANDIDATE_ROOT/private-workflow-evidence"
+          uv python install 3.12.13 >"$CANDIDATE_ROOT/private-workflow-evidence/python-install.log" 2>&1
+          PY31213="$(uv python find 3.12.13)"
+          printf 'CANDIDATE_ROOT=%s\nPY31213=%s\nUV_BIN=%s\nNODE_BIN=%s\n' \
+            "$CANDIDATE_ROOT" "$PY31213" "$(command -v uv)" "$(command -v node)" >> "$GITHUB_ENV"
+      - name: Check reviewed helper logic without native execution
+        id: helper_tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            "$PY31213" -I -B -m unittest discover \
+            -s "$CANDIDATE_ROOT/recipe/tests" -p 'test_*.py' -q \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/helper-tests.log" 2>&1
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            "$PY31213" -I -B -m unittest discover \
+            -s "$CANDIDATE_ROOT" -p 'test_compare_interfaces.py' -q \
+            >>"$CANDIDATE_ROOT/private-workflow-evidence/helper-tests.log" 2>&1
+          echo 'Reviewed helper unit checks passed; no candidate native code executed.'
+      - name: Resolve and verify official Jammy package transaction
+        id: packages
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            ImageOS="${ImageOS:?Hosted image identity missing}" ImageVersion="${ImageVersion:?Hosted image version missing}" \
+            /usr/bin/python3 -I -B "$CANDIDATE_ROOT/recipe/prepare_jammy_packages.py" \
+            --root "$CANDIDATE_ROOT" --install \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/packages.log" 2>&1
+          echo 'Official package preparation completed; raw evidence retained privately on runner.'
+      - name: Materialize locked validation dependencies and official data
+        id: validation_inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            "$PY31213" -I -B "$CANDIDATE_ROOT/recipe/prepare_validation_data.py" \
+            --source "$GITHUB_WORKSPACE/application" --root "$RUNNER_TEMP/f2c-validation-inputs" \
+            --python "$PY31213" --uv "$UV_BIN" \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/validation-inputs.log" 2>&1
+          echo 'Locked validation dependencies and official maps/dataset materialized.'
+      - name: Measure same-runner build inputs and construct single-ORTools-provider interface
+        id: measured_lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            "$PY31213" -I -B "$CANDIDATE_ROOT/recipe/prepare_live.py" \
+            --root "$CANDIDATE_ROOT" --python "$PY31213" \
+            --expected-source-index-sha256 "$REVIEWED_SOURCE_INDEX_SHA256" \
+            --package-lock "$CANDIDATE_ROOT/package-preparation.json" \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/preparation.log" 2>&1
+          echo 'Reviewed preparer anchored measured host/input bytes on this live runner.'
+      - name: Build offline with unchanged upstream source
+        id: offline_build
+        shell: bash
+        run: |
+          set -euo pipefail
+          ANCHOR="$("$PY31213" -I -c 'import json,sys; print(json.load(open(sys.argv[1]))["artifact_index_sha256"])' "$CANDIDATE_ROOT/prepared-anchor.json")"
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            /usr/bin/bash --noprofile --norc "$CANDIDATE_ROOT/recipe/build_offline.sh" \
+            --execute-reviewed-build --root "$CANDIDATE_ROOT" --python "$PY31213" \
+            --expected-index-sha256 "$ANCHOR" \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/offline-build.log" 2>&1
+          echo 'New wheel built; not yet accepted or promoted.'
+      - name: Freeze and validate relocated candidate without loader overrides
+        id: native_validation
+        shell: bash
+        run: |
+          set -euo pipefail
+          CONFIG="$CANDIDATE_ROOT/validation-config.json"
+          RELOCATED="$RUNNER_TEMP/f2c-relocated-validation"
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            "$PY31213" -I -B "$CANDIDATE_ROOT/recipe/freeze_validation_config.py" \
+            --source "$GITHUB_WORKSPACE/application" --root "$CANDIDATE_ROOT" \
+            --data "$RUNNER_TEMP/f2c-validation-inputs" --output "$RELOCATED" \
+            --config "$CONFIG" --python "$PY31213" --node "$NODE_BIN" \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/validation-config.sha256" \
+            2>"$CANDIDATE_ROOT/private-workflow-evidence/validation-freeze.log"
+          CONFIG_SHA="$(cat "$CANDIDATE_ROOT/private-workflow-evidence/validation-config.sha256")"
+          [[ "$CONFIG_SHA" =~ ^[0-9a-f]{64}$ ]]
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            /usr/bin/unshare --user --map-root-user --net \
+            "$PY31213" -I -B "$CANDIDATE_ROOT/recipe/validate_jammy_candidate.py" prepare \
+            --config "$CONFIG" --expected-config-sha256 "$CONFIG_SHA" \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/validation-stage.log" 2>&1
+          /usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            /usr/bin/unshare --user --map-root-user --net \
+            "$PY31213" -I -B "$CANDIDATE_ROOT/recipe/validate_jammy_candidate.py" run \
+            --config "$CONFIG" --expected-config-sha256 "$CONFIG_SHA" --allow-native-execution \
+            >"$CANDIDATE_ROOT/private-workflow-evidence/validation-run.log" 2>&1
+          echo 'Relocated candidate passed unchanged native and full-suite gates.'
+      - name: Report bounded candidate status only
+        if: always()
+        shell: bash
+        env:
+          JOB_STATUS: ${{ job.status }}
+          STAGE_OUTCOMES: helpers_checkout:${{ steps.helpers_checkout.outcome }} source_checkout:${{ steps.source_checkout.outcome }} uv_bootstrap:${{ steps.uv_bootstrap.outcome }} node_bootstrap:${{ steps.node_bootstrap.outcome }} source_anchor:${{ steps.source_anchor.outcome }} helper_tests:${{ steps.helper_tests.outcome }} packages:${{ steps.packages.outcome }} validation_inputs:${{ steps.validation_inputs.outcome }} measured_lock:${{ steps.measured_lock.outcome }} offline_build:${{ steps.offline_build.outcome }} native_validation:${{ steps.native_validation.outcome }}
+        run: |
+          set -euo pipefail
+          case "$JOB_STATUS" in success) RESULT=PASS;; *) RESULT=NOT_ACCEPTED;; esac
+          FAILED_STAGE=none
+          for item in $STAGE_OUTCOMES; do
+            case "$item" in *:failure|*:cancelled) FAILED_STAGE="${item%:*}"; break;; esac
+          done
+          case "$FAILED_STAGE" in none|helpers_checkout|source_checkout|uv_bootstrap|node_bootstrap|source_anchor|helper_tests|packages|validation_inputs|measured_lock|offline_build|native_validation) ;; *) FAILED_STAGE=unknown;; esac
+          if [ "$RESULT" != PASS ] && [ "$FAILED_STAGE" = none ]; then FAILED_STAGE=unknown; fi
+          export FAILED_STAGE
+          FAILURE_DETAILS="$(/usr/bin/env -i PATH=/usr/bin:/bin LANG=C.UTF-8 LC_ALL=C.UTF-8 \
+            CANDIDATE_ROOT="${CANDIDATE_ROOT:-}" REVIEWED_SOURCE_INDEX_SHA256="$REVIEWED_SOURCE_INDEX_SHA256" \
+            FAILED_STAGE="$FAILED_STAGE" /usr/bin/python3 -I -B - <<'PY_FAILURE'
+          import hashlib,json,os,pathlib
+          try:
+              root=pathlib.Path(os.environ['CANDIDATE_ROOT'])
+              raw=(root/'source-index.json').read_bytes()
+              assert hashlib.sha256(raw).hexdigest()==os.environ['REVIEWED_SOURCE_INDEX_SHA256']
+              index=json.loads(raw)
+              helper=root/'recipe/report_candidate_failure.py'
+              data=helper.read_bytes()
+              assert not helper.is_symlink() and hashlib.sha256(data).hexdigest()==index['files']['recipe/report_candidate_failure.py']['sha256']
+              exec(compile(data,str(helper),'exec'),{'__name__':'verified_candidate_report','__file__':str(helper)})
+          except Exception:
+              print('code=UNKNOWN')
+          PY_FAILURE
+          )"
+          if [ "$RESULT" = PASS ]; then FAILURE_DETAILS=code=NONE; fi
+          printf 'Candidate diagnostic: stage=%s %s\n' "$FAILED_STAGE" "$FAILURE_DETAILS" | tee -a "$GITHUB_STEP_SUMMARY"
+          if [ "$RESULT" = PASS ]; then
+            /usr/bin/python3 -I -B - <<'PY_SUMMARY' >> "$GITHUB_STEP_SUMMARY"
+          import json,os,pathlib,re
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'f2c-relocated-validation/public-summary.json'
+          d=json.loads(p.read_text())
+          assert d['schema']==1 and d['status']=='jammy_candidate_validated_not_production_accepted'
+          assert (d['geometry_passed'],d['full_passed'],d['skipped'],d['mixed_import_orders_passed'])==(3,602,0,2)
+          assert re.fullmatch('[0-9a-f]{64}',d['wheel_sha256'])
+          print('Unchanged tests: 602 passed, 0 skipped; native geometry: 3 passed; mixed import orders: 2 passed.')
+          print('Candidate wheel SHA256: '+d['wheel_sha256'])
+          PY_SUMMARY
+          fi
+          printf 'Fields2Cover Jammy candidate: %s.\n' "$RESULT" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf 'Measured first build only; no bit-reproducibility or production-promotion claim.\n' >> "$GITHUB_STEP_SUMMARY"
+          printf 'No native wheels, caches, raw logs, datasets or environment dumps uploaded.\n' >> "$GITHUB_STEP_SUMMARY"

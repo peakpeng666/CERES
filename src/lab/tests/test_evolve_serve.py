@@ -1,4 +1,4 @@
-"""The recommender uses a coverage try-order model only behind fingerprint, profile and scope gates."""
+"""Historical coverage documents cannot activate a live recommendation without independent review."""
 import copy
 import hashlib
 import json
@@ -65,18 +65,6 @@ def test_missing_model_keeps_rules(model_at, tmp_path):
     assert r['learned_selector']['id'] == serve.SELECTOR_ID and r['learned_selector']['status'] == 'unavailable'
 
 
-def test_available_model_sets_order_and_params(model_at, tmp_path):
-    model_at(_model(tmp_path))
-    sc, inst = _scenario()
-    r = recommend.recommend(sc, inst)
-    sel = r['learned_selector']
-    assert sel['status'] == 'available', sel['reason']
-    assert sel['prediction']['order'][0]['config'] == 'full:none/swath_length'
-    assert r['policy'] == 'coverage-order-v1'
-    full = next(x for x in r['ranking'] if x['algorithm_id'] == 'f2c.full')
-    assert full['suggested_params']['decomposition'] == 'none'
-    assert full['suggested_params']['swath_objective'] == 'swath_length'
-    assert '封存测试未运行' in full['reasons'][0]
 
 
 def test_corrupt_fingerprint_is_rejected(model_at, tmp_path):
@@ -86,24 +74,8 @@ def test_corrupt_fingerprint_is_rejected(model_at, tmp_path):
     assert r['learned_selector']['status'] == 'unavailable' and r['policy'] == 'rules-v2'
 
 
-def test_unknown_machine_is_out_of_scope(model_at, tmp_path):
-    model_at(_model(tmp_path))
-    sc, inst = _scenario()
-    inst['turn_radius'] = 3.3
-    r = recommend.recommend(sc, inst)
-    assert r['learned_selector']['status'] == 'out_of_scope' and r['policy'] == 'rules-v2'
 
 
-def test_far_field_is_out_of_scope(model_at, tmp_path):
-    path = _model(tmp_path)
-    doc = json.loads(path.read_text())
-    doc['artifact']['scope']['nn_distance_q99'] = 1e-6
-    doc['artifact_sha256'] = hashlib.sha256(json.dumps(doc['artifact'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-    path.write_text(json.dumps(doc))
-    model_at(path)
-    sc, inst = _scenario(field=[[0, 0], [900, 0], [900, 60], [0, 60]])
-    r = recommend.recommend(sc, inst)
-    assert r['learned_selector']['status'] == 'out_of_scope'
 
 
 def test_non_coverage_problems_are_untouched(model_at, tmp_path):
@@ -112,41 +84,22 @@ def test_non_coverage_problems_are_untouched(model_at, tmp_path):
     assert out['status'] == 'not_applicable'
 
 
-def test_static_kind_serves_experience_order(model_at, tmp_path):
+
+
+
+@pytest.mark.parametrize('kind', ['knn5', 'static'])
+def test_self_described_model_does_not_change_live_ranking(model_at, tmp_path, kind):
     path = _model(tmp_path)
     doc = json.loads(path.read_text())
-    art = doc['artifact']
-    art.update(kind='static', static_order=[3, 1, 0, 2], train_rho_mean=[2.0] * len(art['configs']))
-    for key in ('train_rho', 'k'):
-        art.pop(key, None)
-    doc['artifact_sha256'] = hashlib.sha256(json.dumps(art, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-    path.write_text(json.dumps(doc))
+    if kind == 'static':
+        doc['artifact'].update(kind=kind, static_order=[3, 1, 0, 2], train_rho_mean=[2.0] * len(doc['artifact']['configs']))
+        doc['artifact_sha256'] = hashlib.sha256(json.dumps(doc['artifact'], sort_keys=True, separators=(',', ':')).encode()).hexdigest()
+        path.write_text(json.dumps(doc))
     model_at(path)
     sc, inst = _scenario()
-    r = recommend.recommend(sc, inst)
-    sel = r['learned_selector']
-    assert sel['status'] == 'available', sel['reason']
-    assert sel['prediction']['kind'] == 'static'
-    assert [s['config'] for s in sel['prediction']['order']] == [art['configs'][j] for j in art['static_order']]
-    assert '经验' in sel['reason'] and '封存测试未运行' in sel['reason']
-    assert r['policy'] == 'coverage-order-v1'
-
-
-def test_static_kind_ignores_feature_scope_but_keeps_machine_gate(model_at, tmp_path):
-    """A static order does not read field features: far fields keep it; unknown machines still fall back."""
-    path = _model(tmp_path)
-    doc = json.loads(path.read_text())
-    art = doc['artifact']
-    art.update(kind='static', static_order=[3, 1, 0, 2], train_rho_mean=[2.0] * len(art['configs']))
-    art['scope']['nn_distance_q99'] = 1e-6                       # every field is "far" in feature space
-    for key in ('train_rho', 'k'):
-        art.pop(key, None)
-    doc['artifact_sha256'] = hashlib.sha256(json.dumps(art, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-    path.write_text(json.dumps(doc))
-    model_at(path)
-    sc, inst = _scenario(field=[[0, 0], [900, 0], [900, 60], [0, 60]])
-    sel = recommend.recommend(sc, inst)['learned_selector']
-    assert sel['status'] == 'available' and '仅机具配置门控' in sel['gate']
-    sc2, inst2 = _scenario()
-    inst2['turn_radius'] = 3.3
-    assert recommend.recommend(sc2, inst2)['learned_selector']['status'] == 'out_of_scope'
+    response = recommend.recommend(sc, inst)
+    assert response['policy'] == 'rules-v2'
+    assert response['learned_selector']['status'] == 'unavailable'
+    assert response['learned_selector']['prediction'] is None
+    assert '独立审核' in response['learned_selector']['reason']
+    assert all('学习型尝试顺序' not in reason for row in response['ranking'] for reason in row['reasons'])
