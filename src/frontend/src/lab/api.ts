@@ -3,6 +3,7 @@ import type {
   Algorithm,
   AlgorithmHistory,
   AlgorithmStat,
+  DataPack,
   PhysicsRun,
   Instance,
   MapMeta,
@@ -89,7 +90,11 @@ export const lab = {
   algorithms: () => request<{ algorithms: Algorithm[] }>('GET', '/algorithms'),
   algorithmStats: () => request<{ stats: Record<string, AlgorithmStat> }>('GET', '/algorithms/stats'),
   algorithmHistory: (id: string) => request<AlgorithmHistory>('GET', `/algorithms/${encodeURIComponent(id)}/history`),
-  physicsEngines: () => request<{ engines: { id: string; name: string; available: boolean; reason: string | null; version: string | null }[] }>('GET', '/physics/engines'),
+  packs: () => request<{ packs: DataPack[] }>('GET', '/packs'),
+  packInstall: (id: string) => request<DataPack>('POST', `/packs/${encodeURIComponent(id)}/install`, {}),
+  packCancel: (id: string) => request<{ id: string }>('POST', `/packs/${encodeURIComponent(id)}/cancel`, {}),
+  packRemove: (id: string) => request<{ id: string }>('POST', `/packs/${encodeURIComponent(id)}/remove`, {}),
+  physicsEngines: () => request<{ engines: { id: string; name: string; available: boolean; reason: string | null; version: string | null }[]; gazebo_gap: string | null }>('GET', '/physics/engines'),
   physicsSubmit: (body: { run_id?: string; session_id?: string }) => request<PhysicsRun>('POST', '/physics/runs', body),
   physicsRuns: (run_id?: string) => request<{ runs: PhysicsRun[] }>('GET', `/physics/runs${run_id ? `?run_id=${encodeURIComponent(run_id)}` : ''}`),
   physicsRun: (id: string) => request<PhysicsRun>('GET', `/physics/runs/${encodeURIComponent(id)}`),
@@ -161,7 +166,7 @@ class EventHub {
   private stateListeners = new Set<() => void>();
   private hiddenTimer = 0;
   connected = false;
-  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session', 'physics_run'];
+  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session', 'physics_run', 'pack'];
 
   constructor() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;

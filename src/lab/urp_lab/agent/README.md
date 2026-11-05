@@ -45,25 +45,34 @@
 
 ## 4. 模型接入
 
-提供方在 `~/.config/urp-workbench/llm.json` 声明（可用 `URP_LLM_CONFIG` 覆盖），密钥只在 `~/.config/urp-workbench/credentials.json`（权限须为 600，可用 `URP_LLM_CREDENTIALS` 覆盖）或环境变量中，由网关进程在调用时读取；接口、日志、会话与导出均不包含密钥。配置中直接写入的密钥字段会被拒绝。
+做法和 opencode 一样：服务商和模型来自公开的 [models.dev](https://models.dev) 目录，用户选一家，粘贴 API Key，就能用。模型地址写成 `服务商/模型`，比如 `deepseek/deepseek-v4-pro`。
 
-| 类型 `kind` | 适用 | 说明 |
-|---|---|---|
-| `ollama` | 本地开源模型 | 原生 `/api/chat`，支持工具调用、`think` 开关与上下文长度；用量来自 `prompt_eval_count / eval_count` |
-| `openai` | 智谱、DeepSeek、通义、OpenAI、vLLM 等兼容接口 | `/chat/completions` + `tools`；`options.extra_body` 透传厂商参数 |
-| `anthropic` | Claude Messages API | 工具结果按 `tool_result` 块合并 |
+| 模块 | 内容 |
+|---|---|
+| `catalog.py` | 目录。随代码提供一份精简快照（`data/model-catalog.json`，用 `python -m urp_lab.agent.catalog` 重新生成），桌面应用每天至多刷新一次，缓存在 `~/.config/urp-workbench/model-catalog.json`。只保留一个 Key 就能走通的服务（OpenAI 兼容或 Anthropic 接口）和能调用工具的模型；本地运行时、云账号登录和限定编程工具的订阅端点不列入 |
+| `providers.py` | 已连接的服务、选中的模型和自定义接口。Key 经 `llm.set_key` 写入私有文件，这里没有函数会返回 Key |
+| `llm.py` | 一次具体调用：`openai` 与 `anthropic` 两种接口，超时、仅对传输错误 / 429 / 5xx 的有限重试、取消、用量与费用记录 |
 
-调用包含超时、仅对传输错误 / 429 / 5xx 的有限重试、可取消（放弃进行中的请求）、逐次记录模型、延迟、尝试次数、输入输出 token 与费用（按配置单价）。凭据引用支持 `credentials.json` 键名、`env:变量名` 与 `gcloud-adc`（Vertex AI 的应用默认凭据）。
-
-本机默认：`setup/llm/local-llm.sh start|stop|status|pull`（Ollama v0.40.13，用户目录安装、仅监听 127.0.0.1、无需 sudo），默认模型 `qwen3.8:27b`。
+- **连接**：`POST /providers/{id}/connect`。先用服务商免费的模型列表接口校验，只有明确的 401 才拒绝；服务商不支持校验或暂时连不上时保存并标为未验证，调用时再判断。第一次连接时自动选中该服务的主力模型。
+- **Key 存放**：`~/.config/urp-workbench/credentials.json`（可用 `URP_LLM_CREDENTIALS` 覆盖），权限 600，原子写入。接口、日志、会话和导出都不返回 Key，掩码也不返回。服务目录里声明的环境变量（如 `DEEPSEEK_API_KEY`）也算连接，但界面粘贴的 Key 优先。
+- **不会替用户花钱**：`llm.json` 里已有的端点（比如订阅端点）会列出来，但不会被自动选中；只有用户选了才用。
+- **自定义接口**：任何 OpenAI 兼容服务，写入 `llm.json` 的 `providers`，Key 同样进 `credentials.json`。
+- **推理模型**：目录标明需要回传推理内容的模型，工具调用过程中把它的 `reasoning_content` 按原字段带回；不接受 `temperature` 的模型不发这个参数。
+- **费用**：目录里的单价按美元每百万 tokens 计入会话用量，是估算，以服务商账单为准。
 
 ## 5. HTTP 接口（`/lab/api/agent`）
 
 | 方法 | 路径 | 说明 |
 |---|---|---|
-| GET | `/providers` | 提供方、模型、启用与可达状态（不含密钥） |
+| GET | `/providers` | 服务目录、已连接的服务及其模型、当前模型（不含 Key） |
+| GET | `/providers/{id}/models` | 一家服务的模型清单 |
+| POST | `/providers/{id}/connect` | `{api_key}`，校验后保存 |
+| POST | `/providers/{id}/disconnect` | 删除这家服务的 Key；自定义接口连同配置一起删除 |
+| POST | `/providers/custom` | `{name, base_url, api_key, models?}` |
+| POST | `/providers/refresh` | 立即更新模型目录 |
+| POST | `/model` | `{model: "服务商/模型"}`，设为当前模型 |
 | GET | `/sessions` | 会话列表 |
-| POST | `/sessions` | `{text?, mode: auto|hybrid|llm|rule, provider_id?, auto_confirm?}`；模型不可用时 `auto` 退回规则流程并注明，`llm/hybrid` 返回 409 |
+| POST | `/sessions` | `{text?, mode: auto|hybrid|llm|rule, provider_id?, auto_confirm?}`；`provider_id` 是 `服务商/模型`，省略时用当前模型；模型不可用时 `auto` 退回规则流程并注明，`llm/hybrid` 返回 409 |
 | GET | `/sessions/{id}` | 完整会话（不含模型内部上下文） |
 | POST | `/sessions/{id}/messages` | `{text}`，启动一轮；执行中返回 409 |
 | POST | `/sessions/{id}/control` | `{action: pause|resume|cancel|retry|confirm|approve|reject|takeover|simulate, step?, scenario_id?, run_ids?, run_id?}` |

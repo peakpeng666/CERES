@@ -1,5 +1,6 @@
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import type { Route } from '../app/router';
+import { lab, useLabResource } from '../lab/api';
 import { useAgent } from '../agent/store';
 import { ALWAYS, PANELS, PanelHost, type PanelId } from '../studio/panelRegistry';
 import { useStudio } from '../studio/store';
@@ -164,6 +165,13 @@ function PlanComposer() {
   return <div className={s.dock} style={{ paddingTop: 8 }}><div className={s.dockIn}><Composer session={null} placeholder="让智能体在这张地图上求解、对比或修改" compact /></div></div>;
 }
 
+/** Said once at the top of the simulation surface, so nobody has to press start to find out. */
+function GazeboGap() {
+  const gap = useLabResource('physics-engines', () => lab.physicsEngines()).data?.gazebo_gap;
+  if (!gap) return null;
+  return <p className={s.simGap}>{gap}{window.desktop && <a href="#/system/desktop">打开设置</a>}</p>;
+}
+
 export function WorkSurface({ name, route }: { name: SurfaceName; route: Route }) {
   const def = SURFACES[name];
   const paneSet = useDesk((d) => d.pane[name] !== undefined);
@@ -189,6 +197,7 @@ export function WorkSurface({ name, route }: { name: SurfaceName; route: Route }
   return (
     <SurfaceFrame name={name} pane={<div className={s.paneIn}><Region surface={name} region="pane" tabs={def.pane} more={def.more} tail={tail} /></div>}>
       {head}
+      {name === 'sim' && <GazeboGap />}
       <div className={s.regionBox}>
         {single ? <div className={s.tabPanel}><PanelHost key={single} id={single} /></div> : <Region surface={name} region="main" tabs={def.main} />}
       </div>

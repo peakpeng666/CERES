@@ -4,12 +4,13 @@ from __future__ import annotations
 import threading
 from typing import Any
 
+import httpx
 from fastapi import APIRouter, Body, Request
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 
 from ..services import ServiceError
-from . import capabilities
+from . import capabilities, catalog, providers
 from .runner import AgentRunner, RunnerError
 
 router = APIRouter()
@@ -44,13 +45,49 @@ def _fresh(data, status: int = 200) -> JSONResponse:
 
 
 @router.get('/agent/providers')
-async def providers(request: Request):
+async def provider_list(request: Request):
     return _fresh(await run_in_threadpool(runner(request).providers))
 
 
-@router.post('/agent/providers/local/{action}')
-def local_model(request: Request, action: str, payload: Any = Body(None)):
-    return _fresh(_call(runner(request).local_model, action))
+def _provider_call(fn, *args):
+    try:
+        return _fresh(fn(*args))
+    except providers.ProviderError as exc:
+        raise ServiceError(exc.status, exc.code, exc.message) from None
+
+
+@router.get('/agent/providers/{service_id}/models')
+def provider_models(service_id: str):
+    return _provider_call(providers.models_of, service_id)
+
+
+@router.post('/agent/providers/refresh')
+def provider_refresh():
+    try:
+        meta = catalog.refresh()
+    except (httpx.HTTPError, OSError, ValueError) as exc:
+        raise ServiceError(502, 'catalog_unavailable', f'暂时无法更新模型目录：{type(exc).__name__}') from None
+    return _fresh({'updated_utc': meta['updated_utc'], 'services': len(meta['services'])})
+
+
+@router.post('/agent/providers/custom')
+def provider_custom(payload: Any = Body(None)):
+    return _provider_call(providers.add_custom, _body(payload))
+
+
+@router.post('/agent/providers/{service_id}/connect')
+def provider_connect(service_id: str, payload: Any = Body(None)):
+    return _provider_call(providers.connect, service_id, _body(payload).get('api_key'))
+
+
+@router.post('/agent/providers/{service_id}/disconnect')
+def provider_disconnect(service_id: str):
+    return _provider_call(providers.remove_custom if service_id.startswith('custom-') else providers.disconnect, service_id)
+
+
+@router.post('/agent/model')
+def choose_model(payload: Any = Body(None)):
+    return _provider_call(lambda: {'selected': providers.select(str(_body(payload).get('model') or ''))})
 
 
 @router.get('/agent/harness')

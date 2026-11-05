@@ -1,0 +1,165 @@
+{
+ "session_id": "agt_20261105T093122_6bfc33",
+ "state": "done",
+ "narrative": "任务规模：场地 60 × 40 m，6 个任务点，1 台车，单车容量 8 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 PyVRP 固定车队（run_20261105T093123_4e45e9），总里程 168.04 m，按恒速模型计算的最晚完成时间为 168.04 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 170.77 m、工期 204.16 s；OR-Tools 车队调度 实际里程 170.76 m、工期 204.52 s；节约算法 + 2-opt 实际里程 170.77 m、工期 204.16 s。田间仿真完成 6/6 个任务点，实际里程 170.65 m，规划里程 168.045 m，实际工期 204.22 s，最大横向偏差 0.118 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.034 m。",
+ "best": {
+  "run_id": "run_20261105T093123_4e45e9",
+  "objective": 168.04,
+  "algorithm": "PyVRP 固定车队",
+  "algorithm_id": "pyvrp.fleet",
+  "unit": "m",
+  "total_distance_m": 168.04,
+  "makespan_s": 168.04
+ },
+ "physics": [
+  {
+   "run_id": "run_20261105T093123_4e45e9",
+   "algorithm": "PyVRP 固定车队",
+   "state": "succeeded",
+   "check_valid": true,
+   "wall_s": 0.572,
+   "metrics": {
+    "tasks_total": 6,
+    "tasks_completed": 6,
+    "total_distance_m": 170.77,
+    "planned_total_distance_m": 168.045,
+    "makespan_s": 204.16,
+    "planned_makespan_s": 168.045,
+    "cross_track_mean_m": 0.01,
+    "cross_track_max_m": 0.123,
+    "energy_wh": 0.877
+   }
+  },
+  {
+   "run_id": "run_20261105T093123_f72a3c",
+   "algorithm": "OR-Tools 车队调度",
+   "state": "succeeded",
+   "check_valid": true,
+   "wall_s": 0.587,
+   "metrics": {
+    "tasks_total": 6,
+    "tasks_completed": 6,
+    "total_distance_m": 170.76,
+    "planned_total_distance_m": 168.045,
+    "makespan_s": 204.52,
+    "planned_makespan_s": 168.045,
+    "cross_track_mean_m": 0.011,
+    "cross_track_max_m": 0.121,
+    "energy_wh": 0.877
+   }
+  },
+  {
+   "run_id": "run_20261105T093123_48d180",
+   "algorithm": "节约算法 + 2-opt",
+   "state": "succeeded",
+   "check_valid": true,
+   "wall_s": 0.609,
+   "metrics": {
+    "tasks_total": 6,
+    "tasks_completed": 6,
+    "total_distance_m": 170.77,
+    "planned_total_distance_m": 168.045,
+    "makespan_s": 204.16,
+    "planned_makespan_s": 168.045,
+    "cross_track_mean_m": 0.01,
+    "cross_track_max_m": 0.123,
+    "energy_wh": 0.877
+   }
+  }
+ ],
+ "gazebo": {
+  "session_id": "field_20261105T093130_043ad2",
+  "run_id": "run_20261105T093123_4e45e9",
+  "state": "succeeded",
+  "check_valid": true,
+  "errors": [],
+  "metrics": {
+   "tasks_total": 6,
+   "tasks_completed": 6,
+   "total_distance_m": 170.65,
+   "planned_total_distance_m": 168.045,
+   "makespan_s": 204.22,
+   "planned_makespan_s": 168.045,
+   "cross_track_mean_m": 0.007,
+   "cross_track_max_m": 0.118,
+   "energy_wh": 0.875
+  }
+ },
+ "comparison": {
+  "physics_run_id": "phys_20261105T093229_6f5549",
+  "schema": "urp.sim2sim/1",
+  "run_id": "run_20261105T093123_4e45e9",
+  "a": {
+   "engine": "gazebo",
+   "session_id": "field_20261105T093130_043ad2",
+   "state": "succeeded"
+  },
+  "b": {
+   "engine": "mujoco",
+   "version": "3.17.0",
+   "state": "succeeded"
+  },
+  "path_max_m": 0.034426921779444515,
+  "path_mean_m": 0.0031489039211041047,
+  "time_rmse_m": 0.04825176397819322,
+  "metrics": {
+   "makespan_s": {
+    "a": 204.22,
+    "b": 204.16
+   },
+   "total_distance_m": {
+    "a": 170.65,
+    "b": 170.77
+   },
+   "cross_track_mean_m": {
+    "a": 0.0072,
+    "b": 0.0097
+   },
+   "cross_track_max_m": {
+    "a": 0.1182,
+    "b": 0.1235
+   },
+   "energy_wh": {
+    "a": 0.875,
+    "b": 0.877
+   },
+   "tasks_completed": {
+    "a": 6,
+    "b": 6
+   }
+  },
+  "scope": "同一冻结方案在两个物理引擎中的差异；是引擎间差距，不是实车误差"
+ },
+ "vehicles": [
+  {
+   "name": "vehicle_1",
+   "label": "① 号车",
+   "path": {
+    "mean_m": 0.0031489039211041047,
+    "p95_m": 0.01747351601835123,
+    "max_m": 0.034426921779444515
+   },
+   "at_time": {
+    "rmse_m": 0.04825176397819322,
+    "max_m": 0.15332728175219276
+   },
+   "task_arrival_s": {
+    "tasks": 6,
+    "mean_abs": 0.08133333333333444,
+    "max_abs": 0.19599999999999795
+   },
+   "distance_m": {
+    "a": 170.65,
+    "b": 170.77
+   },
+   "duration_s": {
+    "a": 205.04000000000002,
+    "b": 205
+   },
+   "cross_track_max_m": {
+    "a": 0.1182,
+    "b": 0.1235
+   }
+  }
+ ]
+}

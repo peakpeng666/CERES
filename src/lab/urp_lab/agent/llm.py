@@ -1,8 +1,8 @@
 """Provider-neutral chat with tool calling, bounded retries, cancellation, usage and cost records.
 
-Providers are declared in ``~/.config/urp-workbench/llm.json`` (``URP_LLM_CONFIG``); secrets live only in
-``~/.config/urp-workbench/credentials.json`` (``URP_LLM_CREDENTIALS``, mode 600) or in environment variables, are read
-at call time in the gateway process and never returned by any endpoint, log line or export.
+A ``Provider`` is one model on one service. ``providers.py`` builds them from the model catalog and what the user has
+connected. Secrets live only in ``~/.config/urp-workbench/credentials.json`` (``URP_LLM_CREDENTIALS``, mode 600) or in
+environment variables, are read at call time in the gateway process and never returned by any endpoint, log line or export.
 
 Internal message format (converted per provider)::
 
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import concurrent.futures
 import json
+import logging
 import os
 import re
 import stat
@@ -26,15 +27,12 @@ from pathlib import Path
 
 import httpx
 
+log = logging.getLogger('urp_lab.agent')
+
 CONFIG_PATH = Path(os.environ.get('URP_LLM_CONFIG') or '~/.config/urp-workbench/llm.json').expanduser()
 CREDENTIALS_PATH = Path(os.environ.get('URP_LLM_CREDENTIALS') or '~/.config/urp-workbench/credentials.json').expanduser()
-KINDS = ('ollama', 'openai', 'anthropic')
+KINDS = ('openai', 'anthropic')
 RETRY_STATUS = {408, 409, 425, 429, 500, 502, 503, 504, 529}
-DEFAULT_PROVIDERS = [{
-    'id': 'local', 'kind': 'ollama', 'label': '本地开源模型（Ollama）', 'base_url': 'http://127.0.0.1:11434',
-    'model': 'qwen3.8:27b', 'enabled': True, 'price': {'input': 0.0, 'output': 0.0, 'currency': 'CNY'},
-    'options': {'temperature': 0.2, 'num_ctx': 16384, 'think': False}, 'timeout_s': 240, 'max_retries': 1,
-}]
 KEY_PATTERNS = [re.compile(r'(?i)bearer\s+[A-Za-z0-9._\-]{8,}'), re.compile(r'\bsk-[A-Za-z0-9_\-]{12,}'),
                 re.compile(r'\b[0-9a-f]{32}\.[A-Za-z0-9]{8,}\b'), re.compile(r'\bya29\.[A-Za-z0-9._\-]{10,}')]
 
@@ -59,6 +57,7 @@ class Provider:
     label: str = ''
     enabled: bool = True
     credential: str | None = None          # credentials.json key, "env:NAME" or "gcloud-adc"
+    env: tuple = ()                        # environment variables that also hold this service's key
     price: dict | None = None              # per million tokens: {'input', 'output', 'currency'}
     options: dict = field(default_factory=dict)
     timeout_s: float = 120.0
@@ -68,7 +67,7 @@ class Provider:
     def public(self) -> dict:
         return {'id': self.id, 'kind': self.kind, 'model': self.model, 'label': self.label or self.id,
                 'base_url': self.base_url, 'enabled': self.enabled, 'has_credential': self.credential is None or bool(_secret(self)),
-                'price': self.price, 'terms_note': self.terms_note, 'local': self.kind == 'ollama'}
+                'price': self.price, 'terms_note': self.terms_note}
 
 
 @dataclass
@@ -84,6 +83,7 @@ class Response:
     cost: float | None
     currency: str | None
     reasoning_chars: int = 0
+    reasoning: str | None = None           # handed back on the next call by models that require their own reasoning text
 
     def record(self) -> dict:
         return {'provider': self.provider, 'model': self.model, 'latency_s': round(self.latency_s, 3),
@@ -106,12 +106,44 @@ def _credentials() -> dict:
     if not CREDENTIALS_PATH.is_file():
         return {}
     mode = CREDENTIALS_PATH.stat().st_mode
-    if mode & (stat.S_IRWXG | stat.S_IRWXO):
+    # POSIX modes do not exist on Windows or on a volume bind-mounted from it; there the user profile's ACL applies.
+    if os.name != 'nt' and os.environ.get('URP_CREDENTIALS_MOUNTED') != '1' and mode & (stat.S_IRWXG | stat.S_IRWXO):
         raise LLMError(f'{CREDENTIALS_PATH} 的权限过宽（须为 600），拒绝读取', 'insecure_credentials')
     try:
         return json.loads(CREDENTIALS_PATH.read_text(encoding='utf-8'))
     except (OSError, json.JSONDecodeError) as exc:
         raise LLMError(f'凭据文件无法解析：{type(exc).__name__}', 'invalid_credentials') from None
+
+
+_write_lock = threading.Lock()
+
+
+def write_private(path: Path, data: dict):
+    """Atomic JSON write that is never readable by another user, not even for a moment."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_name(f'.{path.name}.{os.getpid()}.tmp')
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, path)
+
+
+def set_key(ref: str, api_key: str | None):
+    """Store or forget one service's key. Other entries of the file are left as they are."""
+    with _write_lock:
+        data = _credentials()
+        if api_key is None:
+            data.pop(ref, None)
+        else:
+            data[ref] = {'api_key': api_key}
+        write_private(CREDENTIALS_PATH, data)
+
+
+def has_stored_key(ref: str) -> bool:
+    try:
+        return bool((_credentials().get(ref) or {}).get('api_key'))
+    except LLMError:
+        return False
 
 
 _ADC_CACHE: dict[str, tuple[float, str]] = {}
@@ -121,6 +153,9 @@ def _secret(p: Provider) -> str | None:
     ref = p.credential
     if not ref:
         return None
+    for name in p.env:
+        if os.environ.get(name) and not has_stored_key(ref):
+            return os.environ[name]
     if ref.startswith('env:'):
         return os.environ.get(ref[4:]) or None
     if ref == 'gcloud-adc':
@@ -141,93 +176,20 @@ def _secret(p: Provider) -> str | None:
     return item.get('api_key') or None
 
 
-def load_providers() -> list[Provider]:
-    raw = DEFAULT_PROVIDERS
-    if CONFIG_PATH.is_file():
-        try:
-            data = json.loads(CONFIG_PATH.read_text(encoding='utf-8'))
-            raw = data.get('providers') or raw
-        except (OSError, json.JSONDecodeError):
-            raw = DEFAULT_PROVIDERS
-    out = []
-    for item in raw:
-        if not isinstance(item, dict) or item.get('kind') not in KINDS:
-            continue
-        if any(k in item for k in ('api_key', 'key', 'token')):
-            continue  # secrets in the provider list are refused; use credentials.json
-        known = {k: item[k] for k in Provider.__dataclass_fields__ if k in item}
-        try:
-            out.append(Provider(**known))
-        except TypeError:
-            continue
-    return out
-
-
-def default_provider_id(providers: list[Provider]) -> str | None:
-    wanted = os.environ.get('URP_LLM_PROVIDER')
-    if CONFIG_PATH.is_file() and not wanted:
-        try:
-            wanted = json.loads(CONFIG_PATH.read_text(encoding='utf-8')).get('default')
-        except (OSError, json.JSONDecodeError):
-            wanted = None
-    enabled = [p for p in providers if p.enabled]
-    if wanted and any(p.id == wanted for p in enabled):
-        return wanted
-    return enabled[0].id if enabled else None
-
-
-def get_provider(provider_id: str | None) -> Provider:
-    providers = load_providers()
-    pid = provider_id or default_provider_id(providers)
-    for p in providers:
-        if p.id == pid:
-            if not p.enabled:
-                raise LLMError(f'模型提供方 {p.label or p.id} 未启用' + (f'：{p.terms_note}' if p.terms_note else ''), 'disabled')
-            return p
-    raise LLMError('没有已启用的模型提供方；请在 ~/.config/urp-workbench/llm.json 中配置', 'not_configured')
-
-
-def probe(p: Provider, timeout: float = 2.0) -> dict:
-    """Reachability without spending tokens: local servers are listed; remote providers report credential presence."""
-    if p.kind == 'ollama':
-        try:
-            r = httpx.get(p.base_url.rstrip('/') + '/api/tags', timeout=timeout)
-            r.raise_for_status()
-            names = [m.get('name') for m in r.json().get('models', [])]
-        except (httpx.HTTPError, ValueError) as exc:
-            return {'reachable': False, 'model_present': False, 'detail': f'本地模型服务未响应（{type(exc).__name__}）'}
-        present = p.model in names or f'{p.model}:latest' in names
-        return {'reachable': True, 'model_present': present,
-                'detail': '就绪' if present else f'服务在线，但尚未下载 {p.model}'}
-    secret = _secret(p)
-    return {'reachable': None, 'model_present': None,
-            'detail': '已配置凭据，按需调用' if secret else '缺少凭据'}
-
-
 # ---------------------------------------------------------------- formats --
-def _openai_messages(messages: list[dict]) -> list[dict]:
+def _openai_messages(messages: list[dict], reasoning_field: str | None = None) -> list[dict]:
     out = []
     for m in messages:
         if m['role'] == 'assistant' and m.get('tool_calls'):
-            out.append({'role': 'assistant', 'content': m.get('content') or '',
-                        'tool_calls': [{'id': c['id'], 'type': 'function',
-                                        'function': {'name': c['name'], 'arguments': json.dumps(c['arguments'], ensure_ascii=False)}}
-                                       for c in m['tool_calls']]})
+            item = {'role': 'assistant', 'content': m.get('content') or '',
+                    'tool_calls': [{'id': c['id'], 'type': 'function',
+                                    'function': {'name': c['name'], 'arguments': json.dumps(c['arguments'], ensure_ascii=False)}}
+                                   for c in m['tool_calls']]}
+            if reasoning_field and m.get('reasoning'):
+                item[reasoning_field] = m['reasoning']
+            out.append(item)
         elif m['role'] == 'tool':
             out.append({'role': 'tool', 'tool_call_id': m['tool_call_id'], 'content': m['content']})
-        else:
-            out.append({'role': m['role'], 'content': m.get('content') or ''})
-    return out
-
-
-def _ollama_messages(messages: list[dict]) -> list[dict]:
-    out = []
-    for m in messages:
-        if m['role'] == 'assistant' and m.get('tool_calls'):
-            out.append({'role': 'assistant', 'content': m.get('content') or '',
-                        'tool_calls': [{'function': {'name': c['name'], 'arguments': c['arguments']}} for c in m['tool_calls']]})
-        elif m['role'] == 'tool':
-            out.append({'role': 'tool', 'content': m['content'], 'tool_name': m.get('name', '')})
         else:
             out.append({'role': m['role'], 'content': m.get('content') or ''})
     return out
@@ -268,7 +230,7 @@ INLINE_CALL = re.compile(r'<tool_call>\s*(\{.*?\})\s*</tool_call>', re.S)
 
 
 def inline_tool_calls(content: str, allowed: set[str]) -> tuple[str, list[dict]]:
-    """Recover tool calls a local model wrote as ``<tool_call>{json}</tool_call>`` text instead of structured calls."""
+    """Recover tool calls an open-weight model wrote as ``<tool_call>{json}</tool_call>`` text instead of structured calls."""
     calls = []
     for raw in INLINE_CALL.findall(content or ''):
         try:
@@ -287,32 +249,9 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
     """One HTTP attempt; returns (normalized message, usage)."""
     timeout = httpx.Timeout(p.timeout_s, connect=10.0)
     opts = dict(p.options or {})
-    if p.kind == 'ollama':
-        body = {'model': p.model, 'messages': _ollama_messages(messages), 'stream': False,
-                'options': {k: opts[k] for k in ('temperature', 'num_ctx', 'top_p', 'seed') if k in opts},
-                'keep_alive': opts.get('keep_alive', '10m')}
-        if 'think' in opts:
-            body['think'] = opts['think']
-        if tools:
-            body['tools'] = [{'type': 'function', 'function': t} for t in tools]
-        r = httpx.post(p.base_url.rstrip('/') + '/api/chat', json=body, timeout=timeout)
-        _raise_for(r, secret)
-        data = r.json()
-        msg = data.get('message') or {}
-        calls = []
-        for c in msg.get('tool_calls') or []:
-            fn = c.get('function') or {}
-            args, err = _parse_arguments(fn.get('arguments'))
-            calls.append({'id': c.get('id') or f'call_{uuid.uuid4().hex[:10]}', 'name': fn.get('name', ''), 'arguments': args,
-                          'parse_error': err})
-        usage = {'input_tokens': data.get('prompt_eval_count'), 'output_tokens': data.get('eval_count')}
-        content = msg.get('content') or ''
-        if tools and not calls:
-            content, calls = inline_tool_calls(content, {t['name'] for t in tools})
-        return {'content': content, 'tool_calls': calls, 'finish_reason': data.get('done_reason') or 'stop',
-                'reasoning_chars': len(msg.get('thinking') or ''), 'model': data.get('model') or p.model}, usage
     if p.kind == 'openai':
-        body = {'model': p.model, 'messages': _openai_messages(messages)}
+        field_name = opts.get('reasoning_field')
+        body = {'model': p.model, 'messages': _openai_messages(messages, field_name)}
         for k in ('temperature', 'top_p', 'max_tokens'):
             if k in opts:
                 body[k] = opts[k]
@@ -338,8 +277,9 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
         content = msg.get('content') or ''
         if tools and not calls:
             content, calls = inline_tool_calls(content, {t['name'] for t in tools})
-        return {'content': content, 'tool_calls': calls, 'finish_reason': choice.get('finish_reason') or 'stop',
-                'reasoning_chars': len(msg.get('reasoning_content') or ''), 'model': data.get('model') or p.model}, usage
+        reasoning = msg.get(field_name or 'reasoning_content') or ''
+        return {'content': content, 'tool_calls': calls, 'finish_reason': choice.get('finish_reason') or 'stop', 'reasoning': reasoning if field_name else None,
+                'reasoning_chars': len(reasoning), 'model': data.get('model') or p.model}, usage
     system, conv = _anthropic_messages(messages)
     body = {'model': p.model, 'max_tokens': int(opts.get('max_tokens', 4096)), 'messages': conv}
     if system:
@@ -419,5 +359,5 @@ def chat(provider: Provider, messages: list[dict], tools: list[dict] | None = No
         return Response(content=msg['content'], tool_calls=msg['tool_calls'], usage=usage,
                         latency_s=time.monotonic() - start, attempts=attempts, finish_reason=msg['finish_reason'],
                         model=msg['model'], provider=provider.id, cost=cost, currency=price.get('currency'),
-                        reasoning_chars=msg.get('reasoning_chars', 0))
+                        reasoning_chars=msg.get('reasoning_chars', 0), reasoning=msg.get('reasoning'))
     raise LLMError(str(last), 'provider_error')  # pragma: no cover - loop always returns or raises

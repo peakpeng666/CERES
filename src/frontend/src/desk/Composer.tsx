@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useAgent } from '../agent/store';
+import { findModel, useAgent } from '../agent/store';
 import type { AgentSession } from '../agent/api';
 import { lab } from '../lab/api';
 import { studio } from '../studio/api';
@@ -11,6 +11,9 @@ import { useMenu } from './ui';
 import s from './desk.module.css';
 
 interface Command { name: string; desc: string; when?: (session: AgentSession | null) => boolean; run: () => void }
+
+const MENU_MODELS = 6;
+const pinFirst = <T extends { ref: string }>(models: T[], ref?: string | null) => [...models].sort((a, b) => Number(b.ref === ref) - Number(a.ref === ref));
 
 function useCommands(session: AgentSession | null): Command[] {
   const control = useAgent((x) => x.control);
@@ -31,6 +34,7 @@ function useCommands(session: AgentSession | null): Command[] {
       { name: '记录', desc: '打开运行记录', when: hasSession, run: () => openRoot('trace') },
       { name: '仿真', desc: '打开仿真面板', when: hasSession, run: () => openRoot('sim') },
       { name: '算法库', desc: '打开算法库', run: () => { location.hash = '#/algorithms'; } },
+      { name: '模型', desc: '连接服务商或切换模型', run: () => { location.hash = '#/system/models'; } },
       { name: '物理预演', desc: '打开 MuJoCo 记录与双引擎对比', when: hasSession, run: () => openFrames([{ t: 'sim' }, { t: 'panel', id: 'physics' }]) },
       { name: '导出', desc: '导出会话实验包', when: hasSession, run: () => saveFile(sessionExportHref(session!.session_id), `${session!.session_id}.json`) },
       { name: '规划', desc: '在规划工作台打开任务地图', when: () => !!session?.scenario_id, run: () => { location.hash = `#/plan/${encodeURIComponent(session!.scenario_id!)}`; } },
@@ -116,18 +120,21 @@ export function Composer({ session, big = false, compact = false, seed, placehol
     }
   };
 
-  const list = providers?.providers ?? [];
-  const current = list.find((p) => p.id === (chosen ?? providers?.default));
-  const modelLabel = mode === 'rule' ? '规则流程' : current ? `${current.model}${current.local ? ' · 本地' : ''}` : '读取模型…';
-  const ready = current && current.enabled && (current.local ? current.status.reachable && current.status.model_present : current.has_credential);
-  const pickModel = (anchor: HTMLElement) => menu.open(anchor, [
-    ...list.map((p) => ({
-      label: p.label, disabled: !p.enabled, on: mode !== 'rule' && p.id === (chosen ?? providers?.default),
-      sub: !p.enabled ? p.status.detail : p.local ? (p.status.reachable ? '本机运行，就绪' : `未就绪：${p.status.detail}`) : '可选，额度受端点条款限制',
-      onSelect: () => { setChosen(p.id); setMode('auto'); },
-    })),
-    { label: '规则流程', sub: '不调用大模型，作为对照基线', on: mode === 'rule', onSelect: () => setMode('rule') },
-  ]);
+  const ref = chosen ?? providers?.selected;
+  const current = findModel(providers, ref);
+  const modelLabel = mode === 'rule' ? '规则流程' : current ? current.name : providers ? '连接模型' : '读取模型…';
+  const settings = () => { location.hash = '#/system/models'; };
+  const pickModel = (anchor: HTMLElement) => {
+    if (mode !== 'rule' && !providers?.connected.length) { settings(); return; }
+    menu.open(anchor, [
+      ...(providers?.connected ?? []).flatMap((c) => pinFirst(c.models, ref).slice(0, MENU_MODELS).map((m) => ({
+        label: m.name, sub: c.terms_note ? `${c.name} · ${c.terms_note}` : c.name, on: mode !== 'rule' && m.ref === ref,
+        onSelect: () => { setChosen(m.ref); setMode('auto'); void useAgent.getState().selectModel(m.ref); },
+      }))),
+      { label: '更多模型与服务商', sub: '在设置里连接或切换', onSelect: settings },
+      { label: '规则流程', sub: '不调用大模型，作为对照基线', on: mode === 'rule', onSelect: () => setMode('rule') },
+    ]);
+  };
   const pickConfirm = (anchor: HTMLElement) => menu.open(anchor, [
     { label: '手动确认合同', sub: '先看合同，确认后才执行', on: !auto, onSelect: () => setAuto(false) },
     { label: '自动确认合同', sub: '任务修改与仿真仍需批准', on: auto, onSelect: () => setAuto(true) },
@@ -162,8 +169,8 @@ export function Composer({ session, big = false, compact = false, seed, placehol
           : <button type="button" className={s.pick} title="合同确认方式" onClick={(e) => pickConfirm(e.currentTarget)}>{auto ? '自动确认合同' : '手动确认合同'}<Icon name="down" size={11} /></button>}
         <span className={s.grow} />
         {session
-          ? <span className={s.ro} title={session.provider?.label}>{session.provider ? `${session.provider.model}${session.provider.local ? ' · 本地' : ''}` : '规则流程'}</span>
-          : <button type="button" className={s.pick} title={mode === 'rule' ? '不调用大模型' : ready ? current?.label : '模型未就绪时新任务使用规则流程，并在会话中注明'} onClick={(e) => pickModel(e.currentTarget)}>{modelLabel}{mode !== 'rule' && !ready && providers ? ' · 未就绪' : ''}<Icon name="down" size={11} /></button>}
+          ? <span className={s.ro} title={session.provider?.label}>{session.provider ? session.provider.label.split(' · ')[0] : '规则流程'}</span>
+          : <button type="button" className={s.pick} title={mode === 'rule' ? '不调用大模型' : current ? `${current.name} · ${current.service}` : '粘贴一个 API Key 就能用；没有连接时新任务走规则流程'} onClick={(e) => pickModel(e.currentTarget)}>{modelLabel}<Icon name="down" size={11} /></button>}
         {running
           ? <button type="button" className={cx(s.send)} data-stop title="暂停（当前工具调用结束后）" aria-label="暂停" disabled={pending} onClick={() => void control('pause').catch((e) => notify('error', String(e)))}><Icon name="stop" size={13} /></button>
           : <button type="button" className={s.send} title="发送（Enter）" aria-label="发送" disabled={!text.trim() || blocked || sending} onClick={submit}><Icon name="up" size={15} /></button>}
@@ -182,12 +189,14 @@ const EXAMPLES = [
 export function NewTask() {
   const [seed, setSeed] = useState<{ text: string; token: number } | null>(null);
   const actionError = useAgent((x) => x.actionError);
+  const providers = useAgent((x) => x.providers);
   return (
     <div className={s.hello}>
       <div className={s.helloIn}>
         <h1>今天要安排哪块地？</h1>
         {actionError && <p className={s.actionError}>{actionError}</p>}
         <Composer session={null} big seed={seed} />
+        {providers && !providers.connected.length && <p className={s.helloHint}><a href="#/system/models">连接一个模型服务商</a>，粘贴 API Key 就能用自然语言下任务。没有连接时走规则流程。</p>}
         <ul className={s.helloList}>
           {EXAMPLES.map((t) => <li key={t}><button type="button" onClick={() => setSeed({ text: t, token: Date.now() })}>{t}</button></li>)}
         </ul>

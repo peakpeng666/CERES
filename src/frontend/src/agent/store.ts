@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { events } from '../lab/api';
 import { navigate } from '../app/router';
-import { agentApi, type AgentMode, type AgentSession, type ControlAction, type ProvidersInfo, type SessionSummary } from './api';
+import { agentApi, type AgentMode, type AgentSession, type ControlAction, type ModelInfo, type ProvidersInfo, type SessionSummary } from './api';
 
 interface AgentStore {
   sessions: SessionSummary[];
@@ -22,6 +22,7 @@ interface AgentStore {
   setNewAutoConfirm: (auto: boolean) => void;
   patchSession: (id: string, fields: { title?: string | null; pinned?: boolean; archived?: boolean }) => Promise<void>;
   loadProviders: () => Promise<void>;
+  selectModel: (ref: string) => Promise<void>;
   loadSessions: () => Promise<void>;
   select: (id: string | null) => Promise<void>;
   refresh: () => Promise<void>;
@@ -41,6 +42,15 @@ let selection = 0;
 let requestSequence = 0;
 let appliedSequence = 0;
 let listSequence = 0;
+
+/** The model behind a `service/model` reference, among the connected services. */
+export function findModel(info: ProvidersInfo | null, ref: string | null | undefined): (ModelInfo & { service: string }) | null {
+  for (const c of info?.connected ?? []) {
+    const m = c.models.find((x) => x.ref === ref);
+    if (m) return { ...m, service: c.name };
+  }
+  return null;
+}
 
 export const useAgent = create<AgentStore>((set, get) => {
   // A session can be opened, left, and opened again before an old request returns.
@@ -198,6 +208,11 @@ export const useAgent = create<AgentStore>((set, get) => {
 
     setNewMode: (newMode) => set({ newMode }),
     setNewProvider: (newProvider) => set({ newProvider }),
+    selectModel: async (ref) => {
+      await agentApi.selectModel(ref);
+      set({ newProvider: null });
+      await get().loadProviders();
+    },
     setNewAutoConfirm: (newAutoConfirm) => set({ newAutoConfirm }),
     setNewMap: (newMap) => set({ newMap }),
 

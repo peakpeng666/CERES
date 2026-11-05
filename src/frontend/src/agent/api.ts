@@ -111,6 +111,7 @@ export interface Evidence {
     diagnosis_label: string;
   }[];
   best_verified: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; objective: number; unit: string } | null;
+  simulator_gap?: string | null;
   best_executable?: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; objective: number; unit: string } | null;
   unsupported: string[];
   simulation_started: boolean;
@@ -139,7 +140,6 @@ export interface ProviderInfo {
   kind: string;
   model: string;
   label: string;
-  local?: boolean;
 }
 
 export interface AgentSession {
@@ -194,26 +194,46 @@ export interface SessionSummary {
   usage?: { input_tokens: number; output_tokens: number; calls: number; latency_s: number };
 }
 
-export interface ProviderStatus {
+export interface ModelInfo {
+  ref: string;
   id: string;
-  kind: string;
-  model: string;
-  label: string;
-  base_url: string;
-  enabled: boolean;
-  has_credential: boolean;
-  local: boolean;
-  terms_note: string | null;
-  price: { input: number; output: number; currency: string } | null;
-  status: { reachable: boolean | null; model_present: boolean | null; detail: string };
+  name: string;
+  context?: number | null;
+  reasoning: boolean;
+  input_price?: number | null;
+  output_price?: number | null;
+  released?: string | null;
+  beta: boolean;
 }
 
+export interface ServiceRow {
+  id: string;
+  name: string;
+  kind: string;
+  doc?: string | null;
+  key_page?: string | null;
+  base_url: string;
+  custom: boolean;
+  terms_note?: string | null;
+  model_count: number;
+  connected: 'key' | 'env' | null;
+  verified?: boolean | null;
+  detail?: string | null;
+  env: string[];
+}
+
+export interface ConnectedService extends ServiceRow { models: ModelInfo[] }
+
 export interface ProvidersInfo {
-  providers: ProviderStatus[];
-  default: string | null;
-  config: string;
+  selected: string | null;
+  connected: ConnectedService[];
+  services: ServiceRow[];
+  featured: string[];
+  catalog: { source: string; updated_utc: string | null; services: number };
   prompt_version: string;
 }
+
+export interface ConnectResult { service: string; verified: boolean | null; detail: string; selected: string | null }
 
 export interface ToolInfo {
   name: string;
@@ -253,10 +273,16 @@ export type ControlAction = 'pause' | 'resume' | 'cancel' | 'retry' | 'confirm' 
 
 export interface Capability { id: string; kind: string; name: string; status: 'ready' | 'unavailable'; reason?: string | null; summary?: string | null; detail?: string | null; version?: string | null; href?: string; approval?: boolean; problem_class?: string; library?: string }
 export interface Capabilities { algorithms: Capability[]; simulators: Capability[]; learners: Capability[]; transfers: Capability[] }
-export interface BackendJob { id: string; kind: 'solve' | 'study' | 'physics' | 'fieldsim' | 'tb4'; label: string; state: string; progress: number | null; detail?: string | null; started_utc: string | null; href: string }
+export interface BackendJob { id: string; kind: 'solve' | 'study' | 'physics' | 'fieldsim' | 'tb4' | 'pack'; label: string; state: string; progress: number | null; detail?: string | null; started_utc: string | null; href: string }
 
 export const agentApi = {
   providers: () => call<ProvidersInfo>('GET', '/agent/providers', undefined, { timeoutMs: 15_000 }),
+  providerModels: (id: string) => call<ConnectedService>('GET', `/agent/providers/${encodeURIComponent(id)}/models`),
+  connectProvider: (id: string, api_key: string) => call<ConnectResult>('POST', `/agent/providers/${encodeURIComponent(id)}/connect`, { api_key }, { timeoutMs: 20_000 }),
+  disconnectProvider: (id: string) => call<{ selected: string | null }>('POST', `/agent/providers/${encodeURIComponent(id)}/disconnect`, {}),
+  addCustomProvider: (body: { name: string; base_url: string; api_key: string; models: string }) => call<ConnectResult>('POST', '/agent/providers/custom', body, { timeoutMs: 20_000 }),
+  refreshCatalog: () => call<{ updated_utc: string; services: number }>('POST', '/agent/providers/refresh', {}, { timeoutMs: 30_000 }),
+  selectModel: (model: string) => call<{ selected: string }>('POST', '/agent/model', { model }),
   sessions: () => call<{ sessions: SessionSummary[] }>('GET', '/agent/sessions'),
   session: (id: string, signal?: AbortSignal) => call<AgentSession>('GET', `/agent/sessions/${encodeURIComponent(id)}`, undefined, { signal }),
   create: (body: { text?: string; mode?: 'auto' | AgentMode; provider_id?: string; auto_confirm?: boolean; scenario_id?: string }) =>
@@ -267,7 +293,6 @@ export const agentApi = {
   capabilities: () => call<Capabilities>('GET', '/agent/capabilities', undefined, { timeoutMs: 40_000 }),
   jobs: () => call<{ jobs: BackendJob[] }>('GET', '/agent/jobs'),
   evals: () => call<{ runs: EvalRun[] }>('GET', '/agent/evals', undefined, { timeoutMs: 20_000 }),
-  localModel: (action: 'start' | 'stop') => call<{ ok: boolean; detail: string }>('POST', `/agent/providers/local/${action}`, {}, { timeoutMs: 30_000 }),
   message: (id: string, text: string) => call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/messages`, { text }),
   control: (id: string, action: ControlAction, payload: Record<string, unknown> = {}) =>
     call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/control`, { ...payload, action }),

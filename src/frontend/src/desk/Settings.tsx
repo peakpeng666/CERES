@@ -9,10 +9,12 @@ const SECTIONS: { id: string; label: string; panel?: PanelId }[] = [
   { id: 'general', label: '通用' },
   { id: 'models', label: '模型与用量', panel: 'models' },
   { id: 'capabilities', label: '能力', panel: 'capabilities' },
+  { id: 'data', label: '数据', panel: 'data' },
   { id: 'tools', label: '工具与闸门', panel: 'tools' },
   { id: 'evals', label: '智能体评测', panel: 'evals' },
   { id: 'services', label: '服务', panel: 'services' },
   { id: 'logs', label: '日志', panel: 'console' },
+  ...(window.desktop ? [{ id: 'desktop', label: '桌面应用', panel: 'desktop' as PanelId }] : []),
 ];
 
 const KEYS: [string, string][] = [['⌘K', '搜索任务、地图、面板与操作'], ['⌘N', '新任务'], ['⌘B', '任务栏'], ['⌘J', '右侧面板'], ['Esc', '退回上一层'], ['Enter', '发送，Shift+Enter 换行'], ['/', '在输入框里调出命令'], ['⌘Enter', '在规划页求解并对比推荐的算法'], ['⌘Z / ⇧⌘Z', '撤销 / 重做'], ['⌘S', '保存地图'], ['V H T O P D U C', '地图工具：选择、平移、任务点、障碍、地块、车库、补给点、机耕道'], ['F', '地图适配全图'], ['Delete', '删除选中对象']];

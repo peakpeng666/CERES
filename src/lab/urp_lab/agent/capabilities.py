@@ -39,9 +39,10 @@ def _learners() -> list[dict]:
 
 
 def _simulators(lab) -> list[dict]:
-    ros = lab.services.ros()
-    ready = ros.get('state') in ('ready', 'degraded')
-    reason = None if ready else ros.get('detail')
+    gap = paths.gazebo_gap()
+    ros = {} if gap else lab.services.ros()
+    ready = not gap and ros.get('state') in ('ready', 'degraded')
+    reason = None if ready else gap or ros.get('detail')
     mujoco = physics.available()
     return [
         {'id': 'gazebo.field', 'kind': 'simulator', 'name': 'Gazebo 田间多车', 'status': 'ready' if ready else 'unavailable', 'reason': reason, 'approval': True,
@@ -95,6 +96,10 @@ def jobs(lab) -> dict:
         rows.append({'id': r['physics_run_id'], 'kind': 'physics', 'label': f"物理预演 · {r.get('algorithm') or r.get('run_id')}", 'state': r['state'],
                      'progress': p.get('tasks_done', 0) / total if total else None, 'detail': f"仿真时钟 {p['sim_time']} s" if p.get('sim_time') else None,
                      'started_utc': r.get('created_utc'), 'href': '#/sim'})
+    for p in lab.packs.list():
+        if p['state'] in ('downloading', 'installing'):
+            rows.append({'id': p['id'], 'kind': 'pack', 'label': f"下载 {p['name']}", 'state': p['state'], 'progress': p['progress'], 'detail': '校验并解压' if p['state'] == 'installing' else None,
+                         'started_utc': None, 'href': '#/system/data'})
     field = lab.fieldsim.state()
     if field.get('phase') in ('starting', 'ready', 'running'):
         vehicles = field.get('vehicles') or []

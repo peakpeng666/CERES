@@ -454,3 +454,12 @@ def test_a_failed_session_is_read_even_when_its_result_lands_late(lab):
     session = wait(runner, sid)
     sim = session['report']['evidence']['simulation_result']
     assert sim['state'] == 'failed' and sim['metrics']['tasks_completed'] == 4
+
+
+def test_without_gazebo_no_approval_is_requested_and_the_report_says_why(lab, monkeypatch):
+    monkeypatch.setattr('urp_lab.agent.tools.gazebo_gap', lambda: '这台电脑没有 ROS 2 和 Gazebo')
+    runner, script, sid, session = create(lab, [{'content': '规划阶段结束。'}])
+    assert session['state'] == 'done', session.get('error')
+    assert not session['pending'] and not lab.test_sim_starts
+    assert session['report']['evidence']['simulator_gap'] == '这台电脑没有 ROS 2 和 Gazebo'
+    assert session['report']['evidence']['physics'], 'the physics preview does not depend on Gazebo'

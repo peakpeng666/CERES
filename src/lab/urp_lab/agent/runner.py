@@ -12,13 +12,12 @@ import json
 import logging
 import math
 import re
-import subprocess
 import threading
 import time
 from pathlib import Path
 
 from . import contract as tc
-from . import diagnose, llm, prompts, tools
+from . import diagnose, llm, prompts, providers, tools
 from .session import (AgentStore, add_message, add_usage, claims_check, ensure_step, new_session, public,
                       reset_execution_plan, set_step, utc_now)
 
@@ -86,33 +85,20 @@ class AgentRunner:
             add_message(s, 'event', '网关重启时本会话正在执行，已中断；可点击“继续”从当前阶段恢复。', 'notice')
             self.store.save(s)
 
-    def provider_list(self) -> list[llm.Provider]:
-        return self._providers if self._providers is not None else llm.load_providers()
-
     def providers(self) -> dict:
-        items = []
-        providers = self.provider_list()
-        for p in providers:
-            info = p.public()
-            info['status'] = llm.probe(p) if p.enabled else {'reachable': None, 'model_present': None, 'detail': '未启用'}
-            items.append(info)
-        return {'providers': items, 'default': llm.default_provider_id(providers), 'config': str(llm.CONFIG_PATH),
-                'prompt_version': prompts.VERSION}
+        return {**providers.overview(), 'prompt_version': prompts.VERSION}
+
+    def _find_provider(self, ref: str | None) -> llm.Provider | None:
+        if self._providers is not None:          # tests inject their own list
+            return next((p for p in self._providers if p.id == ref), None)
+        return providers.resolve(ref)
 
     def _resolve_provider(self, provider_id: str | None) -> tuple[llm.Provider | None, str | None]:
-        providers = self.provider_list()
-        pid = provider_id or llm.default_provider_id(providers)
-        p = next((x for x in providers if x.id == pid), None)
-        if p is None:
-            return None, '没有已启用的模型提供方'
-        if not p.enabled:
-            return None, f'{p.label or p.id} 未启用' + (f'（{p.terms_note}）' if p.terms_note else '')
-        status = llm.probe(p) if self._providers is None else {'reachable': True, 'model_present': True}
-        if p.kind == 'ollama' and not (status.get('reachable') and status.get('model_present')):
-            return None, status.get('detail') or '本地模型不可用'
-        if p.kind != 'ollama' and status.get('detail') == '缺少凭据':
-            return None, f'{p.label or p.id} 缺少凭据'
-        return p, None
+        ref = provider_id or (self._providers[0].id if self._providers else None) or providers.selected()
+        if ref is None:
+            return None, '还没有连接模型服务商'
+        p = self._find_provider(ref)
+        return (p, None) if p else (None, f'模型 {ref} 不可用，或它的服务商尚未连接')
 
     def create(self, body: dict) -> dict:
         mode = body.get('mode') or 'auto'
@@ -122,7 +108,7 @@ class AgentRunner:
         if provider is None and mode in ('llm', 'hybrid'):
             raise RunnerError(409, 'llm_unavailable', f'无法使用大模型：{reason}')
         actual = 'rule' if provider is None else ('hybrid' if mode == 'auto' else mode)
-        info = None if provider is None else {k: provider.public()[k] for k in ('id', 'kind', 'model', 'label', 'local')}
+        info = None if provider is None else {k: provider.public()[k] for k in ('id', 'kind', 'model', 'label')}
         s = new_session(actual, info, bool(body.get('auto_confirm')), str(body.get('title') or '')[:60])
         if provider is None:
             add_message(s, 'event', f'本会话使用规则流程（未调用大模型）：{reason}。理解与执行均由确定性规则完成，结果同样经独立检查。', 'notice')
@@ -210,21 +196,6 @@ class AgentRunner:
             except (OSError, ValueError):
                 continue
         return {'runs': out}
-
-    def local_model(self, action: str) -> dict:
-        """Start or stop the user-level Ollama service through the project script; it listens on loopback only."""
-        from ..paths import REPO
-        if action not in ('start', 'stop'):
-            raise RunnerError(400, 'invalid_action', '只支持 start / stop')
-        script = REPO / 'setup' / 'llm' / 'local-llm.sh'
-        if not script.exists():
-            raise RunnerError(404, 'no_local_model', '这台机器没有本地模型脚本')
-        try:
-            done = subprocess.run(['bash', str(script), action], capture_output=True, text=True, timeout=20, check=False)
-        except subprocess.TimeoutExpired:
-            raise RunnerError(504, 'timeout', '本地模型服务 20 秒内没有响应') from None
-        detail = (done.stdout or done.stderr).strip().splitlines()
-        return {'ok': done.returncode == 0, 'detail': detail[-1] if detail else ('完成' if done.returncode == 0 else '失败')}
 
     def export(self, session_id: str) -> dict:
         """One reproducible bundle: session (contract, plan, tool and model logs), scenario and every run record."""
@@ -687,9 +658,9 @@ class AgentRunner:
         started = s.get('turn_started') or {}
         if len(s['llm_calls']) - started.get('llm_calls', 0) >= MAX_LLM_CALLS:
             raise Budget(f'本轮模型调用已达上限 {MAX_LLM_CALLS} 次，已停止；可检查调用记录后重试')
-        provider = next((p for p in self.provider_list() if p.id == (s.get('provider') or {}).get('id')), None)
+        provider = self._find_provider((s.get('provider') or {}).get('id'))
         if provider is None:
-            raise llm.LLMError('会话绑定的模型提供方已不存在或未启用', 'not_configured')
+            raise llm.LLMError('这个会话使用的模型已不可用，请在设置里重新连接服务商', 'not_configured')
         messages = [{'role': 'system', 'content': system}] + self._context(s)
         specs = [self.tools[n].spec() for n in names] if names else None
         try:
@@ -791,7 +762,7 @@ class AgentRunner:
                         s['llm_messages'].append({'role': 'assistant', 'content': resp.content})
                         add_message(s, 'assistant', _strip_think(resp.content))
                     break
-                s['llm_messages'].append({'role': 'assistant', 'content': resp.content or '',
+                s['llm_messages'].append({'role': 'assistant', 'content': resp.content or '', 'reasoning': resp.reasoning,
                                           'tool_calls': [{'id': c['id'], 'name': c['name'], 'arguments': c['arguments']} for c in resp.tool_calls]})
                 asked = False
                 for call in resp.tool_calls:
@@ -874,7 +845,7 @@ class AgentRunner:
                     return self._execute_rule(s, cancel, pause)
                 s['draft_report'] = _strip_think(resp.content or '')
                 return True
-            s['llm_messages'].append({'role': 'assistant', 'content': resp.content or '',
+            s['llm_messages'].append({'role': 'assistant', 'content': resp.content or '', 'reasoning': resp.reasoning,
                                       'tool_calls': [{'id': c['id'], 'name': c['name'], 'arguments': c['arguments']} for c in resp.tool_calls]})
             stop = None
             asked = False
@@ -1004,6 +975,9 @@ class AgentRunner:
             return 'stale_scenario', '仿真须使用按当前已确认合同建立的任务地图'
         if not tc.execution(s['contract'])['simulate']:
             return 'simulation_not_requested', '当前已确认合同未要求仿真；修改合同须先请求用户批准'
+        gap = tools.gazebo_gap()
+        if gap:
+            return 'simulator_unavailable', gap
         if self._simulation_decided(s):
             return 'simulation_already_decided', '当前合同的仿真已被拒绝或已尝试执行，不得重复请求批准'
         run = self.lab.store.get_run(args['run_id'])
@@ -1132,7 +1106,7 @@ class AgentRunner:
                 'scenario_id': s.get('scenario_id'), 'runs': runs, 'best_verified': _rounded(self._best_verified(s)),
                 'best_executable': _rounded(self._best_executable(s)),
                 'unsupported': c['unsupported'], 'simulation_started': bool(s.get('active_sim_runs', s.get('sim_runs'))),
-                'simulation_required': tc.execution(c)['simulate'],
+                'simulation_required': tc.execution(c)['simulate'], 'simulator_gap': tools.gazebo_gap(),
                 'simulation_decision': s.get('simulation_decision') if self._simulation_decided(s) else None,
                 'simulation_result': s.get('simulation_result') if (s.get('simulation_result') or {}).get('run_id') in tools.current_run_ids(s) else None,
                 'physics': tools.physics_rows(s),
@@ -1265,6 +1239,8 @@ def _template_report(e: dict) -> str:
         parts.append('用户拒绝启动仿真，本轮未执行田间仿真。')
     elif decision.get('status') == 'attempted':
         parts.append('仿真启动失败：' + str((decision.get('error') or {}).get('message') or '见工具调用记录') + '。')
+    elif e.get('simulation_required') and e.get('simulator_gap'):
+        parts.append(f"合同要求仿真，但未能启动 Gazebo：{e['simulator_gap']}。")
     elif e.get('simulation_required'):
         parts.append('当前没有可供仿真的已复核方案，未启动田间仿真。')
     return ''.join(p for p in parts if p)

@@ -1,5 +1,6 @@
 // Browser acceptance of the desk shell against a running gateway: conversation, layers, contract edit, approval, maps, settings.
-// Usage: NODE_PATH=<dir containing playwright-core> [URP_CHROMIUM=<chrome>] node browser_e2e.mjs --out /new/absolute/dir [--url http://127.0.0.1:4100] [--mode rule|local]
+// With no model connected, tasks take the rule flow; models_e2e.mjs covers connecting one.
+// Usage: NODE_PATH=<dir containing playwright-core> [URP_CHROMIUM=<chrome>] node browser_e2e.mjs --out /new/absolute/dir [--url http://127.0.0.1:4100]
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import assert from 'node:assert/strict';
@@ -9,11 +10,10 @@ const { chromium } = require(process.env.PLAYWRIGHT_CORE || 'playwright-core');
 const arg = (name, fallback) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : fallback; };
 const out = arg('--out');
 const base = arg('--url', 'http://127.0.0.1:4100');
-const mode = arg('--mode', 'rule');
 if (!out || !out.startsWith('/') || existsSync(out)) throw new Error('--out 须为尚不存在的绝对路径');
 mkdirSync(out, { recursive: true });
 
-const log = { base, mode, started: new Date().toISOString(), steps: [], errors: [] };
+const log = { base, started: new Date().toISOString(), steps: [], errors: [] };
 const step = (name, extra = {}) => { log.steps.push({ name, t: new Date().toISOString(), ...extra }); console.log('✓', name, Object.keys(extra).length ? JSON.stringify(extra) : ''); };
 const browser = await chromium.launch({ headless: true, executablePath: process.env.URP_CHROMIUM || undefined });
 const context = await browser.newContext({ viewport: { width: 1600, height: 1000 }, deviceScaleFactor: 1, acceptDownloads: true });
@@ -42,10 +42,6 @@ try {
   await page.getByRole('heading', { name: '今天要安排哪块地？' }).waitFor();
   await shot('01-new-task');
   step('新任务页');
-  if (mode === 'rule') {
-    await page.getByRole('button', { name: /qwen|glm|读取模型/ }).click();
-    await page.getByRole('menuitem', { name: /规则流程/ }).click();
-  }
   await composer().fill('60×40米果园，2台车，8个采样点，每车容量4，1个池塘');
   await composer().press('Enter');
   await page.getByRole('button', { name: '确认并执行' }).waitFor({ timeout: 300_000 });

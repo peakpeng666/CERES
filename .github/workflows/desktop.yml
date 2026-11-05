@@ -1,0 +1,93 @@
+name: Desktop installers
+
+# A v* tag builds the Linux and Windows installers and publishes them as the repository's latest release, which is where
+# the app looks for updates. workflow_dispatch builds the same artifacts without publishing.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  checks:
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  build:
+    needs: checks
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { os: ubuntu-22.04, target: linux, builder: --linux }
+          - { os: windows-2022, target: win, builder: --win }
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: |
+            src/frontend/package-lock.json
+            src/desktop/package-lock.json
+      - uses: astral-sh/setup-uv@v6
+      - name: Build the interface
+        run: |
+          npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
+          npm run build --prefix src/frontend
+      - name: Stage the backend
+        run: uv run --no-project --python 3.12 python src/desktop/scripts/stage_backend.py --target ${{ matrix.target }}
+      - name: Check the staged backend on this operating system
+        shell: bash
+        run: uv run --no-project --python 3.12 python src/desktop/test/backend_smoke.py --backend src/desktop/build/backend/${{ matrix.target }} --out "$RUNNER_TEMP/smoke-${{ matrix.target }}" --node "$(command -v node)"
+      - name: Build the installers
+        working-directory: src/desktop
+        env:
+          # Signing is skipped while these are empty; see setup/README.md.
+          CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+        run: |
+          npm ci --no-audit --no-fund
+          npx electron-builder ${{ matrix.builder }} --publish never
+      - name: Install on this Windows machine and check what landed
+        if: matrix.target == 'win'
+        shell: pwsh
+        run: |
+          $installer = (Get-ChildItem src/desktop/dist/*-windows-x64.exe | Select-Object -First 1).FullName
+          Start-Process -FilePath $installer -ArgumentList '/S', '/currentuser' -Wait
+          $backend = Join-Path $env:LOCALAPPDATA 'Programs/agri-route-workbench/resources/backend'
+          uv run --no-project --python 3.12 python src/desktop/test/backend_smoke.py --backend $backend --out "$env:RUNNER_TEMP/smoke-installed"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: desktop-${{ matrix.target }}
+          path: |
+            src/desktop/dist/*.AppImage
+            src/desktop/dist/*.deb
+            src/desktop/dist/*.exe
+            src/desktop/dist/*.blockmap
+            src/desktop/dist/latest*.yml
+          if-no-files-found: error
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-22.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+      - name: Publish
+        run: gh release create "$GITHUB_REF_NAME" artifacts/* --repo "$GITHUB_REPOSITORY" --title "工作台 $GITHUB_REF_NAME" --generate-notes --latest

@@ -18,7 +18,7 @@ dependencies = [
   "scipy==1.18.1",
   "matplotlib==3.11.2",
   "pillow==12.3.0",
-  "ompl==2.0.1",
+  "ompl==2.0.1; sys_platform != 'win32'",
   "pyproj==3.8.0",
   "python-multipart==0.0.32",
   "defusedxml==0.7.1",

@@ -90,7 +90,7 @@ function openAnywhere(id: PanelId) {
   const here = SURFACE_OF[route.view];
   const home = panelHome(id, here);
   if (!home) {
-    const section = ({ models: 'models', capabilities: 'capabilities', tools: 'tools', evals: 'evals', services: 'services', console: 'logs' } as Partial<Record<PanelId, string>>)[id];
+    const section = ({ models: 'models', capabilities: 'capabilities', data: 'data', desktop: 'desktop', tools: 'tools', evals: 'evals', services: 'services', console: 'logs' } as Partial<Record<PanelId, string>>)[id];
     if (section) navigate(`#/system/${section}`);
     return;
   }

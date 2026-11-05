@@ -30,8 +30,10 @@ const AgentTaskPanel = lazy(() => import('../agent/TaskPanel').then((m) => ({ de
 const ExperimentPanel = lazy(() => import('./experiment/ExperimentPanel').then((m) => ({ default: m.ExperimentPanel })));
 const DecisionPanel = lazy(() => import('./experiment/DecisionPanel').then((m) => ({ default: m.DecisionPanel })));
 const FiguresPanel = lazy(() => import('./figures/FiguresPanel').then((m) => ({ default: m.FiguresPanel })));
-const ModelsPage = lazy(() => system().then((m) => ({ default: m.ModelsPage })));
+const ModelsPage = lazy(() => import('../desk/ModelsPage').then((m) => ({ default: m.ModelsPage })));
 const CapabilitiesPage = lazy(() => system().then((m) => ({ default: m.CapabilitiesPage })));
+const DataPage = lazy(() => import('../desk/DesktopPages').then((m) => ({ default: m.DataPage })));
+const DesktopPage = lazy(() => import('../desk/DesktopPages').then((m) => ({ default: m.DesktopPage })));
 const ToolsPage = lazy(() => system().then((m) => ({ default: m.ToolsPage })));
 const EvalsPage = lazy(() => system().then((m) => ({ default: m.EvalsPage })));
 
@@ -76,6 +78,8 @@ export const PANELS = {
   classic: { title: '经典视图', C: ClassicPanel },
   models: { title: '模型与用量', C: ModelsPage },
   capabilities: { title: '能力', C: CapabilitiesPage },
+  data: { title: '数据', C: DataPage },
+  desktop: { title: '桌面应用', C: DesktopPage },
   tools: { title: '工具与闸门', C: ToolsPage },
   evals: { title: '智能体评测', C: EvalsPage },
 } as const;

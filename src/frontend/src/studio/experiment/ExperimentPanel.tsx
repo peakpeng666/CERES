@@ -141,7 +141,7 @@ function FleetMetrics({ run, sim, simLoading, hasSims, simError }: { run: Run; s
             <Cell label="异常" value={String(sim.d.anomalies.length)} note={sim.d.anomalies.slice(0, 2).map((x) => x.text).join('；') || '无'} tone={sim.d.anomalies.some((x) => x.tone === 'error') ? 'bad' : sim.d.anomalies.length ? 'warn' : 'good'} />
           </div>
           <div className={p.row}>
-            <span className={p.meta} style={{ margin: 0 }}>执行：URP 纯追踪· 控制定位：{sim.r.execution?.localization?.gnss ? '轮式输入与合成位置观测融合估计' : 'Gazebo 真值对照'} · 会话 {sim.r.session_id} · 状态 {sim.r.state} · 清理 {sim.r.session_report?.cleanup_status ?? '未记录'}</span>
+            <span className={p.meta} style={{ margin: 0 }}>执行：纯追踪 · 控制定位：{sim.r.execution?.localization?.gnss ? '轮式输入与合成位置观测融合估计' : 'Gazebo 真值对照'} · 会话 {sim.r.session_id} · 状态 {sim.r.state} · 清理 {sim.r.session_report?.cleanup_status ?? '未记录'}</span>
             <span className={p.spacer} />
             <Button size="sm" onClick={() => { void useReplay.getState().load(sim.r.session_id); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'replay' })); }}>在地图上回放</Button>
           </div>

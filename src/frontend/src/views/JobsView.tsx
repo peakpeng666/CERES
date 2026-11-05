@@ -253,7 +253,7 @@ export function JobsView({ route }: { route: Route }) {
   const health = useAsync(`workspace-health:${healthRevision}`, (signal) => getHealth(signal));
   const archive = route.params.get('tab') === 'archives';
   return <div className={s.page}>
-    <header className={s.header}><div><p className={s.eyebrow}>URP · 路径规划</p><h1>路径任务工作台</h1>
+    <header className={s.header}><div><p className={s.eyebrow}>路径规划</p><h1>路径任务工作台</h1>
       <p>导入任务，运行算法，核对结果与原始记录。</p></div>
       <div className={s.connection} role="status">{health.status === 'ready' ? '● 本地后端已连接' : health.status === 'loading' ? '连接后端…' : '后端未连接'}</div></header>
     <nav className={s.tabs} aria-label="任务工作台视图"><a aria-current={!archive ? 'page' : undefined} href={buildHash('jobs')}>路径任务</a>

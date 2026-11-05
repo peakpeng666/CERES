@@ -162,3 +162,57 @@ def test_a_run_interrupted_by_a_restart_is_marked_failed(tmp_path):
     again = Lab(Config(runtime=tmp_path, background=False))
     assert again.store.get_physics_run('phys_old')['state'] == 'failed'
     again.shutdown()
+
+
+def test_the_windows_shims_leave_this_platform_alone():
+    import os
+    import signal
+    from urp_lab import compat
+    assert os.killpg is not compat._kill_tree and signal.SIGKILL == 9
+
+
+def test_the_windows_kill_ends_the_tree_whatever_the_signal(monkeypatch):
+    import signal
+    import subprocess
+    from types import SimpleNamespace
+    from urp_lab import compat
+    seen = []
+    monkeypatch.setattr(subprocess, 'CREATE_NO_WINDOW', 0, raising=False)
+    monkeypatch.setattr(subprocess, 'run', lambda argv, **_: seen.append(argv) or SimpleNamespace(returncode=0))
+    compat._kill_tree(7, signal.SIGINT)
+    compat._kill_tree(7, compat._Kill(9))
+    assert seen == [['taskkill', '/PID', '7', '/T', '/F']] * 2 and compat._Kill(9).name == 'SIGKILL'
+    monkeypatch.setattr(subprocess, 'run', lambda argv, **_: SimpleNamespace(returncode=128))
+    with pytest.raises(ProcessLookupError):
+        compat._kill_tree(7, signal.SIGTERM)
+
+
+def test_no_node_marks_the_js_baselines_unavailable(monkeypatch):
+    from urp_lab import paths
+    from urp_lab.solvers import catalog
+    monkeypatch.setattr(paths, 'node_command', lambda: None)
+    rows = {a['id']: a for a in catalog()}
+    assert rows['urp.js.savings']['available'] is False and 'Node' in rows['urp.js.savings']['unavailable_reason']
+    monkeypatch.setenv('URP_NODE', '/opt/app/electron')
+    monkeypatch.undo()
+    monkeypatch.setenv('URP_NODE', '/opt/app/electron')
+    assert paths.node_command() == ['/opt/app/electron']
+
+
+def test_the_solver_watchdog_reports_a_timeout_without_an_interval_timer(monkeypatch, capsys):
+    import signal
+    from urp_lab import worker
+    monkeypatch.delattr(signal, 'SIGALRM')
+    exits = []
+    monkeypatch.setattr(worker.os, '_exit', exits.append)
+    disarm = worker.limit(0.01)
+    import time
+    time.sleep(0.15)
+    disarm()
+    assert exits == [1] and json.loads(capsys.readouterr().out)['error_kind'] == 'timeout'
+
+
+def test_an_installed_app_always_takes_gazebo_from_the_container(monkeypatch):
+    from conftest import REAL_GAZEBO_GAP
+    monkeypatch.setenv('URP_DESKTOP', '1')
+    assert '容器后端' in REAL_GAZEBO_GAP()

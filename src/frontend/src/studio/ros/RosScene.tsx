@@ -96,7 +96,7 @@ export function RosView() {
   if (!url) {
     return (
       <div className={s.empty}>
-        <EmptyState icon={Radio} title="没有运行中的仿真" detail="在「任务规划」的方案对比里点「Gazebo」把多车方案送进田间仿真，或在左侧启动 TurtleBot4 仿真；这里会实时显示 ROS 2 话题。" />
+        <EmptyState icon={Radio} title="没有运行中的仿真" detail="在「任务规划」的方案对比里点「Gazebo」把多车方案送进田间仿真，或在 TurtleBot4 页启动仿真；这里会实时显示 ROS 2 话题。" />
       </div>
     );
   }

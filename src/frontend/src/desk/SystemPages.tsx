@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { agentApi, type Capability, type Capabilities, type EvalRun, type HarnessInfo, type ProvidersInfo, type SessionSummary } from '../agent/api';
-import { useAgent } from '../agent/store';
+import { agentApi, type Capability, type Capabilities, type EvalRun, type HarnessInfo } from '../agent/api';
 import { Spinner } from '../lab/ui';
-import { n0, n1, n3 } from './format';
+import { n3 } from './format';
 import { Facts, Kvs, Row, Rows } from './ui';
 import s from './desk.module.css';
 
@@ -40,66 +39,6 @@ export function CapabilitiesPage() {
       <h2>仿真器</h2><CapabilityRows items={data.simulators} />
       <h2>引擎迁移</h2><CapabilityRows items={data.transfers} />
       <h2>学习模型</h2><CapabilityRows items={data.learners} />
-    </div>
-  );
-}
-
-function usageTotals(list: SessionSummary[]) {
-  const t = { input: 0, output: 0, calls: 0, latency: 0, sessions: list.length, byModel: new Map<string, { calls: number; input: number; output: number }>() };
-  for (const x of list) {
-    const u = x.usage;
-    if (!u) continue;
-    t.input += u.input_tokens; t.output += u.output_tokens; t.calls += u.calls; t.latency += u.latency_s;
-    const k = x.provider ?? '规则流程';
-    const m = t.byModel.get(k) ?? { calls: 0, input: 0, output: 0 };
-    m.calls += u.calls; m.input += u.input_tokens; m.output += u.output_tokens;
-    t.byModel.set(k, m);
-  }
-  return t;
-}
-
-export function ModelsPage() {
-  const info = useLoad<ProvidersInfo>(() => agentApi.providers());
-  const sessions = useAgent((x) => x.sessions);
-  const reloadBar = useAgent((x) => x.loadProviders);
-  const [busy, setBusy] = useState(false);
-  const [note, setNote] = useState<string | null>(null);
-  const t = usageTotals(sessions);
-  const local = info.data?.providers.find((p) => p.local);
-  const act = async (action: 'start' | 'stop') => {
-    setBusy(true); setNote(null);
-    try {
-      const r = await agentApi.localModel(action);
-      setNote(r.detail);
-      info.reload(); void reloadBar();
-    } catch (e) {
-      setNote((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  };
-  return (
-    <div className={s.page} style={{ height: '100%' }}>
-      <div className={s.pageIn}>
-        <h2>累计用量 · 最近 {t.sessions} 个任务</h2>
-        <div style={{ padding: '6px 0 10px' }}><Facts items={[['模型调用', n0(t.calls), '次'], ['输入', n0(t.input), 'tokens'], ['输出', n0(t.output), 'tokens'], ['模型耗时', n1(t.latency), 's']]} /></div>
-        {t.byModel.size > 0 && <Rows>{[...t.byModel.entries()].map(([k, v]) => <Row key={k} dense title={k} sub={`${n0(v.calls)} 次调用`} value={`${n0(v.input)} → ${n0(v.output)}`} />)}</Rows>}
-        <h2>模型</h2>
-        {info.error && <p className={s.docBad}>{info.error}</p>}
-        {!info.data && !info.error && <Spinner />}
-        <Rows>{info.data?.providers.map((p) => <Row key={p.id} wrap title={p.label} sub={[p.model, p.terms_note].filter(Boolean).join(' · ')} value={p.id === info.data!.default ? '默认' : p.enabled ? '可选' : '已停用'} valueSub={p.status.detail} />)}</Rows>
-        {local && (
-          <div className={s.nextRow} style={{ paddingTop: 10 }}>
-            <button type="button" className={s.btn} disabled={busy} onClick={() => void act('start')}>启动本地模型服务</button>
-            <button type="button" className={s.btn} disabled={busy} onClick={() => void act('stop')}>停止</button>
-            {note && <span className={s.state}>{note}</span>}
-          </div>
-        )}
-        {info.data && <>
-          <h2>配置</h2>
-          <div style={{ paddingTop: 6 }}><Kvs items={[['提示版本', info.data.prompt_version], ['提供方配置', <span key="c" className={s.mono}>{info.data.config}</span>], ['密钥', '只放在同目录权限 600 的 credentials.json 或环境变量中']]} /></div>
-        </>}
-      </div>
     </div>
   );
 }

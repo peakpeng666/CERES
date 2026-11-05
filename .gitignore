@@ -136,3 +136,10 @@ experiments/runs/evolve-*/fillet.stdout
 experiments/runs/evolve-*/admission.stdout
 experiments/runs/evolve-*/*.done
 experiments/runs/evolve-*/streams/
+
+# Desktop shell: staged backends, downloaded runtimes and installers
+src/desktop/node_modules/
+src/desktop/dist/
+src/desktop/build/backend/
+src/desktop/build/python-cache/
+src/desktop/build/packs/

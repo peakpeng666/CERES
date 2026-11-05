@@ -378,9 +378,10 @@ function NextStep({ session }: { session: AgentSession }) {
   const simulate = () => { void control('simulate', { run_id: ready.run_id }); openFrames([{ t: 'sim' }, { t: 'panel', id: 'rosview' }]); };
   return (
     <div className={s.nextBox}>
-      <p>{verified} 个方案通过复核，规划最优是 {best.algorithm}，总里程 {n1(best.total_distance_m)} m。{swapped ? `它没有通过物理预演，可执行的最好方案是 ${ready.algorithm}。` : physics && !evidence.best_executable ? '方案都没有通过物理预演。' : ''}{simulated ? '' : '还没有进入 Gazebo。'}</p>
+      <p>{verified} 个方案通过复核，规划最优是 {best.algorithm}，总里程 {n1(best.total_distance_m)} m。{swapped ? `它没有通过物理预演，可执行的最好方案是 ${ready.algorithm}。` : physics && !evidence.best_executable ? '方案都没有通过物理预演。' : ''}{simulated ? '' : evidence.simulator_gap ? '这台电脑还不能运行 Gazebo。' : '还没有进入 Gazebo。'}</p>
       <div className={s.nextRow}>
-        {!simulated && <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={simulate}>送入 Gazebo 仿真</button>}
+        {!simulated && !evidence.simulator_gap && <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={simulate}>送入 Gazebo 仿真</button>}
+        {!simulated && evidence.simulator_gap && window.desktop && <a className={s.btn} href="#/system/desktop">开启容器后端</a>}
         <button type="button" className={s.btn} onClick={() => openFrames([{ t: 'plans' }, { t: 'panel', id: 'figures' }])}>科研图表</button>
         <button type="button" className={s.btn} onClick={() => saveFile(sessionExportHref(session.session_id), `${session.session_id}.json`)}>导出实验包</button>
       </div>

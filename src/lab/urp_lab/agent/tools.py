@@ -15,6 +15,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from ..paths import gazebo_gap
 from . import contract as tc
 from . import diagnose
 
@@ -485,6 +486,9 @@ def start_simulation(ctx: ToolContext, args: dict) -> dict:
     if not verdict or not verdict.get('valid') or not verdict.get('agrees'):
         raise ToolError('unverified', '执行前须先用 verify_run 独立复核且通过')
     _scenario(ctx)
+    gap = gazebo_gap()
+    if gap:
+        raise ToolError('simulator_unavailable', gap)
     body = {'run_id': run['run_id'], 'real_time_factor': float(args.get('real_time_factor') or 4.0)}
     try:
         state = ctx.lab.fieldsim.start(body)

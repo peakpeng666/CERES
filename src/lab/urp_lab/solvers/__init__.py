@@ -127,6 +127,8 @@ def catalog():
             available, reason = False, f2c['reason']
         if aid.startswith('ompl.') and version is None:
             available, reason = False, 'OMPL Python 绑定未安装'
+        if aid.startswith('urp.js.') and paths.node_command() is None:
+            available, reason = False, '没有可用的 Node 运行时'
         out.append(dict(id=aid, name=name, problem_classes=[pc], problem_label=PROBLEM_LABEL[pc], family=family, source=source,
                         library=library, origin=label, version=version, turn_aware=pc == 'turn_routing' and aid != 'urp.reset_dp',
                         guarantee=guarantee, limits=extra.get('limits', {}), available=available, unavailable_reason=reason,

@@ -395,7 +395,7 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 接口前缀 `/lab/api`，全部是增量接口：
 
 - `GET /algorithms/stats`、`GET /algorithms/{id}/history`：从 `runs` 表只读计算，不存储。同题对比只比较 `comparison_key` 和时间预算都相同、且通过独立检查的运行；`physical` 汇总该算法方案的物理运行。
-- `GET /physics/engines`；`POST /physics/runs {run_id | session_id}`（202）；`GET /physics/runs?run_id=`；`GET /physics/runs/{id}`；`POST /physics/runs/{id}/cancel`。SSE 事件 `physics_run`。
+- `GET /physics/engines`（`gazebo_gap` 说明这台电脑为什么不能跑 Gazebo，能跑时为空）；`POST /physics/runs {run_id | session_id}`（202）；`GET /physics/runs?run_id=`；`GET /physics/runs/{id}`；`POST /physics/runs/{id}/cancel`。SSE 事件 `physics_run`。
 - `GET /agent/capabilities`（`algorithms`、`simulators`、`learners`、`transfers`，每项带 `status`）；`GET /agent/jobs`（正在运行的 `solve`、`study`、`physics`、`fieldsim`、`tb4`）。
 
 物理运行记录 `urp.physics-run/1`：
@@ -406,3 +406,10 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - 独立进程运行，结果在 `runtime/physics/<id>/`：`plan.json`、`result.json`（50 Hz 真值）。接口返回 2 Hz 轨迹。`check` 复用 `fieldcheck.track_check`，另检车间同步距离与接触。网关重启时运行中的记录标为 `failed`。
 
 `urp.sim2sim/1` 分别回答走到哪和什么时候到：`path_*` 是两条轨迹之间的双向最近距离，不受时间平移影响；`time_rmse_m` 是从各车出发起算同一时刻的位置差；`task_arrival_s` 是到点时刻差。这是两个引擎之间的差距，不是实车误差，也不设通过阈值。
+
+## 11. 模型服务与桌面应用（2026-11-05）
+
+- **模型**：`/lab/api/agent/providers`（目录、已连接服务、当前模型）、`/providers/{id}/models`、`/providers/{id}/connect {api_key}`、`/providers/{id}/disconnect`、`/providers/custom {name, base_url, api_key, models?}`、`/providers/refresh`、`/model {model}`。模型地址是 `服务商/模型`，会话的 `provider.id` 记这个值，旧会话记录的裸 id 解析到该服务的第一个模型。任何响应都不含 Key，写接口受现有的同源检查保护。设计见 [agent/README](urp_lab/agent/README.md) §4。不再有本地模型接口；历史评测记录保留。
+- **数据包**：`GET /lab/api/packs`、`POST /packs/{id}/install|cancel|remove`，SSE 事件 `pack`。清单 `urp_lab/data/packs.json` 写明 SHA256 和解压大小；下载支持续传，校验通过后解压到新目录再移入 `runtime/packs/<id>-<version>/`，路径越界、符号链接和超出声明大小的包一律拒绝。`/data/*` 优先读构建产物，其次读 `history` 包；`URP_PACKS_BASE_URL` 可替换下载地址。
+- **桌面进程**：`python -m urp_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `URP_DESKTOP=1`、`URP_NODE`（JS 基线使用的运行时）、`URP_MODELS_REFRESH=1`。`URP_DESKTOP=1` 时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；Gazebo 由容器后端提供，容器里没有这个变量。
+- **Windows**：`urp_lab/compat.py` 在 Windows 上提供 `signal.SIGKILL` 和基于 `taskkill` 的 `os.killpg`，因此 `services.py` 等进程代码不需要分支。`worker.py` 没有 `SIGALRM` 时用看门狗线程上报同样的超时结果。

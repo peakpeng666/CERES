@@ -93,7 +93,7 @@ def js_baseline(instance, algorithm):
     # The project baselines construct on unrounded distances; the caller re-scores with the instance's own rule.
     payload = {k: instance[k] for k in ('coordinates', 'demands', 'capacity')}
     payload.update(depot=0, fleet='unlimited_identical_vehicles', objective='sum_unrounded_euclidean_distance')
-    proc = subprocess.run(['node', '-e', script, str(paths.FRONTEND_ROUTING / 'cvrp-solver.js'), algorithm],
+    proc = subprocess.run([*(paths.node_command() or ['node']), '-e', script, str(paths.FRONTEND_ROUTING / 'cvrp-solver.js'), algorithm],
                           input=json.dumps(payload), capture_output=True, text=True, timeout=120)
     if proc.returncode:
         raise RuntimeError('项目 JS 基线执行失败：' + proc.stderr.strip()[-400:])

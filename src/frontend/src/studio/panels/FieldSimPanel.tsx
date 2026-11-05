@@ -125,7 +125,7 @@ export function FieldSimPanel() {
           <h3><Tractor size={14} style={{ verticalAlign: -2 }} /> 田间多车仿真</h3>
           <Badge tone={phase.tone}>{phase.text}</Badge>
         </div>
-        <p className={s.meta}>Gazebo Fortress 按任务地图生成场景。车辆由 URP 跟踪规划路径，规划路线与实际轨迹分别记录，完成状态以执行检查为准。</p>
+        <p className={s.meta}>Gazebo Fortress 按任务地图生成场景。车辆跟踪规划路径，规划路线与实际轨迹分别记录，完成状态以执行检查为准。</p>
         {error && <Notice tone="error">仿真状态读取失败：{error}</Notice>}
         {actionError && <Notice tone="error">{actionError}<div className={s.row}><Button size="sm" onClick={() => void refreshFieldSim()}>刷新会话状态</Button><Button size="sm" variant="plain" onClick={() => setFieldSimActionError(null)}>知道了</Button></div></Notice>}
 

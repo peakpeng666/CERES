@@ -11,7 +11,7 @@ import { ShortcutList } from './Settings';
 import { sessionLabel } from './nav';
 import s from './desk.module.css';
 
-const PLACES: [string, string][] = [['新任务', '#/agent'], ['地图', '#/maps'], ['资产', '#/assets'], ['实验', '#/experiments'], ['运行记录', '#/runs'], ['CVRP 数值任务', '#/jobs'], ['仿真', '#/sim'], ['算法库', '#/algorithms'], ['CVRPLIB 算例', '#/library/cvrplib'], ['真实田块', '#/library/fields'], ['文献', '#/library/references'], ['BPP 历史结果', '#/bpp'], ['设置', '#/system'], ['模型与用量', '#/system/models'], ['能力', '#/system/capabilities'], ['工具与闸门', '#/system/tools'], ['智能体评测', '#/system/evals'], ['服务', '#/system/services'], ['日志', '#/system/logs']];
+const PLACES: [string, string][] = [['新任务', '#/agent'], ['地图', '#/maps'], ['资产', '#/assets'], ['实验', '#/experiments'], ['运行记录', '#/runs'], ['CVRP 数值任务', '#/jobs'], ['仿真', '#/sim'], ['算法库', '#/algorithms'], ['CVRPLIB 算例', '#/library/cvrplib'], ['真实田块', '#/library/fields'], ['文献', '#/library/references'], ['BPP 历史结果', '#/bpp'], ['设置', '#/system'], ['模型与用量', '#/system/models'], ['能力', '#/system/capabilities'], ['数据', '#/system/data'], ['工具与闸门', '#/system/tools'], ['智能体评测', '#/system/evals'], ['服务', '#/system/services'], ['日志', '#/system/logs']];
 
 export function Palette() {
   const studio = useStudio();

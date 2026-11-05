@@ -68,7 +68,7 @@ def execution_manifest() -> dict:
             packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
             packages[name] = None
-    node = shutil.which('node')
+    node = (paths.node_command() or [None])[0]
     if node:
         try:
             node_version = subprocess.run([node, '--version'], capture_output=True, text=True,

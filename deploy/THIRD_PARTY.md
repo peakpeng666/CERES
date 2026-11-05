@@ -38,3 +38,15 @@ apply to new collaborator images and asset uploads.
 
 The owner's snapshot `fuel-cache.tar.zst` (SHA256 `ee2d2ce72dea345b5aaac8c4fe0d3d501a8d51c3211ba1c038ca025cc0ae3b0d`) mixes the models above. Do not include that mixed tarball in new collaborator releases. The older
 public snapshot listed above remains a separate review item.
+
+## Desktop application
+
+| Component | Source | Terms |
+|---|---|---|
+| Electron, electron-builder, electron-updater | npm, pinned in `src/desktop/package-lock.json` | MIT; Chromium and Node notices ship in the installer as `LICENSES.chromium.html` |
+| CPython 3.12 (python-build-standalone) | astral-sh/python-build-standalone release used by uv | PSF licence and bundled-library notices in the runtime's `LICENSE.txt` |
+| Python dependencies | `src/lab/uv.lock` | per package, carried in each `*.dist-info` |
+| Microsoft Visual C++ runtime (Windows) | `msvc-runtime` wheel from PyPI | Microsoft redistributable licence; unmodified DLLs placed next to `python.exe` |
+| Model catalog snapshot | [models.dev](https://models.dev), trimmed by `urp_lab/agent/catalog.py` | MIT |
+| MuJoCo | `mujoco` wheel from PyPI | Apache-2.0 |
+| TurtleBot4 official maps (depot, maze, warehouse; see NOTICE.txt beside them) | `turtlebot4_navigation`, unmodified copies in `src/lab/urp_lab/data/maps/` for machines without ROS | Apache-2.0 |

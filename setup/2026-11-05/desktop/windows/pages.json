@@ -1,0 +1,146 @@
+{
+ "base": "http://127.0.0.1:4253",
+ "pages": [
+  {
+   "page": "#/agent",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 299
+  },
+  {
+   "page": "#/maps",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 126
+  },
+  {
+   "page": "#/assets",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 241
+  },
+  {
+   "page": "#/experiments",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 1024
+  },
+  {
+   "page": "#/runs",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 313
+  },
+  {
+   "page": "#/jobs",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 586
+  },
+  {
+   "page": "#/sim",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 479
+  },
+  {
+   "page": "#/algorithms",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 297
+  },
+  {
+   "page": "#/library/cvrplib",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 4393
+  },
+  {
+   "page": "#/library/fields",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 194
+  },
+  {
+   "page": "#/library/references",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 14115
+  },
+  {
+   "page": "#/bpp",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 2773
+  },
+  {
+   "page": "#/system",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 384
+  },
+  {
+   "page": "#/system/models",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 520
+  },
+  {
+   "page": "#/system/capabilities",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 569
+  },
+  {
+   "page": "#/system/data",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 276
+  },
+  {
+   "page": "#/system/tools",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 1417
+  },
+  {
+   "page": "#/system/evals",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 168
+  },
+  {
+   "page": "#/system/services",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 2441
+  },
+  {
+   "page": "#/system/logs",
+   "script": [],
+   "server": [],
+   "boundary": null,
+   "chars": 792
+  }
+ ],
+ "failed": 0
+}

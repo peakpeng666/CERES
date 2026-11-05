@@ -142,6 +142,12 @@ export interface AlgorithmHistory extends AlgorithmStat {
     wall_s: number | null; created_utc: string; budget_s: number | null; valid: boolean | null }[];
 }
 
+export interface DataPack {
+  id: string; name: string; summary: string; bytes: number; unpacked_bytes: number; version: number;
+  state: 'absent' | 'downloading' | 'installing' | 'installed' | 'failed';
+  progress: number | null; error: string | null;
+}
+
 export interface EngineGap {
   run_id: string;
   a: { engine: string; session_id?: string; state?: string };

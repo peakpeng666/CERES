@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import re
 import importlib
 import logging
@@ -97,6 +98,8 @@ class Lab:
             self.studies = StudyManager(self.store, self.jobs, self.bus)
             from .physics import PhysicsManager
             self.physics = PhysicsManager(self.store, self.runtime, self.bus, self.fieldsim)
+            from .datapacks import PackManager
+            self.packs = PackManager(self.runtime, self.bus)
         except BaseException:
             self.store.close()
             raise
@@ -115,6 +118,11 @@ class Lab:
                 self.services.start_archive()
             except Exception:
                 log.exception('archive autostart failed')
+        else:
+            if os.environ.get('URP_DESKTOP') == '1':   # the source tree's start script is not installed
+                self.services.start_archive = lambda: self.packs.start_archive(self.services)
+            self.packs.on_installed = lambda: self.packs.start_archive(self.services)
+            self.packs.start_archive(self.services)
 
     def shutdown(self):
         try:
@@ -350,15 +358,26 @@ def create_app(config: Config | None = None) -> FastAPI:
         lab.shutdown_event.set()
         return {'accepted': True, 'message': '正在有序关闭求解、仿真与网关；日志保留'}
 
+    def installed_rows(rows: list[dict]) -> list[dict]:
+        """In an installed app the archive backend comes from the history pack, not from a source tree's virtual environment."""
+        if os.environ.get('URP_DESKTOP') == '1':
+            for row in rows:
+                if row['id'] == 'archive' and row['state'] == 'unavailable':
+                    if lab.packs.installed('history'):
+                        row.update(state='stopped', detail='未运行；历史档案视图需要它', controls=['start'])
+                    else:
+                        row['detail'] = '下载历史档案后自动启动，见 设置 → 数据'
+        return rows
+
     @app.get(f'{api}/services')
     def services(refresh: bool = False):
         if refresh:
             lab.services.refresh_checks_async()
-        return {'services': lab.services.services()}
+        return {'services': installed_rows(lab.services.services())}
 
     @app.post(f'{api}/services/{{sid}}/{{action}}')
     def service_action(sid: str, action: str, payload: Any = Body(None)):
-        return {'services': lab.services.action(sid, action, body_dict(payload))}
+        return {'services': installed_rows(lab.services.action(sid, action, body_dict(payload)))}
 
     @app.get(f'{api}/logs')
     def logs():
@@ -438,7 +457,7 @@ def create_app(config: Config | None = None) -> FastAPI:
 
     @app.get(f'{api}/physics/engines')
     def physics_engines():
-        return {'engines': [{'id': 'mujoco', 'name': 'MuJoCo', **core('physics').available()}]}
+        return {'engines': [{'id': 'mujoco', 'name': 'MuJoCo', **core('physics').available()}], 'gazebo_gap': paths.gazebo_gap()}
 
     @app.post(f'{api}/physics/runs', status_code=202)
     def physics_submit(payload: Any = Body(None)):
@@ -464,6 +483,30 @@ def create_app(config: Config | None = None) -> FastAPI:
         if not rec:
             raise ApiError(404, 'unknown_physics_run', f'没有物理运行 {physics_run_id}')
         return rec
+
+    # ------------------------------------------------------ data packs --
+    def pack_call(fn, *args):
+        from .datapacks import PackError
+        try:
+            return fn(*args)
+        except PackError as exc:
+            raise ApiError(exc.status, exc.code, exc.message) from None
+
+    @app.get(f'{api}/packs')
+    def packs():
+        return {'packs': lab.packs.list()}
+
+    @app.post(f'{api}/packs/{{pack_id}}/install', status_code=202)
+    def pack_install(pack_id: str):
+        return pack_call(lab.packs.install, pack_id)
+
+    @app.post(f'{api}/packs/{{pack_id}}/cancel')
+    def pack_cancel(pack_id: str):
+        return pack_call(lab.packs.cancel, pack_id)
+
+    @app.post(f'{api}/packs/{{pack_id}}/remove')
+    def pack_remove(pack_id: str):
+        return pack_call(lab.packs.remove, pack_id)
 
     @app.post(f'{api}/recommend')
     def recommend(payload: Any = Body(None)):
@@ -577,8 +620,14 @@ def create_app(config: Config | None = None) -> FastAPI:
     def fieldsim_state():
         return lab.fieldsim.state()
 
+    def require_gazebo():
+        gap = paths.gazebo_gap()
+        if gap:
+            raise ApiError(503, 'simulator_unavailable', gap)
+
     @app.post(f'{api}/fieldsim', status_code=202)
     def fieldsim_start(payload: Any = Body(None)):
+        require_gazebo()
         return lab.fieldsim.start(body_dict(payload))
 
     @app.post(f'{api}/fieldsim/stop', status_code=202)
@@ -614,6 +663,7 @@ def create_app(config: Config | None = None) -> FastAPI:
 
     @app.post(f'{api}/sim/session', status_code=202)
     def sim_start(payload: Any = Body(None)):
+        require_gazebo()
         lab.services.start_sim(body_dict(payload))
         return lab.sim.current_state()
 
@@ -950,7 +1000,7 @@ def create_app(config: Config | None = None) -> FastAPI:
         try:
             resp = await client.send(upstream, stream=True)
         except (httpx.ConnectError, httpx.ConnectTimeout):
-            return error(503, 'archive_offline', '档案后端未运行，可在概览页启动')
+            return error(503, 'archive_offline', '档案后端未运行：下载历史档案后自动启动，见 设置 → 数据' if os.environ.get('URP_DESKTOP') else '档案后端未运行，可在概览页启动')
         except httpx.HTTPError as exc:
             return error(502, 'archive_error', f'档案后端请求失败：{type(exc).__name__}')
         out = StreamingResponse(resp.aiter_raw(), status_code=resp.status_code, background=BackgroundTask(resp.aclose))
@@ -979,9 +1029,9 @@ def create_app(config: Config | None = None) -> FastAPI:
 
     @app.get('/data/{rest:path}', include_in_schema=False)
     def data(rest: str):
-        path = static_file(f'data/{rest}')
+        path = static_file(f'data/{rest}') or lab.packs.web_file(rest)
         if path is None:
-            return error(404, 'not_found', f'无历史数据：/data/{rest} 不存在（历史实验数据未恢复）')
+            return error(404, 'not_found', '这份历史数据还没有下载，可在 设置 → 数据 下载历史档案')
         return FileResponse(path, headers={'Cache-Control': 'no-cache'})
 
     @app.get('/{rest:path}', include_in_schema=False)

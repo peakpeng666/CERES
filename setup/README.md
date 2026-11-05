@@ -10,7 +10,7 @@
 
 ## 云端纯代码与地图验收
 
-没有 ROS 安装的云端可以把官方 YAML/PGM 地图的已核验副本放在独立目录，设置 `URP_ROS_MAPS=/绝对路径/地图目录` 后运行 `src/lab/.venv/bin/python -m pytest`。默认仍使用 `/opt/ros/humble/share/turtlebot4_navigation/maps`，不修改系统目录。此配置用于地图检查与求解测试，地图几何以官方文件为准；Gazebo 执行需另行测试。
+官方地图优先读 `/opt/ros/humble/share/turtlebot4_navigation/maps`；这台机器没有 ROS 时读 `src/lab/urp_lab/data/maps/` 里的原样副本，云端和安装版因此不需要额外配置。`URP_ROS_MAPS=/绝对路径/地图目录` 可以指定别的副本。这些副本用于地图检查与求解测试，地图几何以官方文件为准；Gazebo 执行需另行测试。
 
 云端测试结果见 [2026-10-19 测试报告](2026-10-19/delivery-review/REPORT.md)。容器和本机测试的对应版本见各自记录。
 
@@ -30,6 +30,36 @@ bash setup/run.sh lab --open
 
 恢复：先在仿真面板关闭失败会话，再启动新会话；网关异常时执行 `bash setup/run.sh lab-stop`，待退出后重新运行上面的入口。失败结果与日志保留，不删除 `runtime/`，也不使用按名称批量杀进程的命令。
 
+## 桌面应用（2026-11-05）
+
+安装包自带 Python 后端和全部算法依赖，不需要开终端，也不需要装 Python、Node 或 ROS。
+
+| 系统 | 安装包 | 说明 |
+|---|---|---|
+| Linux x86_64 | `agri-route-workbench-<版本>-linux-x86_64.AppImage` | 下载后 `chmod +x` 直接运行，支持自动更新。Ubuntu 22.04 及以后默认没有 FUSE 2，需要 `sudo apt install libfuse2`，或加环境变量 `APPIMAGE_EXTRACT_AND_RUN=1` |
+| Debian / Ubuntu | `agri-route-workbench-<版本>-linux-amd64.deb` | `sudo apt install ./<文件>` |
+| Windows 10 / 11 x64 | `agri-route-workbench-<版本>-windows-x64.exe` | 安装到当前用户，不需要管理员权限 |
+
+第一次打开后，在输入框右下角点「连接模型」，选一家服务商，粘贴 API Key。不连接也能用规则流程。
+
+- **内置后端能做的**：智能体全流程、算法库、地图、课题实验、MuJoCo 物理预演。Windows 上 OMPL 的 7 个采样规划器和 Fields2Cover 显示未安装，A*、Theta* 等栅格规划器和平行往复基线可用；CVRP 数值任务的进程监督只支持 Linux，这一页在 Windows 上列出算法但不能提交，需要时走容器后端。没有 ROS 的电脑用内置的官方地图副本。
+- **数据**：`设置 → 数据` 里按需下载历史实验档案（约 50 MB，校验后解压，档案后端随之启动）。CVRPLIB 和真实田块在打开时从原始站点下载。运行库在应用数据目录，Linux 是 `~/.config/agri-route-workbench/runtime`，Windows 是 `%APPDATA%\agri-route-workbench\runtime`。模型 Key 在 `~/.config/urp-workbench/`。
+- **Gazebo 与 ROS**：安装版一律走容器后端，Linux 也一样，因为 ROS 桥接要在运行它的机器上编译和验收。`设置 → 桌面应用 → 仿真后端` 检测 Docker，开启后把工作台切到 `ghcr.io/peakpeng666/urp-sim` 容器，Fields2Cover 和 CVRP 数值任务也在里面。Windows 需要 Docker Desktop（WSL2 后端）。容器和内置后端的任务记录各自保存，模型连接共用；容器以 uid 1000 运行，Linux 上用其他 uid 登录时它读不到已保存的 Key。用源码运行的工作台仍然直接使用本机 ROS。
+- **更新**：应用每 6 小时检查仓库最新 Release，下载后在 `设置 → 桌面应用` 点「重启并更新」。deb 安装时更新需要系统授权。
+
+**构建**（Node 24、uv，当前操作系统对应一种安装包）：
+
+```bash
+npm ci --prefix src/frontend && npm run build --prefix src/frontend
+uv run --no-project --python 3.12 python src/desktop/scripts/stage_backend.py --target linux
+python3 src/desktop/test/backend_smoke.py --backend src/desktop/build/backend/linux --out /新的绝对路径
+npm ci --prefix src/desktop && npm run dist:linux --prefix src/desktop
+```
+
+验收脚本都在 `src/desktop/test/`：`backend_smoke.py` 走一遍后端和全部只读接口，`pages_crawl.mjs` 打开每一页，`app_e2e.mjs` 驱动安装后的应用，`container_e2e.mjs` 用真实 Docker 走容器后端和 Gazebo。这台机器有 ROS，只在这里测会漏掉依赖 ROS 的问题；`electronuserland/builder:wine` 镜像是没有 ROS 的 Ubuntu 22.04，暂存的 Linux 后端和 Wine 下的 Windows 后端都可以放进去跑。Windows 安装包也在这个镜像里构建。Wine 的 PowerShell 是总返回成功的空壳，安装程序会误判应用正在运行，测试时要先删掉它；这个镜像没有中文字体，安装程序窗口里的中文显示成方块，应用界面有内置字体回退。
+
+打 `v*` 标签后，`.github/workflows/desktop.yml` 在 Linux 和 Windows 上分别构建、在该系统上跑后端检查，再发布为仓库的最新 Release。Windows 代码签名读取仓库密钥 `WIN_CSC_LINK`、`WIN_CSC_KEY_PASSWORD`，没有证书时安装包照常生成，但 Windows 会提示未知发布者。历史档案用 `python3 src/desktop/scripts/build_data_pack.py` 生成，校验值写入 `src/lab/urp_lab/data/packs.json`，zip 上传到清单里 `base_url` 指向的 Release。
+
 ## 智能体：从需求到经复核、可执行的方案（2026-11-05）
 
 工作台首页是任务对话，地图、方案、合同、运行记录在右侧面板逐层打开。流程为：用自然语言描述需求 → 智能体整理为**任务合同**（每项标明来自原话、模型理解、人工修改或默认值，无法表达的要求单独列出）→ 你确认或修改 → 建立任务地图、推荐并按同一预算与种子对比算法 → **每个报告可行的方案都由独立检查器复核** → **每个通过复核的方案都在 MuJoCo 里物理预演一遍** → 生成报告，可在地图上查看并导出实验记录。任务本身不可行时（如单趟总需求超过车队容量），智能体给出修改建议并等待批准；送入 Gazebo 仿真同样需要批准。执行中可暂停、取消、重试，或接管某一步（改用地图编辑器中的地图、接入规划工作区的求解结果）；刷新或网关重启后可从当前阶段继续。
@@ -38,18 +68,11 @@ bash setup/run.sh lab --open
 
 修改合同后，报告、比较与仿真只使用与本轮冻结输入一致的运行，历史方案及原复核证据仍随会话导出保留。仅改车队或容量时原地更新地图，当前结果重新求解；车宽改变会重新生成几何。合同要求仿真且已有通过复核的方案时，运行器会提出具体批准请求；拒绝后模型不会重复要求批准，也不会启动 Gazebo。用户主动重试失败或拒绝的仿真时会重新请求批准，成功启动过的仿真不因重试报告而再次启动。切换会话、取消和刷新时，过期响应不能覆盖当前会话或较新的状态。
 
-**模型**：默认使用本机开源模型（Ollama + Qwen3.8-27B，用户目录安装、只监听 127.0.0.1）。启动与下载：
+**模型**：在 `设置 → 模型与用量` 里选一家服务商，粘贴 API Key，就能用。目录来自公开的 models.dev，列出 DeepSeek、智谱 GLM、Kimi、通义千问、豆包、硅基流动、OpenRouter、OpenAI、Anthropic、Gemini 等 180 多家，只保留能调用工具的模型；也可以添加任何兼容 OpenAI 接口的自定义地址。第一次连接时自动选中该服务的主力模型，之后在输入框右下角切换。Key 只保存在 `~/.config/urp-workbench/credentials.json`（权限 600），不进入前端存储、日志、仓库或导出。没有连接时，新任务走**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核、物理预演与报告，可作为对照基线。已有的订阅端点（如智谱 Coding Plan）继续出现在已连接列表里，只有手动选中才会使用，条款提示随选项显示。架构、接口与评测见 [智能体说明](../src/lab/urp_lab/agent/README.md)。
 
-```bash
-bash setup/llm/local-llm.sh start
-bash setup/llm/local-llm.sh pull qwen3.8:27b
-```
+**任务理解评测**：`cd src/lab && .venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid --provider 服务商/模型` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
 
-提供方配置在 `~/.config/urp-workbench/llm.json`，密钥只放在同目录权限为 600 的 `credentials.json` 或环境变量中，不进入前端、日志、仓库或导出。模型不可用时，新任务自动使用**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核与报告，可作为对照基线。智谱 GLM-5.3（Coding Plan 端点）已按用户决定（2026-10-30）启用为**可选模型**：在「智能体」首页的模型下拉框中选择，默认仍为本地模型；该端点的条款将额度限定在受支持的编程工具中，界面随选项显示这一提示，调用次数与 token 记入会话用量（按“未按量计价”标注）。按量计费端点仍停用。架构、接口与评测见 [智能体说明](../src/lab/urp_lab/agent/README.md)。
-
-**任务理解评测**：`cd src/lab && .venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
-
-**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --provider local --out /新的绝对路径`。5 个情景使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
+**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --provider 服务商/模型 --out /新的绝对路径`。5 个情景使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
 
 ## 主流程：一句话到多车方案
 

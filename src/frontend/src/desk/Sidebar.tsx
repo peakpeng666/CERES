@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import type { Route } from '../app/router';
 import { lab, useGatewayConnected, useLabResource } from '../lab/api';
 import { simPhaseLabel } from '../lab/shell/labels';
-import { useAgent } from '../agent/store';
+import { findModel, useAgent } from '../agent/store';
 import { agentApi, type SessionSummary } from '../agent/api';
 import { useStudio } from '../studio/store';
 import { useFieldSim } from '../studio/ros/live';
@@ -47,7 +47,7 @@ function SessionRow({ x, current, onPick }: { x: SessionSummary; current: boolea
 
 /** Backend work that outlives a click: solves, studies, physics runs, simulations. Shown only while something runs. */
 function Jobs() {
-  const res = useLabResource('agent-jobs', () => agentApi.jobs(), { reloadOn: 'physics_run', pollMs: 3000 });
+  const res = useLabResource('agent-jobs', () => agentApi.jobs(), { reloadOn: 'pack', pollMs: 3000 });
   const jobs = res.data?.jobs ?? [];
   if (!jobs.length) return null;
   return (
@@ -78,13 +78,12 @@ function Status() {
   const fieldBusy = fieldPhase === 'starting' || fieldPhase === 'running' || fieldPhase === 'ready';
   const fieldText = fieldBusy ? ({ starting: '田间仿真启动中', ready: '田间仿真就绪', running: '田间仿真执行中' } as Record<string, string>)[fieldPhase!] : null;
   const robotBusy = sim.data && !['idle', 'stopped', undefined].includes(sim.data.phase as string);
-  const def = providers?.providers.find((p) => p.id === providers.default);
-  const modelReady = def && def.enabled && (def.local ? def.status.reachable && def.status.model_present : def.has_credential);
+  const model = findModel(providers, providers?.selected);
   const line = !connected ? '服务未连接' : solving ? `正在求解 ${solving} 个` : fieldText ?? (robotBusy ? `TB4 ${simPhaseLabel(sim.data!.phase)}` : '服务已连接');
   return (
-    <a href="#/system/models" className={s.status} title={def?.status.detail}>
+    <a href="#/system/models" className={s.status} title={model?.ref ?? '连接模型服务商'}>
       <span><i className={s.lamp} data-on={!connected ? 'bad' : solving || fieldBusy ? 'busy' : 'ok'} />{line}</span>
-      <span><i className={s.lamp} data-on={modelReady ? 'ok' : 'warn'} />{modelReady ? def!.model : '模型未就绪，使用规则流程'}</span>
+      <span><i className={s.lamp} data-on={model ? 'ok' : 'warn'} />{model ? model.name : '未连接模型，使用规则流程'}</span>
     </a>
   );
 }

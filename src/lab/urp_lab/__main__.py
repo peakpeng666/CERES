@@ -91,7 +91,8 @@ def serve(args) -> int:
     config = uvicorn.Config(app, host=bind, port=args.port, log_config=None, access_log=False,
                             timeout_graceful_shutdown=5, lifespan='on', server_header=False)
     server = Server(config)
-    signal.signal(signal.SIGHUP, server.handle_exit)  # terminal window closed
+    if hasattr(signal, 'SIGHUP'):
+        signal.signal(signal.SIGHUP, server.handle_exit)  # terminal window closed
 
     def announce():
         while not server.started and not server.should_exit:
@@ -107,6 +108,15 @@ def serve(args) -> int:
                     server.should_exit = True
                     break
     threading.Thread(target=announce, daemon=True).start()
+
+    def leave_with_parent():
+        """The desktop app holds our stdin open; end of file means it is gone, however it went."""
+        while os.read(0, 1024):     # the raw descriptor: a daemon thread blocked in sys.stdin would abort interpreter shutdown
+            pass
+        log.info('桌面应用已退出，网关随之有序关闭')
+        lab.shutdown_event.set()
+    if args.exit_with_stdin:
+        threading.Thread(target=leave_with_parent, daemon=True).start()
     try:
         server.run()
     except KeyboardInterrupt:
@@ -185,6 +195,7 @@ def main(argv=None) -> int:
                    help='监听地址。笔记本保持 127.0.0.1；WSL 与容器设 URP_BIND_HOST=0.0.0.0')
     p.add_argument('--open', action='store_true', help='启动后用 Chrome 应用窗口打开面板')
     p.add_argument('--no-archive', action='store_true', help='不自动启动档案后端')
+    p.add_argument('--exit-with-stdin', action='store_true', help='标准输入关闭时有序退出（桌面应用用来绑定生命周期）')
     sub.add_parser('doctor', help='打印服务检测结果（JSON）')
     p = sub.add_parser('solve', help='无界面求解一次，输出 Solution JSON')
     p.add_argument('--scenario', required=True)

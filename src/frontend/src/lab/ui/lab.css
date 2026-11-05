@@ -5,7 +5,8 @@
  * Theme: no attribute follows the system; data-theme="light|dark" is an explicit choice.
  */
 :root {
-  --mac-font: "IBM Plex Sans", "PingFang SC", "苹方-简", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* The bundled serif comes last so a machine with no Chinese font still shows text, not empty boxes. */
+  --mac-font: "IBM Plex Sans", "PingFang SC", "苹方-简", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", "Noto Serif SC Variable", sans-serif;
   --mac-serif: "Noto Serif SC Variable", "Noto Serif CJK SC", "Source Han Serif SC", "Songti SC", STSong, serif;
   --mac-mono: "IBM Plex Mono", "SF Mono", "Noto Sans Mono CJK SC", ui-monospace, Menlo, Consolas, monospace;
 

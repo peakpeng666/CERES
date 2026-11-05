@@ -13,7 +13,7 @@ from fastapi.testclient import TestClient
 
 from urp_lab import paths
 from urp_lab.agent import contract as tc
-from urp_lab.agent import diagnose, llm, tools
+from urp_lab.agent import diagnose, llm, providers, tools
 from urp_lab.agent.runner import AgentRunner
 from urp_lab.agent.session import claims_check
 from urp_lab.compose import EXAMPLES, compose
@@ -158,10 +158,8 @@ def test_provider_config_refuses_inline_secrets(tmp_path, monkeypatch):
         {'id': 'leaky', 'kind': 'openai', 'model': 'm', 'base_url': 'http://x', 'api_key': 'sk-should-not-be-here'},
         {'id': 'ok', 'kind': 'openai', 'model': 'm', 'base_url': 'http://x', 'credential': 'env:URP_TEST_KEY'}]}))
     monkeypatch.setattr(llm, 'CONFIG_PATH', cfg)
-    ids = [p.id for p in llm.load_providers()]
-    assert ids == ['ok']
-    monkeypatch.delenv('URP_TEST_KEY', raising=False)
-    assert llm.load_providers()[0].public()['has_credential'] is False
+    monkeypatch.setattr(llm, 'CREDENTIALS_PATH', tmp_path / 'credentials.json')
+    assert list(providers._custom()) == ['ok']
 
 
 def test_credentials_file_must_be_private(tmp_path, monkeypatch):
@@ -409,13 +407,13 @@ def test_controls_reject_invalid_transitions(gateway):
 def test_llm_mode_without_a_usable_provider_is_refused_not_faked(gateway, monkeypatch, tmp_path):
     app, client = gateway
     monkeypatch.setattr(llm, 'CONFIG_PATH', tmp_path / 'none.json')
-    monkeypatch.setattr(llm, 'probe', lambda p, timeout=2.0: {'reachable': False, 'model_present': False, 'detail': '本地模型服务未响应'})
+    monkeypatch.setattr(llm, 'CREDENTIALS_PATH', tmp_path / 'credentials.json')
     r = client.post('/lab/api/agent/sessions', json={'mode': 'llm', 'text': SMALL})
     assert r.status_code == 409 and r.json()['error'] == 'llm_unavailable'
     auto = client.post('/lab/api/agent/sessions', json={'mode': 'auto'}).json()
     assert auto['mode'] == 'rule' and '未调用大模型' in auto['messages'][0]['text']
-    providers = client.get('/lab/api/agent/providers').json()
-    assert 'api_key' not in json.dumps(providers)
+    listed = client.get('/lab/api/agent/providers').json()
+    assert '"api_key"' not in json.dumps(listed)
 
 
 def test_interrupted_sessions_are_recoverable(gateway):

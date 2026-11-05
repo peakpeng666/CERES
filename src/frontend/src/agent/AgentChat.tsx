@@ -24,7 +24,7 @@ import {
   type Pending,
   type Report,
 } from './api';
-import { useAgent } from './store';
+import { findModel, useAgent } from './store';
 import { currentRuns, syncAgentStudio } from './studioSync';
 import s from './agent.module.css';
 
@@ -55,13 +55,12 @@ export function ModelChip({ compact = false }: { compact?: boolean }) {
       </span>
     );
   }
-  const def = providers?.providers.find((p) => p.id === (chosen ?? providers.default));
-  const ready = def && def.enabled && (def.local ? def.status.reachable && def.status.model_present : def.has_credential);
-  const text = error ? '模型状态未知' : !providers ? '读取模型状态…' : ready ? def!.label : `模型未就绪：${def?.status.detail ?? '未配置'}`;
+  const model = findModel(providers, chosen ?? providers?.selected);
+  const text = error ? '模型状态未知' : !providers ? '读取模型状态…' : model ? model.name : '还没有连接模型服务商';
   return (
-    <span className={s.chip} data-tone={ready ? 'ok' : 'warn'} title={ready ? `${def!.kind} · ${def!.model}` : '未就绪时新任务使用规则流程，并在会话中注明'}>
+    <span className={s.chip} data-tone={model ? 'ok' : 'warn'} title={model ? model.ref : '没有连接时新任务使用规则流程，并在会话中注明'}>
       <span className={s.dot} />
-      {compact ? (ready ? def!.model : '规则流程') : text}
+      {compact ? (model ? model.name : '规则流程') : text}
     </span>
   );
 }
@@ -295,23 +294,19 @@ function Composer({ session }: { session: AgentSession | null }) {
   );
 }
 
-/** Model for new sessions: enabled providers only; the default comes from the server-side configuration. */
+/** Model for new sessions: everything on the connected services; the default is the one chosen in settings. */
 function ProviderPicker() {
   const providers = useAgent((x) => x.providers);
   const chosen = useAgent((x) => x.newProvider);
   const setChosen = useAgent((x) => x.setNewProvider);
   const mode = useAgent((x) => x.newMode);
-  const enabled = (providers?.providers ?? []).filter((p) => p.enabled);
-  if (mode === 'rule' || enabled.length < 2) return null;
-  const value = chosen ?? providers?.default ?? enabled[0].id;
-  const selected = enabled.find((p) => p.id === value);
+  const models = (providers?.connected ?? []).flatMap((c) => c.models.map((m) => ({ ...m, label: `${m.name} · ${c.name}` })));
+  if (mode === 'rule' || models.length < 2) return null;
+  const value = chosen ?? providers?.selected ?? models[0].ref;
   return (
-    <>
-      <select className={s.providerPicker} value={value} aria-label="新任务使用的模型" onChange={(e) => setChosen(e.target.value)}>
-        {enabled.map((p) => <option key={p.id} value={p.id}>{p.label}{p.id === providers?.default ? '（默认）' : ''}</option>)}
-      </select>
-      {selected?.terms_note && <span className={s.termsNote} title={selected.terms_note}><TriangleAlert size={12} /> {selected.terms_note}</span>}
-    </>
+    <select className={s.providerPicker} value={value} aria-label="新任务使用的模型" onChange={(e) => setChosen(e.target.value)}>
+      {models.map((m) => <option key={m.ref} value={m.ref}>{m.label}{m.ref === providers?.selected ? '（默认）' : ''}</option>)}
+    </select>
   );
 }
 

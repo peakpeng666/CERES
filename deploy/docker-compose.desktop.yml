@@ -1,0 +1,13 @@
+# Added by the desktop app on top of docker-compose.sim.yml: the container sees the same model connections as the app.
+# URP_HOST_CONFIG is the app's configuration directory on the host. A bind mount from Windows reports open file modes,
+# so the private-file check is relaxed here; the directory itself stays in the user's profile.
+services:
+  lab:
+    environment:
+      URP_CONFIG_DIR: /config
+      URP_LLM_CONFIG: /config/llm.json
+      URP_LLM_CREDENTIALS: /config/credentials.json
+      URP_CREDENTIALS_MOUNTED: "1"
+      URP_MODELS_REFRESH: "1"
+    volumes:
+      - ${URP_HOST_CONFIG:?}:/config

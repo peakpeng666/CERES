@@ -96,11 +96,6 @@ def test_evals_read_stored_records_without_touching_them(runner, tmp_path, monke
     assert runs['20261030-nlu-x']['metrics']['f1'] == 0.9
 
 
-def test_local_model_rejects_unknown_actions(runner):
-    with pytest.raises(RunnerError):
-        runner.local_model('restart')
-
-
 def test_plan_step_records_a_decided_repair():
     s = new_session('rule', None)
     set_step(s, 'repair', 'waiting', '等待批准')
