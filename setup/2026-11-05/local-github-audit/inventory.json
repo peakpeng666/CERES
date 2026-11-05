@@ -1,0 +1,819 @@
+{
+  "schema": "urp.local-github-audit/1",
+  "generated_utc": "2026-11-05T13:09:53.676449+00:00",
+  "client_date": "2026-11-05",
+  "scope": "metadata and hashes; secrets not read; symlinks not followed; skipped environments/build outputs not included in per-file totals",
+  "git_head": "82db23521565a27ffd585a70ed49f07a4eff165e",
+  "git_branch": "agent/workbench-20261029",
+  "initial_status": "## agent/workbench-20261029...origin/agent/workbench-20261029\n?? .claude/launch.json\n",
+  "main": "3ad714018544f1bd8fe6db30e610eb96b8bc0320",
+  "divergence_main_head": "155\t67",
+  "unpublished_local_commits": [],
+  "aggregates": [
+    {
+      "root": ".claude",
+      "git_state": "tracked",
+      "files": 8,
+      "bytes": 53252
+    },
+    {
+      "root": ".claude",
+      "git_state": "untracked",
+      "files": 1,
+      "bytes": 403
+    },
+    {
+      "root": ".dockerignore",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 461
+    },
+    {
+      "root": ".gitattributes",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 144
+    },
+    {
+      "root": ".github",
+      "git_state": "tracked",
+      "files": 4,
+      "bytes": 19713
+    },
+    {
+      "root": ".gitignore",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 5949
+    },
+    {
+      "root": ".local-state",
+      "git_state": "ignored",
+      "files": 542,
+      "bytes": 124231921
+    },
+    {
+      "root": ".python-version",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 5
+    },
+    {
+      "root": ".vscode",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 77
+    },
+    {
+      "root": "AGENTS.md",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 2961
+    },
+    {
+      "root": "DEPLOY.md",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 13783
+    },
+    {
+      "root": "README.md",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 6420
+    },
+    {
+      "root": "acceptance",
+      "git_state": "tracked",
+      "files": 168,
+      "bytes": 647245
+    },
+    {
+      "root": "algorithm_inventory.json",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 1158624
+    },
+    {
+      "root": "algorithm_inventory.md",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 20433
+    },
+    {
+      "root": "algorithm_source_manifest.json",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 45295
+    },
+    {
+      "root": "audits",
+      "git_state": "tracked",
+      "files": 49,
+      "bytes": 346381
+    },
+    {
+      "root": "baseline-worker",
+      "git_state": "ignored",
+      "files": 219,
+      "bytes": 3467399
+    },
+    {
+      "root": "baseline-worker",
+      "git_state": "untracked",
+      "files": 1,
+      "bytes": 0
+    },
+    {
+      "root": "cohort_b",
+      "git_state": "tracked",
+      "files": 131,
+      "bytes": 2394514
+    },
+    {
+      "root": "compose.yaml",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 199
+    },
+    {
+      "root": "data",
+      "git_state": "tracked",
+      "files": 5647,
+      "bytes": 426762472
+    },
+    {
+      "root": "deploy",
+      "git_state": "tracked",
+      "files": 34,
+      "bytes": 115385
+    },
+    {
+      "root": "docs",
+      "git_state": "tracked",
+      "files": 57,
+      "bytes": 39687059
+    },
+    {
+      "root": "evidence",
+      "git_state": "tracked",
+      "files": 11,
+      "bytes": 664515
+    },
+    {
+      "root": "experiments",
+      "git_state": "tracked",
+      "files": 1544,
+      "bytes": 1555538627
+    },
+    {
+      "root": "history",
+      "git_state": "tracked",
+      "files": 24,
+      "bytes": 1253481
+    },
+    {
+      "root": "independent",
+      "git_state": "tracked",
+      "files": 11,
+      "bytes": 52356
+    },
+    {
+      "root": "install.ps1",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 14158
+    },
+    {
+      "root": "install.sh",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 15077
+    },
+    {
+      "root": "literature",
+      "git_state": "tracked",
+      "files": 852,
+      "bytes": 461591777
+    },
+    {
+      "root": "materials",
+      "git_state": "tracked",
+      "files": 78,
+      "bytes": 4353919
+    },
+    {
+      "root": "papers",
+      "git_state": "tracked",
+      "files": 563,
+      "bytes": 1513837406
+    },
+    {
+      "root": "patches",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 515462
+    },
+    {
+      "root": "protocol",
+      "git_state": "tracked",
+      "files": 16,
+      "bytes": 645219
+    },
+    {
+      "root": "pyproject.toml",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 333
+    },
+    {
+      "root": "reports",
+      "git_state": "tracked",
+      "files": 4,
+      "bytes": 16529
+    },
+    {
+      "root": "requirements.lock",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 342
+    },
+    {
+      "root": "runtime",
+      "git_state": "tracked",
+      "files": 9,
+      "bytes": 24547
+    },
+    {
+      "root": "scripts",
+      "git_state": "tracked",
+      "files": 6,
+      "bytes": 27362
+    },
+    {
+      "root": "setup",
+      "git_state": "ignored",
+      "files": 416,
+      "bytes": 242073643
+    },
+    {
+      "root": "setup",
+      "git_state": "tracked",
+      "files": 2208,
+      "bytes": 96051192
+    },
+    {
+      "root": "setup",
+      "git_state": "untracked",
+      "files": 1,
+      "bytes": 0
+    },
+    {
+      "root": "src",
+      "git_state": "ignored",
+      "files": 5123,
+      "bytes": 1272020900
+    },
+    {
+      "root": "src",
+      "git_state": "tracked",
+      "files": 18226,
+      "bytes": 256232862
+    },
+    {
+      "root": "storage.json",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 923
+    },
+    {
+      "root": "test_install_entrypoints.py",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 23746
+    },
+    {
+      "root": "tools",
+      "git_state": "tracked",
+      "files": 15,
+      "bytes": 112793
+    },
+    {
+      "root": "uv.lock",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 57318
+    },
+    {
+      "root": "停止实验台.bat",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 194
+    },
+    {
+      "root": "启动实验台.bat",
+      "git_state": "tracked",
+      "files": 1,
+      "bytes": 195
+    }
+  ],
+  "local_untracked_or_ignored": {
+    "files": 6303,
+    "bytes": 1641794266,
+    "coverage": [
+      {
+        "state": "changed-since-october-preservation",
+        "files": 4,
+        "bytes": 88446990
+      },
+      {
+        "state": "no-october-preservation-entry",
+        "files": 629,
+        "bytes": 65414974
+      },
+      {
+        "state": "same-source-hash-as-october-preservation",
+        "files": 5670,
+        "bytes": 1487932302
+      }
+    ]
+  },
+  "skipped_directories": [
+    ".git",
+    ".codex",
+    ".v2c",
+    ".venv",
+    ".agents",
+    ".video_agent",
+    ".aws",
+    ".pytest_cache",
+    "independent/__pycache__",
+    "protocol/__pycache__",
+    "baseline-worker/env",
+    "src/research/.venv",
+    "src/research/tests/__pycache__",
+    "src/research/src/urp_research/__pycache__",
+    "src/research/src/urp_research/turn_modes/__pycache__",
+    "src/research/src/urp_research/cvrp_selection/__pycache__",
+    "src/research/src/urp_research/nas_fidelity/__pycache__",
+    "src/research/src/urp_research/cvrplib/__pycache__",
+    "src/research/src/urp_research/cvrplib/frozen/pyvrp/independent_review/__pycache__",
+    "src/research/src/urp_research/cvrplib/frozen/vnd/__pycache__",
+    "src/research/execution/__pycache__",
+    "src/research/execution/tests/__pycache__",
+    "src/research/scripts/__pycache__",
+    "src/research/generator/__pycache__",
+    "src/desktop/node_modules",
+    "src/desktop/dist",
+    "src/desktop/build/packs",
+    "src/desktop/build/backend",
+    "src/desktop/build/python-cache",
+    "src/frontend/.venv",
+    "src/frontend/node_modules",
+    "src/frontend/dist",
+    "src/frontend/tests/__pycache__",
+    "src/frontend/scripts/__pycache__",
+    "src/backend/.venv",
+    "src/backend/tests/__pycache__",
+    "src/backend/backend/__pycache__",
+    "src/lab/.venv",
+    "src/lab/.pytest_cache",
+    "src/lab/e2e/__pycache__",
+    "src/lab/runtime/diagnostics/bridge/ros_gz-0.244.26/ros_gz_bridge/ros_gz_bridge/__pycache__",
+    "src/lab/ros/__pycache__",
+    "src/lab/urp_lab/__pycache__",
+    "src/lab/urp_lab/compose/__pycache__",
+    "src/lab/urp_lab/assets/__pycache__",
+    "src/lab/urp_lab/evolve/__pycache__",
+    "src/lab/urp_lab/agent/__pycache__",
+    "src/lab/urp_lab/agent/evals/__pycache__",
+    "src/lab/urp_lab/figures/__pycache__",
+    "src/lab/urp_lab/solvers/__pycache__",
+    "src/lab/urp_lab/library/__pycache__",
+    "src/lab/urp_lab/scenarios/__pycache__",
+    "src/lab/tests/__pycache__",
+    "src/robotics/urp_route_sim/urp_route_sim/__pycache__",
+    "src/robotics/urp_route_sim/test/__pycache__",
+    "src/repos/DSPy/.agents",
+    "setup/2026-10-15/deployment/__pycache__",
+    "scripts/__pycache__",
+    "tools/__pycache__",
+    "tools/tests/__pycache__"
+  ],
+  "broken_links": [],
+  "tracked_links": [
+    {
+      "path": "src/frontend/research",
+      "target": "../../data/bpp/records",
+      "exists": true,
+      "tracked": true
+    },
+    {
+      "path": "src/frontend/inputs",
+      "target": "../../data/bpp/inputs",
+      "exists": true,
+      "tracked": true
+    },
+    {
+      "path": "src/frontend/public/data",
+      "target": "../../../data/bpp/exports",
+      "exists": true,
+      "tracked": true
+    },
+    {
+      "path": "src/backend/packages",
+      "target": "../../data/packages",
+      "exists": true,
+      "tracked": true
+    },
+    {
+      "path": "setup/2026-10-15/deployment/dds/apt-sources",
+      "target": "../../apt-sources",
+      "exists": true,
+      "tracked": true
+    }
+  ],
+  "largest_tracked": [
+    {
+      "path": "experiments/results/生成与执行/GLM53独立36任务消融.zip",
+      "bytes": 90973318,
+      "git_mode": "100644",
+      "git_blob": "b4e12ff873fe79a0bbced7049b19b15f7e4a2cbc"
+    },
+    {
+      "path": "literature/教材/Reinforcement Learning - An Introduction (Sutton & Barto 2018).pdf",
+      "bytes": 73129769,
+      "git_mode": "100644",
+      "git_blob": "a138de86fad2617a0969dc8bb5f8cc2f1febf823"
+    },
+    {
+      "path": "literature/教材/Hands-On Machine Learning with Scikit-Learn, Keras, and TensorFlow, 3rd Edition (Geron 2022).pdf",
+      "bytes": 73033088,
+      "git_mode": "100644",
+      "git_blob": "50edd1893cfd5c3f8f04f68f01c009d63e196192"
+    },
+    {
+      "path": "experiments/provenance/记录/综合/URP_实验项目.zip",
+      "bytes": 62376435,
+      "git_mode": "100644",
+      "git_blob": "0a06999896fea4c77f222009c032b0874a41571d"
+    },
+    {
+      "path": "data/backend/research.sqlite3",
+      "bytes": 60526592,
+      "git_mode": "100644",
+      "git_blob": "4e10aa6a29e42f61aa79855a8e9ba549310ea99b"
+    },
+    {
+      "path": "experiments/results/路线求解/公共路线强基线.zip",
+      "bytes": 45735218,
+      "git_mode": "100644",
+      "git_blob": "4bdb66e5fe432010e507c9750f8cb09af51ed66b"
+    },
+    {
+      "path": "experiments/results/路线求解/公共路线强基线_PyVRP0.14.0_进程失败未审_RAW.zip",
+      "bytes": 42987789,
+      "git_mode": "100644",
+      "git_blob": "e9eff8d98025985d62e7964f687352cbb343d8b2"
+    },
+    {
+      "path": "literature/教材/Deep Learning (Goodfellow et al 2016).pdf",
+      "bytes": 40450095,
+      "git_mode": "100644",
+      "git_blob": "f1c65447304d316d411dbd12e20aeb04e71a569f"
+    },
+    {
+      "path": "literature/教材/Evolutionary Optimization Algorithms - Biologically-Inspired and Population-Based Approaches to Computer Intelligence (Simon 2013).pdf",
+      "bytes": 35572751,
+      "git_mode": "100644",
+      "git_blob": "f4708de351e7d7721afd5eb2b97cb375a1c600a6"
+    },
+    {
+      "path": "papers/RunAndSchedule2Survive - Algorithm Scheduling Based on Run2Survive (Margraf et al 2025).pdf",
+      "bytes": 34983115,
+      "git_mode": "100644",
+      "git_blob": "9b8082a73ed9072e4e48f8d23bda3e21c7271d12"
+    },
+    {
+      "path": "papers/Fields2Cover - Transparent and Efficient Coverage Paths for Autonomous Agricultural Vehicles (Mier PhD Thesis 2026).pdf",
+      "bytes": 34877750,
+      "git_mode": "100644",
+      "git_blob": "91362cf45083278232d37be8a2dfbac8e344a63a"
+    },
+    {
+      "path": "experiments/results/装箱选择/四路实验_BPP训练量离线消融_完整源码数据.zip",
+      "bytes": 33377043,
+      "git_mode": "100644",
+      "git_blob": "c12f5050d0e1cdc5359278ae9f2524732a17e27d"
+    },
+    {
+      "path": "data/cifar-training/data_batch_3.bin",
+      "bytes": 30730000,
+      "git_mode": "100644",
+      "git_blob": "5259a3e9674ffdf2d5c33a1067f7192ff06c9e2f"
+    },
+    {
+      "path": "data/cifar-training/data_batch_4.bin",
+      "bytes": 30730000,
+      "git_mode": "100644",
+      "git_blob": "301e7d16d78428f13262e87a5bc78ed45b8224aa"
+    },
+    {
+      "path": "data/cifar-training/data_batch_1.bin",
+      "bytes": 30730000,
+      "git_mode": "100644",
+      "git_blob": "da09f891072747be90e69e4f00ba7cba870dc87e"
+    },
+    {
+      "path": "data/cifar-training/data_batch_5.bin",
+      "bytes": 30730000,
+      "git_mode": "100644",
+      "git_blob": "51fe428dfbdd065852912743ae8b7b63bb1e9d8d"
+    },
+    {
+      "path": "data/cifar-training/data_batch_2.bin",
+      "bytes": 30730000,
+      "git_mode": "100644",
+      "git_blob": "7e958840b7a55df3353574298ebc9ca0e4bba48e"
+    },
+    {
+      "path": "literature/教材/Deep Learning with PyTorch - Training and Applying Deep Learning and Generative AI Models, 2nd Edition (Huang et al 2026).pdf",
+      "bytes": 30203298,
+      "git_mode": "100644",
+      "git_blob": "31d040a656e1cc497edc794de4fae2e954b55636"
+    },
+    {
+      "path": "literature/教材/Arc Routing - Problems, Methods, and Applications (Corberan & Laporte 2014).pdf",
+      "bytes": 29635114,
+      "git_mode": "100644",
+      "git_blob": "9b0f497ec8baa1d79fd9289b5e900c042dcd0baf"
+    },
+    {
+      "path": "papers/Design and Analysis of Computer Experiments (Sacks et al 1989).pdf",
+      "bytes": 28299492,
+      "git_mode": "100644",
+      "git_blob": "e3a02213d3c374d97a5cb55dc358f94d9c2b6d3c"
+    },
+    {
+      "path": "experiments/results/装箱选择/前缀算法选择/BPP前缀安全选择_完整源码数据与审计_20261006.zip",
+      "bytes": 25366752,
+      "git_mode": "100644",
+      "git_blob": "792de6570d628ef6d43c5493d7fdf38dc9560c2a"
+    },
+    {
+      "path": "data/bpp/inputs/BPP前缀安全选择_完整源码数据与审计_20261006.zip",
+      "bytes": 25366752,
+      "git_mode": "100644",
+      "git_blob": "792de6570d628ef6d43c5493d7fdf38dc9560c2a"
+    },
+    {
+      "path": "experiments/results/优化与训练/训练保真度与独立重训/P4_发现组权重_20261006.zip",
+      "bytes": 24732887,
+      "git_mode": "100644",
+      "git_blob": "12b019de7fc6efd31681f131baf4b9198354dfb5"
+    },
+    {
+      "path": "experiments/results/优化与训练/训练保真度与独立重训/P4_独立重训权重_20261006.zip",
+      "bytes": 24727814,
+      "git_mode": "100644",
+      "git_blob": "ad5a238c4b53d9d5c26d0093ac9995b942018cec"
+    },
+    {
+      "path": "experiments/results/农业路径/124块NL容量精确参照.zip",
+      "bytes": 24562234,
+      "git_mode": "100644",
+      "git_blob": "89921004e46026b25305a2a4568011debd55a4d7"
+    },
+    {
+      "path": "literature/教材/All of Statistics - A Concise Course in Statistical Inference (Wasserman 2004).pdf",
+      "bytes": 24417120,
+      "git_mode": "100644",
+      "git_blob": "d9e1a810a7d2e2a301ac32ebecf5252e25649e6a"
+    },
+    {
+      "path": "experiments/results/农业路径/完整距离前沿支持性诊断.zip",
+      "bytes": 23963750,
+      "git_mode": "100644",
+      "git_blob": "650d842c7268899e51f6aa509c8de7e56dd209ac"
+    },
+    {
+      "path": "experiments/results/农业路径/跨地块完整距离前沿.zip",
+      "bytes": 23697148,
+      "git_mode": "100644",
+      "git_blob": "09b050069d58a43de3f43ffc5fdc0a9b2792ce8b"
+    },
+    {
+      "path": "papers/Deep Reinforcement Learning at the Edge of the Statistical Precipice (Agarwal et al 2021).pdf",
+      "bytes": 22838819,
+      "git_mode": "100644",
+      "git_blob": "4484b66a28e518759f144e6123c90436efaeb879"
+    },
+    {
+      "path": "experiments/provenance/review_sources/复盘0929.zip",
+      "bytes": 22338694,
+      "git_mode": "100644",
+      "git_blob": "9ec7f726ff8fd891439fe77becb9bcc97099e5ea"
+    },
+    {
+      "path": "papers/WILDS - A Benchmark of in-the-Wild Distribution Shifts (Koh et al 2021).pdf",
+      "bytes": 22135471,
+      "git_mode": "100644",
+      "git_blob": "cb7ce8364a51547d750e47df9532a8d9c45cab95"
+    }
+  ],
+  "vanished_paths": [],
+  "october_map": {
+    "bytes": 5493312,
+    "sha256": "b41a16b2d5e0c07a9bda966f1b215d4fd180fc5404fcb8322d449de3bc31207b",
+    "records": 78764
+  },
+  "disk": [
+    {
+      "path": "/home/peakpeng/Desktop/URP",
+      "exists": true,
+      "allocated_bytes": 17348337664,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/.git",
+      "exists": true,
+      "allocated_bytes": 3446792192,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/desktop",
+      "exists": true,
+      "allocated_bytes": 5439135744,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/desktop/dist",
+      "exists": true,
+      "allocated_bytes": 3252146176,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/desktop/build/backend",
+      "exists": true,
+      "allocated_bytes": 1534939136,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/desktop/build/packs",
+      "exists": true,
+      "allocated_bytes": 51552256,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/lab/runtime",
+      "exists": true,
+      "allocated_bytes": 1268953088,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/.local-state",
+      "exists": true,
+      "allocated_bytes": 125607936,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/papers",
+      "exists": true,
+      "allocated_bytes": 1515081728,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/literature",
+      "exists": true,
+      "allocated_bytes": 463630336,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/experiments",
+      "exists": true,
+      "allocated_bytes": 1560473600,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/data",
+      "exists": true,
+      "allocated_bytes": 441278464,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/baseline-worker",
+      "exists": true,
+      "allocated_bytes": 540835840,
+      "du_exit": 0
+    }
+  ],
+  "host": [
+    {
+      "path": "/opt/ros",
+      "exists": true,
+      "allocated_bytes": 430960640,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/.ignition",
+      "exists": true,
+      "allocated_bytes": 9330688,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/.ros",
+      "exists": true,
+      "allocated_bytes": 2764800,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/.ollama",
+      "exists": true,
+      "allocated_bytes": 17742016512,
+      "du_exit": 0
+    },
+    {
+      "path": "/home/peakpeng/.local/share/uv/python",
+      "exists": true,
+      "allocated_bytes": 412057600,
+      "du_exit": 0
+    }
+  ],
+  "databases": [
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/lab/runtime/lab.sqlite3",
+      "bytes": 25407488,
+      "tables": {
+        "runs": 297,
+        "sim_runs": 40,
+        "studies": 2
+      },
+      "quick_check": "ok",
+      "user_version": 0,
+      "consistent_backup_sha256": "25301197437164f6f0f78aff4c6d22903f490958d1ca9d2339a43bd8852751dd"
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/src/lab/runtime/agent.sqlite3",
+      "bytes": 12288,
+      "tables": {
+        "sessions": 0
+      },
+      "quick_check": "ok",
+      "user_version": 0,
+      "consistent_backup_sha256": "61106086d5d4b7b5850da47e4ae3f1d869df71b4daa29032802ccfbb96bc66f5"
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/.local-state/research.sqlite3",
+      "bytes": 60604416,
+      "tables": {
+        "experiments": 11,
+        "artifacts": 117,
+        "job_scenes": 1,
+        "jobs": 1
+      },
+      "quick_check": "ok",
+      "user_version": 0,
+      "consistent_backup_sha256": "6bc941d09d4caf482789c433a3ac5b733cc47803cd5c98e76d3973a09d280442"
+    },
+    {
+      "path": "/home/peakpeng/Desktop/URP/data/backend/research.sqlite3",
+      "bytes": 60526592,
+      "tables": {
+        "experiments": 9,
+        "artifacts": 107
+      },
+      "quick_check": "ok",
+      "user_version": 0,
+      "consistent_backup_sha256": "45e36c72f905fa4994f2656a85f1a4fe662c1194c218d4648c3d44142579a576"
+    }
+  ],
+  "history_pack": {
+    "bytes": 51543685,
+    "sha256": "c7dc7424abfd08480d20421ace01a8625d790709cd3d9b9c9b37b139177d816a",
+    "sha256_matches_manifest": true,
+    "members": 3019,
+    "unpacked_bytes": 206462338,
+    "first_crc_error": null
+  },
+  "releases": [
+    {
+      "tag": "local-preservation-20261026",
+      "assets": 14,
+      "bytes": 665116274
+    },
+    {
+      "tag": "platform-snapshot-20261018-ddb5113e",
+      "assets": 74,
+      "bytes": 9076891818
+    }
+  ],
+  "release_pin_check": {
+    "pins_checked": 49,
+    "mismatches": [],
+    "scope": "API size and server SHA256; archive payloads not re-downloaded"
+  },
+  "current_commit_remote_workflows": {
+    "total_count": 0,
+    "runs": []
+  }
+}
