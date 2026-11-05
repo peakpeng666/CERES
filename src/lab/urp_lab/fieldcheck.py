@@ -155,7 +155,8 @@ def verify_task_truth(plan, result):
     return {'valid':not errors,'errors':errors,'tasks':details,'scope':'truth position and stop/dwell, distinct from estimated arrival'}
 
 
-def verify(plan, result):
+def track_check(plan, result):
+    """Footprint, path completeness and task dwell of the recorded trails. The same test for every physics engine."""
     inst = plan['instance']
     boundary = Polygon(inst['boundary'])
     solids = [Polygon(o['polygon']) for o in inst.get('obstacles', [])]
@@ -164,37 +165,6 @@ def verify(plan, result):
     solids = np.array(solids, dtype=object)
     radius = plan['robot_radius_m']
     errors, details = [], []
-    motion_metrics = verify_motion_metrics(result) if 'truth_timing' in result else None
-    if result.get('execution') != plan.get('execution'):
-        errors.append('执行配置与冻结计划不一致；不得用结果标志改变验收分支')
-    if plan.get('execution') and not (plan.get('ground_zones_audit') or {}).get('valid'):
-        errors.append('缺少冻结地面分区的 SDF 审计')
-    dynamics = None
-    if plan.get('physics') or result.get('physics'):
-        if result.get('physics') != plan.get('physics') or not (plan.get('physics_audit') or {}).get('valid'):
-            errors.append('执行结果物理模型与冻结计划或 SDF 核验不一致')
-        if (result.get('physics_runtime') or {}).get('valid') is not True:
-            errors.append('缺少物理实现加载及配置核验，不能认证执行结果')
-        from .field_dynamics import verify as verify_dynamics
-        dynamics = verify_dynamics({**result, 'execution': plan.get('execution')})
-        errors.extend(dynamics['errors'])
-    frozen_valid = not errors and (motion_metrics is None or motion_metrics['data_valid'])
-    if motion_metrics:
-        errors.extend(motion_metrics['errors'])
-    nonideal = None
-    if (plan.get('execution') or {}).get('mode') == 'nonideal':
-        nonideal = verify_nonideal_observations(plan, result)
-        errors.extend(nonideal['errors'])
-    from .ground_execution import verify as verify_ground
-    ground_speed = verify_ground(plan, result)
-    if ground_speed:
-        errors.extend(ground_speed['errors'])
-        frozen_valid = frozen_valid and ground_speed['data_valid']
-    task_truth = None
-    if ((plan.get('execution') or {}).get('schema') == 'urp.field-execution/2'
-            or (plan.get('physics') or {}).get('actuator_mode') == 'torque_limited'):
-        task_truth = verify_task_truth(plan, result)
-        errors.extend(task_truth['errors'])
     for v in plan['vehicles']:
         trail = result.get('trails', {}).get(v['name'], [])
         if not trail or any(len(p) < 4 or not all(math.isfinite(x) for x in p[:4]) for p in trail):
@@ -235,6 +205,45 @@ def verify(plan, result):
             if (t.get('state') != 'reached' or arrival is None or complete is None
                     or complete - arrival + 1e-6 < task['service_s']):
                 errors.append(f"{v['label']} 任务 {task['id']} 未完成规定的作业停留时间")
+    return errors, details
+
+
+def verify(plan, result):
+    radius = plan['robot_radius_m']
+    errors = []
+    motion_metrics = verify_motion_metrics(result) if 'truth_timing' in result else None
+    if result.get('execution') != plan.get('execution'):
+        errors.append('执行配置与冻结计划不一致；不得用结果标志改变验收分支')
+    if plan.get('execution') and not (plan.get('ground_zones_audit') or {}).get('valid'):
+        errors.append('缺少冻结地面分区的 SDF 审计')
+    dynamics = None
+    if plan.get('physics') or result.get('physics'):
+        if result.get('physics') != plan.get('physics') or not (plan.get('physics_audit') or {}).get('valid'):
+            errors.append('执行结果物理模型与冻结计划或 SDF 核验不一致')
+        if (result.get('physics_runtime') or {}).get('valid') is not True:
+            errors.append('缺少物理实现加载及配置核验，不能认证执行结果')
+        from .field_dynamics import verify as verify_dynamics
+        dynamics = verify_dynamics({**result, 'execution': plan.get('execution')})
+        errors.extend(dynamics['errors'])
+    frozen_valid = not errors and (motion_metrics is None or motion_metrics['data_valid'])
+    if motion_metrics:
+        errors.extend(motion_metrics['errors'])
+    nonideal = None
+    if (plan.get('execution') or {}).get('mode') == 'nonideal':
+        nonideal = verify_nonideal_observations(plan, result)
+        errors.extend(nonideal['errors'])
+    from .ground_execution import verify as verify_ground
+    ground_speed = verify_ground(plan, result)
+    if ground_speed:
+        errors.extend(ground_speed['errors'])
+        frozen_valid = frozen_valid and ground_speed['data_valid']
+    task_truth = None
+    if ((plan.get('execution') or {}).get('schema') == 'urp.field-execution/2'
+            or (plan.get('physics') or {}).get('actuator_mode') == 'torque_limited'):
+        task_truth = verify_task_truth(plan, result)
+        errors.extend(task_truth['errors'])
+    track_errors, details = track_check(plan, result)
+    errors.extend(track_errors)
     traffic = None
     if plan.get('traffic', {}).get('robot_collisions'):
         try:

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type {
   Algorithm,
+  AlgorithmHistory,
+  AlgorithmStat,
+  PhysicsRun,
   Instance,
   MapMeta,
   Recommendation,
@@ -84,6 +87,12 @@ export const lab = {
   map: (world: string) => request<MapMeta>('GET', `/maps/${encodeURIComponent(world)}`),
 
   algorithms: () => request<{ algorithms: Algorithm[] }>('GET', '/algorithms'),
+  algorithmStats: () => request<{ stats: Record<string, AlgorithmStat> }>('GET', '/algorithms/stats'),
+  algorithmHistory: (id: string) => request<AlgorithmHistory>('GET', `/algorithms/${encodeURIComponent(id)}/history`),
+  physicsEngines: () => request<{ engines: { id: string; name: string; available: boolean; reason: string | null; version: string | null }[] }>('GET', '/physics/engines'),
+  physicsSubmit: (body: { run_id?: string; session_id?: string }) => request<PhysicsRun>('POST', '/physics/runs', body),
+  physicsRuns: (run_id?: string) => request<{ runs: PhysicsRun[] }>('GET', `/physics/runs${run_id ? `?run_id=${encodeURIComponent(run_id)}` : ''}`),
+  physicsRun: (id: string) => request<PhysicsRun>('GET', `/physics/runs/${encodeURIComponent(id)}`),
   recommend: (scenario_id: string, instance?: Instance) =>
     request<Recommendation>('POST', '/recommend', { scenario_id, instance }),
   solve: (scenario_id: string, algorithms: { id: string; params?: Record<string, unknown> }[], instance?: Instance, label?: string) =>
@@ -152,7 +161,7 @@ class EventHub {
   private stateListeners = new Set<() => void>();
   private hiddenTimer = 0;
   connected = false;
-  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session'];
+  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session', 'physics_run'];
 
   constructor() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -238,7 +247,7 @@ export function useGatewayConnected(): boolean {
 export function useLabResource<T>(
   key: string,
   load: (signal: AbortSignal) => Promise<T>,
-  options: { event?: string; select?: (data: unknown) => T | null; pollMs?: number } = {},
+  options: { event?: string; select?: (data: unknown) => T | null; pollMs?: number; reloadOn?: string } = {},
 ): { data: T | null; error: Error | null; loading: boolean; reload: () => void } {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -279,6 +288,17 @@ export function useLabResource<T>(
       }
     });
   }, [options.event]);
+
+  useEffect(() => {
+    if (!options.reloadOn) return;
+    let timer = 0;
+    const off = events.subscribe((type) => {
+      if (type !== options.reloadOn) return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setNonce((n) => n + 1), 400);
+    });
+    return () => { off(); window.clearTimeout(timer); };
+  }, [options.reloadOn]);
 
   useEffect(() => {
     if (!options.pollMs) return;

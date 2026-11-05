@@ -14,7 +14,13 @@ interface AgentStore {
   pendingAction: ControlAction | 'edit' | null;
   newMode: 'auto' | AgentMode;
   newProvider: string | null;
+  newAutoConfirm: boolean;
+  /** Task map attached to the next task, if any. */
+  newMap: { id: string; title: string } | null;
+  setNewMap: (map: { id: string; title: string } | null) => void;
   setNewProvider: (id: string | null) => void;
+  setNewAutoConfirm: (auto: boolean) => void;
+  patchSession: (id: string, fields: { title?: string | null; pinned?: boolean; archived?: boolean }) => Promise<void>;
   loadProviders: () => Promise<void>;
   loadSessions: () => Promise<void>;
   select: (id: string | null) => Promise<void>;
@@ -64,6 +70,8 @@ export const useAgent = create<AgentStore>((set, get) => {
     pendingAction: null,
     newMode: 'auto',
     newProvider: null,
+    newAutoConfirm: false,
+    newMap: null,
     actionError: null,
 
     async loadProviders() {
@@ -115,15 +123,15 @@ export const useAgent = create<AgentStore>((set, get) => {
     async start(text) {
       if (!actionAvailable()) return false;
       const r = request();
-      const { newMode, newProvider } = get();
+      const { newMode, newProvider, newAutoConfirm, newMap } = get();
       set({ sending: true, actionError: null });
       try {
-        const session = await agentApi.create({ text, mode: newMode, provider_id: newMode === 'rule' ? undefined : newProvider ?? undefined });
+        const session = await agentApi.create({ text, mode: newMode, provider_id: newMode === 'rule' ? undefined : newProvider ?? undefined, auto_confirm: newAutoConfirm, scenario_id: newMap?.id });
         void get().loadSessions();
         if (!current(r)) return false;
         selection++;
         appliedSequence = r.sequence;
-        set({ session, sessionId: session.session_id, sending: false, loadError: null });
+        set({ session, sessionId: session.session_id, sending: false, loadError: null, newMap: null });
         navigate(`#/agent/${encodeURIComponent(session.session_id)}`);
         schedulePoll();
         return true;
@@ -190,6 +198,18 @@ export const useAgent = create<AgentStore>((set, get) => {
 
     setNewMode: (newMode) => set({ newMode }),
     setNewProvider: (newProvider) => set({ newProvider }),
+    setNewAutoConfirm: (newAutoConfirm) => set({ newAutoConfirm }),
+    setNewMap: (newMap) => set({ newMap }),
+
+    async patchSession(id, fields) {
+      try {
+        await agentApi.patch(id, fields);
+        await get().loadSessions();
+        if (get().sessionId === id) void get().refresh();
+      } catch (e) {
+        set({ actionError: message(e) });
+      }
+    },
   };
 });
 

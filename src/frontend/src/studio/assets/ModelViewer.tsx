@@ -4,6 +4,7 @@
  * geometry as separate, individually toggled layers, so their sizes can be checked against each other.
  */
 import { Canvas, useThree } from '@react-three/fiber';
+import { useCssVars } from '../../lab/ui/theme';
 import { Html, Line, OrbitControls } from '@react-three/drei';
 import { useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
@@ -189,16 +190,17 @@ export function ModelViewer({ source, forward = '+x', up = '+z', scale = 1, plan
     return found;
   }, [model]);
   const span = placed ? Math.max(placed.size.x, placed.size.y, placed.size.z) : 1;
+  const colors = useCssVars({ bg: '--map-bg', edge: '--mac-separator-strong', line: '--mac-separator' });
   return (
     <div className={s.preview} style={height ? { height } : undefined}>
       <Canvas camera={{ position: [3, 2.5, 3], fov: 40, near: 0.01, far: 500 }} dpr={[1, 2]}>
-        <color attach="background" args={['#eef0f3']} />
+        <color attach="background" args={[colors.bg]} />
         <ambientLight intensity={1.0} />
         <directionalLight position={[4, 8, 5]} intensity={1.8} />
         <directionalLight position={[-5, 3, -4]} intensity={0.5} />
         <OrbitControls makeDefault enableDamping dampingFactor={0.12} />
         <Fit size={span} />
-        <gridHelper args={[Math.max(4, Math.ceil(span * 3)), Math.max(8, Math.ceil(span * 3) * 2), '#c3c8d0', '#dde1e7']} />
+        <gridHelper args={[Math.max(4, Math.ceil(span * 3)), Math.max(8, Math.ceil(span * 3) * 2), colors.edge, colors.line]} key={colors.edge} />
         <group rotation-x={-Math.PI / 2}>
           {placed && <primitive object={placed.holder} />}
           {layers.footprint && fp && (fp.type === 'rect' && fp.length_m && fp.width_m ? (

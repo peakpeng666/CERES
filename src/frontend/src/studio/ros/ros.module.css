@@ -1,27 +1,27 @@
-.view { position: relative; height: 100%; overflow: hidden; background: #eef0f3; }
+.view { position: relative; height: 100%; overflow: hidden; background: var(--map-bg); }
 .canvas { position: absolute !important; inset: 0; }
 .gz { position: absolute; inset: 0; }
 .gz canvas { display: block; }
 .empty { height: 100%; display: flex; align-items: center; justify-content: center; padding: 20px; }
 .hud { position: absolute; left: 10px; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 6px; pointer-events: none; }
 .hud > * { pointer-events: auto; }
-.hudRow { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 10px; background: rgba(255, 255, 255, 0.86); backdrop-filter: var(--mac-blur); box-shadow: var(--mac-shadow-pop); font-size: 12px; }
+.hudRow { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; padding: 5px 10px; border-radius: 10px; background: var(--mac-glass); backdrop-filter: var(--mac-blur); box-shadow: var(--mac-shadow-pop); font-size: 12px; }
 .hudTitle { font-weight: 650; }
 .hudMeta { color: var(--mac-label-3); font-size: 11px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: #c7c7cc; }
-.dot[data-s="connected"] { background: #30b158; box-shadow: 0 0 0 3px rgba(48, 177, 88, 0.18); }
-.dot[data-s="connecting"] { background: #ff9f0a; }
-.dot[data-s="closed"] { background: #ff453a; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--mac-gray); }
+.dot[data-s="connected"] { background: var(--mac-green); box-shadow: 0 0 0 3px color-mix(in srgb, var(--mac-green) 18%, transparent); }
+.dot[data-s="connecting"] { background: var(--mac-orange); }
+.dot[data-s="closed"] { background: var(--mac-red); }
 .chips { display: flex; flex-wrap: wrap; gap: 4px; align-self: flex-start; max-width: 100%; }
-.chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border: 0; border-radius: 11px; background: rgba(255, 255, 255, 0.78); backdrop-filter: var(--mac-blur); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12); font: 500 11px var(--mac-font); color: var(--mac-label-3); cursor: pointer; }
-.chip[data-on] { color: var(--mac-label); background: rgba(255, 255, 255, 0.96); }
+.chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 8px; border: 0; border-radius: 11px; background: var(--mac-glass); backdrop-filter: var(--mac-blur); box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12); font: 500 11px var(--mac-font); color: var(--mac-label-3); cursor: pointer; }
+.chip[data-on] { color: var(--mac-label); background: var(--mac-glass); }
 .chip:hover { background: #fff; }
 .swatch { display: inline-block; width: 9px; height: 9px; border-radius: 3px; }
-.topics { position: absolute; left: 10px; bottom: 10px; max-width: min(560px, 70%); max-height: 45%; overflow: auto; border-radius: 10px; background: rgba(255, 255, 255, 0.9); backdrop-filter: var(--mac-blur); box-shadow: var(--mac-shadow-pop); font-size: 11px; }
+.topics { position: absolute; left: 10px; bottom: 10px; max-width: min(560px, 70%); max-height: 45%; overflow: auto; border-radius: 10px; background: var(--mac-glass); backdrop-filter: var(--mac-blur); box-shadow: var(--mac-shadow-pop); font-size: 11px; }
 .topicsHead { border: 0; background: transparent; padding: 5px 10px; font: 600 11px var(--mac-font); color: var(--mac-label-2); cursor: pointer; }
 .topics table { border-collapse: collapse; margin: 0 6px 6px; }
 .topics td { padding: 2px 6px; font-family: var(--mac-mono); color: var(--mac-label-2); white-space: nowrap; }
-.label { padding: 1px 5px; border-radius: 5px; background: rgba(255, 255, 255, 0.82); font: 600 10px var(--mac-font); white-space: nowrap; pointer-events: none; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1); }
-.vehicleLabel { padding: 2px 7px; border-radius: 7px; background: rgba(255, 255, 255, 0.95); font: 700 11px var(--mac-font); white-space: nowrap; pointer-events: none; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18); }
+.label { padding: 1px 5px; border-radius: 5px; background: var(--mac-glass); font: 600 10px var(--mac-font); white-space: nowrap; pointer-events: none; box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1); }
+.vehicleLabel { padding: 2px 7px; border-radius: 7px; background: var(--mac-glass); font: 700 11px var(--mac-font); white-space: nowrap; pointer-events: none; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18); }
 .charts { height: 100%; overflow: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 8px; padding: 8px 12px; align-content: start; }
 .chart h4 { margin: 2px 0 4px; font-size: 11.5px; font-weight: 650; color: var(--mac-label-2); }

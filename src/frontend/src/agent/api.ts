@@ -111,6 +111,7 @@ export interface Evidence {
     diagnosis_label: string;
   }[];
   best_verified: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; objective: number; unit: string } | null;
+  best_executable?: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; objective: number; unit: string } | null;
   unsupported: string[];
   simulation_started: boolean;
   precheck: string[];
@@ -127,7 +128,7 @@ export interface Report {
 export interface AgentMessage {
   id: string;
   role: 'user' | 'assistant' | 'event';
-  kind: 'text' | 'notice' | 'error' | 'questions' | 'confirmation' | 'approval' | 'report';
+  kind: 'text' | 'notice' | 'error' | 'questions' | 'confirmation' | 'approval' | 'report' | 'simulation' | 'physics';
   text: string;
   utc: string;
   data?: Record<string, unknown>;
@@ -169,6 +170,10 @@ export interface AgentSession {
   error: { kind: string; message: string; where: string } | null;
   report: Report | null;
   rule_progress?: { batch?: string[] };
+  short_title?: string;
+  custom_title?: string | null;
+  pinned?: boolean;
+  archived?: boolean;
 }
 
 export interface SessionSummary {
@@ -182,6 +187,11 @@ export interface SessionSummary {
   scenario_id: string | null;
   runs: number;
   provider: string | null;
+  short_title?: string;
+  custom_title?: string | null;
+  pinned?: boolean;
+  archived?: boolean;
+  usage?: { input_tokens: number; output_tokens: number; calls: number; latency_s: number };
 }
 
 export interface ProviderStatus {
@@ -205,14 +215,59 @@ export interface ProvidersInfo {
   prompt_version: string;
 }
 
-export type ControlAction = 'pause' | 'resume' | 'cancel' | 'retry' | 'confirm' | 'approve' | 'reject' | 'takeover';
+export interface ToolInfo {
+  name: string;
+  label: string;
+  description: string;
+  effect: string;
+  step: string | null;
+  needs_scenario: boolean;
+  needs_confirmed: boolean;
+  phases: string[];
+  needs_approval: boolean;
+}
+
+export interface HarnessInfo {
+  tools: ToolInfo[];
+  limits: { model_calls_per_turn: number; tool_calls_per_turn: number };
+  prompt_version: string;
+  runner_version: string;
+}
+
+export interface EvalRun {
+  id: string;
+  kind: 'execution' | 'understanding';
+  mode: string | null;
+  provider: string | null;
+  split?: string | null;
+  prompt_version?: string | null;
+  runner_version?: string | null;
+  finished_utc?: string | null;
+  passed?: number | null;
+  total?: number | null;
+  metrics?: Record<string, number | null>;
+  cases?: { id: string; passed: boolean | null; state?: string | null; note?: string | null }[];
+}
+
+export type ControlAction = 'pause' | 'resume' | 'cancel' | 'retry' | 'confirm' | 'approve' | 'reject' | 'takeover' | 'simulate';
+
+export interface Capability { id: string; kind: string; name: string; status: 'ready' | 'unavailable'; reason?: string | null; summary?: string | null; detail?: string | null; version?: string | null; href?: string; approval?: boolean; problem_class?: string; library?: string }
+export interface Capabilities { algorithms: Capability[]; simulators: Capability[]; learners: Capability[]; transfers: Capability[] }
+export interface BackendJob { id: string; kind: 'solve' | 'study' | 'physics' | 'fieldsim' | 'tb4'; label: string; state: string; progress: number | null; detail?: string | null; started_utc: string | null; href: string }
 
 export const agentApi = {
   providers: () => call<ProvidersInfo>('GET', '/agent/providers', undefined, { timeoutMs: 15_000 }),
   sessions: () => call<{ sessions: SessionSummary[] }>('GET', '/agent/sessions'),
   session: (id: string, signal?: AbortSignal) => call<AgentSession>('GET', `/agent/sessions/${encodeURIComponent(id)}`, undefined, { signal }),
-  create: (body: { text?: string; mode?: 'auto' | AgentMode; provider_id?: string; auto_confirm?: boolean }) =>
+  create: (body: { text?: string; mode?: 'auto' | AgentMode; provider_id?: string; auto_confirm?: boolean; scenario_id?: string }) =>
     call<AgentSession>('POST', '/agent/sessions', body),
+  patch: (id: string, body: { title?: string | null; pinned?: boolean; archived?: boolean }) =>
+    call<SessionSummary>('PATCH', `/agent/sessions/${encodeURIComponent(id)}`, body),
+  harness: () => call<HarnessInfo>('GET', '/agent/harness'),
+  capabilities: () => call<Capabilities>('GET', '/agent/capabilities', undefined, { timeoutMs: 40_000 }),
+  jobs: () => call<{ jobs: BackendJob[] }>('GET', '/agent/jobs'),
+  evals: () => call<{ runs: EvalRun[] }>('GET', '/agent/evals', undefined, { timeoutMs: 20_000 }),
+  localModel: (action: 'start' | 'stop') => call<{ ok: boolean; detail: string }>('POST', `/agent/providers/local/${action}`, {}, { timeoutMs: 30_000 }),
   message: (id: string, text: string) => call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/messages`, { text }),
   control: (id: string, action: ControlAction, payload: Record<string, unknown> = {}) =>
     call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/control`, { ...payload, action }),

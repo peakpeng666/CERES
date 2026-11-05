@@ -12,6 +12,7 @@ import json
 import logging
 import math
 import re
+import subprocess
 import threading
 import time
 from pathlib import Path
@@ -29,7 +30,7 @@ QUESTIONS = {
     'vehicle_count': ('投入几台机器人？', ['1', '2', '3', '4']),
     'field_size_m': ('场地大约多大？可以给出长 × 宽（米）或面积（亩、公顷）。', ['200×120 米', '50 亩', '5 公顷']),
 }
-RUNNER_VERSION = 'agent-runner/4'
+RUNNER_VERSION = 'agent-runner/5'
 MAX_LLM_CALLS = 20
 MAX_TOOL_CALLS = 30
 MAX_UNDERSTAND_CALLS = 4
@@ -125,16 +126,105 @@ class AgentRunner:
         s = new_session(actual, info, bool(body.get('auto_confirm')), str(body.get('title') or '')[:60])
         if provider is None:
             add_message(s, 'event', f'本会话使用规则流程（未调用大模型）：{reason}。理解与执行均由确定性规则完成，结果同样经独立检查。', 'notice')
+        if body.get('scenario_id'):
+            self._bind_map(s, str(body['scenario_id']))
         self.store.save(s)
         self._publish(s)
         text = str(body.get('text') or '').strip()
-        return self.message(s['session_id'], text) if text else public(s)
+        return self.message(s['session_id'], text) if text else self._view(s)
 
     def get(self, session_id: str) -> dict:
-        return public(self._load(session_id))
+        return self._view(self._load(session_id))
+
+    def _bind_map(self, s: dict, scenario_id: str):
+        """Start a task on an existing map: its facts enter the contract as map-sourced values, and the map step is done."""
+        from ..scenarios import get_scenario
+        try:
+            sc = get_scenario(scenario_id)
+        except KeyError:
+            raise RunnerError(404, 'not_found', '没有该任务地图') from None
+        if sc.get('problem_class') != 'fleet_routing':
+            raise RunnerError(400, 'invalid_scenario', '智能体目前只接手多车任务地图')
+        inst = sc['instance']
+        veh = inst.get('vehicles') or {}
+        xs, ys = [p[0] for p in inst['boundary']], [p[1] for p in inst['boundary']]
+        values = {'field_size_m': [round(max(xs) - min(xs), 2), round(max(ys) - min(ys), 2)], 'task_count': len(inst['tasks']),
+                  'vehicle_count': veh.get('count') or len(veh.get('fleet') or []) or None, 'vehicle_capacity': veh.get('capacity'),
+                  'vehicle_speed_mps': veh.get('speed_mps'), 'objective': inst.get('objective'), 'trip_mode': veh.get('trips'), 'travel_mode': veh.get('travel')}
+        s['contract'], _, _ = tc.apply(s['contract'], {k: v for k, v in values.items() if v is not None}, 'user_edit', note=f"来自任务地图 {sc['title']}")
+        self._takeover_locked(s, {'step': 'scenario', 'scenario_id': scenario_id, 'note': f"使用任务地图「{sc['title']}」"})
 
     def list(self) -> list[dict]:
         return self.store.list()
+
+    def _view(self, s: dict) -> dict:
+        return public(s) | self.store.meta(s['session_id'])
+
+    def patch_session(self, session_id: str, body: dict) -> dict:
+        """Name, pin or archive a session. Archiving only hides it from the list; every record stays."""
+        self._load(session_id)
+        fields: dict = {}
+        if 'title' in body:
+            fields['custom_title'] = (str(body['title'] or '').strip()[:60]) or None
+        for key in ('pinned', 'archived'):
+            if key in body:
+                fields[key] = bool(body[key])
+        if not fields:
+            raise RunnerError(400, 'invalid_body', '没有可修改的字段')
+        meta = self.store.set_meta(session_id, fields)
+        bus = getattr(self.lab, 'bus', None)
+        if bus is not None:
+            bus.publish('agent_session', {'session_id': session_id, 'kind': 'meta'})
+        return {'session_id': session_id} | meta
+
+    def harness(self) -> dict:
+        """What the agent may do: every tool with its stage gate, and the per-turn limits the runner enforces."""
+        approval = {'start_simulation', 'propose_task_change'}
+        items = [{'name': t.name, 'label': t.label, 'description': t.description, 'effect': t.effect, 'step': t.step,
+                  'needs_scenario': t.needs_scenario, 'needs_confirmed': t.needs_confirmed, 'needs_approval': t.name in approval,
+                  'phases': [phase for phase, names in tools.PHASE_TOOLS.items() if t.name in names]} for t in self.tools.values()]
+        return {'tools': items, 'limits': {'model_calls_per_turn': MAX_LLM_CALLS, 'tool_calls_per_turn': MAX_TOOL_CALLS},
+                'prompt_version': prompts.VERSION, 'runner_version': RUNNER_VERSION}
+
+    def evals(self) -> dict:
+        """Stored agent evaluations, newest first. Read-only: the evidence directories are never changed."""
+        from ..paths import REPO
+        out = []
+        root = REPO / 'experiments' / 'agent-evals'
+        for path in sorted((p for p in root.glob('*') if p.is_dir()), reverse=True):
+            try:
+                if (path / 'records.json').exists():
+                    data = json.loads((path / 'records.json').read_text(encoding='utf8'))
+                    meta = data.get('meta') or {}
+                    out.append({'id': path.name, 'kind': 'execution', 'mode': meta.get('mode_requested'), 'provider': meta.get('provider_id'),
+                                'prompt_version': meta.get('prompt_version'), 'runner_version': meta.get('runner_version'),
+                                'finished_utc': meta.get('finished_utc'), 'passed': meta.get('passed'), 'total': meta.get('scenarios'),
+                                'cases': [{'id': r.get('scenario'), 'passed': r.get('pass'), 'state': r.get('state'), 'note': r.get('error')} for r in data.get('records', [])]})
+                elif (path / 'summary.json').exists():
+                    data = json.loads((path / 'summary.json').read_text(encoding='utf8'))
+                    meta = data.get('meta') or {}
+                    allv = (data.get('summary') or {}).get('all') or {}
+                    out.append({'id': path.name, 'kind': 'understanding', 'mode': meta.get('mode_requested'), 'provider': meta.get('provider_id'),
+                                'split': meta.get('split'), 'prompt_version': meta.get('prompt_version'), 'finished_utc': meta.get('finished_utc'),
+                                'metrics': {'f1': allv.get('field_f1'), 'exact_match': allv.get('exact_match'), 'turns': allv.get('turns')}})
+            except (OSError, ValueError):
+                continue
+        return {'runs': out}
+
+    def local_model(self, action: str) -> dict:
+        """Start or stop the user-level Ollama service through the project script; it listens on loopback only."""
+        from ..paths import REPO
+        if action not in ('start', 'stop'):
+            raise RunnerError(400, 'invalid_action', '只支持 start / stop')
+        script = REPO / 'setup' / 'llm' / 'local-llm.sh'
+        if not script.exists():
+            raise RunnerError(404, 'no_local_model', '这台机器没有本地模型脚本')
+        try:
+            done = subprocess.run(['bash', str(script), action], capture_output=True, text=True, timeout=20, check=False)
+        except subprocess.TimeoutExpired:
+            raise RunnerError(504, 'timeout', '本地模型服务 20 秒内没有响应') from None
+        detail = (done.stdout or done.stderr).strip().splitlines()
+        return {'ok': done.returncode == 0, 'detail': detail[-1] if detail else ('完成' if done.returncode == 0 else '失败')}
 
     def export(self, session_id: str) -> dict:
         """One reproducible bundle: session (contract, plan, tool and model logs), scenario and every run record."""
@@ -200,7 +290,7 @@ class AgentRunner:
                                                          for c in accepted), 'notice')
                 self._await_confirmation(s)
             self._save(s)
-            return public(s)
+            return self._view(s)
 
     def control(self, session_id: str, action: str, payload: dict | None = None) -> dict:
         payload = payload or {}
@@ -212,17 +302,17 @@ class AgentRunner:
                 self._event(self._pause, session_id).set()
                 add_message(s, 'event', '已请求暂停：当前步骤结束后停止。', 'notice')
                 self._save(s)
-                return public(s)
+                return self._view(s)
             if action == 'cancel':
                 if s['state'] == 'running':
                     self._event(self._cancel, session_id).set()
                     add_message(s, 'event', '已请求取消：正在中止模型调用与求解进程。', 'notice')
                     self._save(s)
-                    return public(s)
+                    return self._view(s)
                 s['pending'] = None
                 s['state'] = 'cancelled'
                 self._save(s)
-                return public(s)
+                return self._view(s)
             if s['state'] == 'running':
                 raise RunnerError(409, 'busy', '智能体正在执行；可先暂停或取消')
             if action in ('resume', 'retry'):
@@ -250,6 +340,8 @@ class AgentRunner:
                 return self._start_locked(s)
             if action == 'takeover':
                 return self._takeover_locked(s, payload)
+            if action == 'simulate':
+                return self._simulate_locked(s, payload)
             raise RunnerError(400, 'invalid_action', f'未知操作 {action}')
 
     def shutdown(self):
@@ -291,7 +383,7 @@ class AgentRunner:
         t = threading.Thread(target=self._turn, args=(sid,), name=f'agent-{sid}', daemon=True)
         self._threads[sid] = t
         t.start()
-        return public(s)
+        return self._view(s)
 
     def _confirm_locked(self, s: dict) -> dict:
         try:
@@ -326,6 +418,7 @@ class AgentRunner:
             s['llm_messages'].append({'role': 'user', 'content': '[用户批准了任务修改，合同已更新并确认：' + json.dumps(
                 {c['key']: c['new'] for c in accepted}, ensure_ascii=False) + '。请重新建立任务地图并求解。]'})
             s.setdefault('rule_progress', {})['repair_applied'] = True
+            set_step(s, 'repair', 'done', '修改已批准')
         elif pending.get('kind') == 'tool_call':
             call = pending['call']
             ctx = tools.ToolContext(self.lab, s, self._event(self._cancel, s['session_id']),
@@ -338,7 +431,105 @@ class AgentRunner:
                 s['simulation_decision'] = {'contract_revision': s['contract']['revision'],
                                             'run_id': call['arguments']['run_id'], 'status': 'attempted',
                                             'outcome': rec['status'], 'error': rec.get('error')}
+                if rec['status'] == 'ok':
+                    s['simulation_watch'] = {'run_id': call['arguments']['run_id'], 'session_id': (rec.get('result') or {}).get('session_id')}
         return self._start_locked(s)
+
+    def _simulate_locked(self, s: dict, payload: dict) -> dict:
+        """The user asks for a verified plan to run. The click is the approval and is recorded as one."""
+        if s['state'] not in ('done', 'failed', 'cancelled', 'interrupted', 'paused'):
+            raise RunnerError(409, 'invalid_state', '先完成当前待确认或待批准的事项')
+        run_id = str(payload.get('run_id') or (self._best_verified(s) or {}).get('run_id') or '')
+        if not run_id:
+            raise RunnerError(409, 'no_verified_run', '还没有通过独立复核的方案')
+        run = self.lab.store.get_run(run_id)
+        if not run or not tools.run_matches_current(s, run):
+            raise RunnerError(400, 'invalid_run', '只能仿真当前任务地图与合同的方案')
+        ensure_step(s, 'simulate')
+        ctx = tools.ToolContext(self.lab, s, self._event(self._cancel, s['session_id']), lambda kind, data: self._publish(s, kind, data))
+        rec = self._record(s, tools.execute(self.tools, ctx, 'start_simulation', {'run_id': run_id}), 'user_approved')
+        if rec['status'] != 'ok':
+            set_step(s, 'simulate', 'failed', rec['error']['message'])
+            add_message(s, 'event', f"仿真未启动：{rec['error']['message']}", 'error')
+            self._save(s)
+            return self._view(s)
+        s['simulation_decision'] = {'contract_revision': s['contract']['revision'], 'run_id': run_id, 'status': 'attempted', 'outcome': 'ok', 'error': None}
+        s['simulation_watch'] = {'run_id': run_id, 'session_id': (rec.get('result') or {}).get('session_id')}
+        s['phase'] = 'report'
+        add_message(s, 'event', '已按你的操作启动田间仿真。', 'notice')
+        return self._start_locked(s)
+
+    def _watch_simulation(self, s: dict, cancel, pause):
+        """Stay with an approved simulation until it ends, so the report states what happened rather than that it began."""
+        watch = s.get('simulation_watch')
+        if not watch or watch.get('done'):
+            return
+        set_step(s, 'simulate', 'running', 'Gazebo 执行中')
+        self._save(s)
+        field, saved, state = self.lab.fieldsim, 0.0, {}
+        while True:
+            if cancel.is_set():
+                try:
+                    field.stop()
+                except Exception:  # noqa: BLE001 - the session is reported cancelled either way; the service keeps its own log
+                    log.exception('stopping the field simulation after cancel failed')
+                raise Cancelled
+            if pause.is_set():
+                raise Paused        # the simulation keeps running; resuming comes back here
+            state = field.state()
+            if state.get('phase') in ('finished', 'failed', 'stopped', 'idle') or state.get('session_id') not in (None, watch.get('session_id')):
+                break
+            if time.monotonic() - saved > 5:
+                done = sum(int(v.get('tasks_done') or 0) for v in state.get('vehicles') or [])
+                total = sum(int(v.get('tasks_total') or 0) for v in state.get('vehicles') or [])
+                set_step(s, 'simulate', 'running', f'仿真时钟 {float(state.get("sim_time") or 0):.0f} s · {done}/{total} 个任务点')
+                self._save(s)
+                saved = time.monotonic()
+            cancel.wait(1.0)
+        row = {}
+        for _ in range(20):                       # the session writes its result just after it reports the end, failed ones too
+            try:
+                row = field.result(watch.get('session_id')) or {}
+                break
+            except Exception:  # noqa: BLE001 - a session that died writes no result; the report says so
+                if cancel.wait(.5):
+                    break
+        self._release_simulation(s, field)
+        metrics = row.get('metrics') or state.get('metrics') or {}
+        keep = ('tasks_total', 'tasks_completed', 'total_distance_m', 'planned_total_distance_m', 'makespan_s', 'planned_makespan_s',
+                'cross_track_mean_m', 'cross_track_max_m', 'energy_wh')
+        result = {'run_id': watch['run_id'], 'session_id': watch.get('session_id'), 'phase': state.get('phase'), 'state': row.get('state'),
+                  'check_valid': (row.get('check') or {}).get('valid'), 'metrics': {k: round(metrics[k], 3) if isinstance(metrics.get(k), float) else metrics.get(k) for k in keep},
+                  'errors': (state.get('errors') or [])[:5]}
+        watch['done'] = True
+        ok = result['state'] == 'succeeded'
+        if ok:
+            result['comparison'] = self._sim2sim(s, watch['session_id'], cancel)
+        s['simulation_result'] = result
+        m = result['metrics']
+        set_step(s, 'simulate', 'done' if ok else 'failed', f"完成 {m.get('tasks_completed')}/{m.get('tasks_total')}" if ok else (result['errors'][0] if result['errors'] else f"仿真结束：{state.get('phase')}"))
+        add_message(s, 'assistant', '田间仿真已结束。' if ok else '田间仿真没有完成。', 'simulation', result)
+        self._save(s)
+
+    @staticmethod
+    def _release_simulation(s: dict, field):
+        """The result and trajectories are saved; an idle Gazebo would only hold the machine and block the next approval."""
+        try:
+            field.stop()
+        except Exception as exc:  # noqa: BLE001 - the run is already recorded; the panel can still close the session
+            log.exception('closing the finished field simulation failed')
+            add_message(s, 'event', f'田间仿真已结束，但会话未能自动关闭：{exc}。可在仿真面板关闭。', 'notice')
+
+    def _sim2sim(self, s: dict, session_id: str, cancel) -> dict | None:
+        """The finished Gazebo session's plan, run again in MuJoCo: how far apart the two engines land."""
+        from ..physics import PhysicsError
+        try:
+            rec = self.lab.physics.submit(session_id=session_id)
+        except PhysicsError as exc:
+            add_message(s, 'event', f'未做引擎对比：{exc.message}', 'notice')
+            return None
+        rec = self.lab.physics.wait(rec['physics_run_id'], cancel)
+        return {'physics_run_id': rec.get('physics_run_id'), **(rec.get('comparison') or {})} if rec.get('comparison') else None
 
     def _reject_pending(self, s: dict):
         pending = s.get('pending') or {}
@@ -351,6 +542,7 @@ class AgentRunner:
             set_step(s, 'simulate', 'skipped', '用户拒绝仿真')
         else:
             s.setdefault('rule_progress', {})['rejected'] = True
+            set_step(s, 'repair', 'skipped', '用户拒绝修改')
         add_message(s, 'event', f'已拒绝：{what}', 'notice')
 
     def _takeover_locked(self, s: dict, payload: dict) -> dict:
@@ -394,7 +586,7 @@ class AgentRunner:
                                 'started_utc': utc_now(), 'duration_s': 0, 'result': {'note': note}})
         add_message(s, 'event', f"用户接管「{next(x['title'] for x in s['plan'] if x['kind'] == step)}」：{note or '手动完成'}", 'notice')
         self._save(s)
-        return public(s)
+        return self._view(s)
 
     def _await_confirmation(self, s: dict):
         from ..compose.nl import fill_defaults
@@ -442,6 +634,7 @@ class AgentRunner:
                     return
                 s['phase'] = 'report'
             if s['phase'] == 'report':
+                self._watch_simulation(s, cancel, pause)
                 self._report(s, cancel)
                 s['state'] = 'done'
                 self._save(s)
@@ -648,6 +841,7 @@ class AgentRunner:
             return False
         self._checkpoint(s, cancel, pause)
         self._guard_verification(s, cancel)
+        self._guard_physics(s, cancel, pause)
         return not self._guard_simulation(s)
 
     @staticmethod
@@ -704,6 +898,7 @@ class AgentRunner:
                     errors = tools.validate(tool.parameters, call.get('arguments') or {})
                     if not errors:
                         self._guard_verification(s, cancel)
+                        self._guard_physics(s, cancel, pause)
                         refusal = self._simulation_refusal(s, call['arguments'])
                         if refusal:
                             rec = self._record(s, {'name': call['name'], 'arguments': call['arguments'], 'status': 'refused',
@@ -817,20 +1012,28 @@ class AgentRunner:
         verdict = (s.get('verifications') or {}).get(args['run_id']) or {}
         if run.get('state') != 'done' or run.get('status') != 'feasible' or not verdict.get('valid') or not verdict.get('agrees'):
             return 'unverified', '仿真批准前须通过独立复核，且复核须与存档判定一致'
+        better = self._best_executable(s)
+        if better and better['run_id'] != args['run_id'] and self._physics_failed(s, args['run_id']):
+            return 'physics_failed', (f"该方案未通过物理预演：{self._physics_cause(s, args['run_id'])}；"
+                                      f"通过预演的方案是 {better['algorithm']}（{better['run_id']}）")
         return None
 
-    @staticmethod
-    def _queue_simulation(s: dict, args: dict):
+    def _queue_simulation(self, s: dict, args: dict):
+        reason = '该操作会启动 Gazebo 物理仿真会话，需要你的批准'
+        planned = self._best_verified(s)
+        if self._physics_failed(s, args['run_id']):
+            reason = f"此方案未通过物理预演（{self._physics_cause(s, args['run_id'])}），没有通过预演的方案可选。{reason}"
+        elif planned and planned['run_id'] != args['run_id'] and self._physics_failed(s, planned['run_id']):
+            reason = f"规划最优的 {planned['algorithm']} 未通过物理预演（{self._physics_cause(s, planned['run_id'])}），这里改用通过预演的方案。{reason}"
         s['pending'] = {'type': 'approval', 'kind': 'tool_call', 'label': '启动田间仿真',
                         'call': {'name': 'start_simulation', 'arguments': copy.deepcopy(args)},
-                        'contract_revision': s['contract']['revision'],
-                        'reason': '该操作会启动 Gazebo 物理仿真会话，需要你的批准'}
+                        'contract_revision': s['contract']['revision'], 'reason': reason}
 
     def _guard_simulation(self, s: dict) -> bool:
         """A model omission cannot skip the confirmed contract's physical approval gate."""
         if not tc.execution(s['contract'])['simulate'] or self._simulation_decided(s):
             return False
-        best = self._best_verified(s)
+        best = self._best_executable(s) or self._best_verified(s)
         if not best:
             return False
         args = {'run_id': best['run_id'], 'real_time_factor': 4.0}
@@ -850,11 +1053,50 @@ class AgentRunner:
                 self._rule_call(s, 'verify_run', {'run_id': rid}, cancel) if s['mode'] == 'rule' else \
                     self._tool(s, {'id': f'guard_{rid}', 'name': 'verify_run', 'arguments': {'run_id': rid}}, 'system', cancel)
 
-    def _best_verified(self, s: dict) -> dict | None:
+    def _guard_physics(self, s: dict, cancel, pause):
+        """Every verified plan of this contract meets the physics engine before the report; it takes seconds."""
+        passed = [rid for rid in tools.current_run_ids(s) if (s.get('verifications', {}).get(rid) or {}).get('valid')
+                  and (s.get('verifications', {}).get(rid) or {}).get('agrees')]
+        if not passed:
+            return
+        ensure_step(s, 'physics', before='repair')
+        for rid in [r for r in passed if r not in (s.get('physics') or {})]:
+            self._checkpoint(s, cancel, pause)
+            call = {'id': f'guard_physics_{rid}', 'name': 'physics_check', 'arguments': {'run_id': rid}}
+            rec = self._tool(s, call, 'rule' if s['mode'] == 'rule' else 'system', cancel)
+            if rec['status'] != 'ok':
+                s.setdefault('physics', {})[rid] = {'run_id': rid, 'state': 'unavailable', 'errors': [rec['error']['message']], 'metrics': {}}
+        rows = tools.physics_rows(s)
+        shown = sorted(r['run_id'] for r in rows)
+        if shown == s.get('physics_shown'):
+            return
+        s['physics_shown'] = shown
+        done = [r for r in rows if r.get('state') == 'succeeded' and r.get('check_valid')]
+        set_step(s, 'physics', 'done' if len(done) == len(rows) else 'failed', f'{len(done)}/{len(rows)} 个方案执行通过')
+        add_message(s, 'assistant', f'{len(done)}/{len(rows)} 个方案通过物理预演。', 'physics', {'rows': rows})
+        self._save(s)
+
+    @staticmethod
+    def _physics_failed(s: dict, rid: str) -> bool:
+        """True only for a plan the engine actually ran and rejected; an unavailable engine says nothing about the plan."""
+        row = (s.get('physics') or {}).get(rid) or {}
+        return row.get('state') in ('succeeded', 'failed') and not (row.get('state') == 'succeeded' and row.get('check_valid') is True)
+
+    @staticmethod
+    def _physics_cause(s: dict, rid: str) -> str:
+        errors = ((s.get('physics') or {}).get(rid) or {}).get('errors') or []
+        return errors[0] if errors else '运行核验未通过'
+
+    def _best_executable(self, s: dict) -> dict | None:
+        """The best verified plan that also ran clean in the physics engine."""
+        rows = s.get('physics') or {}
+        return self._best_verified(s, lambda rid: rows.get(rid, {}).get('state') == 'succeeded' and rows[rid].get('check_valid') is True)
+
+    def _best_verified(self, s: dict, accept=None) -> dict | None:
         best = None
         for rid in tools.current_run_ids(s):
             v = s.get('verifications', {}).get(rid)
-            if not v or not v.get('valid') or not v.get('agrees'):
+            if not v or not v.get('valid') or not v.get('agrees') or (accept and not accept(rid)):
                 continue
             run = self.lab.store.get_run(rid)
             if not run or not tools.run_matches_current(s, run):
@@ -888,9 +1130,12 @@ class AgentRunner:
         c = s['contract']
         return {'contract': {tc.FIELDS[k].label: tc.format_value(k, v['value']) for k, v in c['fields'].items()},
                 'scenario_id': s.get('scenario_id'), 'runs': runs, 'best_verified': _rounded(self._best_verified(s)),
+                'best_executable': _rounded(self._best_executable(s)),
                 'unsupported': c['unsupported'], 'simulation_started': bool(s.get('active_sim_runs', s.get('sim_runs'))),
                 'simulation_required': tc.execution(c)['simulate'],
                 'simulation_decision': s.get('simulation_decision') if self._simulation_decided(s) else None,
+                'simulation_result': s.get('simulation_result') if (s.get('simulation_result') or {}).get('run_id') in tools.current_run_ids(s) else None,
+                'physics': tools.physics_rows(s),
                 'precheck': [f['message'] for f in (s.get('precheck') or {}).get('findings', [])]}
 
     def _report(self, s: dict, cancel):
@@ -992,7 +1237,29 @@ def _template_report(e: dict) -> str:
     if e['unsupported']:
         parts.append('以下要求超出当前任务模型的表达范围，未纳入求解：' + '；'.join(e['unsupported']) + '。')
     decision = e.get('simulation_decision') or {}
-    if e.get('simulation_started'):
+    physics = [r for r in e.get('physics', []) if r.get('metrics')]
+    if physics:
+        head = '；'.join(f"{r['algorithm']} 实际里程 {r['metrics'].get('total_distance_m')} m、工期 {r['metrics'].get('makespan_s')} s" if r.get('check_valid')
+                        else f"{r['algorithm']} 未通过" for r in physics)
+        parts.append(f"物理预演（MuJoCo {physics[0].get('engine_version')}）：{head}。")
+        planned, executable = e.get('best_verified'), e.get('best_executable')
+        if planned and executable and planned['run_id'] != executable['run_id']:
+            cause = next(((r.get('errors') or ['运行核验未通过'])[0] for r in physics if r['run_id'] == planned['run_id']), '运行核验未通过')
+            parts.append(f"规划最优的 {planned['algorithm']} 未通过物理预演（{cause}），可执行的最好方案为 {executable['algorithm']}（{executable['run_id']}），规划里程 {executable['total_distance_m']} m。")
+        elif planned and not executable:
+            parts.append('通过复核的方案都没有通过物理预演，暂无可执行方案。')
+    sim = e.get('simulation_result')
+    if sim:
+        m = sim['metrics']
+        if sim.get('state') == 'succeeded':
+            parts.append(f"田间仿真完成 {m.get('tasks_completed')}/{m.get('tasks_total')} 个任务点，实际里程 {m.get('total_distance_m')} m，"
+                         f"规划里程 {m.get('planned_total_distance_m')} m，实际工期 {m.get('makespan_s')} s，最大横向偏差 {m.get('cross_track_max_m')} m。")
+            gap = sim.get('comparison')
+            if gap and gap.get('path_mean_m') is not None:
+                parts.append(f"同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 {gap['path_mean_m']:.3f} m，最大 {gap['path_max_m']:.3f} m。")
+        else:
+            parts.append('田间仿真没有完成：' + ('；'.join(sim.get('errors') or []) or str(sim.get('phase'))) + '。')
+    elif e.get('simulation_started'):
         parts.append('已启动田间仿真；启动记录不代表实际轨迹验收通过。')
     elif decision.get('status') == 'rejected':
         parts.append('用户拒绝启动仿真，本轮未执行田间仿真。')

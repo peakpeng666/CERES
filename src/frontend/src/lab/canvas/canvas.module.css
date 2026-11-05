@@ -4,7 +4,7 @@
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  background: #fbfbfd;
+  background: var(--map-bg);
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
@@ -12,7 +12,7 @@
   cursor: grab;
 }
 .canvas:focus-visible {
-  box-shadow: inset 0 0 0 3px rgba(0, 122, 255, 0.35);
+  box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--mac-accent) 35%, transparent);
 }
 .canvas[data-dragging="true"] {
   cursor: grabbing;
@@ -35,42 +35,42 @@
   opacity: 0.78;
 }
 .grid {
-  stroke: rgba(60, 60, 67, 0.08);
+  stroke: color-mix(in srgb, var(--mac-label) 8%, transparent);
   fill: none;
 }
 .gridMajor {
-  stroke: rgba(60, 60, 67, 0.14);
+  stroke: color-mix(in srgb, var(--mac-label) 14%, transparent);
 }
 .poly_field {
-  fill: rgba(52, 199, 89, 0.05);
-  stroke: rgba(40, 140, 70, 0.55);
+  fill: color-mix(in srgb, var(--mac-green) 5%, transparent);
+  stroke: color-mix(in srgb, var(--mac-green) 55%, transparent);
 }
 .poly_headland {
-  fill: rgba(255, 149, 0, 0.09);
+  fill: color-mix(in srgb, var(--mac-orange) 9%, transparent);
   stroke: rgba(230, 126, 0, 0.45);
 }
 .poly_row {
-  fill: rgba(52, 199, 89, 0.16);
-  stroke: rgba(40, 140, 70, 0.35);
+  fill: color-mix(in srgb, var(--mac-green) 16%, transparent);
+  stroke: color-mix(in srgb, var(--mac-green) 35%, transparent);
 }
 .poly_obstacle {
-  fill: rgba(60, 60, 67, 0.22);
-  stroke: rgba(60, 60, 67, 0.45);
+  fill: color-mix(in srgb, var(--mac-label) 22%, transparent);
+  stroke: color-mix(in srgb, var(--mac-label) 45%, transparent);
 }
 .poly_other {
-  fill: rgba(0, 122, 255, 0.05);
-  stroke: rgba(0, 122, 255, 0.3);
+  fill: color-mix(in srgb, var(--mac-accent) 5%, transparent);
+  stroke: color-mix(in srgb, var(--mac-accent) 30%, transparent);
 }
 .arcs {
   fill: none;
-  stroke: rgba(60, 60, 67, 0.2);
+  stroke: color-mix(in srgb, var(--mac-label) 20%, transparent);
 }
 .arrow {
-  fill: rgba(60, 60, 67, 0.38);
+  fill: color-mix(in srgb, var(--mac-label) 38%, transparent);
 }
 .dots {
   fill: none;
-  stroke: rgba(60, 60, 67, 0.4);
+  stroke: color-mix(in srgb, var(--mac-label) 40%, transparent);
   stroke-linecap: round;
 }
 .route {
@@ -86,7 +86,7 @@
 }
 .chevron {
   fill: none;
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -96,7 +96,7 @@
 }
 .halo {
   paint-order: stroke;
-  stroke: rgba(255, 255, 255, 0.92);
+  stroke: var(--mac-glass);
   stroke-width: 3px;
   stroke-linejoin: round;
 }
@@ -118,7 +118,7 @@
 .order {
   font-size: 9.5px;
   font-weight: 700;
-  fill: #fff;
+  fill: var(--map-halo);
   text-anchor: middle;
   dominant-baseline: central;
 }
@@ -128,32 +128,32 @@
 }
 .depot {
   fill: var(--mac-label);
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.5;
 }
 .start {
   fill: var(--mac-teal);
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.5;
 }
 .task {
-  fill: #fff;
+  fill: var(--map-halo);
   stroke: var(--mac-label);
   stroke-width: 1.6;
 }
 .task_pending {
-  fill: #fff;
+  fill: var(--map-halo);
   stroke: var(--mac-label-3);
   stroke-width: 2;
 }
 .task_reached {
   fill: var(--mac-green);
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.5;
 }
 .task_missed {
   fill: var(--mac-red);
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.5;
 }
 .focusRing {
@@ -163,7 +163,7 @@
   opacity: 0.6;
 }
 .hoverRing {
-  fill: rgba(0, 122, 255, 0.12);
+  fill: color-mix(in srgb, var(--mac-accent) 12%, transparent);
   stroke: var(--mac-accent);
   stroke-width: 1.5;
 }
@@ -180,16 +180,16 @@
 }
 .violation {
   fill: var(--mac-red);
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.5;
 }
 .violationX {
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.6;
   stroke-linecap: round;
 }
 .robotBody {
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.5;
   stroke-linejoin: round;
 }
@@ -238,7 +238,7 @@
   gap: 8px;
 }
 .glass {
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--mac-glass);
   backdrop-filter: var(--mac-blur);
   -webkit-backdrop-filter: var(--mac-blur);
   border-radius: 9px;

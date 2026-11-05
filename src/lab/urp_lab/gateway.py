@@ -95,6 +95,8 @@ class Lab:
             self.fieldsim = FieldSimManager(self.store, self.services, self.runtime, port=config.field_sim_port)
             from .studies import StudyManager
             self.studies = StudyManager(self.store, self.jobs, self.bus)
+            from .physics import PhysicsManager
+            self.physics = PhysicsManager(self.store, self.runtime, self.bus, self.fieldsim)
         except BaseException:
             self.store.close()
             raise
@@ -119,6 +121,7 @@ class Lab:
             if getattr(self, 'agent', None) is not None:
                 self.agent.shutdown()
             self.jobs.shutdown()
+            self.physics.shutdown()
             self.fieldsim.shutdown()
             self.services.shutdown()
             self.sim.stop()
@@ -414,6 +417,53 @@ def create_app(config: Config | None = None) -> FastAPI:
     @app.get(f'{api}/algorithms')
     def algorithms():
         return {'algorithms': lab.catalog()}
+
+    @app.get(f'{api}/algorithms/stats')
+    def algorithm_stats():
+        return {'stats': core('algorithm_stats').summaries(lab.store.run_digest())}
+
+    @app.get(f'{api}/algorithms/{{algorithm_id}}/history')
+    def algorithm_history(algorithm_id: str):
+        if not any(a['id'] == algorithm_id for a in lab.catalog()):
+            raise ApiError(404, 'unknown_algorithm', f'没有算法 {algorithm_id}')
+        return core('algorithm_stats').history(lab.store.run_digest(), algorithm_id, lab.store.list_physics_runs(limit=2000))
+
+    # ---------------------------------------------------------- physics --
+    def physics_call(fn, *args, **kwargs):
+        from .physics import PhysicsError
+        try:
+            return fn(*args, **kwargs)
+        except PhysicsError as exc:
+            raise ApiError(exc.status, exc.code, exc.message) from None
+
+    @app.get(f'{api}/physics/engines')
+    def physics_engines():
+        return {'engines': [{'id': 'mujoco', 'name': 'MuJoCo', **core('physics').available()}]}
+
+    @app.post(f'{api}/physics/runs', status_code=202)
+    def physics_submit(payload: Any = Body(None)):
+        body = body_dict(payload)
+        if not body.get('run_id') and not body.get('session_id'):
+            raise ApiError(400, 'invalid_request', '需要 run_id 或 session_id')
+        return physics_call(lab.physics.submit, run_id=body.get('run_id'), session_id=body.get('session_id'))
+
+    @app.get(f'{api}/physics/runs')
+    def physics_runs(run_id: str | None = None, limit: int = 100):
+        return {'runs': lab.store.list_physics_runs(run_id, max(1, min(limit, 500)))}
+
+    @app.get(f'{api}/physics/runs/{{physics_run_id}}')
+    def physics_run(physics_run_id: str):
+        rec = lab.physics.get(physics_run_id)
+        if not rec:
+            raise ApiError(404, 'unknown_physics_run', f'没有物理运行 {physics_run_id}')
+        return rec
+
+    @app.post(f'{api}/physics/runs/{{physics_run_id}}/cancel')
+    def physics_cancel(physics_run_id: str):
+        rec = lab.physics.cancel(physics_run_id)
+        if not rec:
+            raise ApiError(404, 'unknown_physics_run', f'没有物理运行 {physics_run_id}')
+        return rec
 
     @app.post(f'{api}/recommend')
     def recommend(payload: Any = Body(None)):

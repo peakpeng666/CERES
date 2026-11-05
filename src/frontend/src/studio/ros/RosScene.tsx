@@ -12,6 +12,7 @@ import { ColladaLoader } from 'three/examples/jsm/loaders/ColladaLoader.js';
 import URDFLoader from 'urdf-loader';
 import { Bot, Crosshair, Eye, EyeOff, Radio } from 'lucide-react';
 import { EmptyState } from '../../lab/ui';
+import { useCssVars } from '../../lab/ui/theme';
 import { urls } from '../api';
 import { useRos, useRosTopic } from './foxglove';
 import { useLive } from './live';
@@ -63,6 +64,7 @@ function layerOf(topic: string): LayerId {
 
 /* ------------------------------------------------------------------ view -- */
 export function RosView() {
+  const colors = useCssVars({ bg: '--map-bg' });
   const live = useLive();
   const status = useRos((r) => r.status);
   const url = useRos((r) => r.url);
@@ -101,7 +103,7 @@ export function RosView() {
   return (
     <div className={s.view}>
       <Canvas className={s.canvas} camera={{ position: [0, 80, 80], fov: 40, near: 0.1, far: 20000 }} gl={{ antialias: true }} dpr={[1, 2]}>
-        <color attach="background" args={['#eef0f3']} />
+        <color attach="background" args={[colors.bg]} />
         <ambientLight intensity={1.1} />
         <directionalLight position={[60, 120, 40]} intensity={1.6} />
         <OrbitControls makeDefault enableDamping dampingFactor={0.12} maxPolarAngle={Math.PI / 2.05} />
@@ -186,7 +188,8 @@ function GroundGrid({ bounds }: { bounds: THREE.Box3 | null }) {
   const c = bounds ? bounds.getCenter(new THREE.Vector3()) : new THREE.Vector3();
   const size = bounds ? bounds.getSize(new THREE.Vector3()) : new THREE.Vector3(40, 40, 0);
   const span = Math.ceil((Math.max(size.x, size.y) + 40) / 10) * 10;
-  return <gridHelper args={[span, span / 10, '#c3c8d0', '#d9dde3']} position={[c.x, -0.03, -c.y]} />;
+  const colors = useCssVars({ edge: '--mac-separator-strong', line: '--mac-separator' });
+  return <gridHelper key={colors.edge} args={[span, span / 10, colors.edge, colors.line]} position={[c.x, -0.03, -c.y]} />;
 }
 
 function AutoFit({ bounds, nonce }: { bounds: THREE.Box3 | null; nonce: number }) {

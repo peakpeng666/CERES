@@ -13,13 +13,13 @@
   font-weight: 500;
   white-space: nowrap;
   color: var(--mac-label);
-  background: rgba(255, 255, 255, 0.84);
+  background: var(--mac-glass);
   -webkit-backdrop-filter: var(--mac-blur);
   backdrop-filter: var(--mac-blur);
   box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.07);
 }
 .tool:hover {
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--mac-glass);
 }
 .tool[aria-expanded='true'],
 .tool[aria-pressed='true'] {
@@ -38,7 +38,7 @@
   overflow-y: auto;
   padding: 10px 12px;
   border-radius: 12px;
-  background: rgba(252, 252, 254, 0.96);
+  background: var(--mac-glass);
   -webkit-backdrop-filter: var(--mac-blur);
   backdrop-filter: var(--mac-blur);
   box-shadow: var(--mac-shadow-pop);
@@ -91,14 +91,14 @@
   box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 .chip_info {
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--mac-glass);
   color: var(--mac-label-2);
 }
 .chip_warn {
   background: rgba(255, 244, 229, 0.94);
-  color: #8a4b00;
+  color: var(--mac-orange);
 }
 .chip_edit {
   background: rgba(230, 242, 255, 0.95);
-  color: #0a4a9e;
+  color: var(--mac-accent);
 }

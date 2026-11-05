@@ -229,9 +229,9 @@ function PlotBox({ make, deps, height = 240 }: { make: (w: number) => (SVGSVGEle
   return <div ref={ref} style={{ minHeight: height }} />;
 }
 
-const FONT = { fontFamily: 'Inter, PingFang SC, sans-serif', fontSize: '11px' };
+const FONT = { fontFamily: 'var(--mac-font)', fontSize: '11px' };
 /** One colour per algorithm, the same in every chart of a study. */
-const PALETTE = ['#0a84ff', '#ff9f0a', '#30b158', '#bf5af2', '#ff453a', '#14b8c4', '#a2845e', '#5e5ce6', '#ff6482', '#64748b'];
+const PALETTE = ['var(--route-1)', 'var(--route-2)', 'var(--route-3)', 'var(--route-4)', 'var(--route-5)', 'var(--route-6)', '#a2845e', '#64748b', '#8e8e93', '#b0a890'];
 
 export function AnalysisPanel() {
   const studyId = useStudio((st) => st.studyId);
@@ -395,8 +395,8 @@ function CdDiagram({ ranks, cd, names }: { ranks: Record<string, number>; cd: nu
             <text x={x(i + 1)} y={20} textAnchor="middle">{i + 1}</text>
           </g>
         ))}
-        <line x1={x(1)} x2={x(1) + (cd / Math.max(1, k - 1)) * (W - 120)} y1={8} y2={8} stroke="#e5352b" strokeWidth={2} />
-        <text x={x(1) + (cd / Math.max(1, k - 1)) * (W - 120) + 6} y={11} fill="#e5352b">CD = {cd.toFixed(2)}</text>
+        <line x1={x(1)} x2={x(1) + (cd / Math.max(1, k - 1)) * (W - 120)} y1={8} y2={8} stroke="var(--mac-red)" strokeWidth={2} />
+        <text x={x(1) + (cd / Math.max(1, k - 1)) * (W - 120) + 6} y={11} fill="var(--mac-red)">CD = {cd.toFixed(2)}</text>
         {items.map(([a, r], i) => {
           const left = i < half;
           const y = 50 + 22 * (left ? i : k - 1 - i);

@@ -313,6 +313,27 @@ def test_infeasible_task_asks_approval_before_changing_it(gateway):
     s = _wait(client, sid, ('done', 'failed', 'awaiting_approval'))
     assert s['state'] == 'done' and s['report']['evidence']['best_verified']
     assert s['contract']['fields']['trip_mode']['source'] == 'repair'
+    assert next(x for x in s['plan'] if x['kind'] == 'repair')['status'] == 'done'   # a decided repair does not stay “waiting”
+
+
+def test_task_on_an_existing_map_keeps_the_map(gateway):
+    app, client = gateway
+    first = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'text': SMALL}).json()['session_id']
+    _wait(client, first)
+    client.post(f'/lab/api/agent/sessions/{first}/control', json={'action': 'confirm'})
+    built = _wait(client, first, ('done', 'failed'))
+    map_id = built['scenario_id']
+    sid = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'text': '比较推荐的算法', 'scenario_id': map_id}).json()['session_id']
+    s = _wait(client, sid)
+    assert s['scenario_id'] == map_id and s['state'] == 'awaiting_confirmation'
+    assert tc.value(s['contract'], 'task_count') == tc.value(built['contract'], 'task_count')
+    assert s['contract']['fields']['task_count']['source'] == 'user_edit'
+    assert next(x for x in s['plan'] if x['kind'] == 'scenario')['status'] == 'taken_over'
+    client.post(f'/lab/api/agent/sessions/{sid}/control', json={'action': 'confirm'})
+    s = _wait(client, sid, ('done', 'failed', 'awaiting_approval'))
+    assert s['state'] == 'done' and s['scenario_id'] == map_id and s['report']['evidence']['best_verified']
+    missing = client.post('/lab/api/agent/sessions', json={'mode': 'rule', 'text': 'x', 'scenario_id': 'no-such-map'})
+    assert missing.status_code == 404
 
 
 def test_llm_flow_uses_phase_tools_and_flags_unverified_numbers(gateway):

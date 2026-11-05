@@ -23,6 +23,7 @@ dependencies = [
   "python-multipart==0.0.32",
   "defusedxml==0.7.1",
   "opencv-python-headless==5.0.0.93",
+  "mujoco==3.17.0",
 ]
 
 [dependency-groups]

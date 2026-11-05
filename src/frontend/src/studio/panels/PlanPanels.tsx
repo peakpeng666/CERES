@@ -36,7 +36,7 @@ import { addDepot, depotsOf, fleetClassFor, fleetClasses, fleetSize, planningFin
 import { playbackDuration } from '../planningPlayback';
 import { planModelSchema, researchAcceptanceIssues, unacceptedPlanReason } from '../execution';
 import { MapCanvas } from '../../lab/canvas/MapCanvas';
-import { baseScene, routeColor, solutionPaths, violationMarkers } from '../../lab/views/plan/planModel';
+import { baseScene, routeColor, shownColor, solutionPaths, violationMarkers } from '../../lab/views/plan/planModel';
 import type { Instance, Scenario } from '../../lab/types';
 import { logTimeAxis, unitSuffix } from '../chart';
 import { BackgroundControl, FleetAssetSection, PlanBackground } from '../assets/PlanLayers';
@@ -114,7 +114,7 @@ function FleetMap({ inst, focus }: { inst: FleetInstance; focus?: Solution }) {
   const shownInst = frozen ?? inst;
   const lanes = useLanes(shownInst, shownInst.vehicles.travel === 'rows');
   if (!st.scenario) return null;
-  const routes = focus?.state === 'done' ? (focus.routes as FleetRoute[]) : [];
+  const routes = useMemo(() => (focus?.state === 'done' ? (focus.routes as FleetRoute[]).map((r) => ({ ...r, color: shownColor(r.color) })) : []), [focus]);
   const showResult = !stale || !!frozen;
   const otherPlans = focus && showResult ? st.runIds.map((id) => st.runs[id]).filter((r): r is Solution =>
     !!r && r.run_id !== focus.run_id && verifiedPlan(r) && comparable(r, focus)
@@ -132,7 +132,7 @@ function FleetMap({ inst, focus }: { inst: FleetInstance; focus?: Solution }) {
       ) : (
         <div className={s.mapBar}>
           <Segmented value={st.tool} onChange={(t) => st.setTool(t)} label="编辑工具"
-            options={TOOLS.map((t) => ({ value: t.value, label: t.label, icon: t.icon, title: t.title }))} />
+            options={TOOLS.map((t) => ({ value: t.value, label: <span className={s.toolLabel}>{t.label}</span>, icon: t.icon, title: t.title }))} />
           {st.tool === 'obstacle' && (
             <Select aria-label="障碍类型" value={st.obstacleKind} onChange={(e) => st.setObstacleKind(e.target.value as ObstacleKind)}>
               {(Object.keys(OBSTACLE_STYLE) as ObstacleKind[]).map((k) => <option key={k} value={k}>{OBSTACLE_STYLE[k].label}</option>)}
@@ -288,12 +288,12 @@ function VehicleLegend({ run, comparisons = [], overlayIds = [], toggleOverlay }
   const hidden = useStudio((st) => st.hiddenVehicles);
   const toggle = useStudio((st) => st.toggleVehicle);
   const per = (run.metrics.per_vehicle as unknown as PerVehicle[] | undefined) ?? [];
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
   if (!per.length) return null;
   return (
     <div className={s.legend} data-collapsed={!open || undefined}>
       <button type="button" className={s.legendHead} onClick={() => setOpen(!open)} title={open ? '收起图例' : '展开图例'}>
-        {!open && per.map((v) => <span key={v.vehicle} className={s.swatch} style={{ background: v.color }} />)}
+        {!open && per.map((v) => <span key={v.vehicle} className={s.swatch} style={{ background: shownColor(v.color) }} />)}
         <span>{run.algorithm.name}</span>
         <ChevronDown size={12} className={s.legendChevron} />
       </button>
@@ -302,7 +302,7 @@ function VehicleLegend({ run, comparisons = [], overlayIds = [], toggleOverlay }
         const facts = vehicleFacts(run, v, index);
         return (
           <button key={v.vehicle} type="button" className={s.legendRow} data-off={off || undefined} onClick={() => toggle(v.vehicle)}>
-            <span className={s.swatch} style={{ background: v.color }} />
+            <span className={s.swatch} style={{ background: shownColor(v.color) }} />
             <span className={s.legendName}>{v.vehicle}<div className={s.legendMeta}>{facts.className} · 家库 {facts.home}</div></span>
             <span className={s.legendMeta}>{v.tasks} 点 · {v.trips} 趟</span>
             <span className={s.legendMeta}>{fmt.num(v.length_m, 0)} m</span>
@@ -1065,7 +1065,7 @@ function PerVehicleTable({ run }: { run: Solution }) {
           const route = routes.find((item) => item.vehicle_name === v.vehicle) ?? routes[i];
           return (
             <tr key={v.vehicle}>
-              <td><span className={s.swatch} style={{ background: v.color }} /> {v.vehicle}<div className={s.meta}>{facts.className} · 家库 {facts.home}</div></td>
+              <td><span className={s.swatch} style={{ background: shownColor(v.color) }} /> {v.vehicle}<div className={s.meta}>{facts.className} · 家库 {facts.home}</div></td>
               <td className={s.num}>{v.tasks}</td>
               <td className={s.num}>{v.trips}</td>
               <td className={s.num}>{v.load}</td>

@@ -346,7 +346,7 @@ function Welcome() {
 }
 
 /** Keeps the shared map, comparison and verification panels on the agent's scenario and latest runs. */
-function useStudioSync(session: AgentSession | null) {
+export function useStudioSync(session: AgentSession | null) {
   const scenarioId = session?.scenario_id ?? null;
   const key = session ? currentRuns(session).join(',') : '';
   const buildKey = `${session?.session_id ?? ''}/${scenarioId ?? ''}/${session?.built_revision ?? ''}/${session?.scenario_instance_sha256 ?? ''}`;

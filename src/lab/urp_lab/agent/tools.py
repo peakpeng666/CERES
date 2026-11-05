@@ -280,10 +280,12 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
             max(t['demand'] for t in inst['tasks']), math.ceil(sum(t['demand'] for t in inst['tasks']) / veh['count'] * 1.3))
         inst['objective'] = overrides['objective']
         veh['trips'], veh['travel'] = execution['trip_mode'], execution['travel_mode']
-        sc['provenance']['agent'] = {'session_id': ctx.session['session_id'], 'contract_revision': contract['revision']}
-        sc['provenance']['params']['spec'] = overrides
+        # Imported and asset-built maps carry no generator record of their own.
+        provenance = sc.setdefault('provenance', {})
+        provenance['agent'] = {'session_id': ctx.session['session_id'], 'contract_revision': contract['revision']}
+        provenance.setdefault('params', {})['spec'] = overrides
         sc['summary'] = f"{veh['count']} 台车 · " + sc['summary'].split(' · ', 1)[-1]
-        sc['compose']['cards'] = compose.describe(overrides)
+        sc.setdefault('compose', {})['cards'] = compose.describe(overrides)
         stored = save_user_scenario(sc, overwrite=True, expected_revision=sc.get('revision'))
         mode = 'updated'
     else:
@@ -338,6 +340,27 @@ def list_algorithms(ctx: ToolContext, args: dict) -> dict:
                     'unavailable_reason': a.get('unavailable_reason'), 'summary': a.get('summary', '')[:160],
                     'params': [p['name'] for p in a.get('params', [])]})
     return {'algorithms': out}
+
+
+def describe_algorithm(ctx: ToolContext, args: dict) -> dict:
+    """One algorithm's conditions and what this machine has measured about it."""
+    from .. import algorithm_stats
+    a = next((x for x in ctx.lab.catalog() if x['id'] == args['algorithm_id']), None)
+    if a is None:
+        raise ToolError('unknown_algorithm', f"没有算法 {args['algorithm_id']}；可先调用 list_algorithms")
+    record = algorithm_stats.history(ctx.lab.store.run_digest(), a['id'], ctx.lab.store.list_physics_runs(limit=2000))
+    return {'id': a['id'], 'name': a['name'], 'problem': a.get('problem_label'), 'family': a.get('family'), 'guarantee': a.get('guarantee'),
+            'limits': a.get('limits'), 'randomness': (a.get('randomness') or {}).get('note'), 'summary': a.get('summary'),
+            'params': [{k: p.get(k) for k in ('name', 'label', 'default', 'min', 'max')} for p in a.get('params', [])],
+            'available': a.get('available'), 'unavailable_reason': a.get('unavailable_reason'),
+            'record': {k: record[k] for k in ('runs', 'completed', 'valid', 'failed', 'wall_s', 'head_to_head', 'physical')}}
+
+
+def list_capabilities(ctx: ToolContext, args: dict) -> dict:
+    """Simulators, learned models and transfers, each with its status. Algorithms are listed by list_algorithms."""
+    from .capabilities import capabilities
+    found = capabilities(ctx.lab)
+    return {k: [{f: x.get(f) for f in ('id', 'name', 'status', 'reason', 'summary', 'approval')} for x in found[k]] for k in ('simulators', 'learners', 'transfers')}
 
 
 def recommend_algorithms(ctx: ToolContext, args: dict) -> dict:
@@ -473,6 +496,37 @@ def start_simulation(ctx: ToolContext, args: dict) -> dict:
             'note': '已启动 Gazebo 田间会话；规划预览、实时仿真与记录回放分别显示'}
 
 
+def physics_rows(session: dict) -> list[dict]:
+    """Physics results of the session's current runs, in run order."""
+    done = session.get('physics') or {}
+    return [done[r] for r in current_run_ids(session) if r in done]
+
+
+def physics_check(ctx: ToolContext, args: dict) -> dict:
+    """Execute a verified plan in MuJoCo with the follower and vehicle Gazebo uses. Seconds, no ROS process, no approval."""
+    from ..physics import PhysicsError
+    run = _run(ctx, args['run_id'])
+    verdict = (ctx.session.get('verifications') or {}).get(run['run_id'])
+    if not verdict or not verdict.get('valid') or not verdict.get('agrees'):
+        raise ToolError('unverified', '物理预演前须先用 verify_run 独立复核且通过')
+    try:
+        rec = ctx.lab.physics.submit(run_id=run['run_id'])
+    except PhysicsError as exc:
+        raise ToolError(exc.code, exc.message) from None
+    rec = ctx.lab.physics.wait(rec['physics_run_id'], ctx.cancel)
+    if rec.get('state') == 'canceled':
+        raise ToolError('cancelled', '已取消')
+    metrics = rec.get('metrics') or {}
+    row = {'run_id': run['run_id'], 'physics_run_id': rec.get('physics_run_id'), 'algorithm': (run.get('algorithm') or {}).get('name'),
+           'engine': rec.get('engine'), 'engine_version': rec.get('engine_version'), 'state': rec.get('state'),
+           'check_valid': (rec.get('check') or {}).get('valid'), 'errors': (rec.get('errors') or [])[:3] + ((rec.get('check') or {}).get('errors') or [])[:3],
+           'wall_s': rec.get('wall_s'), 'metrics': {k: round(v, 3) if isinstance(v, float) else v for k, v in (
+               (k, metrics.get(k)) for k in ('tasks_total', 'tasks_completed', 'total_distance_m', 'planned_total_distance_m', 'makespan_s', 'planned_makespan_s',
+                                             'cross_track_mean_m', 'cross_track_max_m', 'energy_wh'))}}
+    ctx.session.setdefault('physics', {})[run['run_id']] = row
+    return row
+
+
 def simulation_status(ctx: ToolContext, args: dict) -> dict:
     state = ctx.lab.fieldsim.state()
     keep = ('phase', 'session_id', 'run_id', 'error', 'progress', 'vehicles', 'check')
@@ -562,6 +616,10 @@ def registry() -> dict[str, Tool]:
              EMPTY, build_scenario, 'write', 'scenario', needs_confirmed=True),
         Tool('list_algorithms', '查看算法库', '列出可用于多车任务访问的算法、来源、保证与可用状态。', EMPTY,
              list_algorithms, 'session', 'recommend'),
+        Tool('describe_algorithm', '查阅算法', '读取一个算法的适用条件、最优性、参数范围，以及它在本机的运行次数、耗时与同题对比。',
+             {'type': 'object', 'properties': {'algorithm_id': {'type': 'string', 'maxLength': 80}}, 'required': ['algorithm_id'], 'additionalProperties': False},
+             describe_algorithm, 'session', 'recommend'),
+        Tool('list_capabilities', '查看能力', '列出可用的仿真器、学习模型与引擎迁移及其状态。', EMPTY, list_capabilities, 'session', 'recommend'),
         Tool('recommend_algorithms', '推荐算法', '根据任务地图特征给出规则推荐排序、理由与建议对比集合。', EMPTY,
              recommend_algorithms, 'compute', 'recommend', needs_scenario=True),
         Tool('solve', '求解对比',
@@ -590,6 +648,8 @@ def registry() -> dict[str, Tool]:
              {'type': 'object', 'properties': {'fields': tc.tool_schema()['properties']['fields'],
                                                'reason': {'type': 'string', 'maxLength': 300}},
               'required': ['fields', 'reason'], 'additionalProperties': False}, propose_task_change, 'session', 'repair'),
+        Tool('physics_check', '物理预演', '在 MuJoCo 中用同一路径跟踪器和车辆参数执行已复核的方案，返回实际里程、工期、横向偏差和接触。数秒完成，不启动 ROS，无需批准。',
+             RUN_ID, physics_check, 'compute', 'physics', needs_scenario=True),
         Tool('start_simulation', '启动田间仿真', '把已通过独立复核的方案送入 Gazebo 田间仿真（需要用户批准）。',
              {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80},
                                                'real_time_factor': {'type': 'number', 'minimum': 0.5, 'maximum': 8}},
@@ -602,8 +662,8 @@ def registry() -> dict[str, Tool]:
 
 PHASE_TOOLS = {
     'understand': ['update_task_contract', 'ask_user', 'find_real_fields'],
-    'execute': ['build_scenario', 'list_algorithms', 'recommend_algorithms', 'solve', 'run_study', 'verify_run', 'compare_runs',
-                'diagnose_run', 'propose_task_change', 'start_simulation', 'simulation_status', 'ask_user'],
+    'execute': ['build_scenario', 'list_algorithms', 'describe_algorithm', 'list_capabilities', 'recommend_algorithms', 'solve', 'run_study', 'verify_run', 'compare_runs',
+                'diagnose_run', 'propose_task_change', 'physics_check', 'start_simulation', 'simulation_status', 'ask_user'],
 }
 
 

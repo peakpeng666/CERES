@@ -127,6 +127,45 @@ export interface Algorithm {
   problem_label?: string;
 }
 
+export interface AlgorithmStat {
+  runs: number; completed: number; valid: number; failed: number; canceled: number;
+  wall_s: { median: number | null; p90: number | null };
+  last_utc: string | null;
+  head_to_head: { instances: number; wins: number; mean_gap: number } | null;
+}
+
+export interface AlgorithmHistory extends AlgorithmStat {
+  algorithm_id: string;
+  physical: { runs: number; passed: number; distance_ratio: number | null; cross_track_max_m: number | null } | null;
+  maps: { scenario_id: string; title: string | null; runs: number; best: number | null; unit: string | null; last_utc: string }[];
+  recent: { run_id: string; scenario_id: string; title: string | null; state: string; status: string | null; value: number | null; unit: string | null;
+    wall_s: number | null; created_utc: string; budget_s: number | null; valid: boolean | null }[];
+}
+
+export interface EngineGap {
+  run_id: string;
+  a: { engine: string; session_id?: string; state?: string };
+  b: { engine: string; version?: string; state?: string };
+  path_mean_m: number | null; path_max_m: number | null; time_rmse_m: number | null;
+  vehicles: { name: string; label: string; path: { mean_m: number; p95_m: number; max_m: number }; at_time: { rmse_m: number | null; max_m: number | null };
+    task_arrival_s: { tasks: number; mean_abs: number | null; max_abs: number | null }; duration_s: { a: number; b: number } }[];
+  metrics: Record<string, { a?: number | null; b?: number | null }>;
+  scope: string;
+}
+
+export interface PhysicsRun {
+  physics_run_id: string; run_id: string | null; session_id: string | null; scenario_id?: string; algorithm?: string;
+  engine: string; engine_version?: string; state: string; created_utc: string; finished_utc: string | null;
+  progress?: { sim_time?: number; tasks_done?: number; tasks_total?: number } | null;
+  errors: string[]; sim_time?: number; wall_s?: number; real_time_factor?: number; servo_kv?: number; model_sha256?: string;
+  metrics?: Record<string, number | null>;
+  vehicles?: { name: string; label: string; state: string; distance_m: number; tasks_done: number; tasks_total: number; cross_track_max_m: number | null; duration_s: number | null }[];
+  contacts?: { t_sim: number; between: string[] }[];
+  check?: { valid?: boolean; errors?: string[]; scope?: string };
+  comparison?: EngineGap;
+  trails?: Record<string, number[][]>;
+}
+
 export interface Recommendation {
   problem_class: ProblemClass;
   policy: string;

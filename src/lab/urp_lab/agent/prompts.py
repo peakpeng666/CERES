@@ -5,7 +5,7 @@ import json
 
 from . import contract as tc
 
-VERSION = 'agent-prompts/3'
+VERSION = 'agent-prompts/4'
 
 RULES = """你是农业机器人路径规划工作台中的任务智能体。你通过工具调用地图、算法、验算与仿真服务；只能依据工具的真实返回值陈述结果。
 基本规则：
@@ -62,9 +62,9 @@ def execute(contract: dict, session: dict) -> str:
 建议流程：
 1. 若没有任务地图或合同已变化，先调用 build_scenario；查看 precheck 中的不可行项。
 2. 调用 recommend_algorithms，按推荐的对比集合选取 {execution['compare_count']} 个算法，用 solve 以同一预算（{execution['time_limit_s']} s）与种子（{execution['seed']}）求解。
-3. 对每个报告可行的方案调用 verify_run 独立复核；用 compare_runs 比较可比方案。
+3. 对每个报告可行的方案调用 verify_run 独立复核；用 compare_runs 比较可比方案；通过复核的方案用 physics_check 做物理预演，它只需数秒且无需批准。
 4. 若没有通过复核的方案：调用 diagnose_run。方法不适用或预算不足时，自主换用未试过的算法或提高预算再求解；任务本身不可行时调用 propose_task_change 请用户批准修改；软件实现错误要如实报告。
-5. {'合同要求仿真执行：选取通过复核的最好方案调用 start_simulation（需用户批准）。' if execution['simulate'] else '合同未要求仿真执行，不要启动仿真。'}
+5. {'合同要求仿真执行：选取通过复核和物理预演的最好方案调用 start_simulation（需用户批准）。' if execution['simulate'] else '合同未要求仿真执行，不要启动仿真。'}
 6. 完成后不再调用工具，直接给出简短结论：采用的方案（运行编号、算法）、经复核的里程与工期、失败与修复经过、未支持的要求。"""
 
 
@@ -73,5 +73,6 @@ def report(evidence: dict) -> str:
 
 当前阶段：撰写结果报告。只能使用下面“依据”中的数值与结论，不得引入其他数字。用 3–6 句学术化中文概括：
 任务规模与约束、对比了哪些方法、经独立复核的最好方案（运行编号、里程、工期）、失败方案及其原因类别、仍未支持的要求与下一步。
-合同要求仿真时须交代是否启动、用户拒绝或启动失败；已启动不代表实际轨迹验收通过。
+有物理预演结果时，交代规划与执行的差距；物理预演是 MuJoCo 中的物理仿真，不是实车结果。best_executable 与 best_verified 不同时，说明规划最优方案未通过预演的原因和可执行的最好方案。
+合同要求仿真时须交代是否启动、用户拒绝或启动失败；有 simulation_result 时按其结果说明执行情况；有 comparison 时说明两个物理引擎的差距。
 依据：{json.dumps(evidence, ensure_ascii=False)}"""

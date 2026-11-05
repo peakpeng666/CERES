@@ -9,6 +9,7 @@ from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import JSONResponse
 
 from ..services import ServiceError
+from . import capabilities
 from .runner import AgentRunner, RunnerError
 
 router = APIRouter()
@@ -47,6 +48,31 @@ async def providers(request: Request):
     return _fresh(await run_in_threadpool(runner(request).providers))
 
 
+@router.post('/agent/providers/local/{action}')
+def local_model(request: Request, action: str, payload: Any = Body(None)):
+    return _fresh(_call(runner(request).local_model, action))
+
+
+@router.get('/agent/harness')
+def harness(request: Request):
+    return _fresh(runner(request).harness())
+
+
+@router.get('/agent/capabilities')
+def capabilities_list(request: Request):
+    return _fresh(capabilities.capabilities(request.app.state.lab))
+
+
+@router.get('/agent/jobs')
+def jobs_list(request: Request):
+    return _fresh(capabilities.jobs(request.app.state.lab))
+
+
+@router.get('/agent/evals')
+def evals(request: Request):
+    return _fresh(runner(request).evals())
+
+
 @router.get('/agent/sessions')
 def sessions(request: Request):
     return _fresh({'sessions': runner(request).list()})
@@ -60,6 +86,11 @@ def create(request: Request, payload: Any = Body(None)):
 @router.get('/agent/sessions/{session_id}')
 def get(request: Request, session_id: str):
     return _fresh(_call(runner(request).get, session_id))
+
+
+@router.patch('/agent/sessions/{session_id}')
+def patch_session(request: Request, session_id: str, payload: Any = Body(None)):
+    return _fresh(_call(runner(request).patch_session, session_id, _body(payload)))
 
 
 @router.get('/agent/sessions/{session_id}/export')

@@ -1,0 +1,721 @@
+{
+ "scope": "规则流程经智能体批准后的真实 Gazebo Fortress 田间会话，结束后用同一 plan.json 在 MuJoCo 重放；两引擎差距，不是实车误差",
+ "versions": {
+  "runner_version": "agent-runner/5",
+  "prompt_version": "agent-prompts/4",
+  "mujoco": "3.17.0",
+  "servo_kv": 30
+ },
+ "cases": [
+  {
+   "case": "one-free",
+   "text": "在 60×40 米的菜地里，1 台车访问 6 个点，单车容量 8",
+   "session_id": "agt_20261105T053447_fc7a59",
+   "field_session": "field_20261105T053455_8b2952",
+   "run_id": "run_20261105T053449_106e06",
+   "seconds": 68.4,
+   "gazebo_state": "succeeded",
+   "gazebo_check_valid": true,
+   "gazebo": {
+    "tasks_total": 6,
+    "tasks_completed": 6,
+    "total_distance_m": 170.62,
+    "planned_total_distance_m": 168.045,
+    "makespan_s": 204.12,
+    "planned_makespan_s": 168.045,
+    "cross_track_mean_m": 0.007,
+    "cross_track_max_m": 0.119,
+    "energy_wh": 0.875
+   },
+   "physics": [
+    {
+     "run_id": "run_20261105T053449_106e06",
+     "algorithm": "PyVRP 固定车队",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 0.758,
+     "metrics": {
+      "tasks_total": 6,
+      "tasks_completed": 6,
+      "total_distance_m": 170.77,
+      "planned_total_distance_m": 168.045,
+      "makespan_s": 204.16,
+      "planned_makespan_s": 168.045,
+      "cross_track_mean_m": 0.01,
+      "cross_track_max_m": 0.123,
+      "energy_wh": 0.877
+     },
+     "errors": []
+    },
+    {
+     "run_id": "run_20261105T053449_ab1065",
+     "algorithm": "OR-Tools 车队调度",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 0.675,
+     "metrics": {
+      "tasks_total": 6,
+      "tasks_completed": 6,
+      "total_distance_m": 170.76,
+      "planned_total_distance_m": 168.045,
+      "makespan_s": 204.52,
+      "planned_makespan_s": 168.045,
+      "cross_track_mean_m": 0.011,
+      "cross_track_max_m": 0.121,
+      "energy_wh": 0.877
+     },
+     "errors": []
+    },
+    {
+     "run_id": "run_20261105T053449_29e171",
+     "algorithm": "节约算法 + 2-opt",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 0.763,
+     "metrics": {
+      "tasks_total": 6,
+      "tasks_completed": 6,
+      "total_distance_m": 170.77,
+      "planned_total_distance_m": 168.045,
+      "makespan_s": 204.16,
+      "planned_makespan_s": 168.045,
+      "cross_track_mean_m": 0.01,
+      "cross_track_max_m": 0.123,
+      "energy_wh": 0.877
+     },
+     "errors": []
+    }
+   ],
+   "gap": {
+    "path_mean_m": 0.003295399772518417,
+    "path_max_m": 0.03703795924315613,
+    "time_rmse_m": 0.11240358765894286,
+    "metrics": {
+     "makespan_s": {
+      "a": 204.12,
+      "b": 204.16
+     },
+     "total_distance_m": {
+      "a": 170.62,
+      "b": 170.77
+     },
+     "cross_track_mean_m": {
+      "a": 0.0072,
+      "b": 0.0097
+     },
+     "cross_track_max_m": {
+      "a": 0.1195,
+      "b": 0.1235
+     },
+     "energy_wh": {
+      "a": 0.875,
+      "b": 0.877
+     },
+     "tasks_completed": {
+      "a": 6,
+      "b": 6
+     }
+    },
+    "physics_run_id": "phys_20261105T053553_a05819"
+   },
+   "gap_vehicles": [
+    {
+     "name": "vehicle_1",
+     "label": "① 号车",
+     "path": {
+      "mean_m": 0.003295399772518417,
+      "p95_m": 0.01916196048963339,
+      "max_m": 0.03703795924315613
+     },
+     "at_time": {
+      "rmse_m": 0.11240358765894286,
+      "max_m": 0.23177799538349403
+     },
+     "task_arrival_s": {
+      "tasks": 6,
+      "mean_abs": 0.16733333333335013,
+      "max_abs": 0.3200000000000074
+     },
+     "distance_m": {
+      "a": 170.62,
+      "b": 170.77
+     },
+     "duration_s": {
+      "a": 204.92,
+      "b": 205.0
+     },
+     "cross_track_max_m": {
+      "a": 0.1195,
+      "b": 0.1235
+     }
+    }
+   ],
+   "report": "任务规模：场地 60 × 40 m，6 个任务点，1 台车，单车容量 8 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 PyVRP 固定车队（run_20261105T053449_106e06），总里程 168.04 m，按恒速模型计算的最晚完成时间为 168.04 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 170.77 m、工期 204.16 s；OR-Tools 车队调度 实际里程 170.76 m、工期 204.52 s；节约算法 + 2-opt 实际里程 170.77 m、工期 204.16 s。田间仿真完成 6/6 个任务点，实际里程 170.62 m，规划里程 168.045 m，实际工期 204.12 s，最大横向偏差 0.119 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.037 m。"
+  },
+  {
+   "case": "two-free",
+   "text": "在 70×50 米的菜地里，2 台车访问 8 个点，单车容量 6",
+   "session_id": "agt_20261105T053556_b69e60",
+   "field_session": "field_20261105T053608_3d5396",
+   "run_id": "run_20261105T053557_ef0216",
+   "seconds": 103.5,
+   "gazebo_state": "succeeded",
+   "gazebo_check_valid": true,
+   "gazebo": {
+    "tasks_total": 8,
+    "tasks_completed": 8,
+    "total_distance_m": 264.88,
+    "planned_total_distance_m": 256.911,
+    "makespan_s": 315.27,
+    "planned_makespan_s": 135.161,
+    "cross_track_mean_m": 0.005,
+    "cross_track_max_m": 0.091,
+    "energy_wh": 1.358
+   },
+   "physics": [
+    {
+     "run_id": "run_20261105T053557_ab9392",
+     "algorithm": "PyVRP 固定车队",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 1.595,
+     "metrics": {
+      "tasks_total": 8,
+      "tasks_completed": 8,
+      "total_distance_m": 264.9,
+      "planned_total_distance_m": 256.918,
+      "makespan_s": 315.18,
+      "planned_makespan_s": 135.168,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.1,
+      "energy_wh": 1.359
+     },
+     "errors": []
+    },
+    {
+     "run_id": "run_20261105T053557_6b6286",
+     "algorithm": "OR-Tools 车队调度",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 1.939,
+     "metrics": {
+      "tasks_total": 8,
+      "tasks_completed": 8,
+      "total_distance_m": 264.9,
+      "planned_total_distance_m": 256.918,
+      "makespan_s": 315.18,
+      "planned_makespan_s": 135.168,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.1,
+      "energy_wh": 1.359
+     },
+     "errors": []
+    },
+    {
+     "run_id": "run_20261105T053557_ef0216",
+     "algorithm": "节约算法 + 2-opt",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 1.597,
+     "metrics": {
+      "tasks_total": 8,
+      "tasks_completed": 8,
+      "total_distance_m": 264.94,
+      "planned_total_distance_m": 256.911,
+      "makespan_s": 315.33,
+      "planned_makespan_s": 135.161,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.095,
+      "energy_wh": 1.359
+     },
+     "errors": []
+    }
+   ],
+   "gap": {
+    "path_mean_m": 0.002762279393349357,
+    "path_max_m": 0.03912058863700701,
+    "time_rmse_m": 0.04289620627822958,
+    "metrics": {
+     "makespan_s": {
+      "a": 315.27,
+      "b": 315.33
+     },
+     "total_distance_m": {
+      "a": 264.88,
+      "b": 264.94
+     },
+     "cross_track_mean_m": {
+      "a": 0.0054,
+      "b": 0.0074
+     },
+     "cross_track_max_m": {
+      "a": 0.091,
+      "b": 0.095
+     },
+     "energy_wh": {
+      "a": 1.358,
+      "b": 1.359
+     },
+     "tasks_completed": {
+      "a": 8,
+      "b": 8
+     }
+    },
+    "physics_run_id": "phys_20261105T053734_5df9c0"
+   },
+   "gap_vehicles": [
+    {
+     "name": "vehicle_1",
+     "label": "① 号车",
+     "path": {
+      "mean_m": 0.0030884938052306186,
+      "p95_m": 0.017124424790048838,
+      "max_m": 0.03912058863700701
+     },
+     "at_time": {
+      "rmse_m": 0.04289620627822958,
+      "max_m": 0.11514218377634469
+     },
+     "task_arrival_s": {
+      "tasks": 5,
+      "mean_abs": 0.03359999999999843,
+      "max_abs": 0.06400000000000006
+     },
+     "distance_m": {
+      "a": 137.33,
+      "b": 137.37
+     },
+     "duration_s": {
+      "a": 316.08,
+      "b": 316.18
+     },
+     "cross_track_max_m": {
+      "a": 0.091,
+      "b": 0.095
+     }
+    },
+    {
+     "name": "vehicle_2",
+     "label": "② 号车",
+     "path": {
+      "mean_m": 0.0024360649814680955,
+      "p95_m": 0.018623003864632972,
+      "max_m": 0.03091848377601097
+     },
+     "at_time": {
+      "rmse_m": 0.03340685630673396,
+      "max_m": 0.09634770298355337
+     },
+     "task_arrival_s": {
+      "tasks": 3,
+      "mean_abs": 0.07733333333335206,
+      "max_abs": 0.09200000000001296
+     },
+     "distance_m": {
+      "a": 127.56,
+      "b": 127.56
+     },
+     "duration_s": {
+      "a": 145.28,
+      "b": 145.42
+     },
+     "cross_track_max_m": {
+      "a": 0.0862,
+      "b": 0.091
+     }
+    }
+   ],
+   "report": "任务规模：场地 70 × 50 m，8 个任务点，2 台车，单车容量 6 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 节约算法 + 2-opt（run_20261105T053557_ef0216），总里程 256.91 m，按恒速模型计算的最晚完成时间为 135.16 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 264.9 m、工期 315.18 s；OR-Tools 车队调度 实际里程 264.9 m、工期 315.18 s；节约算法 + 2-opt 实际里程 264.94 m、工期 315.33 s。田间仿真完成 8/8 个任务点，实际里程 264.88 m，规划里程 256.911 m，实际工期 315.27 s，最大横向偏差 0.091 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.039 m。"
+  },
+  {
+   "case": "two-rows",
+   "text": "在 60×40 米的果园里，2 台车访问 6 个采样点，单车容量 4",
+   "session_id": "agt_20261105T053739_8cc527",
+   "field_session": "field_20261105T053750_d6758c",
+   "run_id": "run_20261105T053740_47d2b9",
+   "seconds": 95.5,
+   "gazebo_state": "succeeded",
+   "gazebo_check_valid": true,
+   "gazebo": {
+    "tasks_total": 6,
+    "tasks_completed": 6,
+    "total_distance_m": 250.06,
+    "planned_total_distance_m": 241.047,
+    "makespan_s": 291.22,
+    "planned_makespan_s": 145.132,
+    "cross_track_mean_m": 0.008,
+    "cross_track_max_m": 0.114,
+    "energy_wh": 1.282
+   },
+   "physics": [
+    {
+     "run_id": "run_20261105T053740_47d2b9",
+     "algorithm": "PyVRP 固定车队",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 1.711,
+     "metrics": {
+      "tasks_total": 6,
+      "tasks_completed": 6,
+      "total_distance_m": 250.16,
+      "planned_total_distance_m": 241.047,
+      "makespan_s": 291.31,
+      "planned_makespan_s": 145.132,
+      "cross_track_mean_m": 0.01,
+      "cross_track_max_m": 0.119,
+      "energy_wh": 1.283
+     },
+     "errors": []
+    },
+    {
+     "run_id": "run_20261105T053740_749a76",
+     "algorithm": "OR-Tools 车队调度",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 1.702,
+     "metrics": {
+      "tasks_total": 6,
+      "tasks_completed": 6,
+      "total_distance_m": 250.16,
+      "planned_total_distance_m": 241.047,
+      "makespan_s": 291.31,
+      "planned_makespan_s": 145.132,
+      "cross_track_mean_m": 0.01,
+      "cross_track_max_m": 0.119,
+      "energy_wh": 1.283
+     },
+     "errors": []
+    },
+    {
+     "run_id": "run_20261105T053740_f25d7e",
+     "algorithm": "节约算法 + 2-opt",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 1.807,
+     "metrics": {
+      "tasks_total": 6,
+      "tasks_completed": 6,
+      "total_distance_m": 261.22,
+      "planned_total_distance_m": 253.087,
+      "makespan_s": 311.85,
+      "planned_makespan_s": 160.799,
+      "cross_track_mean_m": 0.009,
+      "cross_track_max_m": 0.146,
+      "energy_wh": 1.34
+     },
+     "errors": []
+    }
+   ],
+   "gap": {
+    "path_mean_m": 0.0030733742486111887,
+    "path_max_m": 0.029712375815163835,
+    "time_rmse_m": 0.038621689887531334,
+    "metrics": {
+     "makespan_s": {
+      "a": 291.22,
+      "b": 291.31
+     },
+     "total_distance_m": {
+      "a": 250.06,
+      "b": 250.16
+     },
+     "cross_track_mean_m": {
+      "a": 0.0077,
+      "b": 0.0102
+     },
+     "cross_track_max_m": {
+      "a": 0.114,
+      "b": 0.1194
+     },
+     "energy_wh": {
+      "a": 1.282,
+      "b": 1.283
+     },
+     "tasks_completed": {
+      "a": 6,
+      "b": 6
+     }
+    },
+    "physics_run_id": "phys_20261105T053911_889328"
+   },
+   "gap_vehicles": [
+    {
+     "name": "vehicle_1",
+     "label": "① 号车",
+     "path": {
+      "mean_m": 0.003394488656439197,
+      "p95_m": 0.01912132343142194,
+      "max_m": 0.026032438505334092
+     },
+     "at_time": {
+      "rmse_m": 0.038621689887531334,
+      "max_m": 0.0946675003466071
+     },
+     "task_arrival_s": {
+      "tasks": 4,
+      "mean_abs": 0.03299999999999237,
+      "max_abs": 0.0519999999999996
+     },
+     "distance_m": {
+      "a": 148.04,
+      "b": 148.13
+     },
+     "duration_s": {
+      "a": 292.0,
+      "b": 292.16
+     },
+     "cross_track_max_m": {
+      "a": 0.114,
+      "b": 0.1194
+     }
+    },
+    {
+     "name": "vehicle_2",
+     "label": "② 号车",
+     "path": {
+      "mean_m": 0.0027522598407831804,
+      "p95_m": 0.018396996331080412,
+      "max_m": 0.029712375815163835
+     },
+     "at_time": {
+      "rmse_m": 0.036828357513482735,
+      "max_m": 0.11580980691698572
+     },
+     "task_arrival_s": {
+      "tasks": 2,
+      "mean_abs": 0.0799999999999983,
+      "max_abs": 0.08400000000000318
+     },
+     "distance_m": {
+      "a": 102.01,
+      "b": 102.03
+     },
+     "duration_s": {
+      "a": 116.18,
+      "b": 116.34
+     },
+     "cross_track_max_m": {
+      "a": 0.0935,
+      "b": 0.0976
+     }
+    }
+   ],
+   "report": "任务规模：场地 60 × 40 m，6 个采样任务点，2 台车，单车容量 4 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 PyVRP 固定车队（run_20261105T053740_47d2b9），总里程 241.05 m，按恒速模型计算的最晚完成时间为 145.13 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 250.16 m、工期 291.31 s；OR-Tools 车队调度 实际里程 250.16 m、工期 291.31 s；节约算法 + 2-opt 实际里程 261.22 m、工期 311.85 s。田间仿真完成 6/6 个任务点，实际里程 250.06 m，规划里程 241.047 m，实际工期 291.22 s，最大横向偏差 0.114 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.030 m。"
+  },
+  {
+   "case": "three-obstacle",
+   "text": "在 90×60 米的果园里有一个池塘，3 台车访问 9 个点，单车容量 4",
+   "session_id": "agt_20261105T053915_562b5a",
+   "field_session": "field_20261105T053936_df2b4c",
+   "run_id": "run_20261105T053916_719b2c",
+   "seconds": 185.3,
+   "gazebo_state": "succeeded",
+   "gazebo_check_valid": true,
+   "gazebo": {
+    "tasks_total": 9,
+    "tasks_completed": 9,
+    "total_distance_m": 501.75,
+    "planned_total_distance_m": 478.638,
+    "makespan_s": 569.54,
+    "planned_makespan_s": 241.021,
+    "cross_track_mean_m": 0.004,
+    "cross_track_max_m": 0.127,
+    "energy_wh": 2.57
+   },
+   "physics": [
+    {
+     "run_id": "run_20261105T053916_cb584d",
+     "algorithm": "PyVRP 固定车队",
+     "state": "failed",
+     "check_valid": false,
+     "wall_s": 3.878,
+     "metrics": {
+      "tasks_total": 9,
+      "tasks_completed": 8,
+      "total_distance_m": 460.66,
+      "planned_total_distance_m": 478.179,
+      "makespan_s": 521.72,
+      "planned_makespan_s": 237.51,
+      "cross_track_mean_m": 0.006,
+      "cross_track_max_m": 0.098,
+      "energy_wh": 2.365
+     },
+     "errors": [
+      "车间距离保护：vehicle_2/vehicle_3 间距 1.117 m；全部停车",
+      "③ 号车 未完整跟踪计划路径或未回到终点",
+      "③ 号车 任务 1 未完成规定的作业停留时间",
+      "vehicle_3 终点实测速度未稳定停止"
+     ]
+    },
+    {
+     "run_id": "run_20261105T053916_05be75",
+     "algorithm": "OR-Tools 车队调度",
+     "state": "failed",
+     "check_valid": false,
+     "wall_s": 3.789,
+     "metrics": {
+      "tasks_total": 9,
+      "tasks_completed": 8,
+      "total_distance_m": 460.53,
+      "planned_total_distance_m": 478.179,
+      "makespan_s": 520.16,
+      "planned_makespan_s": 237.497,
+      "cross_track_mean_m": 0.006,
+      "cross_track_max_m": 0.145,
+      "energy_wh": 2.364
+     },
+     "errors": [
+      "车间距离保护：vehicle_2/vehicle_3 间距 1.125 m；全部停车",
+      "③ 号车 未完整跟踪计划路径或未回到终点",
+      "③ 号车 任务 1 未完成规定的作业停留时间",
+      "vehicle_3 终点实测速度未稳定停止"
+     ]
+    },
+    {
+     "run_id": "run_20261105T053916_719b2c",
+     "algorithm": "节约算法 + 2-opt",
+     "state": "succeeded",
+     "check_valid": true,
+     "wall_s": 4.073,
+     "metrics": {
+      "tasks_total": 9,
+      "tasks_completed": 9,
+      "total_distance_m": 501.72,
+      "planned_total_distance_m": 478.638,
+      "makespan_s": 569.66,
+      "planned_makespan_s": 241.021,
+      "cross_track_mean_m": 0.006,
+      "cross_track_max_m": 0.136,
+      "energy_wh": 2.571
+     },
+     "errors": []
+    }
+   ],
+   "gap": {
+    "path_mean_m": 0.0024482268629183734,
+    "path_max_m": 0.06988103418206733,
+    "time_rmse_m": 0.054413883480203096,
+    "metrics": {
+     "makespan_s": {
+      "a": 569.54,
+      "b": 569.66
+     },
+     "total_distance_m": {
+      "a": 501.75,
+      "b": 501.72
+     },
+     "cross_track_mean_m": {
+      "a": 0.0045,
+      "b": 0.006
+     },
+     "cross_track_max_m": {
+      "a": 0.1268,
+      "b": 0.1357
+     },
+     "energy_wh": {
+      "a": 2.57,
+      "b": 2.571
+     },
+     "tasks_completed": {
+      "a": 9,
+      "b": 9
+     }
+    },
+    "physics_run_id": "phys_20261105T054210_844a0a"
+   },
+   "gap_vehicles": [
+    {
+     "name": "vehicle_1",
+     "label": "① 号车",
+     "path": {
+      "mean_m": 0.0018092408095384302,
+      "p95_m": 0.012351603569574404,
+      "max_m": 0.06988103418206733
+     },
+     "at_time": {
+      "rmse_m": 0.04278709988682344,
+      "max_m": 0.12348325916604179
+     },
+     "task_arrival_s": {
+      "tasks": 4,
+      "mean_abs": 0.09200000000000941,
+      "max_abs": 0.12800000000001432
+     },
+     "distance_m": {
+      "a": 243.47,
+      "b": 243.45
+     },
+     "duration_s": {
+      "a": 570.34,
+      "b": 570.52
+     },
+     "cross_track_max_m": {
+      "a": 0.1268,
+      "b": 0.1357
+     }
+    },
+    {
+     "name": "vehicle_2",
+     "label": "② 号车",
+     "path": {
+      "mean_m": 0.001584646577301108,
+      "p95_m": 0.011642409392581354,
+      "max_m": 0.03895092122009983
+     },
+     "at_time": {
+      "rmse_m": 0.03402735020613498,
+      "max_m": 0.06848038972769784
+     },
+     "task_arrival_s": {
+      "tasks": 3,
+      "mean_abs": 0.06933333333334228,
+      "max_abs": 0.08000000000004093
+     },
+     "distance_m": {
+      "a": 195.44,
+      "b": 195.44
+     },
+     "duration_s": {
+      "a": 295.84000000000003,
+      "b": 296.02
+     },
+     "cross_track_max_m": {
+      "a": 0.0891,
+      "b": 0.0955
+     }
+    },
+    {
+     "name": "vehicle_3",
+     "label": "③ 号车",
+     "path": {
+      "mean_m": 0.003950793201915582,
+      "p95_m": 0.021845496360276134,
+      "max_m": 0.03903663295218452
+     },
+     "at_time": {
+      "rmse_m": 0.054413883480203096,
+      "max_m": 0.11507587430518029
+     },
+     "task_arrival_s": {
+      "tasks": 2,
+      "mean_abs": 0.1440000000000623,
+      "max_abs": 0.1480000000000814
+     },
+     "distance_m": {
+      "a": 62.83,
+      "b": 62.83
+     },
+     "duration_s": {
+      "a": 76.28000000000003,
+      "b": 76.41999999999996
+     },
+     "cross_track_max_m": {
+      "a": 0.0916,
+      "b": 0.0994
+     }
+    }
+   ],
+   "report": "任务规模：场地 90 × 60 m，9 个任务点，3 台车，单车容量 4 单位，障碍为 1 处池塘。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 PyVRP 固定车队（run_20261105T053916_cb584d），总里程 478.18 m，按恒速模型计算的最晚完成时间为 237.51 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队未通过，实际里程 460.66 m、工期 521.72 s；OR-Tools 车队调度未通过，实际里程 460.53 m、工期 520.16 s；节约算法 + 2-opt 实际里程 501.72 m、工期 569.66 s。规划最优的 PyVRP 固定车队 未通过物理预演（车间距离保护：vehicle_2/vehicle_3 间距 1.117 m；全部停车），可执行的最好方案为 节约算法 + 2-opt（run_20261105T053916_719b2c），规划里程 478.64 m。田间仿真完成 9/9 个任务点，实际里程 501.75 m，规划里程 478.638 m，实际工期 569.54 s，最大横向偏差 0.127 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.002 m，最大 0.070 m。"
+  }
+ ]
+}

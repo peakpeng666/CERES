@@ -389,3 +389,20 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - 工具只调用本契约已有接口的同一实现（`compose`、`recommend`、`JobManager.submit`、`solvers.fleet.check`、`FieldSimManager.start`）；Gazebo 会话与改变任务本身的修复须经用户批准。
 - 报告前对本会话所有报告可行的运行重新执行 `fleet.check`，并与存档判定比对；不一致归类为软件实现错误。
 - 模型密钥只在服务端配置中；接口与导出不返回密钥。没有可用模型时 `mode=auto` 使用规则流程并在会话中注明，`mode=llm|hybrid` 返回 409 `llm_unavailable`。
+
+## 10. 算法库记录、物理运行与能力清单（2026-11-05）
+
+接口前缀 `/lab/api`，全部是增量接口：
+
+- `GET /algorithms/stats`、`GET /algorithms/{id}/history`：从 `runs` 表只读计算，不存储。同题对比只比较 `comparison_key` 和时间预算都相同、且通过独立检查的运行；`physical` 汇总该算法方案的物理运行。
+- `GET /physics/engines`；`POST /physics/runs {run_id | session_id}`（202）；`GET /physics/runs?run_id=`；`GET /physics/runs/{id}`；`POST /physics/runs/{id}/cancel`。SSE 事件 `physics_run`。
+- `GET /agent/capabilities`（`algorithms`、`simulators`、`learners`、`transfers`，每项带 `status`）；`GET /agent/jobs`（正在运行的 `solve`、`study`、`physics`、`fieldsim`、`tb4`）。
+
+物理运行记录 `urp.physics-run/1`：
+
+- `run_id` 路径用 `fieldworld.build` 得到与 Gazebo 相同的计划，校验门槛与 `FieldSimManager.start` 相同；`session_id` 路径直接读取该会话冻结的 `plan.json`，并在结束后写入 `comparison`（`urp.sim2sim/1`）。
+- 同一方案、`Driver`、`MissionQueue`、车辆质量惯量几何摩擦、速度限幅、控制与真值频率；不同的是物理引擎。Gazebo 的关节速度由 DART 直接满足，MuJoCo 由 `velocity` 执行器达到，增益 `SERVO_KV = 30` 固定，不按记录拟合。接触模型按引擎各自实现。
+- 只覆盖理想配置。`execution` 非空、`wheel_lateral_friction` 已设或模型参数不全时，返回 422 `unsupported_plan`，不做近似。
+- 独立进程运行，结果在 `runtime/physics/<id>/`：`plan.json`、`result.json`（50 Hz 真值）。接口返回 2 Hz 轨迹。`check` 复用 `fieldcheck.track_check`，另检车间同步距离与接触。网关重启时运行中的记录标为 `failed`。
+
+`urp.sim2sim/1` 分别回答走到哪和什么时候到：`path_*` 是两条轨迹之间的双向最近距离，不受时间平移影响；`time_rmse_m` 是从各车出发起算同一时刻的位置差；`task_arrival_s` 是到点时刻差。这是两个引擎之间的差距，不是实车误差，也不设通过阈值。

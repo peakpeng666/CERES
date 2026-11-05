@@ -15,13 +15,15 @@
 ## 2. 执行流程
 
 ```
-理解需求 ──► 确认合同 ──► 建立任务地图 ──► 推荐算法 ──► 求解对比 ──► 独立复核 ──► (诊断与修复) ──► (田间仿真) ──► 结果报告
-  规则解析      用户确认     build_scenario   recommend     solve        verify_run     diagnose_run       start_simulation
-  + 模型理解    或自动确认                                                (强制)          propose_task_change  (须批准)
+理解需求 ──► 确认合同 ──► 建立任务地图 ──► 推荐算法 ──► 求解对比 ──► 独立复核 ──► 物理预演 ──► (诊断与修复) ──► (田间仿真) ──► 结果报告
+  规则解析      用户确认     build_scenario   recommend     solve        verify_run     physics_check  diagnose_run       start_simulation
+  + 模型理解    或自动确认                                                (强制)          (强制)         propose_task_change  (须批准，守到结束)
 ```
 
 - **分阶段工具集**：理解阶段只开放 `update_task_contract / ask_user / find_real_fields`；执行阶段才开放建图、求解与仿真工具。越阶段的调用被拒绝并记录。
 - **强制复核**：报告前，运行器对本会话所有报告可行的方案再次运行独立检查器（`diagnose.recheck`），与存档判定比对；模型是否调用 `verify_run` 不影响这一步。
+- **物理预演**：每个通过复核的方案都在 MuJoCo 中用同一路径跟踪器和车辆参数执行一遍（`physics_check`，数秒，不启动 ROS，无需批准）。模型遗漏时由运行器补上，结果进入报告依据。物理预演是另一个引擎的物理仿真，不等于实车结果。
+- **守着仿真跑完**：批准后运行器留在 `simulate` 步骤，直到 Gazebo 会话结束，报告写的是实际结果而不是“已启动”。成功时用会话冻结的 `plan.json` 在 MuJoCo 重放，把两个引擎的轨迹差写进报告。取消会停止会话；暂停只是离开，仿真继续，继续后接着等它结束。
 - **原因分类**（`diagnose.py`）：任务本身不可行（不连通、单点需求超容量、单趟总需求超车队容量）、方法不适用、预算不足、软件实现错误（求解器异常、检查器拒绝“可行”结果、复核与存档不一致）。前两类允许自主换方法或加预算；改变任务本身的修复（多趟、加车、提高容量）须经用户批准。
 - **数值核对**：模型撰写的报告逐个提取数值，与执行依据比对；依据中不存在的数值在界面上单独标出。
 - **无模型时**：同一流程由确定性规则完成（规则解析、推荐集合求解、规则修复），会话与报告明确标注“规则流程”。
@@ -35,6 +37,7 @@
 | 重试 | 对失败、取消或中断的会话重新执行当前阶段 |
 | 修改合同 | 表单修改或自然语言修改；合同回到草稿，重新确认后执行；只改车队、容量、目标时原地更新任务地图，改场地、任务点或障碍时另存新地图 |
 | 批准 / 拒绝 | 任务修改与 Gazebo 仿真均需批准；拒绝会记录并告知模型不得重复提出 |
+| 送入仿真 | 报告之后用户可点「送入 Gazebo 仿真」，这一下就是批准，调用记录记为 `user_approved`；待确认或待批准时不可用 |
 | 接管 | 用户可用地图编辑器中的地图替代“建立任务地图”，或把规划工作区中的求解结果接入本会话 |
 | 网关重启 | 执行中的会话标为“已中断”，可继续 |
 
@@ -63,8 +66,12 @@
 | POST | `/sessions` | `{text?, mode: auto|hybrid|llm|rule, provider_id?, auto_confirm?}`；模型不可用时 `auto` 退回规则流程并注明，`llm/hybrid` 返回 409 |
 | GET | `/sessions/{id}` | 完整会话（不含模型内部上下文） |
 | POST | `/sessions/{id}/messages` | `{text}`，启动一轮；执行中返回 409 |
-| POST | `/sessions/{id}/control` | `{action: pause|resume|cancel|retry|confirm|approve|reject|takeover, step?, scenario_id?, run_ids?}` |
+| POST | `/sessions/{id}/control` | `{action: pause|resume|cancel|retry|confirm|approve|reject|takeover|simulate, step?, scenario_id?, run_ids?, run_id?}` |
 | PATCH | `/sessions/{id}/contract` | `{fields: {字段: 值}}`，来源记为人工修改 |
+| PATCH | `/sessions/{id}` | `{title?, pinned?, archived?}` |
+| GET | `/harness` | 工具、阶段闸门与每轮上限 |
+| GET | `/capabilities` | 算法、仿真器、学习模型、引擎迁移，各自说明状态；没有接入的不会显示为可用 |
+| GET | `/jobs` | 正在运行的求解、课题、物理运行、田间仿真、TurtleBot4 |
 
 状态变化通过 SSE 事件 `agent_session` 推送。
 
@@ -81,7 +88,11 @@ cd src/lab
 
 指标：字段微平均精确率 / 召回率 / F1 与逐轮完全匹配；必要澄清召回与多余提问率；未支持要求的检出率与误报率；多轮修改中未改字段的保持率；提示注入复述率；每轮模型调用、token 与延迟。开发集用于提示与流程调整，留出测试集只在定稿后运行一次。结果存于 `experiments/agent-evals/`。
 
-## 7. 研究扩展接口
+## 7. 能力清单
+
+`capabilities.py` 把 harness 能用的东西列成一份清单，智能体（`list_capabilities`、`describe_algorithm`）和界面（设置 → 能力）读同一份。新增一个仿真器、学习模型或迁移任务，在这里加一项并说明状态；长任务再进 `jobs()`，界面的后台任务列表自动显示。各后端保留自己的队列和记录，这里只是汇总。
+
+## 8. 研究扩展接口
 
 - **运行时选择与修复**（本模块）：规则推荐、学习型选择器与模型辅助推荐共享同一合同、预算与验算口径，可在同一任务上并列比较；修复动作由 `diagnose.repairs` 枚举，策略可替换。
 - **算法本身的训练或演化**（`urp_lab/evolve`、`src/research/generator`）：与本模块分开设计和评测，效果证据不混用。

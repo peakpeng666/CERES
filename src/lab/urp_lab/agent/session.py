@@ -16,9 +16,13 @@ STATES = ('idle', 'running', 'awaiting_user', 'awaiting_confirmation', 'awaiting
           'failed', 'done', 'interrupted')
 ACTIVE = ('running',)
 STEP_TITLES = {'understand': '理解需求', 'confirm': '确认任务合同', 'scenario': '建立任务地图', 'recommend': '推荐算法',
-               'solve': '求解对比', 'study': '重复实验', 'verify': '独立复核', 'repair': '诊断与修复', 'simulate': '田间仿真',
+               'solve': '求解对比', 'study': '重复实验', 'verify': '独立复核', 'physics': '物理预演', 'repair': '诊断与修复', 'simulate': '田间仿真',
                'report': '结果报告'}
 NUMBER = re.compile(r'(?<![\w.])-?\d+(?:\.\d+)?')
+SITE_WORDS = ('猕猴桃园', '葡萄园', '苹果园', '果园', '茶园', '菜地', '麦田', '稻田', '玉米地', '棉田', '大豆田', '油菜田', '温室', '大棚',
+              '农场', '牧场', '林地', '田块', '农田', '园区')
+TASK_WORDS = {'sampling': '采样', 'inspection': '巡检', 'transport': '运输', 'harvest': '采收', 'spraying': '喷施'}
+META_FIELDS = ('custom_title', 'pinned', 'archived')
 
 
 def utc_now() -> str:
@@ -127,9 +131,28 @@ def claims_check(text: str, evidence) -> list[str]:
     return flagged
 
 
+def short_title(session: dict) -> str:
+    """Task name for lists, read from the contract: 果园采样 · 3 台车 40 点. The stored title stays the user's words."""
+    contract = session.get('contract') or {}
+    fields = contract.get('fields') or {}
+    if not fields:
+        return session.get('title') or '新任务'
+
+    def value(key):
+        item = fields.get(key)
+        return item.get('value') if isinstance(item, dict) else None
+    text = contract.get('request_text') or session.get('title') or ''
+    site = '真实田块' if value('real_field_id') else next((w for w in SITE_WORDS if w in text), '')
+    head = f"{site}{TASK_WORDS.get(value('task_kind'), '')}"
+    tail = ' '.join(x for x in (f"{value('vehicle_count')} 台车" if value('vehicle_count') else '',
+                                f"{value('task_count')} 点" if value('task_count') else '') if x)
+    return ' · '.join(x for x in (head, tail) if x) or session.get('title') or '新任务'
+
+
 def public(session: dict) -> dict:
     """Session as served to the browser: internal model messages are summarized, never secrets (none are stored)."""
     out = {k: v for k, v in session.items() if k != 'llm_messages'}
+    out['short_title'] = short_title(session)
     out['llm_context'] = {'messages': len(session.get('llm_messages') or [])}
     out['contract_cards'] = tc.cards(session['contract'])
     out['missing'] = [{'key': k, 'label': tc.FIELDS[k].label} for k in tc.missing(session['contract'])]
@@ -145,6 +168,9 @@ class AgentStore:
         self._db.execute('PRAGMA journal_mode=WAL')
         self._db.execute('CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, created_utc TEXT, '
                          'updated_utc TEXT, state TEXT, title TEXT, json TEXT NOT NULL)')
+        # Display state only, kept apart from the session document so a running turn cannot overwrite it.
+        self._db.execute('CREATE TABLE IF NOT EXISTS session_meta (session_id TEXT PRIMARY KEY, custom_title TEXT, '
+                         'pinned INTEGER NOT NULL DEFAULT 0, archived INTEGER NOT NULL DEFAULT 0)')
 
     def save(self, session: dict):
         session['updated_utc'] = utc_now()
@@ -160,15 +186,33 @@ class AgentStore:
             row = self._db.execute('SELECT json FROM sessions WHERE session_id=?', (session_id,)).fetchone()
         return json.loads(row[0]) if row else None
 
-    def list(self, limit: int = 60) -> list[dict]:
+    def meta(self, session_id: str) -> dict:
+        with self._lock:
+            row = self._db.execute('SELECT custom_title, pinned, archived FROM session_meta WHERE session_id=?', (session_id,)).fetchone()
+        return {'custom_title': row[0] if row else None, 'pinned': bool(row[1]) if row else False, 'archived': bool(row[2]) if row else False}
+
+    def set_meta(self, session_id: str, fields: dict) -> dict:
+        current = self.meta(session_id) | {k: v for k, v in fields.items() if k in META_FIELDS}
+        with self._lock:
+            self._db.execute('INSERT INTO session_meta VALUES (?,?,?,?) ON CONFLICT(session_id) DO UPDATE SET custom_title=excluded.custom_title, '
+                             'pinned=excluded.pinned, archived=excluded.archived',
+                             (session_id, current['custom_title'], int(current['pinned']), int(current['archived'])))
+        return current
+
+    def list(self, limit: int = 200) -> list[dict]:
         with self._lock:
             rows = self._db.execute('SELECT json FROM sessions ORDER BY updated_utc DESC LIMIT ?', (limit,)).fetchall()
+            metas = {r[0]: r[1:] for r in self._db.execute('SELECT session_id, custom_title, pinned, archived FROM session_meta').fetchall()}
         out = []
         for (raw,) in rows:
             s = json.loads(raw)
+            meta = metas.get(s['session_id'], (None, 0, 0))
+            usage = s.get('usage') or {}
             out.append({k: s.get(k) for k in ('session_id', 'title', 'state', 'phase', 'mode', 'created_utc',
-                                              'updated_utc', 'scenario_id')} | {'runs': len(s.get('run_ids') or []),
-                                                                                'provider': (s.get('provider') or {}).get('model')})
+                                              'updated_utc', 'scenario_id')}
+                       | {'runs': len(s.get('run_ids') or []), 'provider': (s.get('provider') or {}).get('model'),
+                          'short_title': short_title(s), 'custom_title': meta[0], 'pinned': bool(meta[1]), 'archived': bool(meta[2]),
+                          'usage': {k: usage.get(k, 0) for k in ('input_tokens', 'output_tokens', 'calls', 'latency_s')}})
         return out
 
     def by_state(self, states: tuple[str, ...]) -> list[dict]:

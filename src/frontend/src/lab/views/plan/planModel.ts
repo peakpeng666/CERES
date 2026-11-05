@@ -318,6 +318,13 @@ export function baseScene(scenario: Scenario, inst: Instance): CanvasScene {
 
 export const routeColor = (i: number) => `var(--route-${(((i % 6) + 6) % 6) + 1})`;
 
+/** Run records carry the solver's fixed vehicle colours; the screen shows them through the theme's validated palette. */
+const SOLVER_COLORS = ['#007aff', '#ff6b00', '#34a853', '#a142f4', '#e8336d', '#00a6a6', '#c49000', '#5856d6', '#8e5a2b', '#2f7d32'];
+export const shownColor = (color?: string | null) => {
+  const i = SOLVER_COLORS.indexOf((color ?? '').toLowerCase());
+  return i < 0 ? (color ?? routeColor(0)) : routeColor(i);
+};
+
 /** Polyline for a route; falls back to node coordinates for turn routing when the polyline is missing. */
 export function routePoints(cls: ProblemClass, inst: Instance, route: Solution['routes'][number]): XY[] {
   if (route.polyline?.length) return route.polyline;

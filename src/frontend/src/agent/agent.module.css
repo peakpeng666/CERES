@@ -105,11 +105,11 @@
   padding: 6px 8px;
   border-radius: var(--mac-r-control);
   background: var(--mac-orange-soft);
-  color: #8a4b00;
+  color: var(--mac-orange);
   font-size: var(--mac-fs-12);
   line-height: 1.5;
 }
-.warnText { margin: 6px 0 0; font-size: var(--mac-fs-12); color: #8a4b00; }
+.warnText { margin: 6px 0 0; font-size: var(--mac-fs-12); color: var(--mac-orange); }
 .muted { margin: 0; font-size: var(--mac-fs-12); color: var(--mac-label-3); line-height: 1.5; }
 
 .contractTable { width: 100%; border-collapse: collapse; font-size: var(--mac-fs-12); }
@@ -255,7 +255,7 @@
   gap: 5px;
   align-items: flex-start;
   font-size: var(--mac-fs-11);
-  color: #8a4b00;
+  color: var(--mac-orange);
   line-height: 1.5;
 }
 .modeRow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: var(--mac-fs-12); color: var(--mac-label-2); }

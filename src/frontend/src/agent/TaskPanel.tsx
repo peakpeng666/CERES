@@ -17,7 +17,7 @@ import { useAgent } from './store';
 import s from './agent.module.css';
 
 /** Editable contract fields: kind, options, unit; mirrors urp_lab.agent.contract.FIELDS. */
-const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool' | 'size'; unit?: string; options?: Record<string, string> }> = {
+export const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool' | 'size'; unit?: string; options?: Record<string, string> }> = {
   task_count: { kind: 'int', unit: '个' },
   vehicle_count: { kind: 'int', unit: '台' },
   vehicle_capacity: { kind: 'int', unit: '单位' },
@@ -35,12 +35,12 @@ const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool' | 'siz
   seed: { kind: 'int' },
   simulate: { kind: 'bool' },
 };
-const OPTIONAL_LABEL: Record<string, string> = {
+export const OPTIONAL_LABEL: Record<string, string> = {
   trip_mode: '趟次', travel_mode: '通行方式', time_limit_s: '每个算法的时间预算', compare_count: '对比算法数', seed: '随机种子',
   simulate: '规划后进入仿真执行', vehicle_capacity: '单车容量', vehicle_speed_mps: '车速', objective: '优化目标', task_demand: '单点需求',
 };
 
-function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value'>; onDone: () => void }) {
+export function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value'>; onDone: () => void }) {
   const spec = EDITABLE[card.key];
   const editContract = useAgent((x) => x.editContract);
   const busy = useAgent((x) => x.sending || x.pendingAction !== null || x.session?.state === 'running');

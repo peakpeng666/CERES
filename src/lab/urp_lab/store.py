@@ -21,6 +21,10 @@ CREATE INDEX IF NOT EXISTS sim_runs_run ON sim_runs(run_id);
 CREATE INDEX IF NOT EXISTS sim_runs_created ON sim_runs(created_utc);
 CREATE TABLE IF NOT EXISTS studies (
   study_id TEXT PRIMARY KEY, created_utc TEXT, json TEXT NOT NULL);
+CREATE TABLE IF NOT EXISTS physics_runs (
+  physics_run_id TEXT PRIMARY KEY, run_id TEXT, session_id TEXT, engine TEXT, state TEXT,
+  created_utc TEXT, finished_utc TEXT, json TEXT NOT NULL);
+CREATE INDEX IF NOT EXISTS physics_runs_run ON physics_runs(run_id, created_utc);
 """
 
 RUN_ACTIVE = ('queued', 'running')
@@ -129,6 +133,22 @@ class Store:
     def active_sim_runs(self) -> list[dict]:
         return self._query('SELECT json FROM sim_runs WHERE state IN (?,?,?)', SIM_ACTIVE)
 
+    def put_physics_run(self, run: dict):
+        with self._lock:
+            self._db.execute('INSERT OR REPLACE INTO physics_runs VALUES (?,?,?,?,?,?,?,?)',
+                             (run['physics_run_id'], run.get('run_id'), run.get('session_id'), run.get('engine'), run.get('state'),
+                              run.get('created_utc'), run.get('finished_utc'), json.dumps(run, ensure_ascii=False)))
+            self._db.commit()
+
+    def get_physics_run(self, physics_run_id: str) -> dict | None:
+        rows = self._query('SELECT json FROM physics_runs WHERE physics_run_id = ?', (physics_run_id,))
+        return rows[0] if rows else None
+
+    def list_physics_runs(self, run_id: str | None = None, limit: int = 100) -> list[dict]:
+        if run_id:
+            return self._query('SELECT json FROM physics_runs WHERE run_id = ? ORDER BY created_utc DESC LIMIT ?', (run_id, limit))
+        return self._query('SELECT json FROM physics_runs ORDER BY created_utc DESC LIMIT ?', (limit,))
+
     def put_study(self, study: dict):
         with self._lock:
             self._db.execute('INSERT OR REPLACE INTO studies VALUES (?,?,?)',
@@ -140,6 +160,19 @@ class Store:
 
     def list_studies(self, limit: int = 200) -> list[dict]:
         return self._query('SELECT json FROM studies ORDER BY created_utc DESC LIMIT ?', (int(limit),))
+
+    def run_digest(self, limit: int = 20000) -> list[dict]:
+        """The few fields the algorithm library needs, newest first; the stored JSON is not parsed in Python."""
+        sql = """SELECT run_id, scenario_id, algorithm_id, state, status, created_utc,
+                      json_extract(json, '$.scenario_snapshot.title') AS title,
+                      json_extract(json, '$.objective.value') AS value, json_extract(json, '$.objective.unit') AS unit,
+                      json_extract(json, '$.metrics.wall_s') AS wall_s, json_extract(json, '$.params.time_limit_s') AS budget_s,
+                      json_extract(json, '$.check.valid') AS valid, json_extract(json, '$.planning.comparison_key') AS key
+                 FROM runs ORDER BY created_utc DESC LIMIT ?"""
+        with self._lock:
+            cursor = self._db.execute(sql, (limit,))
+            names = [c[0] for c in cursor.description]
+            return [dict(zip(names, row)) for row in cursor]
 
     def runs_by_ids(self, run_ids: list[str]) -> list[dict]:
         out = []
