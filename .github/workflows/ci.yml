@@ -133,6 +133,7 @@ jobs:
             protocol
             independent
             src/backend
+            src/desktop
             src/frontend
             src/research
             src/robotics
