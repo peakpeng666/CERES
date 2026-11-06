@@ -3,7 +3,7 @@ name: URP engineering checks
 on:
   pull_request:
   push:
-    branches: [main, cvrp-baselines, redo, deploy, 'optimize/**', 'agent/**']
+    branches: [main]
   workflow_dispatch:
   workflow_call:
 
@@ -174,6 +174,7 @@ jobs:
         with:
           persist-credentials: false
           sparse-checkout: |
+            .github/workflows
             deploy
             setup/ubuntu
             cohort_b/ails

@@ -23,7 +23,7 @@ bash setup/run.sh lab-code --open
 
 新机器统一使用 [DEPLOY.md](../DEPLOY.md) 的安装入口。默认安装工作台、ROS 2 Humble / Gazebo Fortress、CVRP 基线和 Fields2Cover；支持 Docker Desktop 的 WSL2 后端、WSL2 Ubuntu 22.04 x86_64，以及原生 Ubuntu 22.04 x86_64。
 
-`deploy` 是默认发布入口，`redo` 的安装与依赖准备使用同一套脚本。选择版本、组件、Windows 命令和更新方式都见部署说明；安装后打开 **http://localhost:4100/**。依赖版本见 [依赖清单](../deploy/DEPENDENCIES.md)。
+`main` 是统一源码与新安装入口；可复现部署选已验证发布的完整提交号。已有 `deploy` / `redo` 选择需要按部署说明明确迁移，不能静默切换。选择版本、组件、Windows 命令和更新方式都见部署说明；安装后打开 **http://localhost:4100/**。依赖版本见 [依赖清单](../deploy/DEPENDENCIES.md)。
 
 ## 云端纯代码与地图验收
 

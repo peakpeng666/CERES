@@ -1,5 +1,5 @@
 ﻿# Public Windows installer. No GitHub login and no docker login.
-#   irm https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.ps1 | iex
+#   irm https://raw.githubusercontent.com/peakpeng666/URP/main/install.ps1 | iex
 # Docker Desktop pulls ghcr.io/peakpeng666/urp-sim and does not clone the repository.
 # Without Docker, the same bash installer runs inside WSL2 Ubuntu 22.04 x86_64.
 # For another source, set $env:URP_REF before irm|iex, or use -Ref with a file.
@@ -19,7 +19,7 @@ $saved = $null
 $selectionPath = Join-Path $State 'install.selection.json'
 if (Test-Path -LiteralPath $selectionPath) { $saved = Get-Content -Raw -LiteralPath $selectionPath -Encoding UTF8 | ConvertFrom-Json }
 $explicitRef = $Ref
-if (-not $Ref) { $Ref = if ($saved -and $saved.ref) { $saved.ref } else { 'deploy' } }
+if (-not $Ref) { $Ref = if ($saved -and $saved.ref) { $saved.ref } else { 'main' } }
 if ($env:URP_RAW -and $env:URP_RAW.StartsWith("$RawRoot/")) {
     $rawRef = $env:URP_RAW.Substring($RawRoot.Length + 1).TrimEnd('/')
     if ($explicitRef -and $explicitRef -ne $rawRef) { throw 'URP_RAW 与 URP_REF/-Ref 不一致。' }
@@ -32,7 +32,7 @@ $Raw = if ($env:URP_RAW) { $env:URP_RAW.TrimEnd('/') } elseif ($saved -and $save
 if (-not $Raw.StartsWith('https://') -or $Raw -match '[\r\n]') { throw 'URP_RAW 必须为单行 HTTPS URL。' }
 $Tag = $env:URP_IMAGE_TAG
 if (-not $Tag -and $saved -and $saved.ref -ceq $Ref) { $Tag = $saved.tag }
-if (-not $Tag -and ($Ref -eq 'deploy' -or $Ref -match '^v[A-Za-z0-9_.-]*$' -or $Ref -cmatch '^[0-9a-f]{40}$')) { $Tag = $Ref }
+if (-not $Tag -and ($Ref -eq 'main' -or $Ref -match '^v[A-Za-z0-9_.-]*$' -or $Ref -cmatch '^[0-9a-f]{40}$')) { $Tag = $Ref }
 if ($Tag -and $Tag -notmatch '^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$') { throw "无效的镜像标签：$Tag" }
 $Components = if ($env:URP_COMPONENTS) { $env:URP_COMPONENTS } elseif ($saved -and $saved.components) { $saved.components } else { 'full' }
 if ($Components -notin @('workbench', 'research', 'full')) { throw 'URP_COMPONENTS 只能是 workbench、research 或 full。' }
@@ -147,7 +147,7 @@ function Invoke-DockerPath {
         return
     }
     if ($Action -eq 'up' -or $Action -eq 'update' -or $Action -eq 'fuel') {
-        if (-not $Tag) { throw "ref=$Ref 没有默认发布镜像。请设置已发布的 v* 版本/完整提交号，或明确匹配源码的 URP_IMAGE_TAG；不会回落到 deploy。" }
+        if (-not $Tag) { throw "ref=$Ref 没有默认发布镜像。请设置已发布的 v* 版本/完整提交号，或明确匹配源码的 URP_IMAGE_TAG；不会回落到其他通道。" }
         $platform = (& docker info --format '{{.OSType}}/{{.Architecture}}' | Out-String).Trim()
         if ($LASTEXITCODE -ne 0 -or $platform -notin @('linux/x86_64', 'linux/amd64')) { throw "需要 Linux x86_64 Docker Engine，当前：$platform" }
         Write-Host "安装来源：$Ref；镜像：$Image"
@@ -163,6 +163,7 @@ function Invoke-DockerPath {
         $revision = (& docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' $Image | Out-String).Trim()
         if ($LASTEXITCODE -ne 0 -or $revision -cnotmatch '^[0-9a-f]{40}$') { throw '镜像缺少有效源码 revision 标签；拒绝混用未知版本文件。' }
         if ($Ref -cmatch '^[0-9a-f]{40}$' -and $revision -cne $Ref) { throw "镜像 revision=$revision 与 ref=$Ref 不一致。" }
+        if ($Tag -cmatch '^[0-9a-f]{40}$' -and $revision -cne $Tag) { throw "镜像 revision=$revision 与镜像提交标签=$Tag 不一致。" }
         if ($Raw -ceq "$RawRoot/$Ref") { $script:AssetRaw = "$RawRoot/$revision" }
         Write-Host "镜像源码：$revision；部署文件：$AssetRaw"
         Get-ComposeFile | Out-Null
@@ -264,6 +265,9 @@ bash "$script" __ACTION__
     if ($code -ne 0) { throw "WSL 安装器退出码：$code" }
 }
 
+if ($Ref -in @('deploy', 'redo') -and $Command -in @('up', 'update', 'fuel')) {
+    throw '旧分支安装选择需要迁移：请重新取得 main/install.ps1，指定 -Ref main -Command update，或选择已验证发布的完整提交号；原数据与选择保留。'
+}
 if (Test-DockerEngine) {
     Invoke-DockerPath $Command
 } else {

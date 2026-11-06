@@ -1,8 +1,8 @@
 # 工作台统一部署
 
-源码开发从 `main` 开始；默认安装发行通道是 `deploy`，安装器的 Bash / PowerShell 下载地址和镜像发布工作流仍引用该分支，需保留。`redo` 继续作为可选的原生源码安装通道；固定版本时，安装器接受发布标签或完整提交号。
+源码开发与新安装入口统一为 `main`。Docker 默认使用通过镜像验收后发布的 `:main` 通道；原生安装检出 main 的实际提交。可复现安装优先使用已经发布镜像的完整 40 位 Git SHA，或经过发布验证的 `v*` 标签。`deploy` 与 `redo` 不再作为新安装入口。
 
-2026-11-01 后续核对的源码主线为 `9324ba1a71eb4b85a60fddbf4635900471b0e3f8`，`deploy` 仍为 `41e6bdc221cbe5e733a583fbadb287afd0534723`。两者分别记录与验收，main 合并不代表 deploy 已更新或镜像已发布。这里的 40 位值是 **Git 提交 SHA**；容器 registry 的镜像 digest 另为 `sha256:…`，需从实际发布结果核实，本轮未查询或发布新镜像。
+迁移补丁基线是 `028bae0e967894c9370460a0301cdf7c27b10965`。第一阶段 `3481c414` 已通过[工程 CI](https://github.com/peakpeng666/URP/actions/runs/42170504143)及[镜像发布流程](https://github.com/peakpeng666/URP/actions/runs/42170504225)，包含两镜像 smoke、匿名 digest 拉取、OCI revision 与 `/opt/urp/REVISION` 检查，两个 main 通道也已独立匿名复核。首次证据见 [当前索引](docs/current-index.md)。本次切换提交的 CI 仍须单独检查，真实 Windows/WSL 首装和旧客户端迁移验收仍待完成。Git SHA 与 registry digest `sha256:…` 是不同身份。旧分支与数据在覆盖及恢复验证完成前继续保留。
 
 默认 `full` 安装工作台、ROS 2 Humble / Gazebo Fortress、CVRP 基线和 Fields2Cover。日常使用见 [工作台使用说明](setup/README.md)，具体版本见 [依赖清单](deploy/DEPENDENCIES.md)。
 
@@ -18,34 +18,38 @@
 Linux 或 WSL Ubuntu：
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh | bash
 ```
 
 Windows PowerShell：
 
 ```powershell
-irm https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.ps1 | iex
+irm https://raw.githubusercontent.com/peakpeng666/URP/main/install.ps1 | iex
 ```
 
 安装器优先使用已启动的 Docker。没有 Docker 时，Windows 入口检查 WSL2 与 Ubuntu 22.04；首次安装发行版后，按提示创建 Linux 用户，再运行同一命令。源码安装会预检 Ubuntu 版本、x86_64 架构及 WSL2；系统依赖通过 `sudo apt` 安装，Python 和 Node 使用独立目录，不替换系统 Python。用普通用户运行安装器，不要给整个脚本加 `sudo`。
 
 PowerShell 的 WSL 路径与已下载的 Bash 脚本发现缺少基础工具时，会在交互终端提示安装；非交互运行需预先装好。Ubuntu 若还不能执行上面的 `curl` 命令，先运行 `sudo apt-get update && sudo apt-get install -y curl ca-certificates git`。Docker 必须能执行 `docker info`，并提供 `docker compose`。
 
+## 首次切换必须分两阶段
+
+先仅上线发布与 digest 验收流程，保持原安装默认值，成功产出并匿名验证可用的 main 镜像。记录两镜像 digest、对应源码提交和真实 Actions 作业结果后，再切换安装器/Compose 默认值。不能把“工作流文件存在、静态条件检查通过”当成真实调度或镜像已可用；若任一构建/验收失败，第二阶段不执行。
+
 ## 版本与组件
 
-默认跟随 `deploy`。固定某次发布时，将 `URP_REF` 设为已发布的 `v*` 标签或完整 40 位提交号；镜像也使用该标签。完整 SHA 会与镜像的 OCI revision 核对，Compose 和 Fuel 脚本从镜像对应的源码提交下载。
+新安装默认跟随 `main` 的已验收镜像通道，可能落后于 main 最新源码提交；不会把最新源码的部署文件与旧镜像混用。固定某次发布时，将 `URP_REF` 设为已发布的 `v*` 标签或完整 40 位提交号；镜像也使用该标签。完整 SHA 会与镜像的 OCI revision 核对，Compose 和 Fuel 脚本从镜像对应的源码提交下载。
 
 ```sh
 # 将 <完整提交号> 换成已发布镜像的 40 位 SHA
-curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.sh \
+curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
   | URP_REF='<完整提交号>' bash
 
-# 无 Docker 的 Ubuntu 源码部署也可以选择 redo
-curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.sh \
-  | URP_REF=redo bash
+# 无 Docker 的 Ubuntu 源码部署从 main 检出实际提交
+curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
+  | URP_REF=main bash
 ```
 
-已安装后可用 `urp --ref <版本> update`。PowerShell 用 `$env:URP_REF = '<版本>'` 后执行安装命令，或给脚本传 `-Ref <版本>`。安装器保存选择，后续启动和更新沿用它；不会在找不到某个版本时改装 `deploy`。
+已安装后可用 `urp --ref <版本> update`。PowerShell 用 `$env:URP_REF = '<版本>'` 后执行安装命令，或给脚本传 `-Ref <版本>`。安装器保存选择，后续启动和更新沿用它；不会在找不到某个版本时切换到其他通道。已保存 `deploy` / `redo` 的安装不会静默切换：先从 main 重新取得安装器，明确选择 `main` 或已验证发布的完整 SHA 后更新。旧入口及旧命令仍可能引用旧分支，不能仅修改文档就删除这些分支。
 
 `--components` 与安装器的 `URP_COMPONENTS` 对应：
 
@@ -60,7 +64,7 @@ curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.sh \
 源码安装通过 `URP_COMPONENTS` 选择，默认 `full`。Docker 入口使用完整 `urp-sim` 镜像，不按组件裁剪：
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.sh \
+curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
   | URP_COMPONENTS=full bash
 ```
 
@@ -79,7 +83,7 @@ urp fuel     # 按需下载 warehouse / depot 的上游模型
 如果找不到 `urp`，使用 `~/.local/bin/urp`，或将 `~/.local/bin` 加入 PATH。PowerShell 可在当前窗口保存命令入口后调用：
 
 ```powershell
-$urp = [scriptblock]::Create((irm https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.ps1))
+$urp = [scriptblock]::Create((irm https://raw.githubusercontent.com/peakpeng666/URP/main/install.ps1))
 & $urp status
 & $urp down
 & $urp update
@@ -104,7 +108,7 @@ python3 deploy/check-runtime.py --components full \
 
 ## 镜像发布与自建
 
-`.github/workflows/images.yml` 先运行工程检查，再为 `deploy` 和 `v*` 标签构建镜像；镜像检查通过后才推送。每个镜像同时标记完整提交 SHA，并记录 OCI revision 和 `/opt/urp/REVISION`；`deploy` 另有 `:deploy`，发布标签另有版本标签和 `:latest`。
+`.github/workflows/images.yml` 先运行工程检查，再为 `main` 和 `v*` 标签构建镜像（标签由 desktop 工作流复用该工作流）；每个镜像先通过本地 smoke，推送提交 SHA 形式的查询标签，并从本次推送回执捕获真正的 manifest digest。匿名验收和 `promote-channels` 全程使用同一 `repository@sha256:…`，不重新解析 SHA 标签。两个镜像均通过后才提升 `:main` 或版本标签；所有调用共享提升锁，旧 main 运行必须通过当前远端 main 头检查，否则跳过。桌面手动构建默认不提升通道。为避免无统一版本排序的 `v*` 乱序覆盖，不再自动更新 `:latest`，已有别名不删除；使用者应明确选择 main 或已核验的发布版本。注册表的多标签写入不是原子事务，提升中断须按记录核对两个镜像；提交 SHA 标签也不是 registry 的不可变标识，精确镜像身份以已验收 digest 为准。
 
 首次发布后，维护者需检查两个包的可见性与仓库关联：
 

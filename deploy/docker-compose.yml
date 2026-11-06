@@ -5,7 +5,7 @@ name: urp-lab
 
 services:
   lab:
-    image: ghcr.io/peakpeng666/urp-bench:${URP_IMAGE_TAG:-deploy}
+    image: ghcr.io/peakpeng666/urp-bench:${URP_IMAGE_TAG:-main}
     pull_policy: missing
     restart: unless-stopped
     ports:

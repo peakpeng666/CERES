@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # Public one-command install for the URP workbench and Gazebo stack.
-#   curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/deploy/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh | bash
 # No GitHub login and no docker login. Docker pulls ghcr.io/peakpeng666/urp-sim
 # and does not clone the repository. Ubuntu 22.04 without Docker uses a shallow
 # sparse clone. See DEPLOY.md.
 # Select a release/commit: URP_REF=v20261019 bash install.sh
-# Or: bash install.sh --ref redo up (native); Docker requires a published tag.
+# Or: bash install.sh --ref main up (native); Docker requires a published tag.
 set -euo pipefail
 
 REPO=https://github.com/peakpeng666/URP.git
@@ -31,13 +31,13 @@ configure() {
     case "$1" in
       --ref) [[ $# -ge 2 ]] || die '--ref 需要版本、分支或完整提交号'; explicit_ref="$2"; shift 2 ;;
       up|down|update|status|fuel) cmd="$1"; shift ;;
-      *) die '用法：urp [--ref deploy|v版本|提交号|分支] up|down|update|status|fuel' ;;
+      *) die '用法：urp [--ref main|v版本|提交号|分支] up|down|update|status|fuel' ;;
     esac
   done
-  REF="${explicit_ref:-${saved_ref:-deploy}}"
+  REF="${explicit_ref:-${saved_ref:-main}}"
   # A raw override on the official host also identifies the source ref.
   # A script piped from a URL cannot discover its download URL: select --ref
-  # (or URP_REF) when using a non-default installer, including redo.
+  # (or URP_REF) when using a non-default installer, including a release tag.
   if [[ -n "${URP_RAW:-}" && "$URP_RAW" == "$RAW_ROOT/"* ]]; then
     local raw_ref="${URP_RAW#"$RAW_ROOT/"}"
     raw_ref="${raw_ref%/}"
@@ -54,7 +54,7 @@ configure() {
   ASSET_RAW="$RAW"
   TAG="${URP_IMAGE_TAG:-}"
   if [[ -z "$TAG" && "$REF" == "$saved_ref" ]]; then TAG="$saved_tag"; fi
-  if [[ -z "$TAG" && ( "$REF" == deploy || "$REF" == v* || "$REF" =~ ^[0-9a-f]{40}$ ) && "$REF" != */* ]]; then TAG="$REF"; fi
+  if [[ -z "$TAG" && ( "$REF" == main || "$REF" == v* || "$REF" =~ ^[0-9a-f]{40}$ ) && "$REF" != */* ]]; then TAG="$REF"; fi
   [[ -z "$TAG" || "$TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]] || die "无效的镜像标签：$TAG"
   COMPONENTS="${URP_COMPONENTS:-${saved_components:-full}}"
   case "$COMPONENTS" in workbench|research|full) ;; *) die 'URP_COMPONENTS 只能是 workbench、research 或 full。' ;; esac
@@ -103,7 +103,7 @@ require_native_platform() {
 }
 
 require_image_tag() {
-  [[ -n "$TAG" ]] || die "ref=$REF 没有默认发布镜像。请将 URP_REF 设为已发布的 v* 版本或完整提交号，或明确设置与该源码匹配的 URP_IMAGE_TAG；不会回落到 deploy。"
+  [[ -n "$TAG" ]] || die "ref=$REF 没有默认发布镜像。请将 URP_REF 设为已发布的 v* 版本或完整提交号，或明确设置与该源码匹配的 URP_IMAGE_TAG；不会回落到其他通道。"
 }
 
 visibility_help() {
@@ -218,6 +218,9 @@ resolve_image_source() {
   if [[ "$REF" =~ ^[0-9a-f]{40}$ && "$revision" != "$REF" ]]; then
     die "镜像 revision=$revision 与请求的 ref=$REF 不一致。"
   fi
+  if [[ "$TAG" =~ ^[0-9a-f]{40}$ && "$revision" != "$TAG" ]]; then
+    die "镜像 revision=$revision 与请求的镜像提交标签=$TAG 不一致。"
+  fi
   if [[ "$RAW" == "$RAW_ROOT/$REF" ]]; then ASSET_RAW="$RAW_ROOT/$revision"; fi
   say "镜像源码：$revision；部署文件：$ASSET_RAW"
 }
@@ -277,7 +280,7 @@ update_src() {
   [[ -z "$(git -C "$src" status --porcelain)" ]] || die '检出中存在本地修改或未跟踪文件；请先保存，安装器不会覆盖。'
   git -C "$src" fetch --depth 1 --filter=blob:none origin "$REF" >&2 || return $?
   # FETCH_HEAD is the exact result of this fetch, including tags and commits;
-  # origin/deploy may still point at an older commit after an explicit fetch.
+  # A remote-tracking ref may still point at an older commit after an explicit fetch.
   git -C "$src" checkout --detach --quiet FETCH_HEAD >&2 || return $?
   printf '%s\n' "$REF" > "$STATE/source.ref"
 }
@@ -308,6 +311,11 @@ native_up() {
 }
 
 route() {
+  # Keep down/status usable for existing installations. Never silently switch
+  # a saved source channel, or try to fetch a retired branch for new work.
+  if [[ ( "$REF" == deploy || "$REF" == redo ) && ( "$cmd" == up || "$cmd" == update || "$cmd" == fuel ) ]]; then
+    die '旧分支安装选择需要迁移：请重新取得 main/install.sh，再运行 --ref main update，或选择已验证发布的完整提交号；原数据与选择保留。'
+  fi
   case "$cmd" in
     up|update)
       [[ "$cmd" == update ]] && export URP_UPDATE=1

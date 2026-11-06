@@ -41,9 +41,9 @@ class BashInstallerTests(unittest.TestCase):
     def test_bash_syntax(self):
         subprocess.run(["bash", "-n", str(BASH)], check=True)
 
-    def test_default_deploy_consistent(self):
+    def test_default_main_consistent(self):
         r = self.run_bash('configure; printf "%s|%s|%s|%s" "$REF" "$RAW" "$TAG" "$URP_IMAGE_TAG"')
-        self.assertEqual(r.stdout, 'deploy|https://raw.githubusercontent.com/peakpeng666/URP/deploy|deploy|deploy')
+        self.assertEqual(r.stdout, 'main|https://raw.githubusercontent.com/peakpeng666/URP/main|main|main')
 
     def test_release_commit_and_branch_selection(self):
         for ref, tag in [('v20261019', 'v20261019'), (SHA, SHA), ('redo', ''), ('feature/fix', '')]:
@@ -55,9 +55,9 @@ class BashInstallerTests(unittest.TestCase):
         r = self.run_bash('configure --ref v2 status; printf "%s|%s|%s" "$REF" "$TAG" "$cmd"', {'URP_REF': 'redo'})
         self.assertEqual(r.stdout, 'v2|v2|status')
 
-    def test_branch_never_falls_back_to_deploy_image(self):
+    def test_branch_never_falls_back_to_another_image_channel(self):
         r = self.run_bash('configure; require_image_tag', {'URP_REF': 'redo'}, success=False)
-        self.assertIn('不会回落到 deploy', r.stderr)
+        self.assertIn('不会回落到其他通道', r.stderr)
 
     def test_explicit_branch_image_exported(self):
         r = self.run_bash('configure; require_image_tag; printf "%s|%s" "$TAG" "$URP_IMAGE_TAG"',
@@ -190,6 +190,64 @@ printf '%s' "$ASSET_RAW"
 docker() { echo 0000000000000000000000000000000000000000; }
 resolve_image_source
 ''', {'URP_REF': SHA}, success=False)
+
+    def test_explicit_main_drops_legacy_saved_image_and_raw(self):
+        state = self.home / 'state'
+        state.mkdir()
+        (state / 'install.selection').write_text('deploy\nhttps://raw.githubusercontent.com/peakpeng666/URP/deploy\ndeploy\nfull\n4200\n')
+        r = self.run_bash('configure --ref main update; printf "%s|%s|%s|%s" "$REF" "$RAW" "$TAG" "$PORT"')
+        self.assertEqual(r.stdout, 'main|https://raw.githubusercontent.com/peakpeng666/URP/main|main|4200')
+
+    def test_legacy_writes_stop_before_any_external_action(self):
+        for ref in ('deploy', 'redo'):
+            for action in ('up', 'update', 'fuel'):
+                with self.subTest(ref=ref, action=action):
+                    r = self.run_bash('configure --ref ' + ref + ' ' + action + '; have_docker() { echo unexpected; }; route', success=False)
+                    self.assertIn('旧分支安装选择需要迁移', r.stderr)
+                    self.assertNotIn('unexpected', r.stdout)
+        self.assertFalse((self.home / 'state/install.selection').exists())
+
+    def test_legacy_status_remains_read_only_and_available(self):
+        for ref in ('deploy', 'redo'):
+            with self.subTest(ref=ref):
+                r = self.run_bash('configure --ref ' + ref + ' status; require_curl() { :; }; have_docker() { return 1; }; curl() { echo healthy; }; route')
+                self.assertIn('healthy', r.stdout)
+        self.assertFalse((self.home / 'state/install.selection').exists())
+
+    def test_sha_image_override_rejects_mismatched_revision(self):
+        r = self.run_bash('configure; docker() { echo 0000000000000000000000000000000000000000; }; resolve_image_source',
+                          {'URP_REF': 'main', 'URP_IMAGE_TAG': SHA}, success=False)
+        self.assertIn('镜像提交标签', r.stderr)
+
+    def test_matching_sha_override_keeps_assets_on_same_revision(self):
+        r = self.run_bash('configure; docker() { echo "$TEST_SHA"; }; resolve_image_source; printf "%s|%s" "$TAG" "$ASSET_RAW"',
+                          {'URP_REF': 'main', 'URP_IMAGE_TAG': SHA, 'TEST_SHA': SHA})
+        self.assertTrue(r.stdout.endswith(SHA + '|https://raw.githubusercontent.com/peakpeng666/URP/' + SHA))
+
+    def test_single_main_ci_and_image_contract(self):
+        for path in ('.github/workflows/images.yml', '.github/workflows/ci.yml'):
+            source = (ROOT / path).read_text()
+            self.assertIn('branches: [main]', source)
+            self.assertNotIn('branches: [deploy]', source)
+        for path in ('deploy/docker-compose.yml', 'deploy/docker-compose.sim.yml'):
+            self.assertIn('${URP_IMAGE_TAG:-main}', (ROOT / path).read_text())
+        self.assertIn('refs/heads/main', (ROOT / 'deploy/promote-images.sh').read_text())
+        self.assertNotIn('refs/heads/deploy', (ROOT / 'deploy/publish-image.sh').read_text())
+        workflow = (ROOT / '.github/workflows/images.yml').read_text()
+        promotion = workflow.split('  promote-channels:', 1)[1]
+        self.assertIn('always()', promotion)
+        self.assertIn('group: urp-image-channel-promotion', promotion)
+        self.assertNotIn('github.workflow', promotion)
+        self.assertIn('needs.verify-public-pull.outputs.bench_digest', promotion)
+        self.assertIn('needs.verify-public-pull.outputs.sim_digest', promotion)
+        self.assertIn('inputs.publish_channels', promotion)
+        desktop = (ROOT / '.github/workflows/desktop.yml').read_text()
+        self.assertIn("publish_channels: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}", desktop)
+
+        for name in ('bench', 'sim', 'verify-public-pull'):
+            self.assertIn("needs." + name + ".result == 'success'", promotion)
+
+
 
     def test_first_install_explicit_setup_and_marker(self):
         src = self.home / 'state/src'

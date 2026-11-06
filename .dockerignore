@@ -25,3 +25,8 @@ cohort_b/ails/sources.list
 cohort_b/sisr/build
 cohort_b/formal-runs-*
 cohort_b/evidence
+
+# Historical recovery evidence is never an application image input.
+preserved
+snapshot
+history/branch-preservation
