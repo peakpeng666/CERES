@@ -17,6 +17,7 @@
 | 全量 Lab | **1149 passed、11 skipped、36 subtests passed**，382.28 s；必需地图开启检查。跳过可选 Fields2Cover/现场或缓存数据项，如实保留。后续定点修改另跑相关回归，GitHub 最终提交结果另列。 |
 | 前端与工程 | 前端 **754** 项、类型检查和生产构建通过；工程 **16/16**；部署单测 **54** 项（1 跳过）；独立双服务 HTTP 真求解/验算/导出/故障退出通过，冻结库前后 SHA256 相同。 |
 | 无 ROS 的桌面后端 | 在无 ROS、无网络的 `electronuserland/builder:wine` 容器中运行暂存 Linux 后端：37 个只读接口、完整规则任务、真实求解/检查、**3/3 MuJoCo 预演**、JS 基线、有序退出及已安装 CLI 的数据导出/异地恢复通过。原始会话 JSON 在恢复前后逐字相同。源码目录的本机 ROS 不作为这项通过的前提。 |
+| GitHub CI 与审查 | [#22](https://github.com/peakpeng666/URP/pull/22) 头 `c38a4415`：[工程 CI](https://github.com/peakpeng666/URP/actions/runs/42062910140) 6/6、[部署 CI](https://github.com/peakpeng666/URP/actions/runs/42062910016) 2/2 通过。自动审查的 5 项意见（桌面备份/恢复工作目录、pyproj 数据被精简、Windows 看门狗超时、已连接服务商的科研对话工具格式、暂停/取消后的未答复工具调用）均已复现并在合并整理分支修复，各有回归测试；第三方快照行尾一并处理。见[工程记录](../../2026-10-30/engineering/REPORT.md#2026-11-06-合并整理pr-22-审查修复与行尾)。 |
 | 发布门槛 | installer manifest 增加来源提交、dirty 与自研文件哈希；桌面 Release 等待同提交双平台安装检查、镜像验收及匿名拉取、固定历史包可用、安装器非残件、版本与 SHA512 校验后才设 latest。旧项目 dist 的 287 KB Windows 文件不发布。 |
 
 本轮证据：[数据恢复回执](../../2026-11-06/sync-integration/local-recovery.json)、[逐会话原件关系](../../2026-11-06/sync-integration/session-recovery.json)、[工程门禁](../../2026-11-06/sync-integration/engineering-summary.json)、[Lab 日志](../../2026-11-06/sync-integration/lab-full.log)、[无 ROS 桌面检查](../../2026-11-06/sync-integration/desktop-linux-smoke.json)、[公开数据包下载](../../2026-11-06/sync-integration/published-history-pack.json)。本轮不把新纯代码/MuJoCo 检查宣称为新 Gazebo 现场通过，已有冻结科研证据和失败保持原件。
