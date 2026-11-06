@@ -1,0 +1,120 @@
+{
+  "schema": "urp.recovery-index/1",
+  "date": "2026-11-06",
+  "patch_base_main_sha": "1fa8c02bb87c564579e7f2807919bd1a1a2b3b25",
+  "status": "historical-content-reconciled; application-restoration-and-branch-retirement-not-complete",
+  "scope": "Historical retention/source-only inventory of four branches; not all Git history, all source differences, or all missing project data. preserved is a subset of snapshot.",
+  "summary": {
+    "inventory_records": 2111,
+    "exact_published_member_matches": 2091,
+    "unique_archive_members_verified": 900,
+    "empty_content_reconstructible": 7,
+    "repository_byte_exact_originals": 9,
+    "repository_privacy_redacted_copies": 1,
+    "excluded_credential_candidates": 3,
+    "archive_count": 7,
+    "archive_bytes_verified": 705866759,
+    "archive_member_missing": 0,
+    "archive_member_hash_mismatches": 0,
+    "known_credential_candidate_payloads_opened": 0
+  },
+  "inventory_baseline_sha": "028bae0e967894c9370460a0301cdf7c27b10965",
+  "records": "history/recovery-records-20261106.json",
+  "inactive_repository_archive": "../history/branch-preservation/20261106/manifest.json",
+  "explanation": "history-preservation-20261106.md",
+  "original_release_index": {
+    "path": "../setup/2026-10-26/local-preservation/recovery-index.json",
+    "bytes": 16607,
+    "sha256": "6a6dba7eae142187e24d477e25e88f36be54a2128d963df6928e9d735c1ed1fb",
+    "git_blob_sha1": "f29a2d6ca4f3a0612ac53269999b5c71216121fa",
+    "modified": false
+  },
+  "release_assets_verified": [
+    {
+      "release": "local-preservation-20261026",
+      "asset": "local-delta-e2e-00.tar.zst",
+      "bytes": 136993694,
+      "sha256": "4fbd9b069a948de24059636d16876d4efd5a4c0a7b5252dbb6ecdec36fa1016e",
+      "expected_sha256": "4fbd9b069a948de24059636d16876d4efd5a4c0a7b5252dbb6ecdec36fa1016e",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-00.tar.zst"
+    },
+    {
+      "release": "local-preservation-20261026",
+      "asset": "local-delta-e2e-01.tar.zst",
+      "bytes": 195818613,
+      "sha256": "9f440fb9e6e762917775130a59f76f50c49266a7c343c03d47baee800f0aa38c",
+      "expected_sha256": "9f440fb9e6e762917775130a59f76f50c49266a7c343c03d47baee800f0aa38c",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-01.tar.zst"
+    },
+    {
+      "release": "local-preservation-20261026",
+      "asset": "local-delta-e2e-02.tar.zst",
+      "bytes": 177076011,
+      "sha256": "4d71221d30c98818a01c8924fba175096c86f053ff8c269b48183d02e2ee0b23",
+      "expected_sha256": "4d71221d30c98818a01c8924fba175096c86f053ff8c269b48183d02e2ee0b23",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-02.tar.zst"
+    },
+    {
+      "release": "local-preservation-20261026",
+      "asset": "local-delta-records-00.tar.zst",
+      "bytes": 78031722,
+      "sha256": "22276a5d4a04a54cb53ac9eb76061049ae2788341b9c9dfb4cde10c734b12c58",
+      "expected_sha256": "22276a5d4a04a54cb53ac9eb76061049ae2788341b9c9dfb4cde10c734b12c58",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-records-00.tar.zst"
+    },
+    {
+      "release": "local-preservation-20261026",
+      "asset": "local-delta-records-01.tar.zst",
+      "bytes": 64436808,
+      "sha256": "3d39a0b0c524a20e6a8c6eb48a8e095d192e1d27f9ec582e5c5be98263be5d38",
+      "expected_sha256": "3d39a0b0c524a20e6a8c6eb48a8e095d192e1d27f9ec582e5c5be98263be5d38",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-records-01.tar.zst"
+    },
+    {
+      "release": "platform-snapshot-20261018-ddb5113e",
+      "asset": "evidence-2026-10-15.tar.zst",
+      "bytes": 25526091,
+      "sha256": "7d202bd7ec960b675b8190aab03884d280ed8ec1211d24f3744169e1aaf89a68",
+      "expected_sha256": "7d202bd7ec960b675b8190aab03884d280ed8ec1211d24f3744169e1aaf89a68",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-15.tar.zst"
+    },
+    {
+      "release": "platform-snapshot-20261018-ddb5113e",
+      "asset": "evidence-2026-10-16.tar.zst",
+      "bytes": 27983820,
+      "sha256": "740700f6ac3f463f6127dd064d471a141dc28250a93a2c8901645989bcebfba9",
+      "expected_sha256": "740700f6ac3f463f6127dd064d471a141dc28250a93a2c8901645989bcebfba9",
+      "verified": true,
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-16.tar.zst"
+    }
+  ],
+  "content_verification": {
+    "method": "Outer archive SHA256, whitelist-only streamed member SHA256 and historical Git blob SHA1; no payload extraction or execution.",
+    "preservation_map_records": 78764,
+    "snapshot_metadata_original_blobs_verified": 3,
+    "source_paths_and_aliases_are_not_sufficient_without_content_hash_match": true,
+    "archive_file_modes_verified": false,
+    "full_application_restoration_performed": false,
+    "historical_code_executed": false,
+    "preserved_is_subset_of_snapshot": true
+  },
+  "privacy": {
+    "known_credential_candidates": "excluded; metadata only; contents never opened",
+    "private_locations_in_selected_text": "One file minimally redacted; complete original and dual-hash mapping kept separately and not included in this repository."
+  },
+  "remaining_gates": [
+    "Apply and verify this archive/index candidate against the current main head without overwriting newer or uncommitted work.",
+    "Complete the separate local uncommitted-work inventory and integrate its required results before any branch deletion.",
+    "A content-hash audit is not full environment restoration or a comprehensive secret audit; validate required restore/mode behavior separately.",
+    "Migrate existing Windows/WSL legacy deploy/redo consumers and verify required current-commit engineering checks.",
+    "Resolve or explicitly retain the separate approximately 1.72 GB original temporary experiment-data gap; it is outside this 2111-record inventory.",
+    "Recheck remote branch heads and durable recovery coverage before a separately authorized branch-cleanup action."
+  ],
+  "branch_deletion_ready": false
+}

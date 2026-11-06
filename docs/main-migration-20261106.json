@@ -2,7 +2,7 @@
   "schema": "urp.main-migration/2",
   "date": "2026-11-06",
   "baseline_main_sha": "028bae0e967894c9370460a0301cdf7c27b10965",
-  "status": "installer-defaults-cutover-after-verified-stage1; exact-cutover-commit-ci-pending",
+  "status": "selected-history-content-reconciled; branch-retirement-and-environment-restoration-incomplete",
   "remote_changes": [
     {
       "commit": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
@@ -8243,9 +8243,149 @@
       "Snapshot source-only comparison starts from the historical retention inventory, not a fresh full-snapshot versus full-main comparison.",
       "Different blobs do not establish missing functionality.",
       "Existing Release recovery manifests were inspected but archive bytes were not downloaded or independently restored in this pass."
-    ]
+    ],
+    "scope": "Initial branch audit only; later archive member content verification is recorded in recovery_verification."
   },
-  "recovery_verification": {
+  "pending": [
+    "Apply and verify this archive/index candidate against the current main head without overwriting newer or uncommitted work.",
+    "Complete the separate local uncommitted-work inventory and integrate its required results before any branch deletion.",
+    "A content-hash audit is not full environment restoration or a comprehensive secret audit; validate required restore/mode behavior separately.",
+    "Verify the required engineering gates for any new commit independently; historical first-stage results do not imply success for later commits.",
+    "Verify fresh and existing-install migration, including Windows/WSL legacy URL consumers, before retiring any old branch URL.",
+    "Recheck current remote branch head leases and durable sanitized recovery coverage before separately executed branch cleanup."
+  ],
+  "sources": [
+    "https://github.com/peakpeng666/URP/blob/028bae0e967894c9370460a0301cdf7c27b10965/docs/branch-semantics.md",
+    "https://github.com/peakpeng666/URP/blob/028bae0e967894c9370460a0301cdf7c27b10965/docs/current-branches.csv",
+    "https://github.com/peakpeng666/URP/blob/516569d4d03b02c53018cf9866f9ffd241c7c7e8/snapshot/coverage.md",
+    "https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026"
+  ],
+  "publication_migration": {
+    "identity": "actual manifest digest captured from push, passed through anonymous verification outputs, consumed by digest-only promotion",
+    "promotion_lock": "repository-wide urp-image-channel-promotion",
+    "main_staleness_guard": "remote main head must equal source SHA immediately before promotion under the shared lock",
+    "manual_desktop_channels": "disabled",
+    "latest_policy": "do not automatically update legacy latest alias; use main or an explicitly verified version",
+    "rollout": "first deploy publishing/digest gates and verify available main images; only then change installer defaults",
+    "unverified": "Concurrent contention and stale-rerun behavior remain covered by mocks/static workflow inspection, not a live adversarial scheduling test. Fresh Windows/WSL end-to-end installation and legacy client migration remain outstanding. Exact-stage2 CI and images must be checked separately.",
+    "stage1_evidence": {
+      "source_commit": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
+      "engineering": {
+        "url": "https://github.com/peakpeng666/URP/actions/runs/42170504143",
+        "conclusion": "success"
+      },
+      "publication": {
+        "url": "https://github.com/peakpeng666/URP/actions/runs/42170504225",
+        "conclusion": "success",
+        "bench_job_id": 127740552750,
+        "sim_job_id": 127740552745,
+        "anonymous_pull_job_id": 127743097052,
+        "promotion_job_id": 127743818371
+      },
+      "lab": {
+        "passed": 1153,
+        "skipped": 12,
+        "subtests_passed": 36,
+        "warnings": 580
+      },
+      "main_channels": [
+        {
+          "repository": "ghcr.io/peakpeng666/urp-bench",
+          "tag": "main",
+          "tag_digest": "sha256:087fb21fe32b2ebc82967384d36775aacfc7d76c8079329b036f097647b01b58",
+          "platform_digest": "sha256:087fb21fe32b2ebc82967384d36775aacfc7d76c8079329b036f097647b01b58",
+          "config_digest": "sha256:52c11180482befe7e7c2381b68cfb9acded64d75456d53c4137bbcace3c6dd6a",
+          "revision": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
+          "os": "linux",
+          "architecture": "amd64",
+          "anonymous_manifest_and_config": true,
+          "layer_pull": "not performed by this inspection"
+        },
+        {
+          "repository": "ghcr.io/peakpeng666/urp-sim",
+          "tag": "main",
+          "tag_digest": "sha256:724547cc0e9f3afb59bdebfcee000398518b844b69231c93f18097a4f3f3bd9e",
+          "platform_digest": "sha256:724547cc0e9f3afb59bdebfcee000398518b844b69231c93f18097a4f3f3bd9e",
+          "config_digest": "sha256:0a4d0e409d9fa2f2150a8e8164d4d99c56ee2cabd5d217ca7eed130e6081e7b0",
+          "revision": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
+          "os": "linux",
+          "architecture": "amd64",
+          "anonymous_manifest_and_config": true,
+          "layer_pull": "not performed by this inspection"
+        }
+      ],
+      "source_assets": [
+        {
+          "path": "deploy/docker-compose.display.yml",
+          "sha": "1268131f87c2347a5105b8c39c7f780062c415f1",
+          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.display.yml",
+          "bytes": 562,
+          "sha256": "9bc58a7de7254a040a1a0540e074daf40d30d884bdbb5bf6ebdd0dc9bfb756e7",
+          "anonymous_fetch": true,
+          "git_blob_verified": true
+        },
+        {
+          "path": "deploy/docker-compose.fuel.yml",
+          "sha": "518d88857b57985b8e40c70aea8b976fb91e6263",
+          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.fuel.yml",
+          "bytes": 434,
+          "sha256": "72213072d301de31c805422ae1a5942b5c482f7749a67e9acd7867633846bc79",
+          "anonymous_fetch": true,
+          "git_blob_verified": true
+        },
+        {
+          "path": "deploy/docker-compose.gpu.yml",
+          "sha": "53f9c7b74eb508f0909ab30c444622781a5f5e8d",
+          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.gpu.yml",
+          "bytes": 412,
+          "sha256": "da5bd1dbc70825a5dd255fd8714a496ddb1548527d383ce168209f1644fb3073",
+          "anonymous_fetch": true,
+          "git_blob_verified": true
+        },
+        {
+          "path": "deploy/docker-compose.sim.yml",
+          "sha": "5e2a5723c1700f25ee2ec8b877e83b3a1c2fa4bf",
+          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.sim.yml",
+          "bytes": 1181,
+          "sha256": "5abb0df61536d50b3a79638a02fb2da91cd82442d6bf516ed85a72c408680557",
+          "anonymous_fetch": true,
+          "git_blob_verified": true
+        },
+        {
+          "path": "deploy/fetch-fuel.sh",
+          "sha": "1212f63a89f0d46180eb1e3866c4838777d0362f",
+          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/fetch-fuel.sh",
+          "bytes": 3661,
+          "sha256": "447a2f50914468dd6709c314e04091c0bd4d0ad14351e017d41d2826734b169e",
+          "anonymous_fetch": true,
+          "git_blob_verified": true
+        },
+        {
+          "path": "install.sh",
+          "sha": "499697b3126569abe0caa63b53ec5e942ffaeb8d",
+          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/install.sh",
+          "bytes": 15077,
+          "sha256": "8d0aef85e7a72d78719006f1e2f9ddbf6f5c24e75dae623ccffb0b085e93dbb5",
+          "anonymous_fetch": true,
+          "git_blob_verified": true
+        }
+      ],
+      "limits": "The independent registry inspection fetched manifests/configs, not layers. Actual anonymous layer pulls and image smoke ran in the linked Actions jobs. No physical Gazebo session or formal research experiment was run."
+    }
+  },
+  "this_change": "Add inactive historical originals and one privacy-redacted copy, update current recovery index, preserve runtime and all branch references.",
+  "branch_inventory_scope": "Historical 32-branch snapshot against baseline_main_sha; it is not a live branch inventory or a deletion lease.",
+  "recovery_status_at_cutover": {
+    "status": "in_progress",
+    "preservation_map": "Downloaded and hash-checked; 78,764 mapping records still being reconciled.",
+    "archive_restoration": "Not completed; no claim that originals have been fully unpacked and recovered.",
+    "unmapped_record_scope": "The prior 15 items are metadata/path records, not 15 established missing source-code deliverables.",
+    "branch_deletion_ready": false,
+    "scope": "Historical status recorded at stage2 cutover; superseded for content verification by recovery_verification."
+  },
+  "status_at_cutover": "installer-defaults-cutover-after-verified-stage1; exact-cutover-commit-ci-pending",
+  "this_change_at_cutover": "Stage2 switches installer/Compose defaults and CI consumers to main after verified stage1 availability. Branch references are retained. CI and images for this exact cutover commit must be checked separately.",
+  "recovery_verification_at_preparation": {
     "release_url": "https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026",
     "github_release_asset_count": 14,
     "release_asset_checks": [
@@ -8407,139 +8547,35 @@
     ],
     "scope": "Earlier read-only preparation snapshot. Its then-unperformed actions and counts are historical, not the current recovery completion claim."
   },
-  "pending": [
-    "Finish reconciliation of verified compressed recovery maps and required archive members; verify real restoration in a fresh isolated directory.",
-    "Resolve historical draft/replaced-implementation metadata without overwriting current runtime code; never import credentials.",
-    "Run full engineering and Windows contracts for this exact stage2 cutover commit; its future CI result is not implied by stage1 success.",
-    "Verify fresh and existing-install migration, including Windows/WSL legacy URL consumers, before retiring any old branch URL.",
-    "Recheck current remote branch head leases and durable sanitized recovery coverage before separately executed branch cleanup."
-  ],
-  "sources": [
-    "https://github.com/peakpeng666/URP/blob/028bae0e967894c9370460a0301cdf7c27b10965/docs/branch-semantics.md",
-    "https://github.com/peakpeng666/URP/blob/028bae0e967894c9370460a0301cdf7c27b10965/docs/current-branches.csv",
-    "https://github.com/peakpeng666/URP/blob/516569d4d03b02c53018cf9866f9ffd241c7c7e8/snapshot/coverage.md",
-    "https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026"
-  ],
-  "publication_migration": {
-    "identity": "actual manifest digest captured from push, passed through anonymous verification outputs, consumed by digest-only promotion",
-    "promotion_lock": "repository-wide urp-image-channel-promotion",
-    "main_staleness_guard": "remote main head must equal source SHA immediately before promotion under the shared lock",
-    "manual_desktop_channels": "disabled",
-    "latest_policy": "do not automatically update legacy latest alias; use main or an explicitly verified version",
-    "rollout": "first deploy publishing/digest gates and verify available main images; only then change installer defaults",
-    "unverified": "Concurrent contention and stale-rerun behavior remain covered by mocks/static workflow inspection, not a live adversarial scheduling test. Fresh Windows/WSL end-to-end installation and legacy client migration remain outstanding. Exact-stage2 CI and images must be checked separately.",
-    "stage1_evidence": {
-      "source_commit": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
-      "engineering": {
-        "url": "https://github.com/peakpeng666/URP/actions/runs/42170504143",
-        "conclusion": "success"
-      },
-      "publication": {
-        "url": "https://github.com/peakpeng666/URP/actions/runs/42170504225",
-        "conclusion": "success",
-        "bench_job_id": 127740552750,
-        "sim_job_id": 127740552745,
-        "anonymous_pull_job_id": 127743097052,
-        "promotion_job_id": 127743818371
-      },
-      "lab": {
-        "passed": 1153,
-        "skipped": 12,
-        "subtests_passed": 36,
-        "warnings": 580
-      },
-      "main_channels": [
-        {
-          "repository": "ghcr.io/peakpeng666/urp-bench",
-          "tag": "main",
-          "tag_digest": "sha256:087fb21fe32b2ebc82967384d36775aacfc7d76c8079329b036f097647b01b58",
-          "platform_digest": "sha256:087fb21fe32b2ebc82967384d36775aacfc7d76c8079329b036f097647b01b58",
-          "config_digest": "sha256:52c11180482befe7e7c2381b68cfb9acded64d75456d53c4137bbcace3c6dd6a",
-          "revision": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
-          "os": "linux",
-          "architecture": "amd64",
-          "anonymous_manifest_and_config": true,
-          "layer_pull": "not performed by this inspection"
-        },
-        {
-          "repository": "ghcr.io/peakpeng666/urp-sim",
-          "tag": "main",
-          "tag_digest": "sha256:724547cc0e9f3afb59bdebfcee000398518b844b69231c93f18097a4f3f3bd9e",
-          "platform_digest": "sha256:724547cc0e9f3afb59bdebfcee000398518b844b69231c93f18097a4f3f3bd9e",
-          "config_digest": "sha256:0a4d0e409d9fa2f2150a8e8164d4d99c56ee2cabd5d217ca7eed130e6081e7b0",
-          "revision": "3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8",
-          "os": "linux",
-          "architecture": "amd64",
-          "anonymous_manifest_and_config": true,
-          "layer_pull": "not performed by this inspection"
-        }
-      ],
-      "source_assets": [
-        {
-          "path": "deploy/docker-compose.display.yml",
-          "sha": "1268131f87c2347a5105b8c39c7f780062c415f1",
-          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.display.yml",
-          "bytes": 562,
-          "sha256": "9bc58a7de7254a040a1a0540e074daf40d30d884bdbb5bf6ebdd0dc9bfb756e7",
-          "anonymous_fetch": true,
-          "git_blob_verified": true
-        },
-        {
-          "path": "deploy/docker-compose.fuel.yml",
-          "sha": "518d88857b57985b8e40c70aea8b976fb91e6263",
-          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.fuel.yml",
-          "bytes": 434,
-          "sha256": "72213072d301de31c805422ae1a5942b5c482f7749a67e9acd7867633846bc79",
-          "anonymous_fetch": true,
-          "git_blob_verified": true
-        },
-        {
-          "path": "deploy/docker-compose.gpu.yml",
-          "sha": "53f9c7b74eb508f0909ab30c444622781a5f5e8d",
-          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.gpu.yml",
-          "bytes": 412,
-          "sha256": "da5bd1dbc70825a5dd255fd8714a496ddb1548527d383ce168209f1644fb3073",
-          "anonymous_fetch": true,
-          "git_blob_verified": true
-        },
-        {
-          "path": "deploy/docker-compose.sim.yml",
-          "sha": "5e2a5723c1700f25ee2ec8b877e83b3a1c2fa4bf",
-          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/docker-compose.sim.yml",
-          "bytes": 1181,
-          "sha256": "5abb0df61536d50b3a79638a02fb2da91cd82442d6bf516ed85a72c408680557",
-          "anonymous_fetch": true,
-          "git_blob_verified": true
-        },
-        {
-          "path": "deploy/fetch-fuel.sh",
-          "sha": "1212f63a89f0d46180eb1e3866c4838777d0362f",
-          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/deploy/fetch-fuel.sh",
-          "bytes": 3661,
-          "sha256": "447a2f50914468dd6709c314e04091c0bd4d0ad14351e017d41d2826734b169e",
-          "anonymous_fetch": true,
-          "git_blob_verified": true
-        },
-        {
-          "path": "install.sh",
-          "sha": "499697b3126569abe0caa63b53ec5e942ffaeb8d",
-          "url": "https://raw.githubusercontent.com/peakpeng666/URP/3481c414e8b5c4d47804ff6dbd6bbe674b52bbc8/install.sh",
-          "bytes": 15077,
-          "sha256": "8d0aef85e7a72d78719006f1e2f9ddbf6f5c24e75dae623ccffb0b085e93dbb5",
-          "anonymous_fetch": true,
-          "git_blob_verified": true
-        }
-      ],
-      "limits": "The independent registry inspection fetched manifests/configs, not layers. Actual anonymous layer pulls and image smoke ran in the linked Actions jobs. No physical Gazebo session or formal research experiment was run."
-    }
-  },
-  "this_change": "Stage2 switches installer/Compose defaults and CI consumers to main after verified stage1 availability. Branch references are retained. CI and images for this exact cutover commit must be checked separately.",
-  "branch_inventory_scope": "Historical 32-branch snapshot against baseline_main_sha; it is not a live branch inventory or a deletion lease.",
-  "recovery_status_at_cutover": {
-    "status": "in_progress",
-    "preservation_map": "Downloaded and hash-checked; 78,764 mapping records still being reconciled.",
-    "archive_restoration": "Not completed; no claim that originals have been fully unpacked and recovered.",
-    "unmapped_record_scope": "The prior 15 items are metadata/path records, not 15 established missing source-code deliverables.",
+  "recovery_verification": {
+    "status": "selected historical inventory content reconciliation complete; application restoration incomplete",
+    "patch_base_main_sha": "1fa8c02bb87c564579e7f2807919bd1a1a2b3b25",
+    "index": "recovery-index.json",
+    "records": "history/recovery-records-20261106.json",
+    "summary": {
+      "inventory_records": 2111,
+      "exact_published_member_matches": 2091,
+      "unique_archive_members_verified": 900,
+      "empty_content_reconstructible": 7,
+      "repository_byte_exact_originals": 9,
+      "repository_privacy_redacted_copies": 1,
+      "excluded_credential_candidates": 3,
+      "archive_count": 7,
+      "archive_bytes_verified": 705866759,
+      "archive_member_missing": 0,
+      "archive_member_hash_mismatches": 0,
+      "known_credential_candidate_payloads_opened": 0
+    },
+    "scope": "Supersedes the earlier metadata-only recovery check without altering its dated source baseline.",
     "branch_deletion_ready": false
+  },
+  "history_archive_update": {
+    "patch_base_main_sha": "1fa8c02bb87c564579e7f2807919bd1a1a2b3b25",
+    "archive": "../history/branch-preservation/20261106/manifest.json",
+    "byte_exact_originals": 9,
+    "privacy_redacted_copies": 1,
+    "runtime_source_changed": false,
+    "branch_references_changed": false,
+    "private_original_and_dual_hash_mapping": "retained separately; not part of this repository candidate"
   }
 }

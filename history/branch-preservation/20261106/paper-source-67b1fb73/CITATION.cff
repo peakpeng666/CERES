@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this software or benchmark in your research, please cite it as below."
+title: "URP: A Unified Algorithm Library and Benchmark for Agricultural Robot Path Planning"
+type: software
+authors:
+  - family-names: "Peng"
+    given-names: ""
+    # TODO: 补全作者全名、单位与 ORCID
+code-repository: "https://github.com/peakpeng666/URP"
+license: "TODO-confirm-license"  # 仓库暂无 LICENSE 文件，发布基准包前需确认
+abstract: >
+  URP is a research system for agricultural robot path planning,
+  providing a unified algorithm library (28 registered configurations
+  across five problem classes: point-to-point, Euclidean CVRP,
+  turning-aware routing, coverage, and fleet planning), a frozen
+  benchmark of 4,505 independently verified runs, and instance-level
+  algorithm selection studies with explicit negative results.
+keywords:
+  - agricultural robotics
+  - path planning
+  - capacitated vehicle routing
+  - algorithm selection
+  - benchmark
+  - coverage path planning

@@ -1,0 +1,136 @@
+{
+  "schema": "urp.inactive-historical-additions/2",
+  "patch_base_main_sha": "1fa8c02bb87c564579e7f2807919bd1a1a2b3b25",
+  "source_inventory_baseline_sha": "028bae0e967894c9370460a0301cdf7c27b10965",
+  "status": "versioned-inactive-archive; remote inclusion must be verified after merge",
+  "counts": {
+    "files": 10,
+    "byte_exact_originals": 9,
+    "privacy_redacted_copies": 1
+  },
+  "records": [
+    {
+      "source_branch": "backup/local-20261015",
+      "source_commit": "767ffbc88b14655bba4360a46435b10c3a0b848d",
+      "source_path": "src/lab/ros/urp.rviz",
+      "historical_path": "backup-local-20261015/src/lab/ros/urp.rviz",
+      "git_blob_sha1": "af3caaaeb87059714db61ee1d35632c7271d36c8",
+      "sha256": "6b04e9db8543a3b2c815b21dbf5961cb72e6dfe12e2e7dc9450e2c9b9583bdfa",
+      "bytes": 17567,
+      "disposition": "superseded configuration or plan, inactive history only",
+      "original_git_blob_sha1": "af3caaaeb87059714db61ee1d35632c7271d36c8",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "backup/local-20261015",
+      "source_commit": "767ffbc88b14655bba4360a46435b10c3a0b848d",
+      "source_path": "下一阶段.md",
+      "historical_path": "backup-local-20261015/下一阶段.md",
+      "git_blob_sha1": "786c099c7eaaa28dcb54fe621457235e8151defe",
+      "sha256": "23326defdf953bbf022c3e233ca4b2e42aed90f155b54802021c936f8bd6fc05",
+      "bytes": 4903,
+      "disposition": "superseded configuration or plan, inactive history only",
+      "original_git_blob_sha1": "786c099c7eaaa28dcb54fe621457235e8151defe",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "backup/local-20261015",
+      "source_commit": "767ffbc88b14655bba4360a46435b10c3a0b848d",
+      "source_path": "按需取用.md",
+      "historical_path": "backup-local-20261015/按需取用.md",
+      "sha256": "bc6002d673417e089ca006abfe50f4ae0f0b52e69360483e127fd607a03e6059",
+      "bytes": 1007,
+      "disposition": "superseded configuration or plan, inactive history only",
+      "git_blob_sha1": "8682b56268489db3bd63257d96fafa5da0a6e2b9",
+      "content_status": "privacy-redacted-historical-copy",
+      "redaction": "Two original location lines replaced; private original and dual-hash evidence retained separately."
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "CITATION.cff",
+      "historical_path": "paper-source-67b1fb73/CITATION.cff",
+      "git_blob_sha1": "9747b480cbaf5532adf035cf61b2a732bab3bfd1",
+      "sha256": "651132c9891aedf1a226e90d9e771dee8d5725b694aa4f37c4da2ec53ee365b3",
+      "bytes": 1026,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "9747b480cbaf5532adf035cf61b2a732bab3bfd1",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "paper/PAPER_PLAN.md",
+      "historical_path": "paper-source-67b1fb73/paper/PAPER_PLAN.md",
+      "git_blob_sha1": "e0a65a2b1fd6b9403dfc634efc00dfa48fc11e7f",
+      "sha256": "f5fb285d2a15aad67167db6d52f6148da3607dc87d40a45a6cc060b9607050cb",
+      "bytes": 11422,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "e0a65a2b1fd6b9403dfc634efc00dfa48fc11e7f",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "paper/README.md",
+      "historical_path": "paper-source-67b1fb73/paper/README.md",
+      "git_blob_sha1": "593757a7167c083347b4e6b50bee30084e05ce43",
+      "sha256": "6d2ff62728a3d8cc494c8e9f49b1f9d4b9dd432434391db2b19bcc3a2c7e237a",
+      "bytes": 1778,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "593757a7167c083347b4e6b50bee30084e05ce43",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "paper/REPRODUCIBILITY_CHECKLIST.md",
+      "historical_path": "paper-source-67b1fb73/paper/REPRODUCIBILITY_CHECKLIST.md",
+      "git_blob_sha1": "add5179854acc9d9596fc7d4a4296d95f3d665c8",
+      "sha256": "524b80f3d54f3a0f809d92e776369cea5a1f41a7aa053ca2bea685c16813c28e",
+      "bytes": 1713,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "add5179854acc9d9596fc7d4a4296d95f3d665c8",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "paper/experiments/PRE_REGISTRATION.md",
+      "historical_path": "paper-source-67b1fb73/paper/experiments/PRE_REGISTRATION.md",
+      "git_blob_sha1": "e642efd08aa944ca2a4aace9e74c0dc934ac821a",
+      "sha256": "3b913585a1a75ac029036da4214858afa06c72d9662f18f67d8cf43777a02b0e",
+      "bytes": 3894,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "e642efd08aa944ca2a4aace9e74c0dc934ac821a",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "paper/literature_supplement_2026Q4.md",
+      "historical_path": "paper-source-67b1fb73/paper/literature_supplement_2026Q4.md",
+      "git_blob_sha1": "da80f7bd8dfa9fe42ec672dfa55d5d813898c3ef",
+      "sha256": "32d0eabe4def0ddcfc41eda8a9c719a3e76b406a2963c8fbfd4d71e46c8e8948",
+      "bytes": 5501,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "da80f7bd8dfa9fe42ec672dfa55d5d813898c3ef",
+      "content_status": "byte-exact-historical-original"
+    },
+    {
+      "source_branch": "paper",
+      "source_commit": "67b1fb73818d07a2e5da562127fa4fab2d412c16",
+      "source_path": "paper/related_work_matrix.md",
+      "historical_path": "paper-source-67b1fb73/paper/related_work_matrix.md",
+      "git_blob_sha1": "2527e3beb40dc47d1d4706f862b9c8884d1ac22b",
+      "sha256": "a11d5403aee3f52210000682c9b2676a66073d19ae8e2c6ee284b4a63d0b4ba0",
+      "bytes": 4228,
+      "disposition": "historical draft, not a current research result or active citation",
+      "original_git_blob_sha1": "2527e3beb40dc47d1d4706f862b9c8884d1ac22b",
+      "content_status": "byte-exact-historical-original"
+    }
+  ],
+  "known_sensitive_files_included": 0,
+  "historical_content_executed": false,
+  "security_scope": "Ten selected texts reviewed; not a comprehensive secret audit of repository history or recovery archives."
+}
