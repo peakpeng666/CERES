@@ -4,29 +4,38 @@
 
 **[交付要求](requirements.md)** · **[研究决策图](research-map.md)**
 
+## 2026-11-06 集成状态
+
+11 月工作台与 main 已在 `codex/local-github-sync-20261105` 合并验证，数据持久化与互通、历史包发布和桌面发布门槛已实现；当前提交/CI/发布的权威状态见[最新集成验收](../setup/2026-10-15/integration/REPORT.md)。原生与容器共用持久数据，原运行库保留；只读恢复会话与缺失原始数据分别登记。
+
+[#22](https://github.com/peakpeng666/URP/pull/22) 仍开放：头 `c38a4415` 的工程与部署 CI **8/8** 通过，自动审查留有 5 项未处理意见。合并整理分支 `ccr-81735237-3k02hy` 以快进方式包含 #22 全部 70 个提交，逐项复现并修复这 5 项（各有回归测试），并让 `src/repos` 第三方快照保持原字节，全新检出不再把最多 185 个第三方文件因行尾误报为已修改；合并该分支即同时并入 #22。范围与验证见[工程记录](../setup/2026-10-30/engineering/REPORT.md#2026-11-06-合并整理pr-22-审查修复与行尾)。资产与清退记录仍是其标注日期的快照。
+
 ## 当前基线
 
-快照：**2026-11-01 06:42 UTC**；已合并 `main` 为 [`9324ba1a`](https://github.com/peakpeng666/URP/tree/9324ba1a71eb4b85a60fddbf4635900471b0e3f8)。七条已授权引用已实际清退；后续文件整理在本地分支实施，尚未作为新批次发布。
+快照：**2026-11-06 02:41 UTC**；已合并 `main` 为 [`3ad71401`](https://github.com/peakpeng666/URP/tree/3ad714018544f1bd8fe6db30e610eb96b8bc0320)（#21）。远端 **31 个分支**：11-01 快照中的 27 个非主线分支头均未移动；新增 `chore/reconcile-retained-branches-20261101`（#21 来源，已合并）、`agent/workbench-20261029` 与 `codex/local-github-sync-20261105`（均在开放的 #22 内）。本次没有删除、移动或改写任何引用；合并整理分支在快照之后发布。
 
-- 远端实测由 **35 条引用清退至 28 个分支，含 27 个非主线分支**：[当前逐支 SHA、祖先关系、消费者与建议](current-branches.csv)、[独有路径与保留索引](branch-retention.json)。七条删除的精确 SHA、已合并 PR 恢复入口和操作回执见 [清退记录](branch-retirement-20261101.json)；main 与其他引用均未移动。
+- [当前逐支 SHA、祖先关系、消费者与建议](current-branches.csv)已按 11-06 快照重算 Git 派生列（对 main `3ad71401` 的祖先、合并基、独有/不同路径，消费者逐条在当前头复核）；未移动分支沿用 11-01 的判断，其[独有路径与保留索引](branch-retention.json)与[语义取舍](branch-semantics.md)仍适用。比 11-01 多出的 1 项独有路径是 #21 有意删除的 `studio/pendingWrites.ts` 转发入口。
+- 2026-11-01：远端由 **35 条引用清退至 28 个分支**；七条删除的精确 SHA、已合并 PR 恢复入口和操作回执见 [清退记录](branch-retirement-20261101.json)；main 与其他引用均未移动。
 - [原 29 个来源分支表](branches.csv)保留工程整合时的快照和取舍，不跟随引用清退改写原历史。
 - [#15 工程整合](https://github.com/peakpeng666/URP/pull/15)已合并。当前获取入口采用 main。
 - [#16 PyVRP ILS 标识兼容修复](https://github.com/peakpeng666/URP/pull/16)已合并到当前 main；修复头 `293dbf20` 的[工程四项作业](https://github.com/peakpeng666/URP/actions/runs/41074311873)和[部署两项作业](https://github.com/peakpeng666/URP/actions/runs/41074311831)已通过。当前使用 `pyvrp.ils`，保留旧 ID 请求兼容；历史模型与结果维持原件。
 - [#12](https://github.com/peakpeng666/URP/pull/12)、[#13](https://github.com/peakpeng666/URP/pull/13)已关闭（未直接合并），其离线 evolve 功能已由 #15 择取整合；来源分支保留。
 - [#17 全量整理与错误处理](https://github.com/peakpeng666/URP/pull/17)已合并；[主线四项CI](https://github.com/peakpeng666/URP/actions/runs/41105645794)通过，合并前精确提交代码审查无发现。
-- PR **#1、#2、#3、#4、#11、#14、#15、#16、#17、#18、#19、#20** 均已合并。原提交与 PR 记录保留，七条已授权来源引用的清退另有回执。
+- PR **#1、#2、#3、#4、#11、#14、#15、#16、#17、#18、#19、#20、#21** 均已合并，**#22** 开放。原提交与 PR 记录保留，七条已授权来源引用的清退另有回执。
 
 - [#18 资产与许可证据](https://github.com/peakpeng666/URP/pull/18)已合并；[合并后四项 CI](https://github.com/peakpeng666/URP/actions/runs/41112545177)通过。
 - [#19 统计、Agent、启动与交付契约 refresh](https://github.com/peakpeng666/URP/pull/19)已合并；头 `4c5d383a` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/41125771960)与[deploy CI](https://github.com/peakpeng666/URP/actions/runs/41125771951)合计 **6/6**，其合并后 [main CI](https://github.com/peakpeng666/URP/actions/runs/41126537526) **4/4**。首次失败、闭包修正及本地验证范围保留在工程记录。
 - [#20 恢复边界、资产与分支索引](https://github.com/peakpeng666/URP/pull/20)已合并；精确头 `8be9b89` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/41277109384)与[部署 CI](https://github.com/peakpeng666/URP/actions/runs/41277109314) **6/6**，合并提交 `9324ba1` 的 [main CI](https://github.com/peakpeng666/URP/actions/runs/41277554358) **4/4**。提交与远端 tree 身份一致。
+- [#21 分支保留与恢复证据核对](https://github.com/peakpeng666/URP/pull/21)已合并；头 `a84190b` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/41284207856)与[部署 CI](https://github.com/peakpeng666/URP/actions/runs/41284207915)通过，合并提交 `3ad7140` 的 [main CI](https://github.com/peakpeng666/URP/actions/runs/41284549690) 通过。
+- [#22 工作台与 main 同步、可迁移数据](https://github.com/peakpeng666/URP/pull/22)开放；头 `c38a4415` 的[工程 CI](https://github.com/peakpeng666/URP/actions/runs/42062910140) **6/6** 与[部署 CI](https://github.com/peakpeng666/URP/actions/runs/42062910016) **2/2**。
 
-现存 12 个非主线分支是 main 祖先：`deploy`、`redo` 仍用于安装，另有 4 支被 CI 分支规则引用；5 个原祖先候选暂留，另保留本次已合并的 cleanup 来源支。只清退了本次逐条授权的七支，未将祖先关系当作批量删除许可。
+现存 13 个非主线分支是 main 祖先：`deploy`、`redo` 仍用于安装，另有 4 支被 CI 分支规则引用；5 个原祖先候选暂留，另保留已合并的 #20、#21 整理来源支。只清退过 11-01 逐条授权的七支，未将祖先关系当作批量删除许可。
 
-其余 15 支全部保留：备份、local 保留支、无共同祖先 snapshot、paper 分别有 7、368、2,096、7 项 main 缺失路径；workbench 保留支另有 1 项敏感候选路径，仅登记路径与 Git 对象，未打开或提取。其中 10 支已完成分支引入差异、blob/AST 与关键行为审查，具体保留与整合建议见 [语义取舍](branch-semantics.md)，不把路径存在等同于功能完整整合。#12/#13 的择取整合事实与“关闭未直接合并”状态同时保留。
+其余 17 支全部保留。#22 的两支（`agent/workbench-20261029` 被 CI `agent/**` 推送规则引用）在 #22 合并后成为 main 祖先；`codex/preserve-20261026-local` 经工作台分支进入 #22 头，届时也成为祖先。其余 15 支同 11-01：备份、local 保留支、无共同祖先 snapshot、paper 分别有 7、368、2,096、7 项 main 缺失路径；workbench 保留支另有 1 项敏感候选路径，仅登记路径与 Git 对象，未打开或提取。其中 10 支已完成分支引入差异、blob/AST 与关键行为审查，具体保留与整合建议见 [语义取舍](branch-semantics.md)，不把路径存在等同于功能完整整合。#12/#13 的择取整合事实与“关闭未直接合并”状态同时保留。
 
 ## 当前 refresh
 
-统计、Agent、启动与交付契约已由 #19 完成；恢复边界、`.tar.xz` 漏计及基础索引由 #20 完成。本次后续整理补入独立 Drive 回执、七引用实际清退、十支语义取舍，并统一内部待完成写入入口与当前 CI 说明；实施和验证见[工程记录](../setup/2026-10-30/engineering/REPORT.md)。
+统计、Agent、启动与交付契约已由 #19 完成；恢复边界、`.tar.xz` 漏计及基础索引由 #20 完成；#21 补入独立 Drive 回执、七引用实际清退、十支语义取舍，并统一内部待完成写入入口与当前 CI 说明。11-06 合并整理在 #22 之上修复其 5 项审查意见并处理第三方快照行尾；实施和验证见[工程记录](../setup/2026-10-30/engineering/REPORT.md)。
 
 源码主线与安装镜像分别验收；当前远端 `deploy` 为 `41e6bdc221cb`，主线合并不代表镜像已发布。
 

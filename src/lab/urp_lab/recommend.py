@@ -9,6 +9,16 @@ from . import learned, paths
 from .solvers import catalog
 
 
+# Development-side audit evidence (experiments/runs/evolve-audit-20261023, Dutch fields, 3 s, seed 42); quoted with
+# its scope so the reason is not mistaken for a guarantee on a new field.
+FLEET_EVIDENCE = {
+    'total_distance': '开发侧审计（真实田块 274 个可解实例，3 s）：PyVRP 首选可行 271/274，可行时 261 例为逐实例最好、其余与最好差距可忽略（平均 1.000 倍）；'
+                      '该历史批次被拒的 3 条与障碍有毫米级擦碰（接口需求第 18 项）；当次 OR-Tools 重试通过，不保证新任务也可求解',
+    'makespan': '开发侧审计（真实田块 68 个可解实例，3 s）：最晚完成目标下 OR-Tools 在 65 个实例上最好，'
+                'PyVRP 只优化里程，平均最晚完成长 19%',
+}
+
+
 def _feature(name, key, value, unit=None, hint=None):
     return {'name': name, 'key': key, 'value': value, 'unit': unit, 'hint': hint}
 
@@ -42,11 +52,13 @@ def _fleet(inst):
     if inst['objective'] == 'makespan':
         score['ortools.fleet'] += 3
         why['ortools.fleet'].append('规则建议：OR-Tools 使用路线跨度与里程的加权目标；时间为匀速代理，不含转向或交通排队')
+        why['ortools.fleet'].append(FLEET_EVIDENCE['makespan'])
         score['pyvrp.fleet'] += 1.5
         why['pyvrp.fleet'].append('以总里程为搜索目标，不直接均衡各车工作量；是否更优需同实例比较')
     else:
         score['pyvrp.fleet'] += 3
         why['pyvrp.fleet'].append('规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估')
+        why['pyvrp.fleet'].append(FLEET_EVIDENCE['total_distance'])
         score['ortools.fleet'] += 2
         why['ortools.fleet'].append('采用不同搜索实现的对照，需用相同实例和预算比较')
     if R is not None and R < 0.8:
@@ -75,6 +87,12 @@ def _fleet(inst):
         why['ortools.fleet'].append('OR-Tools 可为每类车使用不同车速的时间矩阵，均衡最晚完成')
     budget = 2 if n <= 30 else 5 if n <= 120 else 15
     return feats, score, why, {'time_limit_s': budget}
+
+
+def _coverage_order(scenario, instance, score, why, params_hint):
+    """Report the admission status; offline inspection never rewrites live rankings or parameters."""
+    from .evolve import serve
+    return serve.recommend(scenario, instance), params_hint
 
 
 def _depot_central(inst):
@@ -171,6 +189,8 @@ def recommend(scenario, instance, budget_s=None):
                     score[gid] -= 5
                     why[gid].append('栅格搜索不考虑最小转弯半径，仅作几何参照')
             why['ompl.rrt_connect'].append('优先搜索可行路径，不优化路径长度；耗时以实测为准')
+    if pc == 'coverage':
+        model, params_hint = _coverage_order(scenario, instance, score, why, params_hint)
     by_id = {a['id']: a for a in algs}
     rows = []
     for aid in sorted(score, key=lambda k: (-score[k], k)):
@@ -202,6 +222,7 @@ def recommend(scenario, instance, budget_s=None):
                                      reason=None if pc != 'euclidean_cvrp' else '历史训练数据未恢复',
                                      required=[str(paths.CVRP_SELECTION_DATA / 'data/raw.jsonl')], prediction=None)
     first = rows[0]['reasons'][0] if rows else ''
-    return dict(problem_class=pc, policy='knn-crc-local-v1' if model and model.get('status') == 'available' else 'rules-v2',
+    learned_policy = {'lab.coverage.order.v1': 'coverage-order-v1'}.get((model or {}).get('id'), 'knn-crc-local-v1')
+    return dict(problem_class=pc, policy=learned_policy if model and model.get('status') == 'available' else 'rules-v2',
                 features=feats, learned_selector=learned_selector, ranking=rows, recommended=recommended, compare=compare,
                 explanation=(f"推荐 {by_id[recommended]['name']}：{first}" if recommended else '没有适用的算法'))

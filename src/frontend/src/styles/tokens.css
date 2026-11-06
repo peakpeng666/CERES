@@ -61,7 +61,7 @@
   /* type */
   --font-sans: "IBM Plex Sans", "Microsoft YaHei UI", "Microsoft YaHei", "PingFang SC",
     "Noto Sans CJK SC", "Noto Sans SC", "Source Han Sans SC", "Hiragino Sans GB", system-ui,
-    sans-serif;
+    "Noto Serif SC Variable", sans-serif;
   --font-mono: "IBM Plex Mono", "Cascadia Mono", "Noto Sans Mono CJK SC", ui-monospace,
     SFMono-Regular, Menlo, Consolas, monospace;
   --fs-11: 0.6875rem;

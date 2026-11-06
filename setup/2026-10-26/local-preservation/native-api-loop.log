@@ -1,0 +1,13 @@
+[PASS] gateway health
+[PASS] service inventory — gateway=running, archive=running, solver=ready, fields2cover=ready, ros=ready, sim=stopped, rviz=unavailable, gazebo_gui=unavailable
+[PASS] load scenario — turn_routing · map
+[PASS] recommendation — recommended urp.turn_mode_dp; learned selector not_applicable
+[PASS] submit solve job — 1 algorithms: urp.turn_mode_dp
+[PASS] all solver runs terminal
+[PASS] recommended run valid and checked — objective {'value': 490, 'unit': 'cm_equivalent', 'lower_bound': None} check src/research/src/urp_research/turn_modes/checker.py
+[PASS] map check collision-free
+[PASS] export json
+[PASS] export csv
+[PASS] export geojson
+[PASS] compare export
+{"status": "PASS_SOLVER_ONLY", "report": "/home/peakpeng/Desktop/URP/.local-state/inspection-20261025T152450Z/native-api-loop-final/report.json"}

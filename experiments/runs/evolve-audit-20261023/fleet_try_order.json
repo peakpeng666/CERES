@@ -1,0 +1,25 @@
+{
+ "total_distance": {
+  "solvable_instances": 274,
+  "order": [
+   "pyvrp.fleet",
+   "ortools.fleet"
+  ],
+  "first_feasible": 271,
+  "with_fallback_feasible": 274,
+  "mean_ratio_to_vbs": 1.000100453805598,
+  "mean_wall_s": 3.243633521967207
+ },
+ "makespan": {
+  "solvable_instances": 68,
+  "order": [
+   "ortools.fleet",
+   "pyvrp.fleet"
+  ],
+  "first_feasible": 68,
+  "with_fallback_feasible": 68,
+  "mean_ratio_to_vbs": 1.0016511180964023,
+  "mean_wall_s": 3.310112214249918
+ },
+ "note": "开发侧离线计算：先试第一项，独立检查失败再试第二项；比值以同实例五算法中最好可行成本为 1"
+}

@@ -6,3 +6,5 @@ Dockerfile text eol=lf
 *.yaml text eol=lf
 *.ps1 text eol=crlf
 *.bat text eol=crlf
+# Third-party snapshots keep their captured bytes: recorded source hashes refer to them, and no conversion applies.
+src/repos/** -text

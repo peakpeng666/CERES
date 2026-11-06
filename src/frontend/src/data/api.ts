@@ -163,7 +163,7 @@ export function explainLoadError(error: Error | null): { title: string; detail: 
   if (code === 'HTTP_ERROR' && /404/.test(error.message)) {
     if (url === '/data/meta.json') return {
       title: '无历史数据',
-      detail: '本机尚未恢复历史实验数据，因此暂不展示结果、回放或核验结论。恢复可信数据后刷新页面。',
+      detail: '本机还没有历史实验数据。在 设置 → 数据 下载历史档案后，这里显示结果、回放和核验结论。',
     };
     return {
       title: `找不到数据文件 ${url}`,

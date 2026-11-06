@@ -4,6 +4,33 @@
 
 工程基线以 main `5ddbd22` 为基础，整合 Agent、工作台与离线 evolve。第一轮生产代码验证于 `b2f79af`，入口与 CI 验证于 `cf96ed9`；第一轮最终提交为 `aab3b42`。下面先记录在同一 PR 继续推进的第二轮结果。
 
+## 2026-11-06 合并整理：PR #22 审查修复与行尾
+
+基线为已合并 main `3ad714018544f1bd8fe6db30e610eb96b8bc0320`（#21），实施分支 `ccr-81735237-3k02hy`。开放的 [#22](https://github.com/peakpeng666/URP/pull/22) 头 `c38a4415`（工程 6/6、部署 2/2 CI 通过）以快进方式并入，原 70 个提交不改写；`agent/workbench-20261029` 是其祖先，一并包含。#22 的自动审查留有 5 项未处理意见，逐项先在旧代码上复现，再修复并补回归测试。没有删除、移动或改写任何分支引用，也没有调用真实模型。
+
+| 审查意见 | 修复前复现 | 修复 | 回归测试 |
+|---|---|---|---|
+| P1 安装版桌面的备份/恢复报 `No module named urp_lab` | 打包布局下从其他目录启动，子进程工作目录是启动目录（实测 `/tmp`），且 `childEnv()` 已清除 `PYTHONPATH` | `DataTransfer.command` 与 `Backend.start()` 一样传入 `layout()` 的 Lab 目录，`run()` 转发 `cwd` | `src/desktop/test/main.test.js` |
+| P2 精简后端删掉 pyproj 的 `proj.db` | `slim()` 删除所有名为 `share` 的目录，包括 `pyproj/proj_dir/share/proj`；无系统 PROJ 时 GeoJSON 导入与田块投影失败 | 保留该目录，其余 `share` 照常精简 | 同上，以 python3 实际调用 `slim()` |
+| P2 Windows 看门狗超时被记为 error | 去掉 `SIGALRM` 后超时 JSON 写进被重定向的 stderr，stdout 为空，网关解析失败并记为 error | 看门狗写入布防时保存的真实 stdout | `test_error_contracts.py`：子进程真实触发看门狗，`JobManager._finish` 判为 timeout |
+| P1 设置中连接的服务商无法进行科研对话工具调用 | OpenAI 与 Anthropic 两类均报 `KeyError: 'name'`（工具定义被二次包装、历史调用格式不符） | `ConnectedModel` 在适配边界把 OpenAI 形工具定义与历史调用转为 `llm.chat` 的内部格式；会话记录本身不变 | `test_research_agent.py`，两类服务商 |
+| P2 同一回复的多个工具调用之间暂停或取消后无法继续 | 历史中只有第一个调用的结果，严格服务商拒绝继续 | 暂停、取消、致命工具错误、预算、模型与内部错误在保存前为未答复调用补“中断/取消”结果；`RUNNER_VERSION` 改为 `agent-runner/6` | `test_agent_runner_guards.py`，严格替身服务商，暂停与取消两种 |
+
+**行尾。** `src/repos` 有 185 个第三方文件以 CRLF blob 提交（Windows 采集），而 `*.yml`、`*.yaml`、`*.sh`、`Dockerfile`、`*.bat` 规则要求转换，全新检出会依写入时刻把其中一部分报为已修改（本次检出为 95 个）。逐个改写 blob 会动到研究记录固定的字节：`literature/资料/代码定位.json` 的 152 个 `source_sha256` 中 151 个与当前快照一致，改写后 MLEvolve、DR-ALNS 两项将不再一致。因此改为 `src/repos/** -text`：第三方快照不做任何转换，不改 blob；项目自身脚本与 YAML 规则不变。强制重算全部第三方文件哈希的全新检出中，修复前 185 个、修复后 0 个显示为已修改。另记录：改写后 ReEvo、ShinkaEvolve 各一项会与 `materials/代码评议` 清单登记的上游 blob 相同，说明 CRLF 来自采集；是否恢复上游字节留待单独决定。
+
+**分支快照。** 远端 31 个分支：11-01 快照的 27 个非主线分支头未移动，main 前进 #21，新增 #21 来源支和 #22 的两支。[当前分支表](../../../docs/current-branches.csv)按 11-06 快照重算 Git 派生列并复核消费者，未移动分支沿用 11-01 判断；`codex/preserve-20261026-local` 经工作台分支进入 #22 头，#22 合并后成为 main 祖先。各支比 11-01 多出的 1 项独有路径为 #21 有意删除的 `src/frontend/src/studio/pendingWrites.ts` 转发入口；相对本分支头另有 `src/frontend/src/lab/shell/Sidebar.tsx`，由工作台重写 `31edb275` 改为 `desk/Sidebar` 后删除，现无引用。
+
+| 本次验证（代码提交 `92c7983`） | 结果 | 记录 |
+|---|---|---|
+| 5 项修复的回归测试在旧代码上 | 均失败（逐项复现上表现象） | 本节 |
+| 桌面 Node 测试 | **15/15 passed**（#22 为 13 项，新增 2 项） | [summary](../../2026-11-06/cleanup/summary.json) |
+| Agent、科研对话、服务商与错误合约相关 Lab 文件（与全量有交集，不相加） | **181 passed、1 skipped** | 同上 |
+| Lab 全量，固定官方地图（`--require-maps`） | **1153 passed、12 skipped、36 subtests passed**，502 s；跳过均为云端缺少的可选资源：Fields2Cover 9、Fields2Benchmark 2、ROS 1（#22 本机运行有 ROS，为 11 项） | [lab-full.log](../../2026-11-06/cleanup/lab-full.log) |
+| 工程门禁、类型检查与生产构建 | **16/16 passed**：458 个 Python 用例、前端 754、回放 49、桌面 15；构建含 `tsc --noEmit` | [engineering-summary.json](../../2026-11-06/cleanup/engineering-summary.json) |
+| 全新检出行尾（强制重算第三方文件哈希） | 修复前 185、修复后 **0** 个已修改 | 本节 |
+
+本轮在云端运行，没有 ROS/Gazebo、桌面或 Windows：浏览器检查、真实模型、Windows 实机看门狗、桌面打包/安装、容器镜像与现场仿真均未运行；#22 记录的数据恢复结果及约 1.72 GB 原始数据缺口不变。分支清退须逐条授权，本轮只更新快照。
+
 ## 2026-11-01 后续整理：引用清退、Drive 与语义核对
 
 基线为已发布 main `9324ba1a71eb4b85a60fddbf4635900471b0e3f8`。用户授权的七条分支引用已实际删除；本次文件改动保留在本地分支 `chore/reconcile-retained-branches-20261101`，尚未提交或推送为新批次。

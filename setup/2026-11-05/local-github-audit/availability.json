@@ -1,0 +1,68 @@
+{
+  "source_commit": "82db23521565a27ffd585a70ed49f07a4eff165e",
+  "release_tags": [
+    "local-preservation-20261026",
+    "platform-snapshot-20261018-ddb5113e"
+  ],
+  "latest_release": "local-preservation-20261026",
+  "v0.2.0_tag_present": false,
+  "desktop_data_1_release_present": false,
+  "current_workbench_pr_search_result_count": 0,
+  "current_commit_workflow_run_count": 0,
+  "main_last_workflow": {
+    "commit": "3ad714018544f1bd8fe6db30e610eb96b8bc0320",
+    "conclusion": "success",
+    "url": "https://github.com/peakpeng666/URP/actions/runs/41284549690"
+  },
+  "anonymous_ghcr_head": [
+    {
+      "image": "ghcr.io/peakpeng666/urp-sim:v0.2.0",
+      "http_status": 404
+    },
+    {
+      "image": "ghcr.io/peakpeng666/urp-sim:deploy",
+      "http_status": 200,
+      "digest": "sha256:f832c67cd15ac3cacce2f27dc99c527e5b0c0e7a878cc35a6d78f88d88dde127"
+    }
+  ],
+  "current_dist_windows_exe": {
+    "relative_path": "src/desktop/dist/agri-route-workbench-0.2.0-windows-x64.exe",
+    "bytes": 287302,
+    "archive_listing": "7z lists only an embedded __uninstaller.exe; final tested installer is under scratchpad/nsis-out"
+  },
+  "stale_launch_runtime_exists": false,
+  "credential_metadata": {
+    "directory": "~/.config/urp-workbench",
+    "directory_mode": "0700",
+    "files": [
+      {
+        "name": "credentials.json",
+        "bytes": 283,
+        "mode": "0600"
+      },
+      {
+        "name": "llm.json",
+        "bytes": 1582,
+        "mode": "0600"
+      }
+    ],
+    "contents_read": false
+  },
+  "docker_summary": {
+    "images_size": "16.68GB",
+    "image_count": 4,
+    "build_cache_size": "18.96GB",
+    "build_cache_records": 65,
+    "containers": 0,
+    "named_volumes": 0,
+    "sizes_may_share_layers": true
+  },
+  "inspection_effects": {
+    "branch_or_ref_changes": false,
+    "business_source_changes": false,
+    "deleted_files": false,
+    "pushes": false,
+    "partial_clone_note": "An early ls-tree -l requested missing main blobs and triggered Git lazy fetch/automatic object maintenance; it was stopped. Later object inventory used existing object metadata. No checkout, reset, gc/prune command or ref update was requested.",
+    "scope": "Metadata capture phase, before the documentation/inventory-only delivery commit and push requested by the user."
+  }
+}

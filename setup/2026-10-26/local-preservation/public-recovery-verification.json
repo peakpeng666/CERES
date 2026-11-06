@@ -1,0 +1,17 @@
+{
+  "unauthenticated_public_download": true,
+  "experiments": {
+    "selected_paths": 28885,
+    "restored_paths": 28885,
+    "host_dependencies": [],
+    "scope": "Published copies; authentication is redacted. Host files are never installed."
+  },
+  "base": {
+    "selected_paths": 1,
+    "restored_paths": 1,
+    "host_dependencies": [],
+    "scope": "Published copies; authentication is redacted. Host files are never installed."
+  },
+  "base_sample": "project/.local-state/nonideal-audit-ci-watch.log",
+  "existing_destination_rejected": true
+}

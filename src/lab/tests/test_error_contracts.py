@@ -94,6 +94,29 @@ def test_worker_json_requires_a_terminal_solver_status(payload):
     assert 'status' in sol['error']
 
 
+def test_watchdog_timeout_without_interval_timer_reaches_the_gateway_as_timeout():
+    """Windows has no SIGALRM: the watchdog thread must report on the real stdout while the solver's is redirected."""
+    import json
+    import subprocess
+    import threading
+    from urp_lab.jobs import JobManager
+    code = ('import signal, sys, time\n'
+            'del signal.SIGALRM\n'
+            'from urp_lab import worker\n'
+            "worker.run_algorithm = lambda *a: (print('native solver chatter'), time.sleep(30))\n"
+            'sys.exit(worker.main())\n')
+    request = {'algorithm_id': 'urp.watchdog_probe', 'params': {'time_limit_s': 0.2}, 'scenario': {}, 'instance': {}}
+    proc = subprocess.run([sys.executable, '-c', code], input=json.dumps(request).encode(), capture_output=True, timeout=60)
+    assert proc.returncode == 1, proc.stderr.decode(errors='replace')
+    assert b'native solver chatter' in proc.stderr and b'native solver chatter' not in proc.stdout
+    assert json.loads(proc.stdout)['error_kind'] == 'timeout'
+    manager = JobManager.__new__(JobManager)
+    manager._lock, manager._canceled = threading.Lock(), set()
+    sol = {'run_id': 'test', 'metrics': {}, 'routes': [], 'algorithm': {}}
+    manager._finish(sol, proc.returncode, proc.stdout, proc.stderr, .3, 5, False)
+    assert sol['state'] == 'timeout' and 'time_limit_s' in sol['error']
+
+
 @pytest.mark.parametrize('error', [PermissionError(1, 'permission denied'), RuntimeError('lock API bug'), KeyboardInterrupt()])
 def test_store_does_not_misreport_all_lock_errors_as_existing_owner(tmp_path, monkeypatch, error):
     import fcntl

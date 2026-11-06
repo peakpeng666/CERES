@@ -45,7 +45,7 @@ export interface FieldPhysicsResponse {
   };
 }
 
-async function call<T>(method: string, path: string, body?: unknown, options: CallOptions & { preserveJsonText?: boolean } = {}): Promise<T> {
+export async function call<T>(method: string, path: string, body?: unknown, options: CallOptions & { preserveJsonText?: boolean } = {}): Promise<T> {
   const controller = new AbortController();
   const onAbort = () => controller.abort(options.signal?.reason);
   if (options.signal?.aborted) onAbort();
@@ -127,14 +127,14 @@ export const studio = {
     return call<{ references: Reference[]; topics: Record<string, string> }>('GET', `/references?${p}`);
   },
   source: (path: string) => call<{ path: string; language: string; text: string }>('GET', `/source?path=${encodeURIComponent(path)}`),
-  agentStatus: () => call<AgentStatus>('GET', '/agent'),
-  agentSessions: () => call<{ sessions: AgentSessionSummary[] }>('GET', '/agent/sessions'),
-  agentSession: (id: string, options: CallOptions = {}) => call<AgentSession>('GET', `/agent/sessions/${encodeURIComponent(id)}`, undefined, options),
-  agentStart: (message: string) => call<AgentSession>('POST', '/agent/sessions', { message }),
-  agentSend: (id: string, message: string) => call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/messages`, { message }),
+  agentStatus: () => call<AgentStatus>('GET', '/research/agent'),
+  agentSessions: () => call<{ sessions: AgentSessionSummary[] }>('GET', '/research/agent/sessions'),
+  agentSession: (id: string, options: CallOptions = {}) => call<AgentSession>('GET', `/research/agent/sessions/${encodeURIComponent(id)}`, undefined, options),
+  agentStart: (message: string) => call<AgentSession>('POST', '/research/agent/sessions', { message }),
+  agentSend: (id: string, message: string) => call<AgentSession>('POST', `/research/agent/sessions/${encodeURIComponent(id)}/messages`, { message }),
   agentDecide: (id: string, call_id: string, approve: boolean, note?: string) =>
-    call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/approval`, { call_id, approve, note }),
-  agentCancel: (id: string) => call<AgentSession>('POST', `/agent/sessions/${encodeURIComponent(id)}/cancel`, {}),
+    call<AgentSession>('POST', `/research/agent/sessions/${encodeURIComponent(id)}/approval`, { call_id, approve, note }),
+  agentCancel: (id: string) => call<AgentSession>('POST', `/research/agent/sessions/${encodeURIComponent(id)}/cancel`, {}),
   studies: () => call<{ studies: Study[] }>('GET', '/studies'),
   study: (id: string) => call<Study>('GET', `/studies/${encodeURIComponent(id)}`),
   createStudy: (spec: StudySpec) => call<Study>('POST', '/studies', spec),

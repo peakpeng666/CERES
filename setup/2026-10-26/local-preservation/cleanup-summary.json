@@ -1,0 +1,68 @@
+{
+  "started_utc": "2026-10-25T16:14:48.494001+00:00",
+  "available_bytes_before_deletion": 71234732032,
+  "primary_files_verified": 59516,
+  "removed_worktrees": [
+    "/home/peakpeng/urp-worktrees/happy-editor",
+    "/home/peakpeng/urp-worktrees/labpatch-5065046",
+    "/home/peakpeng/urp-worktrees/luna-agri",
+    "/home/peakpeng/urp-worktrees/mamba-20261022",
+    "/home/peakpeng/urp-worktrees/mamba-results",
+    "/home/peakpeng/urp-worktrees/verify-5065046",
+    "/home/peakpeng/urp-worktrees/workbench-20261022"
+  ],
+  "removed_external_copies": [
+    "/home/peakpeng/urp-e2e",
+    "/home/peakpeng/Documents/Codex/2026-10-23/task-2/urp-audit-20261023",
+    "/home/peakpeng/Documents/Codex/2026-10-23/task-2/urp-organize-20261024",
+    "/home/peakpeng/urp-worktrees/patches",
+    "/home/peakpeng/urp-worktrees/mamba-patches"
+  ],
+  "profile_caches_removed": [
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/inspector-profile-1792292411797",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/fleet-planning-profile-1792294882553",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/inspect-profile-1792291867907",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/smoke-profile-2",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/smoke-profile",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/inspector-profile-1792292330032",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/inspector-profile-1792292381528",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/fleet-planning-profile-1792294630107",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/fleet-planning-profile-1792294822437",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/inspector-profile-1792292315639",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/fleet-planning-profile-1792294715366",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-17/frontend-kimi/browser/fleet-planning-profile-1792294655951"
+  ],
+  "main_unchanged": "5ddbd22f0e176b9fb6f0ed7f1eeaa8063ea1b4cb",
+  "primary_files_removed": 59516,
+  "available_bytes_after_source_cleanup": 86285180928,
+  "observed_reclaimed_bytes": 15050448896,
+  "finished_utc": "2026-10-25T16:14:50.580010+00:00",
+  "restored_immutable_controls": [
+    "baseline-worker/.gitignore",
+    "baseline-worker/README.md"
+  ],
+  "primary_files_removed_net": 59514,
+  "available_bytes_final": 97894154240,
+  "available_GiB_final": 91.17,
+  "temporary_verification_bytes_reclaimed": 1785016320,
+  "remaining_worktree": "/home/peakpeng/Desktop/URP",
+  "archived_release": "https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026",
+  "preservation_branch": "codex/preserve-20261026-local",
+  "compressed_audit_inventories": [
+    "delta-spec.json.gz",
+    "ignored-inventory.json.gz",
+    "primary-cleanup-plan.jsonl.gz",
+    "preservation-map.jsonl.gz",
+    "preservation-files.jsonl.gz",
+    "platform-protection-before.json.gz"
+  ],
+  "platform_integrity": {
+    "files": 46767,
+    "symlinks": 152,
+    "mismatches": 0
+  },
+  "native_api_loop_status": "PASS_SOLVER_ONLY",
+  "normal_gateway_exit": 0,
+  "simulation_executed": false,
+  "final_measured_utc": "2026-10-25T16:35:27.697596+00:00"
+}

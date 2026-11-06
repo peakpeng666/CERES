@@ -1,0 +1,36 @@
+{
+  "main": "5ddbd22f0e176b9fb6f0ed7f1eeaa8063ea1b4cb",
+  "local_main": "2ba49b265f7ce04c08c284c4fe1a1fb256e229a1",
+  "local_main_behind": 128,
+  "open_draft_prs": [
+    "https://github.com/peakpeng666/URP/pull/12",
+    "https://github.com/peakpeng666/URP/pull/13"
+  ],
+  "main_ci": "https://github.com/peakpeng666/URP/actions/runs/39952752140",
+  "main_ci_status": "success",
+  "latest_observed_warehouse_diagnostic": {
+    "conclusion": "failure",
+    "createdAt": "2026-10-23T12:01:09Z",
+    "databaseId": 39950208628,
+    "headBranch": "fix/agriculture-compatibility-20261022",
+    "headSha": "2b4458942694c62f5ef8beed6d995af723f69316",
+    "status": "completed",
+    "url": "https://github.com/peakpeng666/URP/actions/runs/39950208628",
+    "workflowName": "Warehouse lifecycle-only diagnostic (no route acceptance)"
+  },
+  "deployment_branch": "41e6bdc221cbe5e733a583fbadb287afd0534723",
+  "deployment_branch_behind_main": 144,
+  "registry_images_anonymously_readable": [
+    {
+      "image": "ghcr.io/peakpeng666/urp-sim",
+      "anonymous_readable": true,
+      "deploy_digest": "sha256:f832c67cd15ac3cacce2f27dc99c527e5b0c0e7a878cc35a6d78f88d88dde127"
+    },
+    {
+      "image": "ghcr.io/peakpeng666/urp-bench",
+      "anonymous_readable": true,
+      "deploy_digest": "sha256:f4b4345d0c537182acb1ea11c9a62448d0c88c17eb5504e2daedf6d89a127c79"
+    }
+  ],
+  "scope": "Inspection only; no branch merge, image rebuild or new physical acceptance. GDrive is a separate rclone FUSE remote and was not changed."
+}

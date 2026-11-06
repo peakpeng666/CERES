@@ -1,0 +1,295 @@
+{
+ "rows": [
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "profile": "robot_s",
+   "official": 69,
+   "fillet": 58,
+   "fillet_unverifiable": 2,
+   "strict": 30
+  },
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "profile": "sprayer_l",
+   "official": 71,
+   "fillet": 62,
+   "fillet_unverifiable": 0,
+   "strict": 59
+  },
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "profile": "tractor_m",
+   "official": 59,
+   "fillet": 57,
+   "fillet_unverifiable": 0,
+   "strict": 51
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "profile": "robot_s",
+   "official": 105,
+   "fillet": 70,
+   "fillet_unverifiable": 2,
+   "strict": 15
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "profile": "sprayer_l",
+   "official": 73,
+   "fillet": 53,
+   "fillet_unverifiable": 0,
+   "strict": 47
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "profile": "tractor_m",
+   "official": 76,
+   "fillet": 65,
+   "fillet_unverifiable": 0,
+   "strict": 56
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "profile": "robot_s",
+   "official": 92,
+   "fillet": 65,
+   "fillet_unverifiable": 2,
+   "strict": 12
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "profile": "sprayer_l",
+   "official": 49,
+   "fillet": 43,
+   "fillet_unverifiable": 0,
+   "strict": 37
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "profile": "tractor_m",
+   "official": 69,
+   "fillet": 63,
+   "fillet_unverifiable": 0,
+   "strict": 51
+  },
+  {
+   "config": "full:none/field_coverage",
+   "profile": "robot_s",
+   "official": 111,
+   "fillet": 107,
+   "fillet_unverifiable": 0,
+   "strict": 52
+  },
+  {
+   "config": "full:none/field_coverage",
+   "profile": "sprayer_l",
+   "official": 90,
+   "fillet": 89,
+   "fillet_unverifiable": 0,
+   "strict": 80
+  },
+  {
+   "config": "full:none/field_coverage",
+   "profile": "tractor_m",
+   "official": 102,
+   "fillet": 100,
+   "fillet_unverifiable": 0,
+   "strict": 87
+  },
+  {
+   "config": "full:none/n_swath",
+   "profile": "robot_s",
+   "official": 128,
+   "fillet": 120,
+   "fillet_unverifiable": 0,
+   "strict": 27
+  },
+  {
+   "config": "full:none/n_swath",
+   "profile": "sprayer_l",
+   "official": 88,
+   "fillet": 74,
+   "fillet_unverifiable": 0,
+   "strict": 68
+  },
+  {
+   "config": "full:none/n_swath",
+   "profile": "tractor_m",
+   "official": 110,
+   "fillet": 104,
+   "fillet_unverifiable": 0,
+   "strict": 82
+  },
+  {
+   "config": "full:none/swath_length",
+   "profile": "robot_s",
+   "official": 123,
+   "fillet": 112,
+   "fillet_unverifiable": 0,
+   "strict": 21
+  },
+  {
+   "config": "full:none/swath_length",
+   "profile": "sprayer_l",
+   "official": 60,
+   "fillet": 54,
+   "fillet_unverifiable": 0,
+   "strict": 49
+  },
+  {
+   "config": "full:none/swath_length",
+   "profile": "tractor_m",
+   "official": 108,
+   "fillet": 97,
+   "fillet_unverifiable": 0,
+   "strict": 74
+  },
+  {
+   "config": "full:trapezoidal/field_coverage",
+   "profile": "robot_s",
+   "official": 1,
+   "fillet": 0,
+   "fillet_unverifiable": 0,
+   "strict": 0
+  },
+  {
+   "config": "full:trapezoidal/field_coverage",
+   "profile": "sprayer_l",
+   "official": 1,
+   "fillet": 0,
+   "fillet_unverifiable": 0,
+   "strict": 0
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "profile": "robot_s",
+   "official": 60,
+   "fillet": 19,
+   "fillet_unverifiable": 8,
+   "strict": 8
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "profile": "sprayer_l",
+   "official": 16,
+   "fillet": 8,
+   "fillet_unverifiable": 0,
+   "strict": 7
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "profile": "tractor_m",
+   "official": 11,
+   "fillet": 9,
+   "fillet_unverifiable": 0,
+   "strict": 8
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "profile": "robot_s",
+   "official": 11,
+   "fillet": 3,
+   "fillet_unverifiable": 0,
+   "strict": 0
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "profile": "sprayer_l",
+   "official": 2,
+   "fillet": 0,
+   "fillet_unverifiable": 0,
+   "strict": 0
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "profile": "tractor_m",
+   "official": 3,
+   "fillet": 0,
+   "fillet_unverifiable": 0,
+   "strict": 0
+  },
+  {
+   "config": "single:boustrophedon",
+   "profile": "robot_s",
+   "official": 6,
+   "fillet": 6,
+   "fillet_unverifiable": 0,
+   "strict": 6
+  },
+  {
+   "config": "single:boustrophedon",
+   "profile": "sprayer_l",
+   "official": 7,
+   "fillet": 7,
+   "fillet_unverifiable": 0,
+   "strict": 7
+  },
+  {
+   "config": "single:boustrophedon",
+   "profile": "tractor_m",
+   "official": 7,
+   "fillet": 7,
+   "fillet_unverifiable": 0,
+   "strict": 7
+  },
+  {
+   "config": "single:snake",
+   "profile": "robot_s",
+   "official": 6,
+   "fillet": 6,
+   "fillet_unverifiable": 0,
+   "strict": 6
+  },
+  {
+   "config": "single:snake",
+   "profile": "sprayer_l",
+   "official": 7,
+   "fillet": 7,
+   "fillet_unverifiable": 0,
+   "strict": 7
+  },
+  {
+   "config": "single:snake",
+   "profile": "tractor_m",
+   "official": 7,
+   "fillet": 7,
+   "fillet_unverifiable": 0,
+   "strict": 7
+  }
+ ],
+ "total": {
+  "official": 1728,
+  "fillet": 1472,
+  "fillet_unverifiable": 14,
+  "strict": 961
+ },
+ "by_profile": {
+  "robot_s": {
+   "official": 712,
+   "fillet": 566,
+   "fillet_unverifiable": 14,
+   "strict": 177
+  },
+  "sprayer_l": {
+   "official": 464,
+   "fillet": 397,
+   "fillet_unverifiable": 0,
+   "strict": 361
+  },
+  "tractor_m": {
+   "official": 552,
+   "fillet": 509,
+   "fillet_unverifiable": 0,
+   "strict": 423
+  }
+ },
+ "tolerance_sensitivity_m": {
+  "0.005": 1472,
+  "0.01": 1472,
+  "0.02": 1472
+ },
+ "unfilletable_reason_counts": {
+  "相邻拐角过近，直段不足以倒圆": 654,
+  "拐角邻接弧段，需修补": 145
+ }
+}

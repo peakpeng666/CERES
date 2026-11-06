@@ -1,0 +1,16 @@
+2026-10-26 01:25:54,454 INFO uvicorn.error: Started server process [48407]
+2026-10-26 01:25:54,454 INFO uvicorn.error: Waiting for application startup.
+2026-10-26 01:25:54,469 INFO urp_lab.services: archive backend started pid=48472
+2026-10-26 01:25:54,469 INFO urp_lab.gateway: gateway ready on 127.0.0.1:4100 (runtime /home/peakpeng/Desktop/URP/.local-state/inspection-20261025T152450Z/native-platform-runtime-final)
+2026-10-26 01:25:54,469 INFO uvicorn.error: Application startup complete.
+2026-10-26 01:25:54,469 INFO uvicorn.error: Uvicorn running on http://127.0.0.1:4100 (Press CTRL+C to quit)
+2026-10-26 01:25:54,547 INFO urp_lab: 农业机器人路径规划工作台：http://127.0.0.1:4100/（监听 127.0.0.1，Ctrl+C 有序退出）
+2026-10-26 01:25:55,121 INFO urp_lab.jobs: job job_20261025T162555_513f74: urp.turn_mode_dp
+2026-10-26 01:25:55,663 INFO urp_lab: 面板请求有序关闭，保留各组件真实退出结果
+2026-10-26 01:25:55,676 INFO uvicorn.error: Shutting down
+2026-10-26 01:25:55,777 INFO uvicorn.error: Waiting for application shutdown.
+2026-10-26 01:25:55,778 INFO urp_lab.services: gateway exit: stopping archive backend started by the gateway
+2026-10-26 01:25:55,979 INFO urp_lab.services: archive backend stopped rc=0
+2026-10-26 01:25:55,991 INFO urp_lab.gateway: gateway stopped
+2026-10-26 01:25:55,991 INFO uvicorn.error: Application shutdown complete.
+2026-10-26 01:25:55,991 INFO uvicorn.error: Finished server process [48407]

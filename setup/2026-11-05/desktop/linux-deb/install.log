@@ -1,0 +1,32 @@
+deb install exit 0 in 67 s
+Status: install ok installed
+Installed-Size: 1095907
+Version: 0.2.0
+/usr/bin/agri-route-workbench
+agri-route-workbench
+microsoft
+wine-stable
+/usr/share/icons/hicolor/256x256
+/usr/share/icons/hicolor/256x256/apps
+/usr/share/icons/hicolor/256x256/apps/agri-route-workbench.png
+Name=农业机器人路径规划工作台
+Exec=/opt/agri-route-workbench/agri-route-workbench %U
+Icon=agri-route-workbench
+✓ 后端就绪 {"seconds": 0.9}
+✓ 算法目录 {"total": 28, "unavailable": {"f2c.full": "可选 Fields2Cover 绑定未安装；可使用平行往复基线", "f2c.boustrophedon": "
+✓ 界面可以打开 
+✓ 能力清单 {"simulators": {"gazebo.field": "unavailable", "gazebo.tb4": "unavailable", "mujoco.field": "ready"}, "learners": 3}
+✓ 模型目录 {"services": 183}
+✓ 只读接口全部可用 {"routes": 35}
+✓ 任务走完：建图、求解、复核、物理预演、报告 {"best": "PyVRP 固定车队", "physics": "3/3", "wall_s": [1.255, 1.267, 1.445]}
+✓ JS 基线 {"state": "done", "status": "feasible"}
+✓ 数据包下载、校验、解压，/data 可用 {"bytes": 51543685, "catalog_bytes": 1438793}
+✓ 档案后端随数据包启动 {"mode": "local_import_query_and_cvrp_jobs"}
+✓ 有序退出 {"code": 0}
+deb smoke exit 0
+tracebacks 0
+app backend up after 2: {"status":"ok","version":"0.1.0","executes_solvers":true}
+page http://127.0.0.1:4100/
+/opt/agri-route-workbench/resources/backend/app/src/lab/.venv/bin/python -m urp_lab serve --port 4100 --no-arc
+remove exit 0
+ls: cannot access '/opt/agri-route-workbench': No such file or directory

@@ -72,15 +72,22 @@ export function DecisionPanel() {
         <h3>③ 推荐</h3>
         <p className={p.hint}>
           {advice.recommended ? <>推荐 <b>{algos[advice.recommended]?.name ?? advice.recommended}</b>。</> : '没有适用的算法。'}
-          策略 <span className={p.mono}>{advice.policy}</span>{advice.policy === 'rules-v2' ? '（特征规则）' : '（学习型选择器）'}。
+          策略 <span className={p.mono}>{advice.policy}</span>{advice.policy === 'rules-v2' ? '（特征规则）' : advice.policy === 'coverage-order-v1' ? '（经验静态尝试顺序，开发侧拟合）' : '（学习型选择器）'}。
         </p>
         <div className={a.kv}>
-          <span>学习型选择器</span><span><span className={a.chip} data-tone={selLabel.tone === 'gray' ? undefined : selLabel.tone}>{selLabel.text}</span> <span className={p.mono}>{sel?.id}</span></span>
+          <span>{sel?.prediction?.kind === 'static' ? '经验尝试顺序' : '学习型选择器'}</span><span><span className={a.chip} data-tone={selLabel.tone === 'gray' ? undefined : selLabel.tone}>{selLabel.text}</span> <span className={p.mono}>{sel?.id}</span></span>
           {sel?.reason && <><span>原因</span><span>{sel.reason}</span></>}
           {sel?.scope && <><span>适用范围</span><span>{sel.scope}</span></>}
           {sel?.evaluation && <><span>离线评估</span><span>测试 {sel.evaluation.test_n} 例，平均改进 {fmt.num(sel.evaluation.mean_improvement_pct, 2)}%，有害 {sel.evaluation.harmful_instances} 例（对照单一最佳 {sel.evaluation.sbs}）</span></>}
           {sel?.status === 'not_applicable' && <><span>说明</span><span>学习型选择器适用于欧氏 CVRP；此问题使用规则推荐。</span></>}
         </div>
+        {sel?.prediction?.order && (
+          <div className={p.features}>
+            {sel.prediction.order.slice(0, 4).map((o, i) => (
+              <div key={o.config} className={p.feature}><span>尝试 {i + 1}</span><strong>{o.label ?? o.config}</strong></div>
+            ))}
+          </div>
+        )}
 
         <h3>④ 实际选择</h3>
         {!runs.length && <p className={p.hint}>还没有求解。勾选的候选：{st.chosen.map((id) => algos[id]?.name ?? id).join('、') || '无'}。</p>}

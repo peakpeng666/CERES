@@ -1,0 +1,546 @@
+[
+  {
+    "tag": "local-preservation-20261026",
+    "target": "273ef860c65e35a1250a5571d9acd90ae2225a99",
+    "published_at": "2026-10-25T16:03:31Z",
+    "url": "https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026",
+    "assets": [
+      {
+        "name": "local-delta-records-00.tar.zst",
+        "bytes": 78031722,
+        "digest": "sha256:22276a5d4a04a54cb53ac9eb76061049ae2788341b9c9dfb4cde10c734b12c58",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-records-00.tar.zst"
+      },
+      {
+        "name": "local-delta-e2e-01.tar.zst",
+        "bytes": 195818613,
+        "digest": "sha256:9f440fb9e6e762917775130a59f76f50c49266a7c343c03d47baee800f0aa38c",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-01.tar.zst"
+      },
+      {
+        "name": "local-delta-e2e-02.tar.zst",
+        "bytes": 177076011,
+        "digest": "sha256:4d71221d30c98818a01c8924fba175096c86f053ff8c269b48183d02e2ee0b23",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-02.tar.zst"
+      },
+      {
+        "name": "local-delta-experiments-00.tar.zst",
+        "bytes": 4690988,
+        "digest": "sha256:9d5b8c35ec8b4b99e988cc1db4ad4e41f339f3461f2a3b37ed7620bfb8edceb0",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-experiments-00.tar.zst"
+      },
+      {
+        "name": "local-delta-e2e-00.tar.zst",
+        "bytes": 136993694,
+        "digest": "sha256:4fbd9b069a948de24059636d16876d4efd5a4c0a7b5252dbb6ecdec36fa1016e",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-00.tar.zst"
+      },
+      {
+        "name": "local-delta-records-01.tar.zst",
+        "bytes": 64436808,
+        "digest": "sha256:3d39a0b0c524a20e6a8c6eb48a8e095d192e1d27f9ec582e5c5be98263be5d38",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-records-01.tar.zst"
+      },
+      {
+        "name": "files.jsonl.zst",
+        "bytes": 1821748,
+        "digest": "sha256:fc19ecebfc40b8f4b69ddcfbd7d7f811bb61f0208589956690cef731938682ed",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/files.jsonl.zst"
+      },
+      {
+        "name": "exclusions.json",
+        "bytes": 716277,
+        "digest": "sha256:7bd962778e6effe05fee2b0507fd09d9b9b11276efc01fc9f0203e6c4563aa29",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/exclusions.json"
+      },
+      {
+        "name": "preservation-map.jsonl.gz",
+        "bytes": 5493312,
+        "digest": "sha256:b41a16b2d5e0c07a9bda966f1b215d4fd180fc5404fcb8322d449de3bc31207b",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/preservation-map.jsonl.gz"
+      },
+      {
+        "name": "publication-review.json",
+        "bytes": 12137,
+        "digest": "sha256:3710b2df73ff22acc97393b7383572ce5745cffe1c612d7e93229a39a76ac50f",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/publication-review.json"
+      },
+      {
+        "name": "preserved-branches.json",
+        "bytes": 3918,
+        "digest": "sha256:d9ced1b30ae17541bd1b5d528b7857392bced907459d0a6272496522fe688591",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/preserved-branches.json"
+      },
+      {
+        "name": "recovery-index.json",
+        "bytes": 16607,
+        "digest": "sha256:6a6dba7eae142187e24d477e25e88f36be54a2128d963df6928e9d735c1ed1fb",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/recovery-index.json"
+      },
+      {
+        "name": "snapshot.json",
+        "bytes": 3263,
+        "digest": "sha256:e83d465232748458fdf2cd2ac2fff67a72ac995e194b5c3032794b4be8ea978f",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/snapshot.json"
+      },
+      {
+        "name": "SHA256SUMS",
+        "bytes": 1176,
+        "digest": "sha256:f5174affce77a6dfea5601b22e464a468675df5b747b3ae8b2855ded80fb3cd5",
+        "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/SHA256SUMS"
+      }
+    ]
+  },
+  {
+    "tag": "platform-snapshot-20261018-ddb5113e",
+    "target": "ddb5113e641ba63846431d4e3114efaf85f2fc89",
+    "published_at": "2026-10-18T14:07:41Z",
+    "url": "https://github.com/peakpeng666/URP/releases/tag/platform-snapshot-20261018-ddb5113e",
+    "assets": [
+      {
+        "name": "evidence-2026-10-16.tar.zst",
+        "bytes": 27983820,
+        "digest": "sha256:740700f6ac3f463f6127dd064d471a141dc28250a93a2c8901645989bcebfba9",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-16.tar.zst"
+      },
+      {
+        "name": "project-runtime.tar.zst",
+        "bytes": 326147402,
+        "digest": "sha256:f4242c7904218f132f2c6461d51bb62c4428e056e8f0b6c33d46f26541b8a6bd",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/project-runtime.tar.zst"
+      },
+      {
+        "name": "project-local-state.tar.zst",
+        "bytes": 4059853,
+        "digest": "sha256:c1c1ea6a634942c514676bba07398088054c7a9f81cbf115bd3e569b1ecd8c28",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/project-local-state.tar.zst"
+      },
+      {
+        "name": "evidence-2026-10-15.tar.zst",
+        "bytes": 25526091,
+        "digest": "sha256:7d202bd7ec960b675b8190aab03884d280ed8ec1211d24f3744169e1aaf89a68",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-15.tar.zst"
+      },
+      {
+        "name": "evidence-2026-10-17.tar.zst",
+        "bytes": 107378224,
+        "digest": "sha256:78b8a547761139e8984c7ad6ed1292b1599e29866c77bebb1000c2ca09343c49",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-17.tar.zst"
+      },
+      {
+        "name": "evidence-2026-10-18.tar.zst",
+        "bytes": 448321148,
+        "digest": "sha256:ac51de4137d645112b3e0be2e4aaff3d5c8f615dc90b10b7dedc8964ec26186c",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-18.tar.zst"
+      },
+      {
+        "name": "compiled-and-wheels.tar.zst",
+        "bytes": 55249092,
+        "digest": "sha256:5b90b8c95d8ad9dfb82382ac9bfba7005254004f5209156b71929a0e4be2af3c",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/compiled-and-wheels.tar.zst"
+      },
+      {
+        "name": "fuel-cache.tar.zst",
+        "bytes": 144263245,
+        "digest": "sha256:ee2d2ce72dea345b5aaac8c4fe0d3d501a8d51c3211ba1c038ca025cc0ae3b0d",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/fuel-cache.tar.zst"
+      },
+      {
+        "name": "download-caches.tar.zst",
+        "bytes": 157435220,
+        "digest": "sha256:af193d56559b1e0837e1bca2f43efcda38918906566ceb37c510d54b2db58569",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/download-caches.tar.zst"
+      },
+      {
+        "name": "frontend-environment.tar.zst",
+        "bytes": 105831105,
+        "digest": "sha256:5ab47e62b8567fc1ed04ad081f679826692e3feac414840509d3390b6eccc99f",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/frontend-environment.tar.zst"
+      },
+      {
+        "name": "ros-gazebo-installed.tar.zst",
+        "bytes": 97141474,
+        "digest": "sha256:fdb09217cabf0ee2b87103b13f7e9528a5a6cd2f0a69100bfda815fe3fdc78e4",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/ros-gazebo-installed.tar.zst"
+      },
+      {
+        "name": "metadata.tar.zst",
+        "bytes": 10264041,
+        "digest": "sha256:54b6b4e48a816ae03c90c02e68ac7328365728f74739ec9d90db0d0dc93b9ae7",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/metadata.tar.zst"
+      },
+      {
+        "name": "python-environments.tar.zst",
+        "bytes": 321373486,
+        "digest": "sha256:ddcd69456155739457dbec11aa4c32749491005f68359339a00bf46e9060b08c",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/python-environments.tar.zst"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk005",
+        "bytes": 134217728,
+        "digest": "sha256:8356441fd3bb655880685094c166ca9d079a7bab42d9803eefeef80f5d66e9c7",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk005"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk001",
+        "bytes": 134217728,
+        "digest": "sha256:350c90efd5d45605a01f0d091700147374a99fcf6b6f233d89ce023f9bf99924",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk001"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk007",
+        "bytes": 134217728,
+        "digest": "sha256:b7150ad17e920f832414d94ed7f386ec49384d61826213d458470f12b6174cc3",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk007"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk003",
+        "bytes": 134217728,
+        "digest": "sha256:f0ffdbfb7414ab9303ca81748b758d51a9832a9ff4c2c258dae66c3f8e14e695",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk003"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk006",
+        "bytes": 134217728,
+        "digest": "sha256:8ee655e8fe2d1aec1408e5581669ac45da3fe67af763c00f6d6cd0739876f271",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk006"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk000",
+        "bytes": 134217728,
+        "digest": "sha256:e426431625b0d4f3b96d72645b757f912ac315131e145d6bf3cfd1e086299773",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk000"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk009",
+        "bytes": 134217728,
+        "digest": "sha256:674b530d9d6030ba6403713f5e20bda84732078a98bab9aa1ec9c009be5bbe19",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk009"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk002",
+        "bytes": 134217728,
+        "digest": "sha256:bf74661d28151360a1fd33e818b835be391104a75a0b406fe16abc7ec9bdd29b",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk002"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk004",
+        "bytes": 134217728,
+        "digest": "sha256:6e0ef9147373e9a4c17ed1681da5f6e6eee398d8f04f22e762a983f3abdd352a",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk004"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk010",
+        "bytes": 134217728,
+        "digest": "sha256:079ea4e36d1ca015a82b8b0e295508111298fc5697f36496eaecab21c2b39298",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk010"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk008",
+        "bytes": 134217728,
+        "digest": "sha256:a1b6e85d98daef35d7f228c93a8a1be160381bb9a3a19934c4e1e892bd66d955",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk008"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk011",
+        "bytes": 134217728,
+        "digest": "sha256:530230dde66f094b070fcd4f3ceca54646cd8f4d7a05b8602ec0f9a1ededcaad",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk011"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk012",
+        "bytes": 134217728,
+        "digest": "sha256:bec323126db7c8be17807f5dbb7d90410f76d607585a916d258936855fed3bdf",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk012"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk013",
+        "bytes": 134217728,
+        "digest": "sha256:a9849bbdba8135e932ef6f6cf0a83d6f8e551cb76c859f9cdc6365e6919f0d3a",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk013"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk014",
+        "bytes": 134217728,
+        "digest": "sha256:9eb5c83844b8ac3bfdc42e1b08a19f2b966f72e56975394c009124b6f7407a9f",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk014"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk015",
+        "bytes": 134217728,
+        "digest": "sha256:77ff64c523af1cd095da3abe5c2ce2de9bfc97754ae2370a0086f55075b03b11",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk015"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk016",
+        "bytes": 134217728,
+        "digest": "sha256:b1b6ee5b8da9f892f635f7dbff080d9056e3c165182e062fcce96f656f93f7e9",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk016"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk017",
+        "bytes": 134217728,
+        "digest": "sha256:0917001055391aca987e7f53e1f5c53d200f4212d067d1f5a1670652e9767403",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk017"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk018",
+        "bytes": 134217728,
+        "digest": "sha256:4f105db106f20e276056fa7d9366a88056828de61f4a9c879deeafeeec396615",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk018"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk019",
+        "bytes": 134217728,
+        "digest": "sha256:c2a3b3855beeaa43f047be96d5dcd7f5d30c2eb3eb1040f49b7bfefd676ade72",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk019"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk020",
+        "bytes": 134217728,
+        "digest": "sha256:31004305eb264eb8195efd1e9e59288beb932d372e88a5ce037ee74dd7fe02d4",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk020"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk021",
+        "bytes": 134217728,
+        "digest": "sha256:78a1739902fe6b496fd287bda46de0891365af6128bb7ae760b9745ef0dd7208",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk021"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk023",
+        "bytes": 134217728,
+        "digest": "sha256:f2b95ff909c26223093bdfd13657bc428f90a3bbfa1055079462e4aaea669789",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk023"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk025",
+        "bytes": 134217728,
+        "digest": "sha256:7e83aade499f72ea766809a1ac7b74cc26666c8898347f1b8fd8c6a094a19b83",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk025"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk024",
+        "bytes": 134217728,
+        "digest": "sha256:0cf82fbf7173264556a42888ca597d6af21481a0a5cf3e6309b3506c1c622a9b",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk024"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk027",
+        "bytes": 134217728,
+        "digest": "sha256:b98ac9e8acb858ba6e104cd3063c66b4b86f8f4bcb46d9e410ffc6969948a45e",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk027"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk026",
+        "bytes": 134217728,
+        "digest": "sha256:b349d76729429080410455c1193ac587ee4ae73af37af4df02cb543e71efcd1e",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk026"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk029",
+        "bytes": 134217728,
+        "digest": "sha256:820ca6591e3f25519abcfda1c9ef8404131773acc422b3ad5dc59bdf9c97c88a",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk029"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk022",
+        "bytes": 134217728,
+        "digest": "sha256:a06d94a66e7994d7a8ead84b741eeebb533dac157e6b61c0f3a2f0cc70cd2781",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk022"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk028",
+        "bytes": 134217728,
+        "digest": "sha256:37278ddbbac2dcff463b6ef0437cda1fd8b5100c8f10986bba420e779c35f214",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk028"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk030",
+        "bytes": 134217728,
+        "digest": "sha256:04026bac6e5378fdaee2554603b1c275545bf899c017c0ce0acd8ce031679924",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk030"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk031",
+        "bytes": 134217728,
+        "digest": "sha256:0fb9ffa6d697fc8c072b4e65230e899e9dc0f79942aa3cd7f765b517d6bf418f",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk031"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk032",
+        "bytes": 134217728,
+        "digest": "sha256:85c589715cb23189fe5eeec6620c78c5221ad95e8bd5b011298fc82228fa7817",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk032"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk033",
+        "bytes": 134217728,
+        "digest": "sha256:ceb24d886e27a226bf638953ca50931ffc2be28dee13e5c65eb81a86effa321a",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk033"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk034",
+        "bytes": 134217728,
+        "digest": "sha256:bc9aa2d9a56a62db60a6c631e0aef42f61c74337fc568b00b2076f3f4d5f7f93",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk034"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk035",
+        "bytes": 134217728,
+        "digest": "sha256:0ab9eab2bf3a382572d25065f236acb79a383e199fec6c7f74e88a518ed6b24a",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk035"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk036",
+        "bytes": 134217728,
+        "digest": "sha256:de8bf21cf9c4f63a7e1c9aa60752caefb04132963788677483e5a530c6ad6f46",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk036"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk037",
+        "bytes": 134217728,
+        "digest": "sha256:fa97a8ccc8ff77a2cd0220e39181ab311b39722e35e8d5fbf2a4b0765d6e6457",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk037"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk038",
+        "bytes": 134217728,
+        "digest": "sha256:05e4ebca060a5716398935b0545dfbe6e5466bf44df4f76069130de130c174be",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk038"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk039",
+        "bytes": 134217728,
+        "digest": "sha256:75f7bb4358d2859b9d84c57ebc2e569575c9404d385e7511073232ed8bb7c3dd",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk039"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk040",
+        "bytes": 134217728,
+        "digest": "sha256:e99e5878e39958a565ab7602c2cdc56d3f8a65b16df3fac9b08aeb71c5ed4931",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk040"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk041",
+        "bytes": 134217728,
+        "digest": "sha256:1f405ecb422723faa044882eb8b977b5ef2b552552c250392d1ef0e4b94c9dd2",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk041"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk042",
+        "bytes": 134217728,
+        "digest": "sha256:0c9e417bde58b9d6836e67a1cfd359cddff824408dade30fea2e9270e7db451e",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk042"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk043",
+        "bytes": 134217728,
+        "digest": "sha256:cb177f0000e54cac4dbc4c0fb5ca10bcbaed53ab68b4f6a5a23d0da924c6ebc2",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk043"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk044",
+        "bytes": 134217728,
+        "digest": "sha256:48708a5343f9721abe1002443610e419347235ca202aedf6acbcafcf970cc998",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk044"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk045",
+        "bytes": 134217728,
+        "digest": "sha256:c5be4080b54f7f0ccc432c5227abae7191150bac51e994908f924664bad75fe0",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk045"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk046",
+        "bytes": 134217728,
+        "digest": "sha256:9ef4dae3870831ff00507863becf45fd8e27c0dce505f91ff38737a1d102c0ce",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk046"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk047",
+        "bytes": 134217728,
+        "digest": "sha256:a65f502178a902440f68dc5651af6519dd5161e626e075bc6814ad4d496418d2",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk047"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk048",
+        "bytes": 134217728,
+        "digest": "sha256:bb15ac13965a78a45aea47ff9e4410e4ed1dab1c3626f308a0707516befdf410",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk048"
+      },
+      {
+        "name": "platform-image.tar.zst.chunk049",
+        "bytes": 122061842,
+        "digest": "sha256:9e46a2c1ada3cf2a021c8c4e0492fe41e71bd1873ee05fea1bd31784206c0504",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.tar.zst.chunk049"
+      },
+      {
+        "name": "platform_snapshot.py",
+        "bytes": 18658,
+        "digest": "sha256:49e9b2c47773b25e8dd18c48cf181a4f2f5a837f009526d78d41b91bb733a165",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform_snapshot.py"
+      },
+      {
+        "name": "files.jsonl.zst",
+        "bytes": 5736042,
+        "digest": "sha256:5afd3d492d9a2c5872592f767ab9b686c6c3a8305090ce7131aeac9ecc333792",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/files.jsonl.zst"
+      },
+      {
+        "name": "snapshot.json",
+        "bytes": 5219,
+        "digest": "sha256:07bc846abe7d8b8819f04db35624e31969b8730a846f9b844d5294e2793166aa",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/snapshot.json"
+      },
+      {
+        "name": "exclusions.json",
+        "bytes": 1524960,
+        "digest": "sha256:2f5cdbd462f76cca4f151943ee000f66a8b5599854af04a83037756617a0227d",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/exclusions.json"
+      },
+      {
+        "name": "additional-project.tar.gz",
+        "bytes": 492860756,
+        "digest": "sha256:cb602cbbfc17e4dc85507072d5d225859496885ff3a0441f85eac9e7b8ec2b8c",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/additional-project.tar.gz"
+      },
+      {
+        "name": "SHA256SUMS",
+        "bytes": 1619,
+        "digest": "sha256:f73536aefaffc84903dab0c6a9d5e5a2832494291f98c395b4181209d997a6d8",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/SHA256SUMS"
+      },
+      {
+        "name": "platform-image.json",
+        "bytes": 10149,
+        "digest": "sha256:c49758f5ec593ed992668f93c68854598c109cb66a09875c58ba644d4c4ef100",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.json"
+      },
+      {
+        "name": "deployment-acceptance-catalog.json",
+        "bytes": 1021,
+        "digest": "sha256:8c49f850a7c5a8763ef0b015ae8536b987aecda1a8943641679843d68f419a61",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance-catalog.json"
+      },
+      {
+        "name": "deployment-acceptance-exclusions.json",
+        "bytes": 3,
+        "digest": "sha256:37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance-exclusions.json"
+      },
+      {
+        "name": "deployment-acceptance.tar.zst",
+        "bytes": 46998880,
+        "digest": "sha256:fc1793db9a74ed08926d8cab69688453f546ac8a264e3846d9ea2d641868f84c",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance.tar.zst"
+      },
+      {
+        "name": "deployment-acceptance-files.jsonl.zst",
+        "bytes": 29796,
+        "digest": "sha256:e947f86e08908a50ad64deb983beac25f2c0ebb6ee6c759770bc8658aa352c40",
+        "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance-files.jsonl.zst"
+      }
+    ]
+  }
+]

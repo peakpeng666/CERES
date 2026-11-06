@@ -1,0 +1,25 @@
+{
+  "runtime": "/tmp/urp-browser-rule-raw-h8c50q6x",
+  "gateway_command": [
+    "/home/peakpeng/Desktop/URP/src/lab/.venv/bin/python",
+    "-m",
+    "urp_lab",
+    "serve",
+    "--no-archive",
+    "--host",
+    "127.0.0.1",
+    "--port",
+    "4100"
+  ],
+  "browser_command": [
+    "node",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-30/agent/browser_e2e.mjs",
+    "--out",
+    "/home/peakpeng/Desktop/URP/setup/2026-10-30/agent/continuation/browser-rule-raw",
+    "--mode",
+    "rule"
+  ],
+  "browser_exit_code": 0,
+  "shutdown_status": 202,
+  "gateway_exit_code": 0
+}

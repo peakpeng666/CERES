@@ -1,0 +1,333 @@
+{
+ "instances": 388,
+ "library": [
+  "full:none/n_swath",
+  "full:none/swath_length",
+  "full:none/field_coverage",
+  "full:boustrophedon/n_swath",
+  "full:boustrophedon/swath_length",
+  "full:boustrophedon/field_coverage",
+  "full:trapezoidal/n_swath",
+  "full:trapezoidal/swath_length",
+  "full:trapezoidal/field_coverage",
+  "single:boustrophedon",
+  "single:snake",
+  "repair:none/n_swath",
+  "repair:none/swath_length",
+  "repair:none/field_coverage",
+  "repair:boustrophedon/n_swath",
+  "repair:boustrophedon/swath_length",
+  "repair:boustrophedon/field_coverage"
+ ],
+ "candidates": [
+  "repair2:none/n_swath",
+  "repair2:none/swath_length",
+  "repair2:none/field_coverage",
+  "repair2:boustrophedon/n_swath",
+  "repair2:boustrophedon/swath_length",
+  "repair2:boustrophedon/field_coverage"
+ ],
+ "excluded_incomplete": 0,
+ "single_member": [
+  {
+   "config": "full:none/n_swath",
+   "feasible": 326,
+   "mean_rho": 1.1570705238028847
+  },
+  {
+   "config": "full:none/swath_length",
+   "feasible": 291,
+   "mean_rho": 1.2668608177657958
+  },
+  {
+   "config": "full:none/field_coverage",
+   "feasible": 303,
+   "mean_rho": 1.2756483080061702
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "feasible": 254,
+   "mean_rho": 1.3534874770967378
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "feasible": 210,
+   "mean_rho": 1.479790531339258
+  },
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "feasible": 199,
+   "mean_rho": 1.5341030997321379
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "feasible": 87,
+   "mean_rho": 1.8164812409796667
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "feasible": 16,
+   "mean_rho": 1.9684241081322906
+  },
+  {
+   "config": "full:trapezoidal/field_coverage",
+   "feasible": 2,
+   "mean_rho": 1.9985391652066198
+  },
+  {
+   "config": "single:boustrophedon",
+   "feasible": 20,
+   "mean_rho": 1.9526716851704338
+  },
+  {
+   "config": "single:snake",
+   "feasible": 20,
+   "mean_rho": 1.955498257836102
+  },
+  {
+   "config": "repair:none/n_swath",
+   "feasible": 357,
+   "mean_rho": 1.0774065171938272
+  },
+  {
+   "config": "repair:none/swath_length",
+   "feasible": 328,
+   "mean_rho": 1.176134377775086
+  },
+  {
+   "config": "repair:none/field_coverage",
+   "feasible": 380,
+   "mean_rho": 1.112927718502683
+  },
+  {
+   "config": "repair:boustrophedon/n_swath",
+   "feasible": 335,
+   "mean_rho": 1.159976828824205
+  },
+  {
+   "config": "repair:boustrophedon/swath_length",
+   "feasible": 293,
+   "mean_rho": 1.29158883583337
+  },
+  {
+   "config": "repair:boustrophedon/field_coverage",
+   "feasible": 306,
+   "mean_rho": 1.3435014207459821
+  },
+  {
+   "config": "repair2:none/n_swath",
+   "feasible": 365,
+   "mean_rho": 1.057872986537437
+  },
+  {
+   "config": "repair2:none/swath_length",
+   "feasible": 333,
+   "mean_rho": 1.1637645669709917
+  },
+  {
+   "config": "repair2:none/field_coverage",
+   "feasible": 381,
+   "mean_rho": 1.1097449840374647
+  },
+  {
+   "config": "repair2:boustrophedon/n_swath",
+   "feasible": 346,
+   "mean_rho": 1.1373630794444047
+  },
+  {
+   "config": "repair2:boustrophedon/swath_length",
+   "feasible": 307,
+   "mean_rho": 1.260715078879018
+  },
+  {
+   "config": "repair2:boustrophedon/field_coverage",
+   "feasible": 325,
+   "mean_rho": 1.3330420346017415
+  }
+ ],
+ "vbs": {
+  "old_library_mean_rho": 1.000485751401723,
+  "new_library_mean_rho": 1.0,
+  "old_library_feasible": 384,
+  "new_library_feasible": 384,
+  "vbs_increment_rho": 0.0004857514017229114
+ },
+ "shapley_method": "permutation sampling (4000 permutations, seed 20261024)",
+ "shapley": [
+  {
+   "config": "full:none/n_swath",
+   "shapley": 0.06361305718661012
+  },
+  {
+   "config": "full:none/swath_length",
+   "shapley": 0.04922489618176223
+  },
+  {
+   "config": "full:none/field_coverage",
+   "shapley": 0.04900125370216942
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "shapley": 0.045324567207259296
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "shapley": 0.03181632277872405
+  },
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "shapley": 0.03032689093725034
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "shapley": 0.01173182398243993
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "shapley": 0.002353964771418212
+  },
+  {
+   "config": "full:trapezoidal/field_coverage",
+   "shapley": 9.801932801275827e-05
+  },
+  {
+   "config": "single:boustrophedon",
+   "shapley": 0.002346786886311499
+  },
+  {
+   "config": "single:snake",
+   "shapley": 0.0021832340926635123
+  },
+  {
+   "config": "repair:none/n_swath",
+   "shapley": 0.0690469973906773
+  },
+  {
+   "config": "repair:none/swath_length",
+   "shapley": 0.05699336184757779
+  },
+  {
+   "config": "repair:none/field_coverage",
+   "shapley": 0.0693851308260286
+  },
+  {
+   "config": "repair:boustrophedon/n_swath",
+   "shapley": 0.06617451668717558
+  },
+  {
+   "config": "repair:boustrophedon/swath_length",
+   "shapley": 0.043290821815252255
+  },
+  {
+   "config": "repair:boustrophedon/field_coverage",
+   "shapley": 0.0467948316151004
+  },
+  {
+   "config": "repair2:none/n_swath",
+   "shapley": 0.07587750346193095
+  },
+  {
+   "config": "repair2:none/swath_length",
+   "shapley": 0.05762688787660217
+  },
+  {
+   "config": "repair2:none/field_coverage",
+   "shapley": 0.0661135291398724
+  },
+  {
+   "config": "repair2:boustrophedon/n_swath",
+   "shapley": 0.06778659503237683
+  },
+  {
+   "config": "repair2:boustrophedon/swath_length",
+   "shapley": 0.04644354586290425
+  },
+  {
+   "config": "repair2:boustrophedon/field_coverage",
+   "shapley": 0.04644546138987527
+  }
+ ],
+ "controls": {
+  "old_library": {
+   "static": {
+    "first_try_feasible": 0.9296874999999999,
+    "stop_rho": 1.011139687593092,
+    "tries": 1.0776041666666665,
+    "instances": 384
+   },
+   "logit:agri": {
+    "first_try_feasible": 0.9539062499999998,
+    "stop_rho": 1.035069764701021,
+    "tries": 1.06796875,
+    "instances": 384
+   },
+   "knn5:agri": {
+    "first_try_feasible": 0.9408854166666666,
+    "stop_rho": 1.0251001096786434,
+    "tries": 1.1330729166666667,
+    "instances": 384
+   }
+  },
+  "new_library": {
+   "static": {
+    "first_try_feasible": 0.9505208333333331,
+    "stop_rho": 1.0106807065408858,
+    "tries": 1.0531249999999999,
+    "instances": 384
+   },
+   "logit:agri": {
+    "first_try_feasible": 0.9682291666666666,
+    "stop_rho": 1.0279486565972025,
+    "tries": 1.074739583333333,
+    "instances": 384
+   },
+   "knn5:agri": {
+    "first_try_feasible": 0.9497395833333332,
+    "stop_rho": 1.0221051048037262,
+    "tries": 1.1632812499999998,
+    "instances": 384
+   }
+  },
+  "member_alone:repair2:none/n_swath": {
+   "feasible_share": 0.9407216494845361
+  },
+  "member_alone:repair2:none/swath_length": {
+   "feasible_share": 0.8582474226804123
+  },
+  "member_alone:repair2:none/field_coverage": {
+   "feasible_share": 0.9819587628865979
+  },
+  "member_alone:repair2:boustrophedon/n_swath": {
+   "feasible_share": 0.8917525773195877
+  },
+  "member_alone:repair2:boustrophedon/swath_length": {
+   "feasible_share": 0.7912371134020618
+  },
+  "member_alone:repair2:boustrophedon/field_coverage": {
+   "feasible_share": 0.8376288659793815
+  },
+  "training_sbs_old": {
+   "config": "repair:none/n_swath",
+   "feasible_share": 0.9201030927835051
+  }
+ },
+ "actual_policy_gain": {
+  "static": {
+   "first_try_feasible": 0.02083333333333326,
+   "stop_rho": 0.00045898105220620877,
+   "tries": 0.024479166666666607
+  },
+  "logit:agri": {
+   "first_try_feasible": 0.01432291666666674,
+   "stop_rho": 0.0071211081038184965,
+   "tries": -0.0067708333333331705
+  },
+  "knn5:agri": {
+   "first_try_feasible": 0.008854166666666607,
+   "stop_rho": 0.0029950048749172176,
+   "tries": -0.03020833333333317
+  }
+ },
+ "yardstick": "两种组合都以扩展后组合的逐实例最好可行成本为 1；分母为扩展后组合可解的实例",
+ "keys_sha256": "457a8f41e6d979484b39a893f35408126ece836f61313547bc9c75cdba08d7a9"
+}

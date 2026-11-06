@@ -2,3 +2,6 @@
 runtime/
 __pycache__/
 .pytest_cache/
+/setup/2026-10-18/ground-risk-planning/*/runtime/
+/setup/2026-10-18/ground-risk-planning/*/*-result.json
+/setup/2026-10-18/ground-risk-planning/*/*-response.json

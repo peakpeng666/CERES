@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import logging
 import os
@@ -62,6 +63,10 @@ def serve(args) -> int:
     url = f'http://127.0.0.1:{args.port}/'
     status, data = http_json('GET', f'{url}lab/api/health', timeout=1.0)
     if status == 200 and isinstance(data, dict) and data.get('status') == 'ok':
+        wanted = hashlib.sha256(str(paths.RUNTIME.resolve()).encode()).hexdigest()
+        if data.get('runtime_id') != wanted:
+            print(f'端口 {args.port} 上的工作台使用另一份或未标识的运行数据；请先有序关闭再切换，未改动现有服务。', file=sys.stderr)
+            return 1
         print(f'工作台网关已在 {url} 运行。', flush=True)
         if args.open:
             open_browser(url)
@@ -91,7 +96,8 @@ def serve(args) -> int:
     config = uvicorn.Config(app, host=bind, port=args.port, log_config=None, access_log=False,
                             timeout_graceful_shutdown=5, lifespan='on', server_header=False)
     server = Server(config)
-    signal.signal(signal.SIGHUP, server.handle_exit)  # terminal window closed
+    if hasattr(signal, 'SIGHUP'):
+        signal.signal(signal.SIGHUP, server.handle_exit)  # terminal window closed
 
     def announce():
         while not server.started and not server.should_exit:
@@ -107,6 +113,15 @@ def serve(args) -> int:
                     server.should_exit = True
                     break
     threading.Thread(target=announce, daemon=True).start()
+
+    def leave_with_parent():
+        """The desktop app holds our stdin open; end of file means it is gone, however it went."""
+        while os.read(0, 1024):     # the raw descriptor: a daemon thread blocked in sys.stdin would abort interpreter shutdown
+            pass
+        log.info('桌面应用已退出，网关随之有序关闭')
+        lab.shutdown_event.set()
+    if args.exit_with_stdin:
+        threading.Thread(target=leave_with_parent, daemon=True).start()
     try:
         server.run()
     except KeyboardInterrupt:
@@ -177,14 +192,17 @@ def solve(args) -> int:
 
 
 def main(argv=None) -> int:
+    from .runtime_transfer import configure_cli, run_cli
     parser = argparse.ArgumentParser(prog='python -m urp_lab', description='农业机器人路径规划工作台')
     sub = parser.add_subparsers(dest='command', required=True)
+    configure_cli(sub)
     p = sub.add_parser('serve', help='启动网关（默认只监听 127.0.0.1）')
     p.add_argument('--port', type=int, default=int(os.environ.get('URP_PORT', '4100')))
     p.add_argument('--host', default=os.environ.get('URP_BIND_HOST', '127.0.0.1'),
                    help='监听地址。笔记本保持 127.0.0.1；WSL 与容器设 URP_BIND_HOST=0.0.0.0')
     p.add_argument('--open', action='store_true', help='启动后用 Chrome 应用窗口打开面板')
     p.add_argument('--no-archive', action='store_true', help='不自动启动档案后端')
+    p.add_argument('--exit-with-stdin', action='store_true', help='标准输入关闭时有序退出（桌面应用用来绑定生命周期）')
     sub.add_parser('doctor', help='打印服务检测结果（JSON）')
     p = sub.add_parser('solve', help='无界面求解一次，输出 Solution JSON')
     p.add_argument('--scenario', required=True)
@@ -194,7 +212,7 @@ def main(argv=None) -> int:
     p.add_argument('--no-save', action='store_true', help='不写入运行历史')
     p.add_argument('--compact', action='store_true')
     args = parser.parse_args(argv)
-    return {'serve': serve, 'doctor': doctor, 'solve': solve}[args.command](args)
+    return {'serve': serve, 'doctor': doctor, 'solve': solve, 'data': run_cli}[args.command](args)
 
 
 if __name__ == '__main__':

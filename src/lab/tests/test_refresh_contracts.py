@@ -5,7 +5,7 @@ import copy
 
 import pytest
 
-from urp_lab.agent import tools
+from urp_lab.agent import research_tools as tools
 from urp_lab.jobs import resolve_params
 from urp_lab.scenarios.validate import PROBLEM_CLASSES
 from urp_lab.solvers import catalog, TIME

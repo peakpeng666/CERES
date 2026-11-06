@@ -76,13 +76,13 @@ export function obstacleShape(kind: ObstacleKind, a: XY, b: XY): XY[] {
 }
 
 export const OBSTACLE_STYLE: Record<ObstacleKind, { label: string; fill: string; stroke: string }> = {
-  pond: { label: '池塘', fill: '#bfe0fb', stroke: '#3b8fd9' },
-  building: { label: '建筑', fill: '#d6d6dc', stroke: '#6b6b73' },
-  greenhouse: { label: '温室', fill: '#e6f3f7', stroke: '#6aa9bf' },
-  tree: { label: '树', fill: '#8fcf8a', stroke: '#3f8f45' },
-  ditch: { label: '水渠', fill: '#d9c4a5', stroke: '#9c7a4b' },
-  rock: { label: '石块', fill: '#c9c1b6', stroke: '#857b6e' },
-  other: { label: '障碍', fill: '#e2e2e2', stroke: '#8e8e93' },
+  pond: { label: '池塘', fill: 'var(--map-water)', stroke: 'var(--map-water-edge)' },
+  building: { label: '建筑', fill: 'var(--map-solid)', stroke: 'var(--map-solid-edge)' },
+  greenhouse: { label: '温室', fill: 'var(--map-water)', stroke: 'var(--map-glass-edge)' },
+  tree: { label: '树', fill: 'var(--map-tree)', stroke: 'var(--map-tree-edge)' },
+  ditch: { label: '水渠', fill: 'var(--map-soil)', stroke: 'var(--map-soil-edge)' },
+  rock: { label: '石块', fill: 'var(--map-solid)', stroke: 'var(--map-soil-edge)' },
+  other: { label: '障碍', fill: 'var(--map-solid)', stroke: 'var(--map-solid-edge)' },
 };
 
 /** Local, instant feedback while editing (the server validator remains the authority). */

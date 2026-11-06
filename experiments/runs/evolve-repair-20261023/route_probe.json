@@ -1,0 +1,339 @@
+{
+ "run": "evolve-repair-20261023",
+ "job_id": "5d75cb509e8b6cbd",
+ "field": "nl_field_104",
+ "profile": "robot_s",
+ "params": {
+  "decomposition": "boustrophedon",
+  "swath_objective": "swath_length",
+  "turn_model": "dubins"
+ },
+ "recorded_sha256": "40234cf97d6083d3f8c2e979ca127a1047e17143f9a9c8be9a7d9af0b0d59874",
+ "repeats": 10,
+ "settings": {
+  "default": {
+   "distinct_hashes": 5,
+   "matches_recorded": 0,
+   "valid_runs": 8,
+   "length_m_range": [
+    7291.8555770351295,
+    7645.759692245647
+   ],
+   "runs": [
+    {
+     "repeat": 0,
+     "sha256": "48ffc54625f3578cfc442b8e9c7cff61aa9fa6071c8dbedd8ab0f06ad0aedacb",
+     "points": 50028,
+     "length_m": 7291.8555770351295,
+     "official_valid": true
+    },
+    {
+     "repeat": 1,
+     "sha256": "43cdc0b369ba1e69a615bf03fa7f5d901c0ed9d667a06427a21f7e2cb7be3297",
+     "points": 49380,
+     "length_m": 7292.684870725433,
+     "official_valid": true
+    },
+    {
+     "repeat": 2,
+     "sha256": "48ffc54625f3578cfc442b8e9c7cff61aa9fa6071c8dbedd8ab0f06ad0aedacb",
+     "points": 50028,
+     "length_m": 7291.8555770351295,
+     "official_valid": true
+    },
+    {
+     "repeat": 3,
+     "sha256": "48ffc54625f3578cfc442b8e9c7cff61aa9fa6071c8dbedd8ab0f06ad0aedacb",
+     "points": 50028,
+     "length_m": 7291.8555770351295,
+     "official_valid": true
+    },
+    {
+     "repeat": 4,
+     "sha256": "48ffc54625f3578cfc442b8e9c7cff61aa9fa6071c8dbedd8ab0f06ad0aedacb",
+     "points": 50028,
+     "length_m": 7291.8555770351295,
+     "official_valid": true
+    },
+    {
+     "repeat": 5,
+     "sha256": "48ffc54625f3578cfc442b8e9c7cff61aa9fa6071c8dbedd8ab0f06ad0aedacb",
+     "points": 50028,
+     "length_m": 7291.8555770351295,
+     "official_valid": true
+    },
+    {
+     "repeat": 6,
+     "sha256": "4baefedc61dc4d12e5431c28e92074db576f78035ff159b4c64e47f9536d4afd",
+     "points": 43527,
+     "length_m": 7645.759692245647,
+     "official_valid": false
+    },
+    {
+     "repeat": 7,
+     "sha256": "8ecc8489773c141473fb8e1c80c34d958579c2d43bcdf2eb81bee2ed98ae77b3",
+     "points": 50167,
+     "length_m": 7294.398109343718,
+     "official_valid": true
+    },
+    {
+     "repeat": 8,
+     "sha256": "fc5ff137972fb914623e84f6503ca88a364f96234fbac63ad5dbbec00ef37644",
+     "points": 51018,
+     "length_m": 7317.022674821451,
+     "official_valid": false
+    },
+    {
+     "repeat": 9,
+     "sha256": "43cdc0b369ba1e69a615bf03fa7f5d901c0ed9d667a06427a21f7e2cb7be3297",
+     "points": 49380,
+     "length_m": 7292.684870725433,
+     "official_valid": true
+    }
+   ]
+  },
+  "time_limit_10s": {
+   "distinct_hashes": 1,
+   "matches_recorded": 0,
+   "valid_runs": 0,
+   "length_m_range": [
+    7865.375378156276,
+    7865.375378156276
+   ],
+   "runs": [
+    {
+     "repeat": 0,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 1,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 2,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 3,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 4,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 5,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 6,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 7,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 8,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    },
+    {
+     "repeat": 9,
+     "sha256": "9d715d0294ce34e4f15fa02c303c59ae3e55e5046b9dc6ba66b335bfb9405d4d",
+     "points": 49046,
+     "length_m": 7865.375378156276,
+     "official_valid": false
+    }
+   ]
+  },
+  "optimum": {
+   "distinct_hashes": 5,
+   "matches_recorded": 0,
+   "valid_runs": 8,
+   "length_m_range": [
+    7291.8555770351295,
+    7350.520989981448
+   ],
+   "runs": [
+    {
+     "repeat": 0,
+     "sha256": "4aec08063093fd7129d8e5429e30978ec6b1cc15b1919afb9a7fbae0125cc1fc",
+     "points": 52452,
+     "length_m": 7350.520989981448,
+     "official_valid": false
+    },
+    {
+     "repeat": 1,
+     "sha256": "26e064ff2ada7524549884f3008c51719aea03a1b1d38ab6ea0e3e2544c43a0d",
+     "points": 50135,
+     "length_m": 7293.768936704787,
+     "official_valid": true
+    },
+    {
+     "repeat": 2,
+     "sha256": "26e064ff2ada7524549884f3008c51719aea03a1b1d38ab6ea0e3e2544c43a0d",
+     "points": 50135,
+     "length_m": 7293.768936704787,
+     "official_valid": true
+    },
+    {
+     "repeat": 3,
+     "sha256": "8ecc8489773c141473fb8e1c80c34d958579c2d43bcdf2eb81bee2ed98ae77b3",
+     "points": 50167,
+     "length_m": 7294.398109343718,
+     "official_valid": true
+    },
+    {
+     "repeat": 4,
+     "sha256": "26e064ff2ada7524549884f3008c51719aea03a1b1d38ab6ea0e3e2544c43a0d",
+     "points": 50135,
+     "length_m": 7293.768936704787,
+     "official_valid": true
+    },
+    {
+     "repeat": 5,
+     "sha256": "48ffc54625f3578cfc442b8e9c7cff61aa9fa6071c8dbedd8ab0f06ad0aedacb",
+     "points": 50028,
+     "length_m": 7291.8555770351295,
+     "official_valid": true
+    },
+    {
+     "repeat": 6,
+     "sha256": "26e064ff2ada7524549884f3008c51719aea03a1b1d38ab6ea0e3e2544c43a0d",
+     "points": 50135,
+     "length_m": 7293.768936704787,
+     "official_valid": true
+    },
+    {
+     "repeat": 7,
+     "sha256": "26e064ff2ada7524549884f3008c51719aea03a1b1d38ab6ea0e3e2544c43a0d",
+     "points": 50135,
+     "length_m": 7293.768936704787,
+     "official_valid": true
+    },
+    {
+     "repeat": 8,
+     "sha256": "8ecc8489773c141473fb8e1c80c34d958579c2d43bcdf2eb81bee2ed98ae77b3",
+     "points": 50167,
+     "length_m": 7294.398109343718,
+     "official_valid": true
+    },
+    {
+     "repeat": 9,
+     "sha256": "d6bc196543e217bd5a51a5512c250d88795e6b3c1eeb032a25ef274e6685924f",
+     "points": 50315,
+     "length_m": 7296.71616904683,
+     "official_valid": false
+    }
+   ]
+  },
+  "optimum_time_limit_10s": {
+   "distinct_hashes": 1,
+   "matches_recorded": 0,
+   "valid_runs": 0,
+   "length_m_range": [
+    8094.200512912213,
+    8094.200512912213
+   ],
+   "runs": [
+    {
+     "repeat": 0,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 1,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 2,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 3,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 4,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 5,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 6,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 7,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 8,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    },
+    {
+     "repeat": 9,
+     "sha256": "717f7b990f92fbffbd8d6f4d6f824f5a91a99c767ad19af7ecbb07f8fc55f911",
+     "points": 49254,
+     "length_m": 8094.200512912213,
+     "official_valid": false
+    }
+   ]
+  }
+ }
+}

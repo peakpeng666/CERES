@@ -68,15 +68,33 @@ def test_wilson_bounds():
     assert D.wilson(0, 0) == [None, None]
 
 
-def test_route_budget_probe_smoke():
+def test_route_budget_probe_smoke(tmp_path):
     """The probe replays a recorded task and reports per-setting hash counts (F2C + field cache required)."""
     import pytest
     pytest.importorskip('fields2cover')
     from urp_lab.library import fields
     if not fields.status()['downloaded']:
         pytest.skip('Fields2Benchmark not cached')
+    # Preservation moved the raw records into the checked-in archive. Replay
+    # the exact member in a fresh directory instead of requiring an unpacked
+    # research tree or restoring over the frozen evidence.
+    import hashlib
+    import os
+    from pathlib import Path
+    import zipfile
+    root = Path(__file__).resolve().parents[3]
+    archive = root / 'experiments/results/进化决策/evolve-audit-20261023-records.zip'
+    expected = next(line.split()[0] for line in (archive.parent / 'SHA256SUMS.txt').read_text().splitlines()
+                    if line.split()[-1] == archive.name)
+    assert hashlib.sha256(archive.read_bytes()).hexdigest() == expected
+    job_id = '8792aeb4e5a72873'
+    records = tmp_path / 'records'
+    records.mkdir()
+    with zipfile.ZipFile(archive) as z:
+        (records / f'{job_id}.json').write_bytes(z.read(f'evolve-audit-20261023/records/{job_id}.json'))
+    cores = tuple(sorted(os.sched_getaffinity(0))[:2]) if hasattr(os, 'sched_getaffinity') else ()
     from urp_lab.evolve import route_determinism as R
-    out = R.probe('evolve-audit-20261023', '8792aeb4e5a72873', repeats=1, workers=2, cores=(0, 1),
+    out = R.probe(str(tmp_path), job_id, repeats=1, workers=2, cores=cores,
                   settings=('default', 'time_limit_10s'), write=False)
     assert set(out) == {'default', 'time_limit_10s'}
     assert all(isinstance(v[0], int) for v in out.values())

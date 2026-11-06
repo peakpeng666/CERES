@@ -1,0 +1,3944 @@
+{
+ "schema": "urp.agent-session/1",
+ "session_id": "agt_20261105T060837_152c80",
+ "title": "在 70×50 米的菜地里，2 台车访问 8 个…",
+ "created_utc": "2026-11-05T06:08:37.501Z",
+ "updated_utc": "2026-11-05T06:11:32.347Z",
+ "state": "done",
+ "phase": "report",
+ "mode": "hybrid",
+ "provider": {
+  "id": "local",
+  "kind": "ollama",
+  "model": "qwen3.8:27b",
+  "label": "本地开源模型 Qwen3.8-27B（Ollama）",
+  "local": true
+ },
+ "auto_confirm": false,
+ "messages": [
+  {
+   "id": "m1",
+   "role": "user",
+   "kind": "text",
+   "text": "在 70×50 米的菜地里，2 台车访问 8 个点，单车容量 6",
+   "utc": "2026-11-05T06:08:37.505Z"
+  },
+  {
+   "id": "m2",
+   "role": "assistant",
+   "kind": "text",
+   "text": "已记录：70×50 米场地、2 台车、8 个任务点、单车容量 6。其余字段（分布、车速、趟次、目标等）将采用默认值，请您在确认合同时核对。",
+   "utc": "2026-11-05T06:08:41.851Z"
+  },
+  {
+   "id": "m3",
+   "role": "assistant",
+   "kind": "confirmation",
+   "text": "请确认任务合同；浅色项为系统默认值，可直接修改后再确认。",
+   "utc": "2026-11-05T06:08:41.851Z",
+   "data": {
+    "cards": [
+     {
+      "key": "field_size_m",
+      "label": "场地尺寸",
+      "value": [
+       70.0,
+       50.0
+      ],
+      "text": "70 × 50 m",
+      "source": "user_text",
+      "evidence": "70×50 米"
+     },
+     {
+      "key": "task_count",
+      "label": "任务点数",
+      "value": 8,
+      "text": "8 个",
+      "source": "user_text",
+      "evidence": "8 个点"
+     },
+     {
+      "key": "vehicle_count",
+      "label": "车辆数",
+      "value": 2,
+      "text": "2 台",
+      "source": "user_text",
+      "evidence": "2 台"
+     },
+     {
+      "key": "vehicle_capacity",
+      "label": "单车容量",
+      "value": 6,
+      "text": "6 单位",
+      "source": "user_text",
+      "evidence": "容量 6"
+     },
+     {
+      "key": "task_kind",
+      "label": "作业类型",
+      "value": "sampling",
+      "text": "采样",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "plot_count",
+      "label": "地块数",
+      "value": 4,
+      "text": "4 块",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "task_distribution",
+      "label": "任务分布",
+      "value": "uniform",
+      "text": "均匀分布",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "obstacles",
+      "label": "障碍",
+      "value": {
+       "pond": 1,
+       "building": 1
+      },
+      "text": "1 处池塘、1 处建筑",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "depot_location",
+      "label": "车库位置",
+      "value": "sw",
+      "text": "西南角",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "objective",
+      "label": "优化目标",
+      "value": "total_distance",
+      "text": "总里程最短",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "vehicle_speed_mps",
+      "label": "车速",
+      "value": 1.0,
+      "text": "1 m/s",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "vehicle_width_m",
+      "label": "车宽",
+      "value": 1.0,
+      "text": "1 m",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "field_shape",
+      "label": "边界形状",
+      "value": "rect",
+      "text": "矩形",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "trip_mode",
+      "label": "趟次",
+      "value": "multi",
+      "text": "允许多趟往返",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "travel_mode",
+      "label": "通行方式",
+      "value": "rows",
+      "text": "沿行间与地头",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "time_limit_s",
+      "label": "每个算法的时间预算",
+      "value": 2.0,
+      "text": "2 s",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "seed",
+      "label": "随机种子",
+      "value": 42,
+      "text": "42",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "compare_count",
+      "label": "对比算法数",
+      "value": 3,
+      "text": "3 个",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "simulate",
+      "label": "规划后进入仿真执行",
+      "value": false,
+      "text": "否",
+      "source": "default",
+      "evidence": ""
+     }
+    ],
+    "unsupported": [],
+    "execution": {
+     "trip_mode": "multi",
+     "travel_mode": "rows",
+     "time_limit_s": 2.0,
+     "seed": 42,
+     "compare_count": 3,
+     "simulate": false
+    },
+    "revision": 1
+   }
+  },
+  {
+   "id": "m4",
+   "role": "event",
+   "kind": "notice",
+   "text": "已修改：规划后进入仿真执行 → 是",
+   "utc": "2026-11-05T06:08:42.535Z"
+  },
+  {
+   "id": "m5",
+   "role": "assistant",
+   "kind": "confirmation",
+   "text": "请确认任务合同；浅色项为系统默认值，可直接修改后再确认。",
+   "utc": "2026-11-05T06:08:42.536Z",
+   "data": {
+    "cards": [
+     {
+      "key": "field_size_m",
+      "label": "场地尺寸",
+      "value": [
+       70.0,
+       50.0
+      ],
+      "text": "70 × 50 m",
+      "source": "user_text",
+      "evidence": "70×50 米"
+     },
+     {
+      "key": "task_count",
+      "label": "任务点数",
+      "value": 8,
+      "text": "8 个",
+      "source": "user_text",
+      "evidence": "8 个点"
+     },
+     {
+      "key": "vehicle_count",
+      "label": "车辆数",
+      "value": 2,
+      "text": "2 台",
+      "source": "user_text",
+      "evidence": "2 台"
+     },
+     {
+      "key": "vehicle_capacity",
+      "label": "单车容量",
+      "value": 6,
+      "text": "6 单位",
+      "source": "user_text",
+      "evidence": "容量 6"
+     },
+     {
+      "key": "simulate",
+      "label": "规划后进入仿真执行",
+      "value": true,
+      "text": "是",
+      "source": "user_edit",
+      "evidence": ""
+     },
+     {
+      "key": "task_kind",
+      "label": "作业类型",
+      "value": "sampling",
+      "text": "采样",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "plot_count",
+      "label": "地块数",
+      "value": 4,
+      "text": "4 块",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "task_distribution",
+      "label": "任务分布",
+      "value": "uniform",
+      "text": "均匀分布",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "obstacles",
+      "label": "障碍",
+      "value": {
+       "pond": 1,
+       "building": 1
+      },
+      "text": "1 处池塘、1 处建筑",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "depot_location",
+      "label": "车库位置",
+      "value": "sw",
+      "text": "西南角",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "objective",
+      "label": "优化目标",
+      "value": "total_distance",
+      "text": "总里程最短",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "vehicle_speed_mps",
+      "label": "车速",
+      "value": 1.0,
+      "text": "1 m/s",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "vehicle_width_m",
+      "label": "车宽",
+      "value": 1.0,
+      "text": "1 m",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "field_shape",
+      "label": "边界形状",
+      "value": "rect",
+      "text": "矩形",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "trip_mode",
+      "label": "趟次",
+      "value": "multi",
+      "text": "允许多趟往返",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "travel_mode",
+      "label": "通行方式",
+      "value": "rows",
+      "text": "沿行间与地头",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "time_limit_s",
+      "label": "每个算法的时间预算",
+      "value": 2.0,
+      "text": "2 s",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "seed",
+      "label": "随机种子",
+      "value": 42,
+      "text": "42",
+      "source": "default",
+      "evidence": ""
+     },
+     {
+      "key": "compare_count",
+      "label": "对比算法数",
+      "value": 3,
+      "text": "3 个",
+      "source": "default",
+      "evidence": ""
+     }
+    ],
+    "unsupported": [],
+    "execution": {
+     "trip_mode": "multi",
+     "travel_mode": "rows",
+     "time_limit_s": 2.0,
+     "seed": 42,
+     "compare_count": 3,
+     "simulate": true
+    },
+    "revision": 2
+   }
+  },
+  {
+   "id": "m6",
+   "role": "event",
+   "kind": "notice",
+   "text": "任务合同第 2 版已确认，开始执行。",
+   "utc": "2026-11-05T06:08:42.546Z"
+  },
+  {
+   "id": "m7",
+   "role": "assistant",
+   "kind": "physics",
+   "text": "3/3 个方案通过物理预演。",
+   "utc": "2026-11-05T06:09:20.056Z",
+   "data": {
+    "rows": [
+     {
+      "run_id": "run_20261105T060851_11dd93",
+      "physics_run_id": "phys_20261105T060914_51aeab",
+      "algorithm": "PyVRP 固定车队",
+      "engine": "mujoco",
+      "engine_version": "3.17.0",
+      "state": "succeeded",
+      "check_valid": true,
+      "errors": [],
+      "wall_s": 2.309,
+      "metrics": {
+       "tasks_total": 8,
+       "tasks_completed": 8,
+       "total_distance_m": 264.9,
+       "planned_total_distance_m": 256.918,
+       "makespan_s": 315.18,
+       "planned_makespan_s": 135.168,
+       "cross_track_mean_m": 0.007,
+       "cross_track_max_m": 0.1,
+       "energy_wh": 1.359
+      }
+     },
+     {
+      "run_id": "run_20261105T060851_3aa260",
+      "physics_run_id": "phys_20261105T060917_165a72",
+      "algorithm": "OR-Tools 车队调度",
+      "engine": "mujoco",
+      "engine_version": "3.17.0",
+      "state": "succeeded",
+      "check_valid": true,
+      "errors": [],
+      "wall_s": 1.87,
+      "metrics": {
+       "tasks_total": 8,
+       "tasks_completed": 8,
+       "total_distance_m": 264.9,
+       "planned_total_distance_m": 256.918,
+       "makespan_s": 315.18,
+       "planned_makespan_s": 135.168,
+       "cross_track_mean_m": 0.007,
+       "cross_track_max_m": 0.1,
+       "energy_wh": 1.359
+      }
+     },
+     {
+      "run_id": "run_20261105T060851_128ac1",
+      "physics_run_id": "phys_20261105T060905_fa5199",
+      "algorithm": "节约算法 + 2-opt",
+      "engine": "mujoco",
+      "engine_version": "3.17.0",
+      "state": "succeeded",
+      "check_valid": true,
+      "errors": [],
+      "wall_s": 1.844,
+      "metrics": {
+       "tasks_total": 8,
+       "tasks_completed": 8,
+       "total_distance_m": 264.94,
+       "planned_total_distance_m": 256.911,
+       "makespan_s": 315.33,
+       "planned_makespan_s": 135.161,
+       "cross_track_mean_m": 0.007,
+       "cross_track_max_m": 0.095,
+       "energy_wh": 1.359
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "m8",
+   "role": "assistant",
+   "kind": "approval",
+   "text": "请求执行：启动田间仿真（{\"run_id\": \"run_20261105T060851_128ac1\"}）。该操作会启动 Gazebo 物理仿真会话，需要你的批准",
+   "utc": "2026-11-05T06:09:20.061Z",
+   "data": {
+    "type": "approval",
+    "kind": "tool_call",
+    "label": "启动田间仿真",
+    "call": {
+     "name": "start_simulation",
+     "arguments": {
+      "run_id": "run_20261105T060851_128ac1"
+     }
+    },
+    "contract_revision": 2,
+    "reason": "该操作会启动 Gazebo 物理仿真会话，需要你的批准"
+   }
+  },
+  {
+   "id": "m9",
+   "role": "event",
+   "kind": "notice",
+   "text": "已批准：启动田间仿真（成功）",
+   "utc": "2026-11-05T06:09:20.325Z"
+  },
+  {
+   "id": "m10",
+   "role": "assistant",
+   "kind": "simulation",
+   "text": "田间仿真已结束。",
+   "utc": "2026-11-05T06:11:21.123Z",
+   "data": {
+    "run_id": "run_20261105T060851_128ac1",
+    "session_id": "field_20261105T060920_7511ee",
+    "phase": "finished",
+    "state": "succeeded",
+    "check_valid": true,
+    "metrics": {
+     "tasks_total": 8,
+     "tasks_completed": 8,
+     "total_distance_m": 264.89,
+     "planned_total_distance_m": 256.911,
+     "makespan_s": 315.24,
+     "planned_makespan_s": 135.161,
+     "cross_track_mean_m": 0.005,
+     "cross_track_max_m": 0.09,
+     "energy_wh": 1.358
+    },
+    "errors": [],
+    "comparison": {
+     "physics_run_id": "phys_20261105T061115_8e830a",
+     "schema": "urp.sim2sim/1",
+     "run_id": "run_20261105T060851_128ac1",
+     "a": {
+      "engine": "gazebo",
+      "session_id": "field_20261105T060920_7511ee",
+      "state": "succeeded"
+     },
+     "b": {
+      "engine": "mujoco",
+      "version": "3.17.0",
+      "state": "succeeded"
+     },
+     "vehicles": [
+      {
+       "name": "vehicle_1",
+       "label": "① 号车",
+       "path": {
+        "mean_m": 0.003119387911680185,
+        "p95_m": 0.018473397014990265,
+        "max_m": 0.039120573200965375
+       },
+       "at_time": {
+        "rmse_m": 0.04271928114805742,
+        "max_m": 0.14359847702989165
+       },
+       "task_arrival_s": {
+        "tasks": 5,
+        "mean_abs": 0.038400000000001454,
+        "max_abs": 0.060000000000002274
+       },
+       "distance_m": {
+        "a": 137.34,
+        "b": 137.37
+       },
+       "duration_s": {
+        "a": 316.02,
+        "b": 316.18
+       },
+       "cross_track_max_m": {
+        "a": 0.0905,
+        "b": 0.095
+       }
+      },
+      {
+       "name": "vehicle_2",
+       "label": "② 号车",
+       "path": {
+        "mean_m": 0.0024377279613176403,
+        "p95_m": 0.01679717158078165,
+        "max_m": 0.03728436031125629
+       },
+       "at_time": {
+        "rmse_m": 0.08539961935317472,
+        "max_m": 0.170795850997428
+       },
+       "task_arrival_s": {
+        "tasks": 3,
+        "mean_abs": 0.13733333333334485,
+        "max_abs": 0.17200000000002547
+       },
+       "distance_m": {
+        "a": 127.55,
+        "b": 127.56
+       },
+       "duration_s": {
+        "a": 145.17999999999998,
+        "b": 145.42
+       },
+       "cross_track_max_m": {
+        "a": 0.0879,
+        "b": 0.091
+       }
+      }
+     ],
+     "path_max_m": 0.039120573200965375,
+     "path_mean_m": 0.0027785579364989123,
+     "time_rmse_m": 0.08539961935317472,
+     "metrics": {
+      "makespan_s": {
+       "a": 315.24,
+       "b": 315.33
+      },
+      "total_distance_m": {
+       "a": 264.89,
+       "b": 264.94
+      },
+      "cross_track_mean_m": {
+       "a": 0.0054,
+       "b": 0.0074
+      },
+      "cross_track_max_m": {
+       "a": 0.0905,
+       "b": 0.095
+      },
+      "energy_wh": {
+       "a": 1.358,
+       "b": 1.359
+      },
+      "tasks_completed": {
+       "a": 8,
+       "b": 8
+      }
+     },
+     "scope": "同一冻结方案在两个物理引擎中的差异；是引擎间差距，不是实车误差"
+    }
+   }
+  },
+  {
+   "id": "m11",
+   "role": "assistant",
+   "kind": "report",
+   "text": "任务规模：场地 70 × 50 m，8 个任务点，2 台车，单车容量 6 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 节约算法 + 2-opt（run_20261105T060851_128ac1），总里程 256.91 m，按恒速模型计算的最晚完成时间为 135.16 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 264.9 m、工期 315.18 s；OR-Tools 车队调度 实际里程 264.9 m、工期 315.18 s；节约算法 + 2-opt 实际里程 264.94 m、工期 315.33 s。田间仿真完成 8/8 个任务点，实际里程 264.89 m，规划里程 256.911 m，实际工期 315.24 s，最大横向偏差 0.09 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.039 m。",
+   "utc": "2026-11-05T06:11:32.347Z",
+   "data": {
+    "evidence": {
+     "contract": {
+      "场地尺寸": "70 × 50 m",
+      "车辆数": "2 台",
+      "任务点数": "8 个",
+      "单车容量": "6 单位",
+      "规划后进入仿真执行": "是"
+     },
+     "scenario_id": "task-sampling-20261105-060845-042-152c80-r2",
+     "runs": [
+      {
+       "run_id": "run_20261105T060851_11dd93",
+       "algorithm": "PyVRP 固定车队",
+       "state": "done",
+       "status": "feasible",
+       "independent_recheck": true,
+       "total_distance_m": 256.92,
+       "makespan_s": 135.17,
+       "vehicles_used": 2,
+       "trips": 2,
+       "wall_s": 2.11,
+       "params": {
+        "time_limit_s": 2.0,
+        "seed": 42,
+        "ground_policy": "ignore",
+        "ground_risk_weight": 1.0
+       },
+       "time_limit_s": 2.0,
+       "seed": 42,
+       "diagnosis_label": "已验证可行"
+      },
+      {
+       "run_id": "run_20261105T060851_3aa260",
+       "algorithm": "OR-Tools 车队调度",
+       "state": "done",
+       "status": "feasible",
+       "independent_recheck": true,
+       "total_distance_m": 256.92,
+       "makespan_s": 135.17,
+       "vehicles_used": 2,
+       "trips": 2,
+       "wall_s": 2.14,
+       "params": {
+        "time_limit_s": 2.0,
+        "seed": 42,
+        "ground_policy": "ignore",
+        "ground_risk_weight": 1.0
+       },
+       "time_limit_s": 2.0,
+       "seed": 42,
+       "diagnosis_label": "已验证可行"
+      },
+      {
+       "run_id": "run_20261105T060851_128ac1",
+       "algorithm": "节约算法 + 2-opt",
+       "state": "done",
+       "status": "feasible",
+       "independent_recheck": true,
+       "total_distance_m": 256.91,
+       "makespan_s": 135.16,
+       "vehicles_used": 2,
+       "trips": 2,
+       "wall_s": 0.08,
+       "params": {
+        "time_limit_s": 2.0,
+        "ground_policy": "ignore",
+        "ground_risk_weight": 1.0
+       },
+       "time_limit_s": 2.0,
+       "seed": null,
+       "diagnosis_label": "已验证可行"
+      }
+     ],
+     "best_verified": {
+      "run_id": "run_20261105T060851_128ac1",
+      "objective": 256.91,
+      "algorithm": "节约算法 + 2-opt",
+      "algorithm_id": "panel.savings_fleet",
+      "unit": "m",
+      "total_distance_m": 256.91,
+      "makespan_s": 135.16
+     },
+     "best_executable": {
+      "run_id": "run_20261105T060851_128ac1",
+      "objective": 256.91,
+      "algorithm": "节约算法 + 2-opt",
+      "algorithm_id": "panel.savings_fleet",
+      "unit": "m",
+      "total_distance_m": 256.91,
+      "makespan_s": 135.16
+     },
+     "unsupported": [],
+     "simulation_started": true,
+     "simulation_required": true,
+     "simulation_decision": {
+      "contract_revision": 2,
+      "run_id": "run_20261105T060851_128ac1",
+      "status": "attempted",
+      "outcome": "ok",
+      "error": null
+     },
+     "simulation_result": {
+      "run_id": "run_20261105T060851_128ac1",
+      "session_id": "field_20261105T060920_7511ee",
+      "phase": "finished",
+      "state": "succeeded",
+      "check_valid": true,
+      "metrics": {
+       "tasks_total": 8,
+       "tasks_completed": 8,
+       "total_distance_m": 264.89,
+       "planned_total_distance_m": 256.911,
+       "makespan_s": 315.24,
+       "planned_makespan_s": 135.161,
+       "cross_track_mean_m": 0.005,
+       "cross_track_max_m": 0.09,
+       "energy_wh": 1.358
+      },
+      "errors": [],
+      "comparison": {
+       "physics_run_id": "phys_20261105T061115_8e830a",
+       "schema": "urp.sim2sim/1",
+       "run_id": "run_20261105T060851_128ac1",
+       "a": {
+        "engine": "gazebo",
+        "session_id": "field_20261105T060920_7511ee",
+        "state": "succeeded"
+       },
+       "b": {
+        "engine": "mujoco",
+        "version": "3.17.0",
+        "state": "succeeded"
+       },
+       "vehicles": [
+        {
+         "name": "vehicle_1",
+         "label": "① 号车",
+         "path": {
+          "mean_m": 0.003119387911680185,
+          "p95_m": 0.018473397014990265,
+          "max_m": 0.039120573200965375
+         },
+         "at_time": {
+          "rmse_m": 0.04271928114805742,
+          "max_m": 0.14359847702989165
+         },
+         "task_arrival_s": {
+          "tasks": 5,
+          "mean_abs": 0.038400000000001454,
+          "max_abs": 0.060000000000002274
+         },
+         "distance_m": {
+          "a": 137.34,
+          "b": 137.37
+         },
+         "duration_s": {
+          "a": 316.02,
+          "b": 316.18
+         },
+         "cross_track_max_m": {
+          "a": 0.0905,
+          "b": 0.095
+         }
+        },
+        {
+         "name": "vehicle_2",
+         "label": "② 号车",
+         "path": {
+          "mean_m": 0.0024377279613176403,
+          "p95_m": 0.01679717158078165,
+          "max_m": 0.03728436031125629
+         },
+         "at_time": {
+          "rmse_m": 0.08539961935317472,
+          "max_m": 0.170795850997428
+         },
+         "task_arrival_s": {
+          "tasks": 3,
+          "mean_abs": 0.13733333333334485,
+          "max_abs": 0.17200000000002547
+         },
+         "distance_m": {
+          "a": 127.55,
+          "b": 127.56
+         },
+         "duration_s": {
+          "a": 145.17999999999998,
+          "b": 145.42
+         },
+         "cross_track_max_m": {
+          "a": 0.0879,
+          "b": 0.091
+         }
+        }
+       ],
+       "path_max_m": 0.039120573200965375,
+       "path_mean_m": 0.0027785579364989123,
+       "time_rmse_m": 0.08539961935317472,
+       "metrics": {
+        "makespan_s": {
+         "a": 315.24,
+         "b": 315.33
+        },
+        "total_distance_m": {
+         "a": 264.89,
+         "b": 264.94
+        },
+        "cross_track_mean_m": {
+         "a": 0.0054,
+         "b": 0.0074
+        },
+        "cross_track_max_m": {
+         "a": 0.0905,
+         "b": 0.095
+        },
+        "energy_wh": {
+         "a": 1.358,
+         "b": 1.359
+        },
+        "tasks_completed": {
+         "a": 8,
+         "b": 8
+        }
+       },
+       "scope": "同一冻结方案在两个物理引擎中的差异；是引擎间差距，不是实车误差"
+      }
+     },
+     "physics": [
+      {
+       "run_id": "run_20261105T060851_11dd93",
+       "physics_run_id": "phys_20261105T060914_51aeab",
+       "algorithm": "PyVRP 固定车队",
+       "engine": "mujoco",
+       "engine_version": "3.17.0",
+       "state": "succeeded",
+       "check_valid": true,
+       "errors": [],
+       "wall_s": 2.309,
+       "metrics": {
+        "tasks_total": 8,
+        "tasks_completed": 8,
+        "total_distance_m": 264.9,
+        "planned_total_distance_m": 256.918,
+        "makespan_s": 315.18,
+        "planned_makespan_s": 135.168,
+        "cross_track_mean_m": 0.007,
+        "cross_track_max_m": 0.1,
+        "energy_wh": 1.359
+       }
+      },
+      {
+       "run_id": "run_20261105T060851_3aa260",
+       "physics_run_id": "phys_20261105T060917_165a72",
+       "algorithm": "OR-Tools 车队调度",
+       "engine": "mujoco",
+       "engine_version": "3.17.0",
+       "state": "succeeded",
+       "check_valid": true,
+       "errors": [],
+       "wall_s": 1.87,
+       "metrics": {
+        "tasks_total": 8,
+        "tasks_completed": 8,
+        "total_distance_m": 264.9,
+        "planned_total_distance_m": 256.918,
+        "makespan_s": 315.18,
+        "planned_makespan_s": 135.168,
+        "cross_track_mean_m": 0.007,
+        "cross_track_max_m": 0.1,
+        "energy_wh": 1.359
+       }
+      },
+      {
+       "run_id": "run_20261105T060851_128ac1",
+       "physics_run_id": "phys_20261105T060905_fa5199",
+       "algorithm": "节约算法 + 2-opt",
+       "engine": "mujoco",
+       "engine_version": "3.17.0",
+       "state": "succeeded",
+       "check_valid": true,
+       "errors": [],
+       "wall_s": 1.844,
+       "metrics": {
+        "tasks_total": 8,
+        "tasks_completed": 8,
+        "total_distance_m": 264.94,
+        "planned_total_distance_m": 256.911,
+        "makespan_s": 315.33,
+        "planned_makespan_s": 135.161,
+        "cross_track_mean_m": 0.007,
+        "cross_track_max_m": 0.095,
+        "energy_wh": 1.359
+       }
+      }
+     ],
+     "precheck": []
+    },
+    "narrative": "任务规模：场地 70 × 50 m，8 个任务点，2 台车，单车容量 6 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 节约算法 + 2-opt（run_20261105T060851_128ac1），总里程 256.91 m，按恒速模型计算的最晚完成时间为 135.16 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 264.9 m、工期 315.18 s；OR-Tools 车队调度 实际里程 264.9 m、工期 315.18 s；节约算法 + 2-opt 实际里程 264.94 m、工期 315.33 s。田间仿真完成 8/8 个任务点，实际里程 264.89 m，规划里程 256.911 m，实际工期 315.24 s，最大横向偏差 0.09 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.039 m。",
+    "source": "template",
+    "unverified_numbers": [],
+    "utc": "2026-11-05T06:11:32.347Z"
+   }
+  }
+ ],
+ "contract": {
+  "schema": "urp.task-contract/1",
+  "status": "confirmed",
+  "revision": 2,
+  "request_text": "在 70×50 米的菜地里，2 台车访问 8 个点，单车容量 6",
+  "fields": {
+   "field_size_m": {
+    "value": [
+     70.0,
+     50.0
+    ],
+    "source": "user_text",
+    "evidence": "70×50 米"
+   },
+   "vehicle_count": {
+    "value": 2,
+    "source": "user_text",
+    "evidence": "2 台"
+   },
+   "task_count": {
+    "value": 8,
+    "source": "user_text",
+    "evidence": "8 个点"
+   },
+   "vehicle_capacity": {
+    "value": 6,
+    "source": "user_text",
+    "evidence": "容量 6"
+   },
+   "simulate": {
+    "value": true,
+    "source": "user_edit",
+    "evidence": ""
+   }
+  },
+  "unsupported": [],
+  "history": [
+   {
+    "revision": 1,
+    "source": "user_text",
+    "note": "规则解析",
+    "changes": [
+     {
+      "key": "field_size_m",
+      "old": null,
+      "new": [
+       70.0,
+       50.0
+      ],
+      "source": "user_text"
+     },
+     {
+      "key": "vehicle_count",
+      "old": null,
+      "new": 2,
+      "source": "user_text"
+     },
+     {
+      "key": "task_count",
+      "old": null,
+      "new": 8,
+      "source": "user_text"
+     },
+     {
+      "key": "vehicle_capacity",
+      "old": null,
+      "new": 6,
+      "source": "user_text"
+     }
+    ]
+   },
+   {
+    "revision": 2,
+    "source": "user_edit",
+    "note": "用户在表单中修改",
+    "changes": [
+     {
+      "key": "simulate",
+      "old": null,
+      "new": true,
+      "source": "user_edit"
+     }
+    ]
+   }
+  ],
+  "confirmed_revision": 2
+ },
+ "plan": [
+  {
+   "id": "understand",
+   "kind": "understand",
+   "title": "理解需求",
+   "status": "done",
+   "detail": "合同第 1 版",
+   "updated_utc": "2026-11-05T06:08:41.851Z"
+  },
+  {
+   "id": "confirm",
+   "kind": "confirm",
+   "title": "确认任务合同",
+   "status": "done",
+   "detail": "第 2 版",
+   "updated_utc": "2026-11-05T06:08:42.546Z"
+  },
+  {
+   "id": "scenario",
+   "kind": "scenario",
+   "title": "建立任务地图",
+   "status": "done",
+   "detail": "8 个任务点 · 2 台车",
+   "updated_utc": "2026-11-05T06:08:45.879Z"
+  },
+  {
+   "id": "recommend",
+   "kind": "recommend",
+   "title": "推荐算法",
+   "status": "done",
+   "detail": "推荐 pyvrp.fleet",
+   "updated_utc": "2026-11-05T06:08:49.563Z"
+  },
+  {
+   "id": "solve",
+   "kind": "solve",
+   "title": "求解对比",
+   "status": "done",
+   "detail": "3/3 个方案通过检查",
+   "updated_utc": "2026-11-05T06:08:54.405Z"
+  },
+  {
+   "id": "verify",
+   "kind": "verify",
+   "title": "独立复核",
+   "status": "done",
+   "detail": "",
+   "updated_utc": "2026-11-05T06:09:03.487Z"
+  },
+  {
+   "id": "physics",
+   "kind": "physics",
+   "title": "物理预演",
+   "status": "done",
+   "detail": "3/3 个方案执行通过",
+   "updated_utc": "2026-11-05T06:09:20.056Z"
+  },
+  {
+   "id": "repair",
+   "kind": "repair",
+   "title": "诊断与修复",
+   "status": "skipped",
+   "detail": "无需修复",
+   "updated_utc": "2026-11-05T06:11:32.347Z"
+  },
+  {
+   "id": "simulate",
+   "kind": "simulate",
+   "title": "田间仿真",
+   "status": "done",
+   "detail": "完成 8/8",
+   "updated_utc": "2026-11-05T06:11:21.123Z"
+  },
+  {
+   "id": "report",
+   "kind": "report",
+   "title": "结果报告",
+   "status": "done",
+   "detail": "依据已核对",
+   "updated_utc": "2026-11-05T06:11:32.347Z"
+  }
+ ],
+ "tool_calls": [
+  {
+   "name": "rule_parse",
+   "label": "规则解析",
+   "arguments": {
+    "text": "在 70×50 米的菜地里，2 台车访问 8 个点，单车容量 6"
+   },
+   "status": "ok",
+   "started_utc": "2026-11-05T06:08:37.512Z",
+   "duration_s": 0,
+   "result": {
+    "accepted": [
+     {
+      "key": "field_size_m",
+      "old": null,
+      "new": [
+       70.0,
+       50.0
+      ],
+      "source": "user_text"
+     },
+     {
+      "key": "vehicle_count",
+      "old": null,
+      "new": 2,
+      "source": "user_text"
+     },
+     {
+      "key": "task_count",
+      "old": null,
+      "new": 8,
+      "source": "user_text"
+     },
+     {
+      "key": "vehicle_capacity",
+      "old": null,
+      "new": 6,
+      "source": "user_text"
+     }
+    ],
+    "rejected": []
+   },
+   "id": "c1",
+   "actor": "rule",
+   "step": null
+  },
+  {
+   "name": "update_task_contract",
+   "arguments": {
+    "fields": {
+     "field_size_m": [
+      70,
+      50
+     ],
+     "task_count": 8,
+     "vehicle_capacity": 6,
+     "vehicle_count": 2
+    },
+    "evidence": {
+     "field_size_m": "70×50 米的菜地",
+     "task_count": "访问 8 个点",
+     "vehicle_capacity": "单车容量 6",
+     "vehicle_count": "2 台车"
+    }
+   },
+   "started_utc": "2026-11-05T06:08:40.445Z",
+   "label": "更新任务合同",
+   "status": "ok",
+   "result": {
+    "accepted": [],
+    "rejected": [],
+    "missing": [],
+    "unsupported": [],
+    "status": "draft",
+    "revision": 1
+   },
+   "duration_s": 0.0,
+   "id": "c2",
+   "actor": "llm",
+   "step": "understand"
+  },
+  {
+   "name": "build_scenario",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:08:45.868Z",
+   "label": "建立任务地图",
+   "status": "ok",
+   "result": {
+    "scenario_id": "task-sampling-20261105-060845-042-152c80-r2",
+    "mode": "created",
+    "title": "在 70×50 米的菜地里，2 台车访问 8…",
+    "summary": "2 台车 · 8 个采样点 · 70×50 m · 4 块地 · 1 处障碍",
+    "units": "m",
+    "tasks": 8,
+    "vehicles": 2,
+    "capacity": 6,
+    "trips": "multi",
+    "travel": "rows",
+    "obstacles": 1,
+    "objective": "total_distance",
+    "precheck": {
+     "feasible_by_precheck": true,
+     "findings": [],
+     "total_demand": 8,
+     "fleet_capacity_per_trip": 12
+    }
+   },
+   "duration_s": 0.011,
+   "id": "c3",
+   "actor": "llm",
+   "step": "scenario"
+  },
+  {
+   "name": "recommend_algorithms",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:08:49.556Z",
+   "label": "推荐算法",
+   "status": "ok",
+   "result": {
+    "policy": "rules-v2",
+    "recommended": "pyvrp.fleet",
+    "compare": [
+     "pyvrp.fleet",
+     "ortools.fleet",
+     "panel.savings_fleet"
+    ],
+    "explanation": "推荐 PyVRP 固定车队：规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估",
+    "ranking": [
+     {
+      "algorithm_id": "pyvrp.fleet",
+      "rank": 1,
+      "applicable": true,
+      "suitability": "推荐",
+      "reasons": [
+       "规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估",
+       "开发侧审计（真实田块 274 个可解实例，3 s）：PyVRP 首选可行 271/274，可行时 261 例为逐实例最好、其余与最好差距可忽略（平均 1.000 倍）；被拒的 3 条只与障碍有毫米级擦碰（接口需求第 18 项），改用 OR-Tools 重试即可全部求解"
+      ]
+     },
+     {
+      "algorithm_id": "ortools.fleet",
+      "rank": 2,
+      "applicable": true,
+      "suitability": "可用",
+      "reasons": [
+       "采用不同搜索实现的对照，需用相同实例和预算比较"
+      ]
+     },
+     {
+      "algorithm_id": "panel.savings_fleet",
+      "rank": 3,
+      "applicable": true,
+      "suitability": "可用",
+      "reasons": [
+       "确定性构造基线，可作为改进幅度的参照；耗时以实测为准"
+      ]
+     },
+     {
+      "algorithm_id": "panel.cluster_first",
+      "rank": 4,
+      "applicable": true,
+      "suitability": "可用",
+      "reasons": [
+       "按区域划分各车负责范围，便于现场分工"
+      ]
+     },
+     {
+      "algorithm_id": "panel.sweep",
+      "rank": 5,
+      "applicable": true,
+      "suitability": "可用",
+      "reasons": [
+       "按车库方位进行扫描切分的构造基线"
+      ]
+     }
+    ],
+    "features": [
+     {
+      "name": "任务点",
+      "value": 8,
+      "unit": null
+     },
+     {
+      "name": "车辆",
+      "value": 2,
+      "unit": null
+     },
+     {
+      "name": "至少需要的趟数",
+      "value": 2,
+      "unit": null
+     },
+     {
+      "name": "车型类别",
+      "value": 1,
+      "unit": null
+     },
+     {
+      "name": "障碍占地",
+      "value": 0.88,
+      "unit": "%"
+     },
+     {
+      "name": "聚集度 R",
+      "value": 0.94,
+      "unit": null
+     },
+     {
+      "name": "目标",
+      "value": "总里程",
+      "unit": null
+     }
+    ],
+    "learned_selector": {
+     "status": "not_applicable",
+     "reason": null
+    },
+    "recommender_kind": "规则推荐（rules-v2）；学习型选择器只在其训练覆盖的问题类型上启用"
+   },
+   "duration_s": 0.007,
+   "id": "c4",
+   "actor": "llm",
+   "step": "recommend"
+  },
+  {
+   "name": "solve",
+   "arguments": {
+    "algorithms": [
+     "pyvrp.fleet",
+     "ortools.fleet",
+     "panel.savings_fleet"
+    ],
+    "time_limit_s": 2,
+    "seed": 42
+   },
+   "started_utc": "2026-11-05T06:08:51.831Z",
+   "label": "求解对比",
+   "status": "ok",
+   "result": {
+    "job_id": "job_20261105T060851_629397",
+    "time_limit_s": 2.0,
+    "seed": 42,
+    "runs": [
+     {
+      "run_id": "run_20261105T060851_11dd93",
+      "algorithm_id": "pyvrp.fleet",
+      "algorithm": "PyVRP 固定车队",
+      "state": "done",
+      "status": "feasible",
+      "check_valid": true,
+      "independent_recheck": null,
+      "objective": 256.9182185479384,
+      "objective_unit": "m",
+      "total_distance_m": 256.9182185479384,
+      "makespan_s": 135.16804806910335,
+      "vehicles_used": 2,
+      "trips": 2,
+      "wall_s": 2.1055189099997733,
+      "errors": [],
+      "diagnosis": "ok",
+      "diagnosis_label": "已验证可行",
+      "params": {
+       "time_limit_s": 2.0,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "run_id": "run_20261105T060851_3aa260",
+      "algorithm_id": "ortools.fleet",
+      "algorithm": "OR-Tools 车队调度",
+      "state": "done",
+      "status": "feasible",
+      "check_valid": true,
+      "independent_recheck": null,
+      "objective": 256.9182185479384,
+      "objective_unit": "m",
+      "total_distance_m": 256.9182185479384,
+      "makespan_s": 135.16804806910335,
+      "vehicles_used": 2,
+      "trips": 2,
+      "wall_s": 2.1373820999997406,
+      "errors": [],
+      "diagnosis": "ok",
+      "diagnosis_label": "已验证可行",
+      "params": {
+       "time_limit_s": 2.0,
+       "seed": 42,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     },
+     {
+      "run_id": "run_20261105T060851_128ac1",
+      "algorithm_id": "panel.savings_fleet",
+      "algorithm": "节约算法 + 2-opt",
+      "state": "done",
+      "status": "feasible",
+      "check_valid": true,
+      "independent_recheck": null,
+      "objective": 256.91119037968565,
+      "objective_unit": "m",
+      "total_distance_m": 256.91119037968565,
+      "makespan_s": 135.16101990085062,
+      "vehicles_used": 2,
+      "trips": 2,
+      "wall_s": 0.07503929100039386,
+      "errors": [],
+      "diagnosis": "ok",
+      "diagnosis_label": "已验证可行",
+      "params": {
+       "time_limit_s": 2.0,
+       "ground_policy": "ignore",
+       "ground_risk_weight": 1.0
+      }
+     }
+    ]
+   },
+   "duration_s": 2.574,
+   "id": "c5",
+   "actor": "llm",
+   "step": "solve"
+  },
+  {
+   "name": "verify_run",
+   "arguments": {
+    "run_id": "run_20261105T060851_11dd93"
+   },
+   "started_utc": "2026-11-05T06:09:01.174Z",
+   "label": "独立复核",
+   "status": "ok",
+   "result": {
+    "run_id": "run_20261105T060851_11dd93",
+    "recheck": {
+     "performed": true,
+     "valid": true,
+     "agrees": true,
+     "computed_cost": 256.9182185479384,
+     "items": [
+      {
+       "id": "coverage",
+       "label": "每个任务点恰好服务一次",
+       "ok": true,
+       "detail": "服务 8 / 8，重复 0"
+      },
+      {
+       "id": "checker",
+       "label": "路线、载重、避障与里程独立复算",
+       "ok": true,
+       "detail": "无违规"
+      },
+      {
+       "id": "agreement",
+       "label": "复核与存档判定一致",
+       "ok": true,
+       "detail": "复算里程 256.9182185479384，存档 256.9182185479384"
+      },
+      {
+       "id": "collision",
+       "label": "车体足迹不与障碍相交",
+       "ok": true,
+       "detail": "碰撞段 0"
+      }
+     ],
+     "errors": [],
+     "checker": "urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）"
+    },
+    "diagnosis": "ok",
+    "diagnosis_label": "已验证可行",
+    "evidence": []
+   },
+   "duration_s": 0.016,
+   "id": "c6",
+   "actor": "llm",
+   "step": "verify"
+  },
+  {
+   "name": "verify_run",
+   "arguments": {
+    "run_id": "run_20261105T060851_3aa260"
+   },
+   "started_utc": "2026-11-05T06:09:01.196Z",
+   "label": "独立复核",
+   "status": "ok",
+   "result": {
+    "run_id": "run_20261105T060851_3aa260",
+    "recheck": {
+     "performed": true,
+     "valid": true,
+     "agrees": true,
+     "computed_cost": 256.9182185479384,
+     "items": [
+      {
+       "id": "coverage",
+       "label": "每个任务点恰好服务一次",
+       "ok": true,
+       "detail": "服务 8 / 8，重复 0"
+      },
+      {
+       "id": "checker",
+       "label": "路线、载重、避障与里程独立复算",
+       "ok": true,
+       "detail": "无违规"
+      },
+      {
+       "id": "agreement",
+       "label": "复核与存档判定一致",
+       "ok": true,
+       "detail": "复算里程 256.9182185479384，存档 256.9182185479384"
+      },
+      {
+       "id": "collision",
+       "label": "车体足迹不与障碍相交",
+       "ok": true,
+       "detail": "碰撞段 0"
+      }
+     ],
+     "errors": [],
+     "checker": "urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）"
+    },
+    "diagnosis": "ok",
+    "diagnosis_label": "已验证可行",
+    "evidence": []
+   },
+   "duration_s": 0.014,
+   "id": "c7",
+   "actor": "llm",
+   "step": "verify"
+  },
+  {
+   "name": "verify_run",
+   "arguments": {
+    "run_id": "run_20261105T060851_128ac1"
+   },
+   "started_utc": "2026-11-05T06:09:01.218Z",
+   "label": "独立复核",
+   "status": "ok",
+   "result": {
+    "run_id": "run_20261105T060851_128ac1",
+    "recheck": {
+     "performed": true,
+     "valid": true,
+     "agrees": true,
+     "computed_cost": 256.91119037968565,
+     "items": [
+      {
+       "id": "coverage",
+       "label": "每个任务点恰好服务一次",
+       "ok": true,
+       "detail": "服务 8 / 8，重复 0"
+      },
+      {
+       "id": "checker",
+       "label": "路线、载重、避障与里程独立复算",
+       "ok": true,
+       "detail": "无违规"
+      },
+      {
+       "id": "agreement",
+       "label": "复核与存档判定一致",
+       "ok": true,
+       "detail": "复算里程 256.91119037968565，存档 256.91119037968565"
+      },
+      {
+       "id": "collision",
+       "label": "车体足迹不与障碍相交",
+       "ok": true,
+       "detail": "碰撞段 0"
+      }
+     ],
+     "errors": [],
+     "checker": "urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）"
+    },
+    "diagnosis": "ok",
+    "diagnosis_label": "已验证可行",
+    "evidence": []
+   },
+   "duration_s": 0.012,
+   "id": "c8",
+   "actor": "llm",
+   "step": "verify"
+  },
+  {
+   "name": "compare_runs",
+   "arguments": {
+    "run_ids": [
+     "run_20261105T060851_11dd93",
+     "run_20261105T060851_3aa260",
+     "run_20261105T060851_128ac1"
+    ]
+   },
+   "started_utc": "2026-11-05T06:09:03.485Z",
+   "label": "方案对比",
+   "status": "ok",
+   "result": {
+    "groups": [
+     {
+      "comparison_key": "30760f46a51bbdc0",
+      "comparable": true,
+      "rows": [
+       {
+        "run_id": "run_20261105T060851_11dd93",
+        "algorithm_id": "pyvrp.fleet",
+        "algorithm": "PyVRP 固定车队",
+        "state": "done",
+        "status": "feasible",
+        "check_valid": true,
+        "independent_recheck": true,
+        "objective": 256.9182185479384,
+        "objective_unit": "m",
+        "total_distance_m": 256.9182185479384,
+        "makespan_s": 135.16804806910335,
+        "vehicles_used": 2,
+        "trips": 2,
+        "wall_s": 2.1055189099997733,
+        "errors": [],
+        "diagnosis": "ok",
+        "diagnosis_label": "已验证可行",
+        "params": {
+         "time_limit_s": 2.0,
+         "seed": 42,
+         "ground_policy": "ignore",
+         "ground_risk_weight": 1.0
+        }
+       },
+       {
+        "run_id": "run_20261105T060851_3aa260",
+        "algorithm_id": "ortools.fleet",
+        "algorithm": "OR-Tools 车队调度",
+        "state": "done",
+        "status": "feasible",
+        "check_valid": true,
+        "independent_recheck": true,
+        "objective": 256.9182185479384,
+        "objective_unit": "m",
+        "total_distance_m": 256.9182185479384,
+        "makespan_s": 135.16804806910335,
+        "vehicles_used": 2,
+        "trips": 2,
+        "wall_s": 2.1373820999997406,
+        "errors": [],
+        "diagnosis": "ok",
+        "diagnosis_label": "已验证可行",
+        "params": {
+         "time_limit_s": 2.0,
+         "seed": 42,
+         "ground_policy": "ignore",
+         "ground_risk_weight": 1.0
+        }
+       },
+       {
+        "run_id": "run_20261105T060851_128ac1",
+        "algorithm_id": "panel.savings_fleet",
+        "algorithm": "节约算法 + 2-opt",
+        "state": "done",
+        "status": "feasible",
+        "check_valid": true,
+        "independent_recheck": true,
+        "objective": 256.91119037968565,
+        "objective_unit": "m",
+        "total_distance_m": 256.91119037968565,
+        "makespan_s": 135.16101990085062,
+        "vehicles_used": 2,
+        "trips": 2,
+        "wall_s": 0.07503929100039386,
+        "errors": [],
+        "diagnosis": "ok",
+        "diagnosis_label": "已验证可行",
+        "params": {
+         "time_limit_s": 2.0,
+         "ground_policy": "ignore",
+         "ground_risk_weight": 1.0
+        }
+       }
+      ],
+      "best": {
+       "total_distance_m": "run_20261105T060851_128ac1",
+       "makespan_s": "run_20261105T060851_128ac1",
+       "wall_s": "run_20261105T060851_128ac1"
+      }
+     }
+    ],
+    "rule": "只在相同输入、目标、单位与约束的已验证方案之间标记最好值"
+   },
+   "duration_s": 0.002,
+   "id": "c9",
+   "actor": "llm",
+   "step": "verify"
+  },
+  {
+   "name": "physics_check",
+   "arguments": {
+    "run_id": "run_20261105T060851_128ac1"
+   },
+   "started_utc": "2026-11-05T06:09:05.107Z",
+   "label": "物理预演",
+   "status": "ok",
+   "result": {
+    "run_id": "run_20261105T060851_128ac1",
+    "physics_run_id": "phys_20261105T060905_fa5199",
+    "algorithm": "节约算法 + 2-opt",
+    "engine": "mujoco",
+    "engine_version": "3.17.0",
+    "state": "succeeded",
+    "check_valid": true,
+    "errors": [],
+    "wall_s": 1.844,
+    "metrics": {
+     "tasks_total": 8,
+     "tasks_completed": 8,
+     "total_distance_m": 264.94,
+     "planned_total_distance_m": 256.911,
+     "makespan_s": 315.33,
+     "planned_makespan_s": 135.161,
+     "cross_track_mean_m": 0.007,
+     "cross_track_max_m": 0.095,
+     "energy_wh": 1.359
+    }
+   },
+   "duration_s": 2.683,
+   "id": "c10",
+   "actor": "llm",
+   "step": "physics"
+  },
+  {
+   "name": "physics_check",
+   "arguments": {
+    "run_id": "run_20261105T060851_11dd93"
+   },
+   "started_utc": "2026-11-05T06:09:14.275Z",
+   "label": "物理预演",
+   "status": "ok",
+   "result": {
+    "run_id": "run_20261105T060851_11dd93",
+    "physics_run_id": "phys_20261105T060914_51aeab",
+    "algorithm": "PyVRP 固定车队",
+    "engine": "mujoco",
+    "engine_version": "3.17.0",
+    "state": "succeeded",
+    "check_valid": true,
+    "errors": [],
+    "wall_s": 2.309,
+    "metrics": {
+     "tasks_total": 8,
+     "tasks_completed": 8,
+     "total_distance_m": 264.9,
+     "planned_total_distance_m": 256.918,
+     "makespan_s": 315.18,
+     "planned_makespan_s": 135.168,
+     "cross_track_mean_m": 0.007,
+     "cross_track_max_m": 0.1,
+     "energy_wh": 1.359
+    }
+   },
+   "duration_s": 3.147,
+   "id": "c11",
+   "actor": "system",
+   "step": "physics"
+  },
+  {
+   "name": "physics_check",
+   "arguments": {
+    "run_id": "run_20261105T060851_3aa260"
+   },
+   "started_utc": "2026-11-05T06:09:17.434Z",
+   "label": "物理预演",
+   "status": "ok",
+   "result": {
+    "run_id": "run_20261105T060851_3aa260",
+    "physics_run_id": "phys_20261105T060917_165a72",
+    "algorithm": "OR-Tools 车队调度",
+    "engine": "mujoco",
+    "engine_version": "3.17.0",
+    "state": "succeeded",
+    "check_valid": true,
+    "errors": [],
+    "wall_s": 1.87,
+    "metrics": {
+     "tasks_total": 8,
+     "tasks_completed": 8,
+     "total_distance_m": 264.9,
+     "planned_total_distance_m": 256.918,
+     "makespan_s": 315.18,
+     "planned_makespan_s": 135.168,
+     "cross_track_mean_m": 0.007,
+     "cross_track_max_m": 0.1,
+     "energy_wh": 1.359
+    }
+   },
+   "duration_s": 2.614,
+   "id": "c12",
+   "actor": "system",
+   "step": "physics"
+  },
+  {
+   "name": "start_simulation",
+   "arguments": {
+    "run_id": "run_20261105T060851_128ac1"
+   },
+   "started_utc": "2026-11-05T06:09:20.261Z",
+   "label": "启动田间仿真",
+   "status": "ok",
+   "result": {
+    "phase": "starting",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "note": "已启动 Gazebo 田间会话；规划预览、实时仿真与记录回放分别显示"
+   },
+   "duration_s": 0.054,
+   "id": "c13",
+   "actor": "user_approved",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:09:26.647Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       3.888,
+       12.816,
+       1.458
+      ],
+      "speed": 1.0,
+      "progress": 0.0884,
+      "distance_m": 12.38,
+      "path_length_m": 139.69,
+      "tasks_done": 0,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0111,
+      "cross_track_max_m": 0.0635,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.006,
+   "id": "c14",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:09:32.908Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       5.379,
+       26.75,
+       2.953
+      ],
+      "speed": 0.0,
+      "progress": 0.2299,
+      "distance_m": 31.81,
+      "path_length_m": 139.69,
+      "tasks_done": 1,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.009,
+      "cross_track_max_m": 0.0827,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.005,
+   "id": "c15",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:09:39.608Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       7.401,
+       29.75,
+       -3.142
+      ],
+      "speed": 1.0,
+      "progress": 0.3791,
+      "distance_m": 52.15,
+      "path_length_m": 139.69,
+      "tasks_done": 2,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0075,
+      "cross_track_max_m": 0.0899,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.008,
+   "id": "c16",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:09:46.276Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       5.945,
+       36.95,
+       -3.141
+      ],
+      "speed": 0.843,
+      "progress": 0.5164,
+      "distance_m": 70.77,
+      "path_length_m": 139.69,
+      "tasks_done": 4,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0068,
+      "cross_track_max_m": 0.0899,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.005,
+   "id": "c17",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:09:53.420Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       11.722,
+       40.55,
+       -3.142
+      ],
+      "speed": 1.0,
+      "progress": 0.6645,
+      "distance_m": 90.89,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0065,
+      "cross_track_max_m": 0.0905,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.006,
+   "id": "c18",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:09:54.375Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       7.902,
+       40.55,
+       3.142
+      ],
+      "speed": 1.0,
+      "progress": 0.6918,
+      "distance_m": 94.71,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0063,
+      "cross_track_max_m": 0.0905,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.006,
+   "id": "c19",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:10:02.336Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "driving",
+      "pose": [
+       3.424,
+       14.081,
+       -1.63
+      ],
+      "speed": 1.0,
+      "progress": 0.9024,
+      "distance_m": 124.02,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0054,
+      "cross_track_max_m": 0.0905,
+      "duration_s": null,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "waiting",
+      "pose": [
+       1.15,
+       5.95,
+       -1.107
+      ],
+      "speed": 0.0,
+      "progress": 0.0,
+      "distance_m": 0.0,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": null,
+      "cross_track_max_m": null,
+      "duration_s": null,
+      "queue_wait_s": null,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.007,
+   "id": "c20",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:10:10.606Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "done",
+      "pose": [
+       1.371,
+       1.329,
+       -2.438
+      ],
+      "speed": 0.0,
+      "progress": 0.9976,
+      "distance_m": 137.34,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0055,
+      "cross_track_max_m": 0.0905,
+      "duration_s": 169.76,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "driving",
+      "pose": [
+       7.173,
+       8.253,
+       -0.009
+      ],
+      "speed": 1.0,
+      "progress": 0.0907,
+      "distance_m": 11.44,
+      "path_length_m": 128.91,
+      "tasks_done": 0,
+      "tasks_total": 3,
+      "cross_track_mean_m": 0.0115,
+      "cross_track_max_m": 0.0793,
+      "duration_s": null,
+      "queue_wait_s": 170.85199999999998,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.006,
+   "id": "c21",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:10:19.167Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "done",
+      "pose": [
+       1.371,
+       1.329,
+       -2.438
+      ],
+      "speed": 0.0,
+      "progress": 0.9976,
+      "distance_m": 137.34,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0055,
+      "cross_track_max_m": 0.0905,
+      "duration_s": 169.76,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "driving",
+      "pose": [
+       36.599,
+       11.605,
+       0.83
+      ],
+      "speed": 0.321,
+      "progress": 0.3304,
+      "distance_m": 42.31,
+      "path_length_m": 128.91,
+      "tasks_done": 1,
+      "tasks_total": 3,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.0793,
+      "duration_s": null,
+      "queue_wait_s": 170.85199999999998,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.008,
+   "id": "c22",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:10:28.891Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "done",
+      "pose": [
+       1.371,
+       1.329,
+       -2.438
+      ],
+      "speed": 0.0,
+      "progress": 0.9976,
+      "distance_m": 137.34,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0055,
+      "cross_track_max_m": 0.0905,
+      "duration_s": 169.76,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "driving",
+      "pose": [
+       54.313,
+       5.096,
+       -3.095
+      ],
+      "speed": 1.0,
+      "progress": 0.5718,
+      "distance_m": 72.72,
+      "path_length_m": 128.91,
+      "tasks_done": 3,
+      "tasks_total": 3,
+      "cross_track_mean_m": 0.0068,
+      "cross_track_max_m": 0.0879,
+      "duration_s": null,
+      "queue_wait_s": 170.85199999999998,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.017,
+   "id": "c23",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:10:38.857Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "running",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "done",
+      "pose": [
+       1.371,
+       1.329,
+       -2.438
+      ],
+      "speed": 0.0,
+      "progress": 0.9976,
+      "distance_m": 137.34,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0055,
+      "cross_track_max_m": 0.0905,
+      "duration_s": 169.76,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "driving",
+      "pose": [
+       15.679,
+       3.338,
+       -3.096
+      ],
+      "speed": 1.0,
+      "progress": 0.8718,
+      "distance_m": 111.39,
+      "path_length_m": 128.91,
+      "tasks_done": 3,
+      "tasks_total": 3,
+      "cross_track_mean_m": 0.0047,
+      "cross_track_max_m": 0.0879,
+      "duration_s": null,
+      "queue_wait_s": 170.85199999999998,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.013,
+   "id": "c24",
+   "actor": "llm",
+   "step": "simulate"
+  },
+  {
+   "name": "simulation_status",
+   "arguments": {},
+   "started_utc": "2026-11-05T06:10:49.174Z",
+   "label": "查看仿真状态",
+   "status": "ok",
+   "result": {
+    "phase": "finished",
+    "session_id": "field_20261105T060920_7511ee",
+    "run_id": "run_20261105T060851_128ac1",
+    "vehicles": [
+     {
+      "error": null,
+      "name": "vehicle_1",
+      "label": "① 号车",
+      "color": "#007aff",
+      "state": "done",
+      "pose": [
+       1.371,
+       1.329,
+       -2.438
+      ],
+      "speed": 0.0,
+      "progress": 0.9976,
+      "distance_m": 137.34,
+      "path_length_m": 139.69,
+      "tasks_done": 5,
+      "tasks_total": 5,
+      "cross_track_mean_m": 0.0055,
+      "cross_track_max_m": 0.0905,
+      "duration_s": 169.76,
+      "queue_wait_s": 0.016000000000000014,
+      "parking_xy": [
+       1.15,
+       1.15
+      ],
+      "planned_length_m": 135.16101990085062,
+      "planned_duration_s": 135.16101990085062,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     },
+     {
+      "error": null,
+      "name": "vehicle_2",
+      "label": "② 号车",
+      "color": "#ff6b00",
+      "state": "done",
+      "pose": [
+       1.272,
+       5.675,
+       1.993
+      ],
+      "speed": 0.0,
+      "progress": 0.9973,
+      "distance_m": 127.55,
+      "path_length_m": 128.91,
+      "tasks_done": 3,
+      "tasks_total": 3,
+      "cross_track_mean_m": 0.0052,
+      "cross_track_max_m": 0.0879,
+      "duration_s": 315.24,
+      "queue_wait_s": 170.85199999999998,
+      "parking_xy": [
+       1.15,
+       5.95
+      ],
+      "planned_length_m": 121.75017047883505,
+      "planned_duration_s": 121.75017047883505,
+      "pose_source": "ground_truth",
+      "speed_source": "ground_truth"
+     }
+    ]
+   },
+   "duration_s": 0.007,
+   "id": "c25",
+   "actor": "llm",
+   "step": "simulate"
+  }
+ ],
+ "llm_calls": [
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 2.495,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 2385,
+    "output_tokens": 119,
+    "total_tokens": 2504
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "update_task_contract"
+   ],
+   "reasoning_chars": 0,
+   "phase": "understand",
+   "utc": "2026-11-05T06:08:40.010Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 1.403,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 2548,
+    "output_tokens": 53,
+    "total_tokens": 2601
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [],
+   "reasoning_chars": 0,
+   "phase": "understand",
+   "utc": "2026-11-05T06:08:41.851Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 3.31,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 3034,
+    "output_tokens": 15,
+    "total_tokens": 3049
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "build_scenario"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:08:45.860Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 3.038,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 3301,
+    "output_tokens": 16,
+    "total_tokens": 3317
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "recommend_algorithms"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:08:48.920Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 1.645,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 3963,
+    "output_tokens": 72,
+    "total_tokens": 4035
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "solve"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:08:51.211Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 5.906,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 4939,
+    "output_tokens": 150,
+    "total_tokens": 5089
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "verify_run",
+    "verify_run",
+    "verify_run"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:00.320Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 2.243,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 6085,
+    "output_tokens": 100,
+    "total_tokens": 6185
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "compare_runs"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:03.476Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 1.608,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 7118,
+    "output_tokens": 50,
+    "total_tokens": 7168
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "physics_check"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:05.098Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 6.469,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 7052,
+    "output_tokens": 49,
+    "total_tokens": 7101
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "start_simulation"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:14.267Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 6.308,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 6742,
+    "output_tokens": 15,
+    "total_tokens": 6757
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:26.639Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 6.243,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 7214,
+    "output_tokens": 15,
+    "total_tokens": 7229
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:32.900Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 6.682,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 7752,
+    "output_tokens": 15,
+    "total_tokens": 7767
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:39.600Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 6.648,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 7691,
+    "output_tokens": 15,
+    "total_tokens": 7706
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:46.268Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 7.126,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 8294,
+    "output_tokens": 15,
+    "total_tokens": 8309
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:53.411Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 0.937,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 8902,
+    "output_tokens": 15,
+    "total_tokens": 8917
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:09:54.366Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 7.947,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 9195,
+    "output_tokens": 15,
+    "total_tokens": 9210
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:10:02.331Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 8.231,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 9491,
+    "output_tokens": 15,
+    "total_tokens": 9506
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:10:10.578Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 8.536,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 9828,
+    "output_tokens": 15,
+    "total_tokens": 9843
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:10:19.156Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 9.705,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 10134,
+    "output_tokens": 15,
+    "total_tokens": 10149
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:10:28.884Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 9.934,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 10308,
+    "output_tokens": 15,
+    "total_tokens": 10323
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:10:38.848Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 10.289,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 10568,
+    "output_tokens": 15,
+    "total_tokens": 10583
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [
+    "simulation_status"
+   ],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:10:49.165Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 24.011,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 10652,
+    "output_tokens": 988,
+    "total_tokens": 11640
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [],
+   "reasoning_chars": 0,
+   "phase": "execute",
+   "utc": "2026-11-05T06:11:13.196Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  },
+  {
+   "provider": "local",
+   "model": "qwen3.8:27b",
+   "latency_s": 11.205,
+   "attempts": 1,
+   "finish_reason": "stop",
+   "usage": {
+    "input_tokens": 11948,
+    "output_tokens": 1,
+    "total_tokens": 11949
+   },
+   "cost": 0.0,
+   "currency": "CNY",
+   "tool_calls": [],
+   "reasoning_chars": 0,
+   "phase": "report",
+   "utc": "2026-11-05T06:11:32.347Z",
+   "prompt_version": "agent-prompts/4",
+   "runner_version": "agent-runner/5"
+  }
+ ],
+ "usage": {
+  "input_tokens": 169144,
+  "output_tokens": 1793,
+  "cost": 0.0,
+  "currency": "CNY",
+  "calls": 23,
+  "latency_s": 151.919
+ },
+ "scenario_id": "task-sampling-20261105-060845-042-152c80-r2",
+ "run_ids": [
+  "run_20261105T060851_11dd93",
+  "run_20261105T060851_3aa260",
+  "run_20261105T060851_128ac1"
+ ],
+ "active_run_ids": [
+  "run_20261105T060851_11dd93",
+  "run_20261105T060851_3aa260",
+  "run_20261105T060851_128ac1"
+ ],
+ "active_sim_runs": [
+  "run_20261105T060851_128ac1"
+ ],
+ "tried_algorithms": [
+  "pyvrp.fleet",
+  "ortools.fleet",
+  "panel.savings_fleet"
+ ],
+ "precheck": {
+  "feasible_by_precheck": true,
+  "findings": [],
+  "total_demand": 8,
+  "fleet_capacity_per_trip": 12
+ },
+ "verifications": {
+  "run_20261105T060851_11dd93": {
+   "valid": true,
+   "agrees": true,
+   "category": "ok"
+  },
+  "run_20261105T060851_3aa260": {
+   "valid": true,
+   "agrees": true,
+   "category": "ok"
+  },
+  "run_20261105T060851_128ac1": {
+   "valid": true,
+   "agrees": true,
+   "category": "ok"
+  }
+ },
+ "recommendation": {
+  "recommended": "pyvrp.fleet",
+  "compare": [
+   "pyvrp.fleet",
+   "ortools.fleet",
+   "panel.savings_fleet"
+  ],
+  "policy": "rules-v2"
+ },
+ "pending": null,
+ "error": null,
+ "turn": 1,
+ "report": {
+  "evidence": {
+   "contract": {
+    "场地尺寸": "70 × 50 m",
+    "车辆数": "2 台",
+    "任务点数": "8 个",
+    "单车容量": "6 单位",
+    "规划后进入仿真执行": "是"
+   },
+   "scenario_id": "task-sampling-20261105-060845-042-152c80-r2",
+   "runs": [
+    {
+     "run_id": "run_20261105T060851_11dd93",
+     "algorithm": "PyVRP 固定车队",
+     "state": "done",
+     "status": "feasible",
+     "independent_recheck": true,
+     "total_distance_m": 256.92,
+     "makespan_s": 135.17,
+     "vehicles_used": 2,
+     "trips": 2,
+     "wall_s": 2.11,
+     "params": {
+      "time_limit_s": 2.0,
+      "seed": 42,
+      "ground_policy": "ignore",
+      "ground_risk_weight": 1.0
+     },
+     "time_limit_s": 2.0,
+     "seed": 42,
+     "diagnosis_label": "已验证可行"
+    },
+    {
+     "run_id": "run_20261105T060851_3aa260",
+     "algorithm": "OR-Tools 车队调度",
+     "state": "done",
+     "status": "feasible",
+     "independent_recheck": true,
+     "total_distance_m": 256.92,
+     "makespan_s": 135.17,
+     "vehicles_used": 2,
+     "trips": 2,
+     "wall_s": 2.14,
+     "params": {
+      "time_limit_s": 2.0,
+      "seed": 42,
+      "ground_policy": "ignore",
+      "ground_risk_weight": 1.0
+     },
+     "time_limit_s": 2.0,
+     "seed": 42,
+     "diagnosis_label": "已验证可行"
+    },
+    {
+     "run_id": "run_20261105T060851_128ac1",
+     "algorithm": "节约算法 + 2-opt",
+     "state": "done",
+     "status": "feasible",
+     "independent_recheck": true,
+     "total_distance_m": 256.91,
+     "makespan_s": 135.16,
+     "vehicles_used": 2,
+     "trips": 2,
+     "wall_s": 0.08,
+     "params": {
+      "time_limit_s": 2.0,
+      "ground_policy": "ignore",
+      "ground_risk_weight": 1.0
+     },
+     "time_limit_s": 2.0,
+     "seed": null,
+     "diagnosis_label": "已验证可行"
+    }
+   ],
+   "best_verified": {
+    "run_id": "run_20261105T060851_128ac1",
+    "objective": 256.91,
+    "algorithm": "节约算法 + 2-opt",
+    "algorithm_id": "panel.savings_fleet",
+    "unit": "m",
+    "total_distance_m": 256.91,
+    "makespan_s": 135.16
+   },
+   "best_executable": {
+    "run_id": "run_20261105T060851_128ac1",
+    "objective": 256.91,
+    "algorithm": "节约算法 + 2-opt",
+    "algorithm_id": "panel.savings_fleet",
+    "unit": "m",
+    "total_distance_m": 256.91,
+    "makespan_s": 135.16
+   },
+   "unsupported": [],
+   "simulation_started": true,
+   "simulation_required": true,
+   "simulation_decision": {
+    "contract_revision": 2,
+    "run_id": "run_20261105T060851_128ac1",
+    "status": "attempted",
+    "outcome": "ok",
+    "error": null
+   },
+   "simulation_result": {
+    "run_id": "run_20261105T060851_128ac1",
+    "session_id": "field_20261105T060920_7511ee",
+    "phase": "finished",
+    "state": "succeeded",
+    "check_valid": true,
+    "metrics": {
+     "tasks_total": 8,
+     "tasks_completed": 8,
+     "total_distance_m": 264.89,
+     "planned_total_distance_m": 256.911,
+     "makespan_s": 315.24,
+     "planned_makespan_s": 135.161,
+     "cross_track_mean_m": 0.005,
+     "cross_track_max_m": 0.09,
+     "energy_wh": 1.358
+    },
+    "errors": [],
+    "comparison": {
+     "physics_run_id": "phys_20261105T061115_8e830a",
+     "schema": "urp.sim2sim/1",
+     "run_id": "run_20261105T060851_128ac1",
+     "a": {
+      "engine": "gazebo",
+      "session_id": "field_20261105T060920_7511ee",
+      "state": "succeeded"
+     },
+     "b": {
+      "engine": "mujoco",
+      "version": "3.17.0",
+      "state": "succeeded"
+     },
+     "vehicles": [
+      {
+       "name": "vehicle_1",
+       "label": "① 号车",
+       "path": {
+        "mean_m": 0.003119387911680185,
+        "p95_m": 0.018473397014990265,
+        "max_m": 0.039120573200965375
+       },
+       "at_time": {
+        "rmse_m": 0.04271928114805742,
+        "max_m": 0.14359847702989165
+       },
+       "task_arrival_s": {
+        "tasks": 5,
+        "mean_abs": 0.038400000000001454,
+        "max_abs": 0.060000000000002274
+       },
+       "distance_m": {
+        "a": 137.34,
+        "b": 137.37
+       },
+       "duration_s": {
+        "a": 316.02,
+        "b": 316.18
+       },
+       "cross_track_max_m": {
+        "a": 0.0905,
+        "b": 0.095
+       }
+      },
+      {
+       "name": "vehicle_2",
+       "label": "② 号车",
+       "path": {
+        "mean_m": 0.0024377279613176403,
+        "p95_m": 0.01679717158078165,
+        "max_m": 0.03728436031125629
+       },
+       "at_time": {
+        "rmse_m": 0.08539961935317472,
+        "max_m": 0.170795850997428
+       },
+       "task_arrival_s": {
+        "tasks": 3,
+        "mean_abs": 0.13733333333334485,
+        "max_abs": 0.17200000000002547
+       },
+       "distance_m": {
+        "a": 127.55,
+        "b": 127.56
+       },
+       "duration_s": {
+        "a": 145.17999999999998,
+        "b": 145.42
+       },
+       "cross_track_max_m": {
+        "a": 0.0879,
+        "b": 0.091
+       }
+      }
+     ],
+     "path_max_m": 0.039120573200965375,
+     "path_mean_m": 0.0027785579364989123,
+     "time_rmse_m": 0.08539961935317472,
+     "metrics": {
+      "makespan_s": {
+       "a": 315.24,
+       "b": 315.33
+      },
+      "total_distance_m": {
+       "a": 264.89,
+       "b": 264.94
+      },
+      "cross_track_mean_m": {
+       "a": 0.0054,
+       "b": 0.0074
+      },
+      "cross_track_max_m": {
+       "a": 0.0905,
+       "b": 0.095
+      },
+      "energy_wh": {
+       "a": 1.358,
+       "b": 1.359
+      },
+      "tasks_completed": {
+       "a": 8,
+       "b": 8
+      }
+     },
+     "scope": "同一冻结方案在两个物理引擎中的差异；是引擎间差距，不是实车误差"
+    }
+   },
+   "physics": [
+    {
+     "run_id": "run_20261105T060851_11dd93",
+     "physics_run_id": "phys_20261105T060914_51aeab",
+     "algorithm": "PyVRP 固定车队",
+     "engine": "mujoco",
+     "engine_version": "3.17.0",
+     "state": "succeeded",
+     "check_valid": true,
+     "errors": [],
+     "wall_s": 2.309,
+     "metrics": {
+      "tasks_total": 8,
+      "tasks_completed": 8,
+      "total_distance_m": 264.9,
+      "planned_total_distance_m": 256.918,
+      "makespan_s": 315.18,
+      "planned_makespan_s": 135.168,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.1,
+      "energy_wh": 1.359
+     }
+    },
+    {
+     "run_id": "run_20261105T060851_3aa260",
+     "physics_run_id": "phys_20261105T060917_165a72",
+     "algorithm": "OR-Tools 车队调度",
+     "engine": "mujoco",
+     "engine_version": "3.17.0",
+     "state": "succeeded",
+     "check_valid": true,
+     "errors": [],
+     "wall_s": 1.87,
+     "metrics": {
+      "tasks_total": 8,
+      "tasks_completed": 8,
+      "total_distance_m": 264.9,
+      "planned_total_distance_m": 256.918,
+      "makespan_s": 315.18,
+      "planned_makespan_s": 135.168,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.1,
+      "energy_wh": 1.359
+     }
+    },
+    {
+     "run_id": "run_20261105T060851_128ac1",
+     "physics_run_id": "phys_20261105T060905_fa5199",
+     "algorithm": "节约算法 + 2-opt",
+     "engine": "mujoco",
+     "engine_version": "3.17.0",
+     "state": "succeeded",
+     "check_valid": true,
+     "errors": [],
+     "wall_s": 1.844,
+     "metrics": {
+      "tasks_total": 8,
+      "tasks_completed": 8,
+      "total_distance_m": 264.94,
+      "planned_total_distance_m": 256.911,
+      "makespan_s": 315.33,
+      "planned_makespan_s": 135.161,
+      "cross_track_mean_m": 0.007,
+      "cross_track_max_m": 0.095,
+      "energy_wh": 1.359
+     }
+    }
+   ],
+   "precheck": []
+  },
+  "narrative": "任务规模：场地 70 × 50 m，8 个任务点，2 台车，单车容量 6 单位。在当前任务输入上比较了 3 个方案（PyVRP 固定车队、OR-Tools 车队调度、节约算法 + 2-opt），其中 3 个通过独立检查器复核；各次预算与随机种子见运行记录。经复核的最优方案为 节约算法 + 2-opt（run_20261105T060851_128ac1），总里程 256.91 m，按恒速模型计算的最晚完成时间为 135.16 s。物理预演（MuJoCo 3.17.0）：PyVRP 固定车队 实际里程 264.9 m、工期 315.18 s；OR-Tools 车队调度 实际里程 264.9 m、工期 315.18 s；节约算法 + 2-opt 实际里程 264.94 m、工期 315.33 s。田间仿真完成 8/8 个任务点，实际里程 264.89 m，规划里程 256.911 m，实际工期 315.24 s，最大横向偏差 0.09 m。同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 0.003 m，最大 0.039 m。",
+  "source": "template",
+  "unverified_numbers": [],
+  "utc": "2026-11-05T06:11:32.347Z"
+ },
+ "turn_started": {
+  "llm_calls": 9,
+  "tool_calls": 13
+ },
+ "scenario_contract_fields": {
+  "task_kind": null,
+  "field_size_m": [
+   70.0,
+   50.0
+  ],
+  "field_area_m2": null,
+  "field_shape": null,
+  "real_field_id": null,
+  "plot_count": null,
+  "task_count": 8,
+  "task_distribution": null,
+  "task_demand": null,
+  "vehicle_count": 2,
+  "vehicle_capacity": 6,
+  "vehicle_speed_mps": null,
+  "vehicle_width_m": null,
+  "trip_mode": null,
+  "travel_mode": null,
+  "depot_location": null,
+  "obstacles": null,
+  "objective": null,
+  "time_limit_s": null,
+  "seed": null,
+  "compare_count": null,
+  "simulate": true
+ },
+ "built_revision": 2,
+ "scenario_instance_sha256": "f87fccea8dd3d7db3109ff053da3c22590dec3cce00b1699f9d494f0101b7411",
+ "verification_history": {},
+ "solved_since_build": true,
+ "physics": {
+  "run_20261105T060851_128ac1": {
+   "run_id": "run_20261105T060851_128ac1",
+   "physics_run_id": "phys_20261105T060905_fa5199",
+   "algorithm": "节约算法 + 2-opt",
+   "engine": "mujoco",
+   "engine_version": "3.17.0",
+   "state": "succeeded",
+   "check_valid": true,
+   "errors": [],
+   "wall_s": 1.844,
+   "metrics": {
+    "tasks_total": 8,
+    "tasks_completed": 8,
+    "total_distance_m": 264.94,
+    "planned_total_distance_m": 256.911,
+    "makespan_s": 315.33,
+    "planned_makespan_s": 135.161,
+    "cross_track_mean_m": 0.007,
+    "cross_track_max_m": 0.095,
+    "energy_wh": 1.359
+   }
+  },
+  "run_20261105T060851_11dd93": {
+   "run_id": "run_20261105T060851_11dd93",
+   "physics_run_id": "phys_20261105T060914_51aeab",
+   "algorithm": "PyVRP 固定车队",
+   "engine": "mujoco",
+   "engine_version": "3.17.0",
+   "state": "succeeded",
+   "check_valid": true,
+   "errors": [],
+   "wall_s": 2.309,
+   "metrics": {
+    "tasks_total": 8,
+    "tasks_completed": 8,
+    "total_distance_m": 264.9,
+    "planned_total_distance_m": 256.918,
+    "makespan_s": 315.18,
+    "planned_makespan_s": 135.168,
+    "cross_track_mean_m": 0.007,
+    "cross_track_max_m": 0.1,
+    "energy_wh": 1.359
+   }
+  },
+  "run_20261105T060851_3aa260": {
+   "run_id": "run_20261105T060851_3aa260",
+   "physics_run_id": "phys_20261105T060917_165a72",
+   "algorithm": "OR-Tools 车队调度",
+   "engine": "mujoco",
+   "engine_version": "3.17.0",
+   "state": "succeeded",
+   "check_valid": true,
+   "errors": [],
+   "wall_s": 1.87,
+   "metrics": {
+    "tasks_total": 8,
+    "tasks_completed": 8,
+    "total_distance_m": 264.9,
+    "planned_total_distance_m": 256.918,
+    "makespan_s": 315.18,
+    "planned_makespan_s": 135.168,
+    "cross_track_mean_m": 0.007,
+    "cross_track_max_m": 0.1,
+    "energy_wh": 1.359
+   }
+  }
+ },
+ "physics_shown": [
+  "run_20261105T060851_11dd93",
+  "run_20261105T060851_128ac1",
+  "run_20261105T060851_3aa260"
+ ],
+ "sim_runs": [
+  "run_20261105T060851_128ac1"
+ ],
+ "simulation_decision": {
+  "contract_revision": 2,
+  "run_id": "run_20261105T060851_128ac1",
+  "status": "attempted",
+  "outcome": "ok",
+  "error": null
+ },
+ "simulation_watch": {
+  "run_id": "run_20261105T060851_128ac1",
+  "session_id": "field_20261105T060920_7511ee",
+  "done": true
+ },
+ "draft_report": "## 执行结论\n\n**采用方案**：`run_20261105T060851_128ac1`（算法：节约算法 + 2-opt，`panel.savings_fleet`）\n\n**经独立复核的规划指标**\n- 总里程：256.911 m（8/8 任务点恰好服务一次，无载重/避障/边界违规）\n- 工期（makespan）：135.16 s\n- 车辆使用：2 台，趟次：2\n\n**对比与复核**\n- 三个算法（PyVRP、OR-Tools、节约+2-opt）在 2.0 s 预算、种子 42 下均给出可行解，独立复核全部通过；其中节约+2-opt 里程最低（256.911 m），PyVRP 与 OR-Tools 均为 256.918 m。\n- MuJoCo 物理预演（`phys_20261105T060905_fa5199`）：成功，8/8 任务完成，实际里程 264.94 m，横向偏差均值 0.007 m、最大 0.095 m，无接触。\n\n**Gazebo 田间仿真**（会话 `field_20261105T060920_7511ee`，已获批准并执行完毕）\n- ① 号车：5/5 任务，实际里程 137.34 m，用时 169.76 s，横向偏差均值 0.0055 m\n- ② 号车：3/3 任务，实际里程 127.55 m，用时 315.24 s（含排队等待 170.85 s），横向偏差均值 0.0052 m\n- 全部 8 个任务点完成，无错误。\n\n**失败与修复**：无。三个算法一次求解即全部可行，无需更换算法或提高预算。\n\n**未支持的要求**：无。\n</think>\n\n## 执行结论\n\n**采用方案**：`run_20261105T060851_128ac1`（算法：节约算法 + 2-opt，`panel.savings_fleet`）\n\n**经独立复核的规划指标**\n- 总里程：256.911 m（8/8 任务点恰好服务一次，无载重/避障/边界违规）\n- 工期（makespan）：135.16 s\n- 车辆使用：2 台，趟次：2\n\n**对比与复核**\n- 三个算法（PyVRP、OR-Tools、节约+2-opt）在 2.0 s 预算、种子 42 下均给出可行解，独立复核全部通过；其中节约+2-opt 里程最低（256.911 m），PyVRP 与 OR-Tools 均为 256.918 m。\n- MuJoCo 物理预演（`phys_20261105T060905_fa5199`）：成功，8/8 任务完成，实际里程 264.94 m，横向偏差均值 0.007 m、最大 0.095 m，无接触。\n\n**Gazebo 田间仿真**（会话 `field_20261105T060920_7511ee`，已获批准并执行完毕）\n- ① 号车：5/5 任务，实际里程 137.34 m，用时 169.76 s，横向偏差均值 0.0055 m\n- ② 号车：3/3 任务，实际里程 127.55 m，用时 315.24 s（含排队等待 170.85 s），横向偏差均值 0.0052 m\n- 全部 8 个任务点完成，无错误。\n\n**失败与修复**：无。三个算法一次求解即全部可行，无需更换算法或提高预算。\n\n**未支持的要求**：无。",
+ "simulation_result": {
+  "run_id": "run_20261105T060851_128ac1",
+  "session_id": "field_20261105T060920_7511ee",
+  "phase": "finished",
+  "state": "succeeded",
+  "check_valid": true,
+  "metrics": {
+   "tasks_total": 8,
+   "tasks_completed": 8,
+   "total_distance_m": 264.89,
+   "planned_total_distance_m": 256.911,
+   "makespan_s": 315.24,
+   "planned_makespan_s": 135.161,
+   "cross_track_mean_m": 0.005,
+   "cross_track_max_m": 0.09,
+   "energy_wh": 1.358
+  },
+  "errors": [],
+  "comparison": {
+   "physics_run_id": "phys_20261105T061115_8e830a",
+   "schema": "urp.sim2sim/1",
+   "run_id": "run_20261105T060851_128ac1",
+   "a": {
+    "engine": "gazebo",
+    "session_id": "field_20261105T060920_7511ee",
+    "state": "succeeded"
+   },
+   "b": {
+    "engine": "mujoco",
+    "version": "3.17.0",
+    "state": "succeeded"
+   },
+   "vehicles": [
+    {
+     "name": "vehicle_1",
+     "label": "① 号车",
+     "path": {
+      "mean_m": 0.003119387911680185,
+      "p95_m": 0.018473397014990265,
+      "max_m": 0.039120573200965375
+     },
+     "at_time": {
+      "rmse_m": 0.04271928114805742,
+      "max_m": 0.14359847702989165
+     },
+     "task_arrival_s": {
+      "tasks": 5,
+      "mean_abs": 0.038400000000001454,
+      "max_abs": 0.060000000000002274
+     },
+     "distance_m": {
+      "a": 137.34,
+      "b": 137.37
+     },
+     "duration_s": {
+      "a": 316.02,
+      "b": 316.18
+     },
+     "cross_track_max_m": {
+      "a": 0.0905,
+      "b": 0.095
+     }
+    },
+    {
+     "name": "vehicle_2",
+     "label": "② 号车",
+     "path": {
+      "mean_m": 0.0024377279613176403,
+      "p95_m": 0.01679717158078165,
+      "max_m": 0.03728436031125629
+     },
+     "at_time": {
+      "rmse_m": 0.08539961935317472,
+      "max_m": 0.170795850997428
+     },
+     "task_arrival_s": {
+      "tasks": 3,
+      "mean_abs": 0.13733333333334485,
+      "max_abs": 0.17200000000002547
+     },
+     "distance_m": {
+      "a": 127.55,
+      "b": 127.56
+     },
+     "duration_s": {
+      "a": 145.17999999999998,
+      "b": 145.42
+     },
+     "cross_track_max_m": {
+      "a": 0.0879,
+      "b": 0.091
+     }
+    }
+   ],
+   "path_max_m": 0.039120573200965375,
+   "path_mean_m": 0.0027785579364989123,
+   "time_rmse_m": 0.08539961935317472,
+   "metrics": {
+    "makespan_s": {
+     "a": 315.24,
+     "b": 315.33
+    },
+    "total_distance_m": {
+     "a": 264.89,
+     "b": 264.94
+    },
+    "cross_track_mean_m": {
+     "a": 0.0054,
+     "b": 0.0074
+    },
+    "cross_track_max_m": {
+     "a": 0.0905,
+     "b": 0.095
+    },
+    "energy_wh": {
+     "a": 1.358,
+     "b": 1.359
+    },
+    "tasks_completed": {
+     "a": 8,
+     "b": 8
+    }
+   },
+   "scope": "同一冻结方案在两个物理引擎中的差异；是引擎间差距，不是实车误差"
+  }
+ },
+ "short_title": "菜地 · 2 台车 8 点",
+ "llm_context": {
+  "messages": 48
+ },
+ "contract_cards": [
+  {
+   "key": "field_size_m",
+   "label": "场地尺寸",
+   "value": [
+    70.0,
+    50.0
+   ],
+   "text": "70 × 50 m",
+   "source": "user_text",
+   "evidence": "70×50 米"
+  },
+  {
+   "key": "task_count",
+   "label": "任务点数",
+   "value": 8,
+   "text": "8 个",
+   "source": "user_text",
+   "evidence": "8 个点"
+  },
+  {
+   "key": "vehicle_count",
+   "label": "车辆数",
+   "value": 2,
+   "text": "2 台",
+   "source": "user_text",
+   "evidence": "2 台"
+  },
+  {
+   "key": "vehicle_capacity",
+   "label": "单车容量",
+   "value": 6,
+   "text": "6 单位",
+   "source": "user_text",
+   "evidence": "容量 6"
+  },
+  {
+   "key": "simulate",
+   "label": "规划后进入仿真执行",
+   "value": true,
+   "text": "是",
+   "source": "user_edit",
+   "evidence": ""
+  }
+ ],
+ "missing": [],
+ "custom_title": null,
+ "pinned": false,
+ "archived": false
+}

@@ -1,0 +1,68 @@
+{
+ "passed": true,
+ "failure": null,
+ "python": "/backend/app/src/lab/.venv/bin/python",
+ "steps": [
+  {
+   "name": "后端就绪",
+   "seconds": 0.9
+  },
+  {
+   "name": "算法目录",
+   "total": 28,
+   "unavailable": {
+    "f2c.full": "可选 Fields2Cover 绑定未安装；可使用平行往复基线",
+    "f2c.boustrophedon": "可选 Fields2Cover 绑定未安装；可使用平行往复基线",
+    "f2c.snake": "可选 Fields2Cover 绑定未安装；可使用平行往复基线"
+   }
+  },
+  {
+   "name": "界面可以打开"
+  },
+  {
+   "name": "能力清单",
+   "simulators": {
+    "gazebo.field": "unavailable",
+    "gazebo.tb4": "unavailable",
+    "mujoco.field": "ready"
+   },
+   "learners": 3
+  },
+  {
+   "name": "模型目录",
+   "services": 183
+  },
+  {
+   "name": "只读接口全部可用",
+   "routes": 35
+  },
+  {
+   "name": "任务走完：建图、求解、复核、物理预演、报告",
+   "best": "PyVRP 固定车队",
+   "physics": "3/3",
+   "wall_s": [
+    1.303,
+    1.25,
+    1.404
+   ]
+  },
+  {
+   "name": "JS 基线",
+   "state": "done",
+   "status": "feasible"
+  },
+  {
+   "name": "数据包下载、校验、解压，/data 可用",
+   "bytes": 51543685,
+   "catalog_bytes": 1438793
+  },
+  {
+   "name": "档案后端随数据包启动",
+   "mode": "local_import_query_and_cvrp_jobs"
+  },
+  {
+   "name": "有序退出",
+   "code": 0
+  }
+ ]
+}

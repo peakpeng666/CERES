@@ -1,0 +1,49 @@
+{
+ "jobs": 2625,
+ "by_config": {
+  "fillet:none/field_coverage": {
+   "valid": 286,
+   "invalid": 16,
+   "unverifiable": 1
+  },
+  "fillet:none/n_swath": {
+   "valid": 286,
+   "invalid": 39,
+   "unverifiable": 1
+  },
+  "repairw:none/field_coverage@0.5-1-2": {
+   "valid": 266,
+   "invalid": 112,
+   "unverifiable": 1
+  },
+  "repairw:none/field_coverage@2-4-8-16": {
+   "invalid": 110,
+   "valid": 270
+  },
+  "repairw:none/n_swath@0.5-1-2": {
+   "invalid": 167,
+   "valid": 190,
+   "unverifiable": 1
+  },
+  "repairw:none/n_swath@2-4-8-16": {
+   "invalid": 164,
+   "valid": 195
+  },
+  "split:boustrophedon/n_swath@0.25": {
+   "invalid": 135,
+   "valid": 123,
+   "unverifiable": 2
+  },
+  "split:boustrophedon/n_swath@0.75": {
+   "invalid": 133,
+   "valid": 125,
+   "unverifiable": 2
+  }
+ },
+ "tolerance_sensitivity_m": {
+  "0.005": 1741,
+  "0.01": 1741,
+  "0.02": 1741
+ },
+ "note": "倒圆判定：拐角能在相邻直段内用最小转弯半径圆弧倒圆，且倒圆后路径通过未修改的官方检查；单区适配器等同官方∧严格"
+}

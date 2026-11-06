@@ -1,0 +1,91 @@
+{
+  "utc": "2026-10-25T16:11:22.758731+00:00",
+  "verified_assets": 14,
+  "bytes": 665116274,
+  "assets": [
+    {
+      "name": "exclusions.json",
+      "bytes": 716277,
+      "sha256": "7bd962778e6effe05fee2b0507fd09d9b9b11276efc01fc9f0203e6c4563aa29",
+      "unauthenticated": true
+    },
+    {
+      "name": "files.jsonl.zst",
+      "bytes": 1821748,
+      "sha256": "fc19ecebfc40b8f4b69ddcfbd7d7f811bb61f0208589956690cef731938682ed",
+      "unauthenticated": true
+    },
+    {
+      "name": "local-delta-e2e-00.tar.zst",
+      "bytes": 136993694,
+      "sha256": "4fbd9b069a948de24059636d16876d4efd5a4c0a7b5252dbb6ecdec36fa1016e",
+      "unauthenticated": true
+    },
+    {
+      "name": "local-delta-e2e-01.tar.zst",
+      "bytes": 195818613,
+      "sha256": "9f440fb9e6e762917775130a59f76f50c49266a7c343c03d47baee800f0aa38c",
+      "unauthenticated": true
+    },
+    {
+      "name": "local-delta-e2e-02.tar.zst",
+      "bytes": 177076011,
+      "sha256": "4d71221d30c98818a01c8924fba175096c86f053ff8c269b48183d02e2ee0b23",
+      "unauthenticated": true
+    },
+    {
+      "name": "local-delta-experiments-00.tar.zst",
+      "bytes": 4690988,
+      "sha256": "9d5b8c35ec8b4b99e988cc1db4ad4e41f339f3461f2a3b37ed7620bfb8edceb0",
+      "unauthenticated": true
+    },
+    {
+      "name": "local-delta-records-00.tar.zst",
+      "bytes": 78031722,
+      "sha256": "22276a5d4a04a54cb53ac9eb76061049ae2788341b9c9dfb4cde10c734b12c58",
+      "unauthenticated": true
+    },
+    {
+      "name": "local-delta-records-01.tar.zst",
+      "bytes": 64436808,
+      "sha256": "3d39a0b0c524a20e6a8c6eb48a8e095d192e1d27f9ec582e5c5be98263be5d38",
+      "unauthenticated": true
+    },
+    {
+      "name": "preservation-map.jsonl.gz",
+      "bytes": 5493312,
+      "sha256": "b41a16b2d5e0c07a9bda966f1b215d4fd180fc5404fcb8322d449de3bc31207b",
+      "unauthenticated": true
+    },
+    {
+      "name": "preserved-branches.json",
+      "bytes": 3918,
+      "sha256": "d9ced1b30ae17541bd1b5d528b7857392bced907459d0a6272496522fe688591",
+      "unauthenticated": true
+    },
+    {
+      "name": "publication-review.json",
+      "bytes": 12137,
+      "sha256": "3710b2df73ff22acc97393b7383572ce5745cffe1c612d7e93229a39a76ac50f",
+      "unauthenticated": true
+    },
+    {
+      "name": "recovery-index.json",
+      "bytes": 16607,
+      "sha256": "6a6dba7eae142187e24d477e25e88f36be54a2128d963df6928e9d735c1ed1fb",
+      "unauthenticated": true
+    },
+    {
+      "name": "SHA256SUMS",
+      "bytes": 1176,
+      "sha256": "f5174affce77a6dfea5601b22e464a468675df5b747b3ae8b2855ded80fb3cd5",
+      "unauthenticated": true
+    },
+    {
+      "name": "snapshot.json",
+      "bytes": 3263,
+      "sha256": "e83d465232748458fdf2cd2ac2fff67a72ac995e194b5c3032794b4be8ea978f",
+      "unauthenticated": true
+    }
+  ]
+}

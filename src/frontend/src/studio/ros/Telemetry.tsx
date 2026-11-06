@@ -4,6 +4,7 @@
  * and command velocity come from /odom and /cmd_vel.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { cssVar, useThemeKey } from '../../lab/ui/theme';
 import uPlot from 'uplot';
 import 'uplot/dist/uPlot.min.css';
 import { Activity } from 'lucide-react';
@@ -19,9 +20,13 @@ function Chart({ title, unit, series, data, height = 150 }: { title: string; uni
   const box = useRef<HTMLDivElement>(null);
   const plot = useRef<uPlot | null>(null);
   const key = series.map((x) => x.label + x.color).join('|');
+  const theme = useThemeKey();
   useEffect(() => {
     const el = box.current;
     if (!el) return;
+    const axis = cssVar('--mac-label-3');
+    const grid = cssVar('--mac-separator');
+    const font = `10px ${cssVar('--mac-font')}`;
     const opts: uPlot.Options = {
       width: Math.max(240, el.clientWidth),
       height,
@@ -29,10 +34,10 @@ function Chart({ title, unit, series, data, height = 150 }: { title: string; uni
       cursor: { drag: { x: true, y: false } },
       scales: { x: { time: false } },
       axes: [
-        { label: '仿真时间 (s)', stroke: '#6e6e73', grid: { stroke: '#eceef1' }, size: 34, font: '10px Inter, PingFang SC, sans-serif', labelFont: '10px Inter, PingFang SC, sans-serif' },
-        { label: unit, stroke: '#6e6e73', grid: { stroke: '#eceef1' }, size: 46, font: '10px Inter, PingFang SC, sans-serif', labelFont: '10px Inter, PingFang SC, sans-serif' },
+        { label: '仿真时间 (s)', stroke: axis, grid: { stroke: grid }, ticks: { stroke: grid }, size: 34, font, labelFont: font },
+        { label: unit, stroke: axis, grid: { stroke: grid }, ticks: { stroke: grid }, size: 46, font, labelFont: font },
       ],
-      series: [{ label: 't' }, ...series.map((x) => ({ label: x.label, stroke: x.color, width: 1.6, points: { show: false } }))],
+      series: [{ label: 't' }, ...series.map((x) => ({ label: x.label, stroke: x.color.startsWith('--') ? cssVar(x.color) : x.color, width: 1.6, points: { show: false } }))],
     };
     plot.current = new uPlot(opts, [[], ...series.map(() => [])] as uPlot.AlignedData, el);
     const ro = new ResizeObserver(() => plot.current?.setSize({ width: Math.max(240, el.clientWidth), height }));
@@ -42,7 +47,7 @@ function Chart({ title, unit, series, data, height = 150 }: { title: string; uni
       plot.current?.destroy();
       plot.current = null;
     };
-  }, [key, unit, height]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [key, unit, height, theme]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     plot.current?.setData(data as uPlot.AlignedData);
   }, [data]);
@@ -127,8 +132,8 @@ export function TelemetryView() {
   }
   return (
     <div className={s.charts}>
-      <Chart title="线速度" unit="m/s" series={[{ label: '/odom', color: '#0a84ff' }, { label: '/cmd_vel', color: '#ff9f0a' }]} data={[odomData[0], odomData[1], odomData[3]]} />
-      <Chart title="角速度" unit="rad/s" series={[{ label: '/odom', color: '#30b158' }, { label: '/cmd_vel', color: '#bf5af2' }]} data={[odomData[0], odomData[2], odomData[4]]} />
+      <Chart title="线速度" unit="m/s" series={[{ label: '/odom', color: '--route-1' }, { label: '/cmd_vel', color: '--route-2' }]} data={[odomData[0], odomData[1], odomData[3]]} />
+      <Chart title="角速度" unit="rad/s" series={[{ label: '/odom', color: '--route-3' }, { label: '/cmd_vel', color: '--route-4' }]} data={[odomData[0], odomData[2], odomData[4]]} />
     </div>
   );
 }

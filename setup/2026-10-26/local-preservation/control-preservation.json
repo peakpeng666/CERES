@@ -1,0 +1,12 @@
+[
+  {
+    "path": "baseline-worker/.gitignore",
+    "sha256": "cdbcae15105d6b781e620813c79c7e868740d4e9cc53ce6f5fcbbc12387adf4b",
+    "matches_original": true
+  },
+  {
+    "path": "baseline-worker/README.md",
+    "sha256": "506010dbcb6d848c865eed3cc298d574ece5361b467ce97ad13789c7ce633fd9",
+    "matches_original": true
+  }
+]

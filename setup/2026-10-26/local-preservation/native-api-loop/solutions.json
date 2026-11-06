@@ -1,0 +1,789 @@
+[
+  {
+    "run_id": "run_20261025T162555_ff8705",
+    "job_id": "job_20261025T162555_513f74",
+    "scenario_id": "maze-inspection",
+    "problem_class": "turn_routing",
+    "instance_sha256": "e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548",
+    "planning": {
+      "schema": "urp.planning/1",
+      "service_kind": "point_visit",
+      "comparison_key": "734ea09e6bf9fdb48087b83051521dc87b1d0896b4563861e265cf4309e22d34",
+      "problem_class": "turn_routing",
+      "instance_sha256": "e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548",
+      "frame": {
+        "kind": "map",
+        "units": "m",
+        "world": "maze",
+        "map": {
+          "world": "maze",
+          "yaml": "/opt/ros/humble/share/turtlebot4_navigation/maps/maze.yaml",
+          "resolution": 0.03,
+          "origin": [
+            -10.1,
+            -10.0,
+            0.0
+          ],
+          "width": 670,
+          "height": 669,
+          "image": "/lab/api/maps/maze.png"
+        }
+      },
+      "environment_sha256": "4b4921c3c56751b3dd967257be629f6e3e63f62ed9a8115361188cc331a13045",
+      "objective_rule": "directed_arc_cost_plus_turn_penalty",
+      "objective_unit": "cm_equivalent",
+      "relaxed_constraints": [],
+      "objective_label": "有向路段成本与转弯惩罚之和",
+      "axes": "x right / y up",
+      "angle_unit": "rad",
+      "route_semantics": "solver_geometry; task sequence alone is not a collision-free path",
+      "metric_scope": "planning; execution records have a separate clock and trajectory"
+    },
+    "frame": {
+      "kind": "map",
+      "units": "m",
+      "world": "maze",
+      "map": {
+        "world": "maze",
+        "yaml": "/opt/ros/humble/share/turtlebot4_navigation/maps/maze.yaml",
+        "resolution": 0.03,
+        "origin": [
+          -10.1,
+          -10.0,
+          0.0
+        ],
+        "width": 670,
+        "height": 669,
+        "image": "/lab/api/maps/maze.png"
+      }
+    },
+    "cost_unit": "cm_equivalent",
+    "instance": {
+      "depot": 0,
+      "capacity": 2,
+      "customers": [
+        {
+          "id": 0,
+          "node": 1,
+          "demand": 1,
+          "label": "巡检 A"
+        },
+        {
+          "id": 1,
+          "node": 2,
+          "demand": 1,
+          "label": "巡检 B"
+        }
+      ],
+      "arcs": [
+        [
+          0,
+          1,
+          115
+        ],
+        [
+          1,
+          0,
+          115
+        ],
+        [
+          1,
+          2,
+          100
+        ],
+        [
+          2,
+          1,
+          100
+        ]
+      ],
+      "forbidden_turns": [],
+      "turn_penalties": [
+        [
+          0,
+          1,
+          0,
+          60
+        ],
+        [
+          1,
+          2,
+          1,
+          60
+        ],
+        [
+          2,
+          1,
+          2,
+          60
+        ]
+      ],
+      "coordinates": {
+        "0": [
+          -0.35,
+          0.0
+        ],
+        "1": [
+          -1.5,
+          0.0
+        ],
+        "2": [
+          -2.5,
+          0.0
+        ]
+      },
+      "node_kinds": {
+        "0": "depot",
+        "1": "grid",
+        "2": "grid"
+      },
+      "units": "cm_equivalent",
+      "service_heading_reset": false,
+      "depot_reset": "between_routes_only",
+      "fleet_limit": null
+    },
+    "scenario_snapshot": {
+      "id": "maze-inspection",
+      "title": "官方迷宫 · 双点巡检闭环",
+      "summary": "4.3 m 往返路网、两个访问任务，用于集成验收；不是农业场景验证。",
+      "problem_class": "turn_routing",
+      "frame": {
+        "kind": "map",
+        "units": "m",
+        "world": "maze",
+        "map": {
+          "world": "maze",
+          "yaml": "/opt/ros/humble/share/turtlebot4_navigation/maps/maze.yaml",
+          "resolution": 0.03,
+          "origin": [
+            -10.1,
+            -10.0,
+            0.0
+          ],
+          "width": 670,
+          "height": 669,
+          "image": "/lab/api/maps/maze.png"
+        }
+      },
+      "cost_unit": "cm_equivalent",
+      "instance": {
+        "depot": 0,
+        "capacity": 2,
+        "customers": [
+          {
+            "id": 0,
+            "node": 1,
+            "demand": 1,
+            "label": "巡检 A"
+          },
+          {
+            "id": 1,
+            "node": 2,
+            "demand": 1,
+            "label": "巡检 B"
+          }
+        ],
+        "arcs": [
+          [
+            0,
+            1,
+            115
+          ],
+          [
+            1,
+            0,
+            115
+          ],
+          [
+            1,
+            2,
+            100
+          ],
+          [
+            2,
+            1,
+            100
+          ]
+        ],
+        "forbidden_turns": [],
+        "turn_penalties": [
+          [
+            0,
+            1,
+            0,
+            60
+          ],
+          [
+            1,
+            2,
+            1,
+            60
+          ],
+          [
+            2,
+            1,
+            2,
+            60
+          ]
+        ],
+        "coordinates": {
+          "0": [
+            -0.35,
+            0.0
+          ],
+          "1": [
+            -1.5,
+            0.0
+          ],
+          "2": [
+            -2.5,
+            0.0
+          ]
+        },
+        "node_kinds": {
+          "0": "depot",
+          "1": "grid",
+          "2": "grid"
+        },
+        "units": "cm_equivalent",
+        "service_heading_reset": false,
+        "depot_reset": "between_routes_only",
+        "fleet_limit": null
+      },
+      "provenance": {
+        "generator": "urp_lab.scenarios.field:maze_inspection",
+        "params": {
+          "arc_cost": "厘米取整；掉头罚 60 cm 当量"
+        },
+        "seed": null,
+        "note": "官方 maze 地图与 world 原点对齐；脱座位置约 (-0.35,0)，全路径由地图与机器人足迹独立检查。"
+      },
+      "sim": {
+        "supported": true,
+        "world": "maze",
+        "spawn": {
+          "x": 0.0,
+          "y": 0.0,
+          "yaw": 0.0
+        },
+        "reason": null
+      },
+      "editable": {
+        "tasks": true,
+        "depot": false,
+        "capacity": true,
+        "demands": true
+      },
+      "layers": {},
+      "origin": "builtin",
+      "source_instance_sha256": "e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548"
+    },
+    "reproducibility": {
+      "python": "3.12.13 (main, Mar 10 2026, 18:17:25) [Clang 21.1.4 ]",
+      "packages": {
+        "pyvrp": "0.14.0",
+        "ortools": "9.15.6755",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "shapely": "2.2.0",
+        "ompl": "2.0.1",
+        "fields2cover": "2.1.0"
+      },
+      "native_dependencies": {
+        "ompl": {
+          "state": "present",
+          "origin": "/home/peakpeng/Desktop/URP/src/lab/.venv/lib/python3.12/site-packages/ompl/__init__.py",
+          "package_roots": [
+            "/home/peakpeng/Desktop/URP/src/lab/.venv/lib/python3.12/site-packages/ompl"
+          ],
+          "files": {
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/__init__.py": "3a3d238c18569e5aac0fef3ee9453fef130034a5ed3563fa1ed32c6de00a3808",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/_benchmark_statistics.py": "f1f4e65f6ed4042d62e8df2106bf437db855c0b813bbf04519bce2b405b532e1",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/_ompl.cpython-312-x86_64-linux-gnu.so": "00b6c7ad908ffda991aac844a39e6c79db2381b0e7d521f5afb95efcf3b8830a",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/base.py": "929b1ccdbccbd4edd93e349c9a25279f95ef0fc99b24f9a8d8932989397e5ff1",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/control.py": "0f5f14a5f9a35fdef4069e4989a258c527e31b3ed6e34278bdec0dc1b07d617a",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/geometric.py": "ac5f36bda8abe3938d004f0c7cac67af91417ec2ddb2f6e96c3adc760853e1a2",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/libompl.so": "5b815651875b5390975743c46e29eae44fd026d4d9894d2a3d143ee4974414b0",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/ompl_benchmark_statistics.py": "aef5717c86a4421a0e2506f4663836aeca7be0bcc2c03aa8697cb4353a7874ef",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/tools.py": "1222425f99051070b484136a2bba363d30ce6810cc173751f2b49e4d87363e3e",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl/util.py": "7ab8b791165e54de75921a838c78092b6881cf526aa96503c7854a82405a052e",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl-2.0.1.dist-info/METADATA": "996114b1d4621db6f400b78c8c3f2309b6310c935ce9cc58870175c6b9f2bfe9",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl-2.0.1.dist-info/RECORD": "5c2e01876fab3eecdec0b21e027d1cc201141c973303a2f3701ba61d63d76b67",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl-2.0.1.dist-info/WHEEL": "e5e88994666c4ec2813721104a55a9052bc8498e653426e73d3b83ff4c8dd9e8",
+            "src/lab/.venv/lib/python3.12/site-packages/ompl.libs/libboost_serialization-4cef20e9.so.1.87.0": "1b5e3dea1bada63b2fbeede0a848b64f2bafd9cb956b1129c83c3501b4891a69"
+          }
+        },
+        "fields2cover": {
+          "state": "present",
+          "origin": "/home/peakpeng/Desktop/URP/src/lab/.venv/lib/python3.12/site-packages/fields2cover/__init__.py",
+          "package_roots": [
+            "/home/peakpeng/Desktop/URP/src/lab/.venv/lib/python3.12/site-packages/fields2cover"
+          ],
+          "files": {
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover/__init__.py": "4bb91180bc35e96d0387bf5583e330ecee972aaa1380d8d8f5cca3115a5428b2",
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover/_fields2cover_python.so": "f9737d9c997b96c59e63b38b1461613dd624b2dacbc1d9d006f15a6660baa64a",
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover/fields2cover.py": "563a87d3ba993b4dacffea402626ce16fe7b1c8e391ed5026e6a0f48d5ef30f2",
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover-2.1.0.dist-info/METADATA": "f28f24e74f3e6337b774642ea6b9049e87fd2bb5e3332e1689e18bedaa51e689",
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover-2.1.0.dist-info/RECORD": "4d754fab0a30876a9438ba7a0962ef744ae5a037ff7f36f4d2057c898910f7b0",
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover-2.1.0.dist-info/WHEEL": "7e698e569e701a2b38b83dd7728c8654b643e58771730fee2876ce44d303a5fb",
+            "src/lab/.venv/lib/python3.12/site-packages/fields2cover.libs/libortools-19cba74a.so.9.9.3963": "63ff3f5a9b499b9a3deb7bb9a60597c6181ba288d846d3b7c94a46356835f426",
+            "src/lab/vendor/fields2cover-manifest.json": "d521186d85ad60417fa593d9be7e8cf786bec8fb2a688d7953fff82f524b6bf0"
+          },
+          "acceptance_manifest": "src/lab/vendor/fields2cover-manifest.json",
+          "checked_binary": "src/lab/.venv/lib/python3.12/site-packages/fields2cover/_fields2cover_python.so"
+        }
+      },
+      "python_executable": "/home/peakpeng/Desktop/URP/src/lab/.venv/bin/python",
+      "python_prefix": "/home/peakpeng/Desktop/URP/src/lab/.venv",
+      "node_executable": "/home/peakpeng/.nvm/versions/node/v24.14.0/bin/node",
+      "node_version": "v24.14.0",
+      "source_sha256": {
+        "src/frontend/core/routing/cvrp-problem.js": "71a3ba30cb955e1d61d4385fc40da0f1e04e9bc80a772f16c7f55bcebbc93e28",
+        "src/frontend/core/routing/cvrp-solver.js": "48e8c7cb09566f3453f48d928be5d4ef2b5e0de8d49ea96b080f44c7a857d30f",
+        "src/lab/models/cvrp-knn-v1.json": "143f5ac03a8d61352886cc9719f3ff9b7a75d137361f6c9a33bce20bb67d262a",
+        "src/lab/pyproject.toml": "2bd91a44ddbc3e7e425d6e6d51aa4920b7eeaa3baa42de95ae35c219bc0a9369",
+        "src/lab/urp_lab/__init__.py": "99501ed9422c936530b37ccd11efd114c89ae3af34a5b9d63f4372ca0e61ac16",
+        "src/lab/urp_lab/__main__.py": "d9c5bd7e8946942b12a537be8cba5bac599d5f2d1f6a71a2fc729da52e4a614e",
+        "src/lab/urp_lab/analysis.py": "ad28787674395e5e5e067bbffc6e19ee90adbd792530675d15ecddd4eaaf0049",
+        "src/lab/urp_lab/assets/__init__.py": "f9f2805dcfb79c761ef9178976982411a3be473e54438585de77829d04771929",
+        "src/lab/urp_lab/assets/api.py": "2089716fa89c4005ad9d6c3ca146bf33e99af1c83d9fd8426db6c254a4a7162b",
+        "src/lab/urp_lab/assets/bindings.py": "330d729e23bd6a38967fd8dc210de3acb06b8a786b30c0a0eaa01c060b217c5d",
+        "src/lab/urp_lab/assets/imagecal.py": "425d7b86c2efe4415f126a5981aa379d56627ad19404a265c9fee70cb625877b",
+        "src/lab/urp_lab/assets/importer.py": "889c675db5abf2caf4b874b54790d847c51179d22131cde13ea9485d7106f293",
+        "src/lab/urp_lab/assets/local.py": "84b66e3086fdc5d5239006c9bb2651e0d3d4a4671e27c83cc2eb10376a5c6076",
+        "src/lab/urp_lab/assets/models.py": "d693ec23c0e2f0fb20c0f55cd07ea92257eb451ffe88450e8d92ef0bca613488",
+        "src/lab/urp_lab/assets/profiles.py": "0677278942ffd51661a31d13ee81e469a0c6747c02ee729eb2793b83da59db35",
+        "src/lab/urp_lab/assets/rosmap.py": "173539acfd2230b4b244319fe56ecb86b3ab5b213c2116bcdd8457169cbcd156",
+        "src/lab/urp_lab/assets/safety.py": "2965507802290a1f321a635850016042132efe6ffa068ac21024982de1b5dbe5",
+        "src/lab/urp_lab/assets/store.py": "989e6277b4f9c8ca32bfbfaaaa12ee46eb5da065e4188df24acfacdab6492c05",
+        "src/lab/urp_lab/assets/vector.py": "6856be9729c9d3fe55a391d3c859c34033e01f31d4a9d38fba73532241abd375",
+        "src/lab/urp_lab/compose/__init__.py": "f94215fe69e96b4f7ad2589bcb85a35740b0231a9cecd6946c5ab421dc6fd576",
+        "src/lab/urp_lab/compose/generate.py": "fa05a5c0228fc0f62de27f9a8aa7fb802ca10b0a9345561b7f30a3dd403c9eac",
+        "src/lab/urp_lab/compose/geo.py": "dd87cb852f2c7d4daf2869391f3e82dbaa4db27a3207ca8b00aacf94a8a04a31",
+        "src/lab/urp_lab/compose/nl.py": "6ac950f02fd7eadd263f0052f8a1789e2d6df7fedc7fe6e56e8a5aa3b62c90ba",
+        "src/lab/urp_lab/events.py": "96c0427da166814e69d25e1ba7fd2862d5510d9ae2b5130091d984d44acd04ce",
+        "src/lab/urp_lab/evolve/__init__.py": "82dbe5ece6fdeb4ecb15c7c962debd6422053ed509c3d101834745b999f3f3a5",
+        "src/lab/urp_lab/evolve/__main__.py": "400eae386a63d333dd5639243581e7372f2b9bd3238b1b1530a56bfc356932ca",
+        "src/lab/urp_lab/evolve/admission.py": "8bd13ff0c4d59e722ed77d532fe601b577a24caff32023381ae1038912c0405a",
+        "src/lab/urp_lab/evolve/admission_rules.py": "1ba56414d6ad2a12ab3083598585771e5d551e506618a3c81baa1d5100ced311",
+        "src/lab/urp_lab/evolve/audit.py": "19d9b50bb5f60511cc9822e2e294f1de11da5c79ad96a49cce4cdaf4c469d0d6",
+        "src/lab/urp_lab/evolve/candidates.py": "06cfe350ccc1b5414051dbcbd84a45a739d48e9abf1b13b7225c0a6f39748cbd",
+        "src/lab/urp_lab/evolve/dashboard.py": "db75eb9041308abfb94b54263eedf3876405b6f7b1a30a760ee2b8b5d99629a5",
+        "src/lab/urp_lab/evolve/determinism.py": "f93385ad2dcf448d9d63d7b20ecb11fa217d229570e86dcdb987fea11010206d",
+        "src/lab/urp_lab/evolve/dynamic.py": "a4f44a4a7f2681c88ae8aab06b02b6f96d8a02b95f12dc180bc86294db0cb2e5",
+        "src/lab/urp_lab/evolve/exec_model.py": "d7a906055b6574224a77b64e1a1184c6b9d173910bff215440a069ac23799f01",
+        "src/lab/urp_lab/evolve/experience.py": "a22a7e011ad61e440d1e59f2767f4163c4d17b595ab92c73c709822aca0d029f",
+        "src/lab/urp_lab/evolve/features.py": "38be648c99ebaf37c754f76cfbcaa51bb0bded15a15484d9de07db6ff6cd059a",
+        "src/lab/urp_lab/evolve/figures.py": "3ce0208dd6b5ebadef81c7d9780974de0c611d8d84d5771fe496a2aaa7283659",
+        "src/lab/urp_lab/evolve/figures2.py": "e3bf969ccc7b90a2571b80f6f984195bf7a1d4469b2be0ffd1fe7914cd37b788",
+        "src/lab/urp_lab/evolve/fillet.py": "d4f0d6918ccb09137d051c3f523939c1f5054aa9e12e4ab8702c6730ec883e30",
+        "src/lab/urp_lab/evolve/geometry.py": "8fde7aa4dca43c333d0e771b2a5961940a26d7f9c134341c5b5f88b93b5f43cd",
+        "src/lab/urp_lab/evolve/instances.py": "30a042dc35789838cf0682274108cf524bee2237d7595ceb6f62e42735c27986",
+        "src/lab/urp_lab/evolve/ledger.py": "a3464c27ced6471d1ba075451328c8ffa376779f7e970a0c0887f81befbabab3",
+        "src/lab/urp_lab/evolve/plans.py": "c0cf81706ef8e825124fa121f292ba58ac4aefe4bf03891b4f7af0781676208b",
+        "src/lab/urp_lab/evolve/policy.py": "2b255c24bcda7413caaa58194ecb60977563834aabf9d358c4d0166a41e87150",
+        "src/lab/urp_lab/evolve/power.py": "ebd4eed4d784030fdad822fdcc577da2c5047d72242453897d1a24537d0c08c7",
+        "src/lab/urp_lab/evolve/repair.py": "4d7d8af984e935700ac21d4e7a4433654555de975f783d998b8e756ec58b615f",
+        "src/lab/urp_lab/evolve/repair2.py": "ab30337a5729389e6dff22ffb4d136bb8c9fc0c2689372fbc2d92a81776dcdd6",
+        "src/lab/urp_lab/evolve/replan_gate.py": "2553255e4a984c7286ea85517ae9c998e93f6875b7fd5a6080549ea427247e8d",
+        "src/lab/urp_lab/evolve/reverify.py": "4019b6ae4bcb3a2c99d8363f76cc276ff96c1b6e797db536f9566419567a5be8",
+        "src/lab/urp_lab/evolve/route_determinism.py": "b62989134526edd66aa9759c27c9c96bd77665fc5da58b20bac9298867f153b6",
+        "src/lab/urp_lab/evolve/serve.py": "913193b643da181d8836ce7487d94a490211a043e5d67d8eaf0e2d0b2e4df3a2",
+        "src/lab/urp_lab/evolve/sweep.py": "f55616a328397cde79d4f8b6f98c70966dfb9faba9e77f73ae755a4c77497d9a",
+        "src/lab/urp_lab/evolve/terms.py": "256782dcf3a0eb6ef84ea714772f5954db7612fe3cc325dd34fdc2d49f7c5238",
+        "src/lab/urp_lab/evolve/verdicts.py": "c01e9ff1180ebefcf7c8854d6f305fc423c49c509e9308bae86e21cffb14b2f7",
+        "src/lab/urp_lab/execution_check.py": "c4cd2728943067b20cb04a94aa2ef172028c823e999d71554d7ac0827dfc415b",
+        "src/lab/urp_lab/experiment.py": "d6946569470f90d70fb0c6e896db49b136fe92dfe458fbf3f78db0ca00e25c6a",
+        "src/lab/urp_lab/export.py": "6d3e27e38288e27e42636ff428548a623aa6c4fb307ecb2823f6f02ce47c6ac3",
+        "src/lab/urp_lab/field_actuation.py": "d528d0aa36a20925b1886415e15ecded7a522b56783526dd5fa9e142787c7c05",
+        "src/lab/urp_lab/field_dynamics.py": "631567f1b0661340b7d27b1935c467476501c35ad0be2b052e3be6b337c3d246",
+        "src/lab/urp_lab/field_energy.py": "1ca3c08957e362e39efb70f803feb447fe48acc9fa8cb718b99d629049c0db0b",
+        "src/lab/urp_lab/field_localization.py": "26e3c36ac106f9e8fa3087620c90f18d302592bdbcf5c539f0f483e75fe14953",
+        "src/lab/urp_lab/field_nonideal.py": "b3ae7f39819dd1c1e4adeceb5aaa10defd4a5fa662bde5d85652512dac05a946",
+        "src/lab/urp_lab/field_observation_check.py": "7d97545f314fb7c62421f9126921c6ce28fdd210e45b31baf8afd7ecb6f98dcc",
+        "src/lab/urp_lab/field_physics.py": "a8de4be22c4ea3d7bf7089465e061c9d6238c9cbb74dfa84554d8bb9c3c14756",
+        "src/lab/urp_lab/field_records.py": "48c3559de93e5c8d01b6177094f91346fed6060eadabf1228ded36ca456d0714",
+        "src/lab/urp_lab/field_tracking.py": "2f252474acd9ec32512fc3ae8d127c191e1f0a12b5553e12e9216d6b9208e4c2",
+        "src/lab/urp_lab/field_traffic.py": "0ae8ccc42d07565b4bf23d995d2f9257767bd420ba4c2efb2219d06657e4a54d",
+        "src/lab/urp_lab/fieldcheck.py": "7a38d9f95601fe9d6c5317024d1468c0deb1a9e5f1ca098d9bdce95e74842532",
+        "src/lab/urp_lab/fieldsim.py": "3c9c259c294abbcf9c5844ffcd632432ae81adfd0962950fbeeb06b97610492f",
+        "src/lab/urp_lab/fieldworld.py": "284bea07e4d0ac5ab67384037705c1fd7a019d9267e5c8be81c7251ac01cf106",
+        "src/lab/urp_lab/figures/__init__.py": "6948b787c5877fc4c0a9b03607026d74ff1c7a4237e98e9d46ca460bebceb234",
+        "src/lab/urp_lab/figures/api.py": "fcbfdca5b1c24da8348bbc186e33fe910af97625544506ec491506ff0f7352a3",
+        "src/lab/urp_lab/figures/charts.py": "11d5d4f359dee3ce3094bb373b11717c916362e1035cb988417698ed20c24b05",
+        "src/lab/urp_lab/figures/data.py": "ce628a82fac268013598b5710514b980a0fd2c94b832227705d87475b406296f",
+        "src/lab/urp_lab/figures/images.py": "c9c057cb996517f9b78b5fd1eac7c2e5565ee3949b1bd28be229622855ea7e45",
+        "src/lab/urp_lab/figures/maps.py": "ea1e22fcdc73e107adf5aac4a2ed2acac885d2f4525c88e8b72ed8b237f1f83f",
+        "src/lab/urp_lab/figures/names.py": "f4935d414c6082f0136f17c75bed90c3c5134d1813b7c4e5fa04d7960f76a87d",
+        "src/lab/urp_lab/figures/registry.py": "035133ade142873946da2b06e17f9b63992b49d334aa08cde1c78bcf62d305d8",
+        "src/lab/urp_lab/figures/study.py": "d4847158f6da06bf24bd75d176f090e5ad2bff9b221d821f3c117882dfa39c9f",
+        "src/lab/urp_lab/figures/style.py": "b3beebacd9271e7d3d7d2bf549210fb806271c3d8e1be558445025f4c6907732",
+        "src/lab/urp_lab/gateway.py": "c3ecdc8852850fae669bbf87ad3dd04fcd75c646bae3a4333cdfd9969e8b40b2",
+        "src/lab/urp_lab/ground_execution.py": "708e15be16eb2fd36a95b2f3fe17a259b1e08673ca1e8a63aa48b3115e2ab584",
+        "src/lab/urp_lab/ground_map.py": "16b9ba500583db87612c15f3ac55de60ba9ef3edd50aa953ca2ec944d0a85281",
+        "src/lab/urp_lab/ground_risk.py": "7e7ce85b1de6246d55299feaabf11ce42aa9b75bd5d0491d50aa0294bdc34c0f",
+        "src/lab/urp_lab/jobs.py": "be887429e72af1a1c02131d9253863736511db24d0ab247342d9c39656cbbca8",
+        "src/lab/urp_lab/lanes.py": "4f2bd57f90fd2e1f701124c9668aa5fd1ddf850373f314c0c2f4a6f5b5be7664",
+        "src/lab/urp_lab/learned.py": "61ba505b74c8ecefea2b75bfd8576e3cc84bb9e51dfa6040822b1c0f3171dbd4",
+        "src/lab/urp_lab/library/__init__.py": "8015ad82a80916d926ab5c1ec9437ae876471d04c85215a25eb51fb60b11dc35",
+        "src/lab/urp_lab/library/cvrplib.py": "3ea73fe3e9c6d1e6c0788bbf3b939f78bb94554f32e6b9334ee2cf202c99155b",
+        "src/lab/urp_lab/library/fields.py": "1f24cb256f855cf2eb944bb2ff07612c866fefac9c770b67e4f5ee52d33dbd3e",
+        "src/lab/urp_lab/library/references.py": "3530d58687a143819fbcd792d7579734e7dc9b91d6e2c56e5618ac1cd7776068",
+        "src/lab/urp_lab/localization_check.py": "c1ef7fa0bec2b0801dd82dfb074861dec2404e46916a079d35948217df5ecc05",
+        "src/lab/urp_lab/native_identity.py": "8d35eb01472f6d88b93db275789d538af83a1f5585dafee48702f43cddd65527",
+        "src/lab/urp_lab/path_geometry.py": "d3820ee311d702c7c81102265aa5135c449b0a0b123fc38ebc5320be9135ddf5",
+        "src/lab/urp_lab/paths.py": "f3053692b1c6f254f349e637e474427b3136273af0e38502cfe1b12897ffd8db",
+        "src/lab/urp_lab/planning.py": "3bff3d74c48d8ce6acd9462f85675e880accfef3919f4060be0c0635ad525fdd",
+        "src/lab/urp_lab/process_health.py": "cb4522e17000177e30638db29c62701996fc7924fcbf64d3c25b46791349b086",
+        "src/lab/urp_lab/recommend.py": "71f72ce4a6a29cdf06cfd6a563694c1c5dcb8bf3b76f324af3b83c6d3ec31bb7",
+        "src/lab/urp_lab/result_integrity.py": "94abc1ebc56903ea69c93fe756a39e8375937ba7f0197452a82320ad01010bbf",
+        "src/lab/urp_lab/robots.py": "78a78ce68daea6585b4ecc346d2d73884444d9b88e24ee6b8fa57b7343111883",
+        "src/lab/urp_lab/runtime_config.py": "ff6803c02ac76a6a8c7ad56aa9176f8ef2419f412f10bc935bf15e35a16b34ee",
+        "src/lab/urp_lab/scenarios/__init__.py": "202f9c5f734d7b43a22d3f12dc3f9988da7867ac9fe0ed7bab5b7277c81fc55c",
+        "src/lab/urp_lab/scenarios/benchmark.py": "30dcdac911214eeff7300e05e5bd8e8a1cf7e1127af593f3aa1a55f309f0ab9e",
+        "src/lab/urp_lab/scenarios/field.py": "c07db66388b5371d72e107e26e523c3a49431b2cf18b710a6cd989d8ed39b409",
+        "src/lab/urp_lab/scenarios/maps.py": "7a79257e1e3321b8236f0c6b27bdcc000a9b59cadd83cf5fb707ebd804eefb99",
+        "src/lab/urp_lab/scenarios/motion.py": "661aacf6880d24ca97d1f543cad974b8b73bd8393583348cba9a2cb9b90bc6ac",
+        "src/lab/urp_lab/scenarios/validate.py": "814c1e40c80c64f0122b2ae28d0a6062d0647bee57c8420e05c7a009de003d4b",
+        "src/lab/urp_lab/services.py": "a8f4a4ab0511b84f3fb22114f223d3d6336b504959ac4590cf7c0695e46f9136",
+        "src/lab/urp_lab/simclient.py": "acb7d5acffaa3e2dc18ff374e0b85866e85ed16f04820a93c343c3f23b6c73b9",
+        "src/lab/urp_lab/simplan.py": "4f3e8707afc311a5a8d2cee4fc02fe1fdf027632893216116aa6bd810d9b12ee",
+        "src/lab/urp_lab/solvers/__init__.py": "326873175d9bc13c916c5a96d44bc8c3baed69bf6290f96b5a76a4f6eb09466e",
+        "src/lab/urp_lab/solvers/f2c_coverage.py": "374261811c40d736894da00fdd9b5321fac1b0af42710956276407d568bafc3f",
+        "src/lab/urp_lab/solvers/fleet.py": "a2fb64edcb7ab28ca8d3c0cfdd870d1835a2b626167755fd9207256a97c0daec",
+        "src/lab/urp_lab/solvers/fleet_common.py": "bdb585f693d6ec57d5bb4e526a18d375cb484488f6c0939fbed2a078d7f5c548",
+        "src/lab/urp_lab/solvers/fleet_curvature.py": "d0b13f56e306b06cf6dbaf3763d9e999fb7c2fa697b26346040470a36e831c45",
+        "src/lab/urp_lab/solvers/fleet_engines.py": "7ffd887ee41b0fd0a37cafc48a0051d80d463ab7afdecf4401d02fcc485802b5",
+        "src/lab/urp_lab/solvers/motion.py": "4edaa73c16d8cc4805fd75e217b227e44580059307ff595b66a9aaf56d779964",
+        "src/lab/urp_lab/solvers/routing.py": "f2c377e01ed951e3c5ab51d734498506476647179f6fda5187787ba40e5dd3bc",
+        "src/lab/urp_lab/store.py": "9893e10d0dde2acd17b87bf01b5d0fd2d58a77c845b7bd3c2acbf30f85643f30",
+        "src/lab/urp_lab/studies.py": "ad78254c76ead19d468216643e8c5c325e8a0d6498a95308307839ea519e2f46",
+        "src/lab/urp_lab/worker.py": "e11e595b944c403b475f9e5fecb500c91ca12295375593c53ee780fd2a31f400",
+        "src/lab/urp_lab/worlds.py": "af92a8306b9f5c0a13eb79f12bb701c7cb2390fc7c4245774364683a107a9e33",
+        "src/lab/uv.lock": "d815596194c13702328e58a8166f8cb6711c292131c57fbb49aef3b9b7f35f0b",
+        "src/research/src/urp_research/__init__.py": "278e5bfbce9df64ec553c2599dfaf42733484abbe6867fc665e3c68ab964e803",
+        "src/research/src/urp_research/cvrp_selection/__init__.py": "43380c40419736f15f08019a7a20d17341ffadd43016115ecab534b957bfb11a",
+        "src/research/src/urp_research/cvrp_selection/experiment.py": "b1e6b38f32cce4f1b3b9db61fa3fd7a38dae7c2a42c6f21a3b5d41f558760219",
+        "src/research/src/urp_research/cvrp_selection/preflight.py": "ebf0c4d398a5efbf0fd0b79b85eade27872b40e595f726f7b7bce17d4299286c",
+        "src/research/src/urp_research/turn_modes/__init__.py": "43380c40419736f15f08019a7a20d17341ffadd43016115ecab534b957bfb11a",
+        "src/research/src/urp_research/turn_modes/checker.py": "263538a8bbd8fbae861d4650ff06fc7e75efe22e25316b3425c6b5a04ff39885",
+        "src/research/src/urp_research/turn_modes/evaluate_candidate.py": "efa41111e257531277f4b6487eff468170802b117b321bfcd3bea4e4549727fd",
+        "src/research/src/urp_research/turn_modes/generate_data.py": "d7b100580bb6c65a26271dc52e6f7816851ac8526e3b07eaeb4300211dbcfc35",
+        "src/research/src/urp_research/turn_modes/oracle.py": "273d78fa13595fad3b913aa1ef75dda02d1304d5d3abc0dbe00c3619e960fd7c",
+        "src/research/src/urp_research/turn_modes/run.py": "d2ef4c557c445d79052777b1b7c21d7152a11dc3a31c6bec9a68860fbb37662b",
+        "src/research/src/urp_research/turn_modes/solver.py": "ec63081c5ede4a7d94b8cf0b0245fa07d9df5ee1d8b038d0eb094001a1470b8b"
+      },
+      "execution_sha256": "4e84ead5142672736ccbce048572469210f1ebd817c88f5c5e35bcd844176e28",
+      "stopping_rule": "墙钟上限；固定种子不保证不同硬件/负载下得到逐位相同的元启发式结果",
+      "seed_usage": "此适配器不使用 seed；更换 seed 不构成独立随机重复",
+      "worker_command": [
+        "/home/peakpeng/Desktop/URP/src/lab/.venv/bin/python",
+        "-m",
+        "urp_lab.worker"
+      ],
+      "worker_environment_verified": true
+    },
+    "algorithm": {
+      "id": "urp.turn_mode_dp",
+      "name": "转弯模式分层 DP",
+      "source": "project",
+      "origin": "src/research/src/urp_research/turn_modes/solver.py",
+      "version": "ec63081c5ede4a7d94b8cf0b0245fa07d9df5ee1d8b038d0eb094001a1470b8b",
+      "randomness": {
+        "uses_seed": false,
+        "note": "此适配器不使用 seed；更换 seed 不构成独立随机重复"
+      }
+    },
+    "params": {
+      "time_limit_s": 3,
+      "seed": 42
+    },
+    "state": "done",
+    "status": "optimal",
+    "recommendation_at_submission": {
+      "advice": {
+        "problem_class": "turn_routing",
+        "policy": "rules-v2",
+        "features": [
+          {
+            "name": "任务数",
+            "key": "n_tasks",
+            "value": 2,
+            "unit": null,
+            "hint": null
+          },
+          {
+            "name": "禁止转弯",
+            "key": "forbidden",
+            "value": 0,
+            "unit": null,
+            "hint": null
+          },
+          {
+            "name": "转弯惩罚",
+            "key": "penalties",
+            "value": 3,
+            "unit": null,
+            "hint": null
+          }
+        ],
+        "learned_selector": {
+          "id": "urp.cvrp_selection.knn_crc",
+          "status": "not_applicable",
+          "reason": null,
+          "required": [
+            "/home/peakpeng/Desktop/URP/data/research/cvrp-selection-crc/data/raw.jsonl"
+          ],
+          "prediction": null
+        },
+        "ranking": [
+          {
+            "algorithm_id": "urp.turn_mode_dp",
+            "rank": 1,
+            "applicable": true,
+            "score": 3.0,
+            "suitability": "推荐",
+            "reasons": [
+              "任务数 2 ≤ 12：优先尝试精确分层 DP，是否证最优以终态和预算为准"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "pyvrp.hgs+urp.layered",
+            "rank": 2,
+            "applicable": true,
+            "score": 2.0,
+            "suitability": "可用",
+            "reasons": [
+              "规模较大时的首选：PyVRP 定顺序，项目分层 DP 补全转弯可行路径"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "ortools.gls+urp.layered",
+            "rank": 3,
+            "applicable": true,
+            "score": 1.5,
+            "suitability": "可用",
+            "reasons": [
+              "与 PyVRP 方案互为对照"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "urp.raw_oracle",
+            "rank": 4,
+            "applicable": true,
+            "score": 1.0,
+            "suitability": "可用",
+            "reasons": [
+              "小规模时可用独立精确搜索交叉验证最优值"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "urp.reset_dp",
+            "rank": 5,
+            "applicable": true,
+            "score": -5.0,
+            "suitability": "可用",
+            "reasons": [
+              "只作下界参考：忽略进入方向，路线可能违反转弯规则"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          }
+        ],
+        "recommended": "urp.turn_mode_dp",
+        "compare": [
+          "urp.turn_mode_dp",
+          "pyvrp.hgs+urp.layered",
+          "ortools.gls+urp.layered"
+        ],
+        "explanation": "推荐 转弯模式分层 DP：任务数 2 ≤ 12：优先尝试精确分层 DP，是否证最优以终态和预算为准"
+      },
+      "submitted_algorithm": "urp.turn_mode_dp",
+      "budget_matches_learned_profile": false,
+      "learned_profile_match": false,
+      "note": "提交时的建议快照；实际算法选择与预算以 algorithm / params 为准，不据此推断用户接受了建议"
+    },
+    "objective": {
+      "value": 490,
+      "unit": "cm_equivalent",
+      "lower_bound": null
+    },
+    "routes": [
+      {
+        "vehicle": 0,
+        "nodes": [
+          0,
+          1,
+          2,
+          1,
+          0
+        ],
+        "sequence": [
+          1,
+          0
+        ],
+        "services": [
+          {
+            "task": 1,
+            "position": 2
+          },
+          {
+            "task": 0,
+            "position": 3
+          }
+        ],
+        "polyline": [
+          [
+            -0.35,
+            0.0
+          ],
+          [
+            -1.5,
+            0.0
+          ],
+          [
+            -2.5,
+            0.0
+          ],
+          [
+            -1.5,
+            0.0
+          ],
+          [
+            -0.35,
+            0.0
+          ]
+        ],
+        "cost": 490,
+        "load": 2,
+        "mode_chain": [
+          [
+            1,
+            2
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      }
+    ],
+    "check": {
+      "valid": true,
+      "errors": [],
+      "computed_cost": 490,
+      "routes": [
+        {
+          "route": 0,
+          "load": 2,
+          "cost": 490,
+          "forbidden_turns": []
+        }
+      ],
+      "checker": "src/research/src/urp_research/turn_modes/checker.py",
+      "source": "project"
+    },
+    "map_check": {
+      "checked": true,
+      "collision_free": true,
+      "min_clearance_m": 0.9100735712051392,
+      "robot_radius_m": 0.175,
+      "margin_m": 0.05,
+      "violations": [],
+      "violation_count": 0,
+      "method": "沿整条路径按半个栅格采样，距离变换给出保守净空；未知区与地图外按障碍"
+    },
+    "metrics": {
+      "cost": 490,
+      "length": 4.3,
+      "length_unit": "m",
+      "n_routes": 1,
+      "n_tasks": 2,
+      "turns": null,
+      "turn_penalty_total": 60,
+      "forbidden_turn_violations": 0,
+      "wall_s": 0.025854041000457073,
+      "cpu_s": 0.025774623999999996,
+      "process_wall_s": 0.195
+    },
+    "log": null,
+    "error": null,
+    "created_utc": "2026-10-25T16:25:55.108Z",
+    "finished_utc": "2026-10-25T16:25:55.337Z",
+    "label": "e2e 20261025T162555Z",
+    "asset_snapshot": [],
+    "process": {
+      "returncode": 0,
+      "budget_s": 5.0,
+      "evidence": "/home/peakpeng/Desktop/URP/.local-state/inspection-20261025T152450Z/native-platform-runtime-final/runs/run_20261025T162555_ff8705",
+      "source_identity_verified": true
+    },
+    "raw_result": {
+      "status": "optimal",
+      "cost": 490,
+      "routes": [
+        {
+          "nodes": [
+            0,
+            1,
+            2,
+            1,
+            0
+          ],
+          "services": [
+            {
+              "customer": 1,
+              "position": 2
+            },
+            {
+              "customer": 0,
+              "position": 3
+            }
+          ],
+          "mode_chain": [
+            [
+              1,
+              2
+            ],
+            [
+              2,
+              1
+            ]
+          ],
+          "cost": 490
+        }
+      ],
+      "dp_transitions": 4,
+      "method": "mode",
+      "wall_s": 7.385100070678163e-05,
+      "cpu_s": 7.490899999998413e-05,
+      "preprocess_wall_s": 4.9001000661519356e-05,
+      "shortest_expansions": 17
+    },
+    "trace": [],
+    "trace_contract": {
+      "schema": "urp.search-trace/1",
+      "semantic": "solver_search_proxy",
+      "note": "求解器内部代理成本，可能含距离量化、方向松弛或加权跨度；不能作为最终验算目标或跨算法增益",
+      "independent_check_at_each_sample": false
+    }
+  }
+]

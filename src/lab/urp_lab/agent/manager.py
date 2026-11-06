@@ -20,9 +20,9 @@ from datetime import datetime, timezone
 from ..events import utc_now
 from ..services import ServiceError
 from . import grounding
-from .llm import ModelError, model_from_env
+from .research_llm import ModelError, configured_model
 from .prompt import PROMPT_ID, PROMPT_SHA256, SYSTEM_PROMPT
-from .tools import BY_NAME, TOOLS, ToolContext, ToolError
+from .research_tools import BY_NAME, TOOLS, ToolContext, ToolError
 
 log = logging.getLogger('urp_lab.agent')
 
@@ -66,16 +66,20 @@ def _clip(text: str | None, limit: int) -> str | None:
 class AgentManager:
     def __init__(self, lab, model=None):
         self.lab = lab
-        self._model, self._model_reason = (model, None) if model is not None else model_from_env()
+        self._provided_model = model is not None
+        self._model, self._model_reason = (model, None) if self._provided_model else configured_model()
         self._lock = threading.RLock()
         self._threads = ThreadPoolExecutor(max_workers=POLICY['max_sessions_running'], thread_name_prefix='agent')
         self._running: dict[str, threading.Event] = {}   # session id → cancel flag of its live turn
+        self._turn_models: dict[str, object] = {}
         self._closed = False
         for stale in self.lab.store.list_agent_sessions(limit=200, states=('running',)):
             self._end(stale, 'error', '网关重启时这一轮被中断；会话记录保留，可以继续提问', announce=False)
 
     # ---------------------------------------------------------------- views --
     def status(self) -> dict:
+        if not self._provided_model:
+            self._model, self._model_reason = configured_model()
         return {'configured': self._model is not None, 'reason': self._model_reason,
                 'model': self._model.describe() if self._model is not None else None,
                 'prompt': {'id': PROMPT_ID, 'sha256': PROMPT_SHA256}, 'policy': POLICY,
@@ -176,6 +180,8 @@ class AgentManager:
 
     # ------------------------------------------------------------ internals --
     def _require_model(self):
+        if not self._provided_model:
+            self._model, self._model_reason = configured_model()
         if self._model is None:
             raise ServiceError(503, 'agent_unconfigured', self._model_reason or '未配置大模型')
         if self._closed:
@@ -214,6 +220,7 @@ class AgentManager:
 
     def _spawn(self, session_id: str):
         self._running[session_id] = threading.Event()
+        self._turn_models[session_id] = self._model
         self._threads.submit(self._drive, session_id)
 
     def _append(self, session: dict, step: dict):
@@ -244,6 +251,7 @@ class AgentManager:
         for key in TURN_KEYS:
             session.pop(key, None)
         self._running.pop(session['session_id'], None)
+        self._turn_models.pop(session['session_id'], None)
         self._save(session, announce)
 
     def _drive(self, session_id: str):
@@ -306,9 +314,10 @@ class AgentManager:
             session['usage']['model_calls'] += 1
             session['turn_model_calls'] = session.get('turn_model_calls', 0) + 1
             self._save(session)
+            model = self._turn_models[session['session_id']]
         started = time.monotonic()
         try:
-            reply = self._model.complete(session['messages'], [t.schema() for t in TOOLS])
+            reply = model.complete(session['messages'], [t.schema() for t in TOOLS])
         except ModelError as exc:
             with self._lock:
                 if not self._closed:

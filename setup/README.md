@@ -1,146 +1,297 @@
-# URP 使用与开发
+# 农业机器人路径规划工作台 · 使用说明
 
-工作台统一监听 `http://127.0.0.1:4100/`。任务规划、Agent、算法实验、仿真和回放在同一页面；`#/jobs` 提供 CVRP 数值任务，`#/bpp` 提供历史装箱结果。
+面向农业机器人的路径规划算法库与智能推荐研究工作台。以多车任务访问为主线，同时支持点到点运动规划、转弯约束路网与覆盖任务：编辑问题、查看算法适用条件、同口径比较、独立验算，再把已适配的几何路径交给 ROS 2 / Gazebo，核对实际执行与原始记录。
 
-## 获取工程
+## 获取源码与开发环境
 
-完整获取可直接克隆仓库。只开发系统时，使用源码检出清单，按需保留大资料：
+main 是完整集成入口。普通开发可按[源码检出清单](source-checkout.txt)省去大资料，历史原件仍由[现行资产索引](../docs/assets/README.md)关联：
 
 ```sh
 git clone --filter=blob:none --no-checkout --branch main https://github.com/peakpeng666/URP.git
 cd URP
 git show HEAD:setup/source-checkout.txt | git sparse-checkout set --no-cone --stdin
 git checkout
-```
-
-[源码检出清单](source-checkout.txt) 省去论文、教材、第三方源码、压缩包与恢复数据，保留 BPP 只读回归所需的完整记录；[资产索引](../docs/assets/README.md) 记录原提交中的资料路径。
-
-## 安装依赖
-
-源码开发使用 Python 3.12、Node 24、npm 和 uv。在仓库根执行：
-
-```sh
 uv sync --locked --extra solvers
 (cd src/lab && uv sync --locked --inexact)
 npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
+bash setup/run.sh lab-code --open
 ```
 
-| 环境 | 权威锁文件 | 用途 |
+开发使用 Python 3.12、Node 24 与 uv；根和 Lab 各有独立的 uv 锁文件。`lab-code` 启动普通代码工作台；已配置 ROS 的机器使用 `lab` 准备本机仿真组件。两者均重新构建前端并使用同一 4100 入口。系统 Python 和 `/opt/ros` 不作替换。
+
+## 安装与启动
+
+新机器统一使用 [DEPLOY.md](../DEPLOY.md) 的安装入口。默认安装工作台、ROS 2 Humble / Gazebo Fortress、CVRP 基线和 Fields2Cover；支持 Docker Desktop 的 WSL2 后端、WSL2 Ubuntu 22.04 x86_64，以及原生 Ubuntu 22.04 x86_64。
+
+`deploy` 是默认发布入口，`redo` 的安装与依赖准备使用同一套脚本。选择版本、组件、Windows 命令和更新方式都见部署说明；安装后打开 **http://localhost:4100/**。依赖版本见 [依赖清单](../deploy/DEPENDENCIES.md)。
+
+## 云端纯代码与地图验收
+
+官方地图优先读 `/opt/ros/humble/share/turtlebot4_navigation/maps`；这台机器没有 ROS 时读 `src/lab/urp_lab/data/maps/` 里的原样副本，云端和安装版因此不需要额外配置。`URP_ROS_MAPS=/绝对路径/地图目录` 可以指定别的副本。这些副本用于地图检查与求解测试，地图几何以官方文件为准；Gazebo 执行需另行测试。
+
+云端测试结果见 [2026-10-19 测试报告](2026-10-19/delivery-review/REPORT.md)。容器和本机测试的对应版本见各自记录。
+
+## 打开
+
+安装器部署后使用 `urp up`、`urp status`、`urp down`。Windows PowerShell 的对应命令见 [DEPLOY.md](../DEPLOY.md)。
+
+已准备好依赖的源码工作区也可直接运行：
+
+```bash
+bash setup/run.sh lab --open
+```
+
+本机入口打开 **http://127.0.0.1:4100/**。首次准备完整环境用 `bash setup/ubuntu/setup.sh --components full`；已有环境日常启动不必重装。关闭时在启动终端按 Ctrl+C，或运行 `bash setup/run.sh lab-stop`。
+
+**物理执行基线（2026-10-18 地面规划与力矩执行独立审计）**：保留原工作台和 4100 入口；已知地面图进入风险规划、完整路径限速与真值验收，可选有界力矩模式具有真实双轮反馈。定位观测误差经融合估计进入控制，摩擦区进入 Gazebo 接触。默认仍为理想速度伺服；两种模式均是未标定的刚体模型，不含真实土壤沉陷/压实或充气轮胎力学。当前软件与逐场物理验证范围分别见 [集成报告](2026-10-15/integration/REPORT.md)，新增智能体不自动继承新的物理验收结论。
+
+恢复：先在仿真面板关闭失败会话，再启动新会话；网关异常时执行 `bash setup/run.sh lab-stop`，待退出后重新运行上面的入口。失败结果与日志保留，不删除 `runtime/`，也不使用按名称批量杀进程的命令。
+
+## 桌面应用（2026-11-05）
+
+**当前发布状态：** `desktop-data-1` 历史数据包已[发布并完成实际下载校验](https://github.com/peakpeng666/URP/releases/tag/desktop-data-1)。新的桌面与容器版本由同一次发布流程构建，须同时通过代码检查、两系统后端检查、镜像验收及匿名拉取、安装包与更新清单校验，才会成为 latest。具体已完成与待验收范围以[最新集成记录](2026-10-15/integration/REPORT.md)为准。
+
+安装包自带 Python 后端和全部算法依赖，不需要开终端，也不需要装 Python、Node 或 ROS。
+
+| 系统 | 安装包 | 说明 |
 |---|---|---|
-| 根 `.venv`，Python 3.12 | `uv.lock` | 档案、CVRP 数值任务和工程检查 |
-| `src/lab/.venv`，Python 3.12 | `src/lab/uv.lock` | 网关、Agent、规划和离线 evolve |
-| 前端，Node 24 | `src/frontend/package-lock.json` | 页面、类型检查和界面测试 |
-| 浏览器验收工具 | `src/frontend/tools/browser/package-lock.json` | Playwright 验收 |
-| ROS 2 Humble，系统 Python 3.10 | [部署依赖](../deploy/DEPENDENCIES.md) | Gazebo、ROS 节点与原生组件 |
+| Linux x86_64 | `agri-route-workbench-<版本>-linux-x86_64.AppImage` | 下载后 `chmod +x` 直接运行，支持自动更新。Ubuntu 22.04 及以后默认没有 FUSE 2，需要 `sudo apt install libfuse2`，或加环境变量 `APPIMAGE_EXTRACT_AND_RUN=1` |
+| Debian / Ubuntu | `agri-route-workbench-<版本>-linux-amd64.deb` | `sudo apt install ./<文件>` |
+| Windows 10 / 11 x64 | `agri-route-workbench-<版本>-windows-x64.exe` | 安装到当前用户，不需要管理员权限 |
 
-根 `requirements.lock` 是 `uv.lock` 的 pip 导出，由 CI 检查一致性。更新后用以下命令重新生成：
+第一次打开后，在输入框右下角点「连接模型」，选一家服务商，粘贴 API Key。不连接也能用规则流程。
 
-```sh
-uv export --locked --extra solvers --no-dev --no-hashes --no-annotate --output-file requirements.lock
+- **内置后端能做的**：智能体全流程、算法库、地图、课题实验、MuJoCo 物理预演。Windows 上 OMPL 的 7 个采样规划器和 Fields2Cover 显示未安装，A*、Theta* 等栅格规划器和平行往复基线可用；CVRP 数值任务的进程监督只支持 Linux，这一页在 Windows 上列出算法但不能提交，需要时走容器后端。没有 ROS 的电脑用内置的官方地图副本。
+- **数据**：`设置 → 数据` 里按需下载历史实验档案（约 50 MB，校验后解压，档案后端随之启动）。CVRPLIB 和真实田块在打开时从原始站点下载。运行库在应用数据目录，Linux 是 `~/.config/agri-route-workbench/runtime`，Windows 是 `%APPDATA%\agri-route-workbench\runtime`。模型 Key 在 `~/.config/urp-workbench/`。
+- **Gazebo 与 ROS**：安装版一律走容器后端，Linux 也一样，因为 ROS 桥接要在运行它的机器上编译和验收。`设置 → 桌面应用 → 仿真后端` 检测 Docker，开启后把工作台切到 `ghcr.io/peakpeng666/urp-sim` 容器，Fields2Cover 和 CVRP 数值任务也在里面。Windows 需要 Docker Desktop（WSL2 后端）。容器和内置后端共用同一持久运行库、档案库和模型连接，切换前先停止当前后端；Linux 容器使用当前用户的 UID/GID，保留密钥文件的 0600 权限。用源码运行的工作台仍然直接使用本机 ROS。
+- **更新**：应用每 6 小时检查仓库最新 Release，下载后在 `设置 → 桌面应用` 点「重启并更新」。deb 安装时更新需要系统授权。
+
+**构建**（Node 24、uv，当前操作系统对应一种安装包）：
+
+```bash
+npm ci --prefix src/frontend && npm run build --prefix src/frontend
+uv run --no-project --python 3.12 python src/desktop/scripts/stage_backend.py --target linux
+python3 src/desktop/test/backend_smoke.py --backend src/desktop/build/backend/linux --out /新的绝对路径
+npm ci --prefix src/desktop && npm run dist:linux --prefix src/desktop
 ```
 
-`src/frontend/requirements.lock` 属于独立的历史 BPP 数据转换环境；`runtime/cvrplib/requirements.lock` 和实验快照中的锁文件对应原实验。它们不参与上述两套 Python 环境安装。
+验收脚本都在 `src/desktop/test/`：`backend_smoke.py` 走一遍后端和全部只读接口，`pages_crawl.mjs` 打开每一页，`app_e2e.mjs` 驱动安装后的应用，`container_e2e.mjs` 用真实 Docker 走容器后端和 Gazebo。这台机器有 ROS，只在这里测会漏掉依赖 ROS 的问题；`electronuserland/builder:wine` 镜像是没有 ROS 的 Ubuntu 22.04，暂存的 Linux 后端和 Wine 下的 Windows 后端都可以放进去跑。Windows 安装包也在这个镜像里构建。Wine 的 PowerShell 是总返回成功的空壳，安装程序会误判应用正在运行，测试时要先删掉它；这个镜像没有中文字体，安装程序窗口里的中文显示成方块，应用界面有内置字体回退。
 
-## 启动与停止
+打 `v*` 标签后，`.github/workflows/desktop.yml` 在 Linux 和 Windows 上分别构建并运行后端与安装检查；同一次流程构建并验收两个镜像，验证匿名拉取及固定历史包，再校验安装器体积、版本、更新 SHA512 并生成 SHA256SUMS，通过后发布为最新 Release。Windows 代码签名读取仓库密钥 `WIN_CSC_LINK`、`WIN_CSC_KEY_PASSWORD`，没有证书时安装包照常生成，但 Windows 会提示未知发布者。历史档案用 `python3 src/desktop/scripts/build_data_pack.py` 生成，校验值写入 `src/lab/urp_lab/data/packs.json`，zip 上传到清单里 `base_url` 指向的 Release。
 
-```sh
-bash setup/run.sh lab-code --open
-curl -fsS http://127.0.0.1:4100/lab/api/health
-bash setup/run.sh lab-stop
-```
+## 智能体：从需求到经复核、可执行的方案（2026-11-05）
 
-`lab-code` 启动规划、Agent、验算和记录服务。`lab` / `lab-code` 每次先构建前端，包含锁文件、配置、工具与公共资产的变化；构建失败则停止启动。启动会增加一次构建耗时。在启动终端按 Ctrl+C 也会正常关闭。
+工作台首页是任务对话，地图、方案、合同、运行记录在右侧面板逐层打开。流程为：用自然语言描述需求 → 智能体整理为**任务合同**（每项标明来自原话、模型理解、人工修改或默认值，无法表达的要求单独列出）→ 你确认或修改 → 建立任务地图、推荐并按同一预算与种子对比算法 → **每个报告可行的方案都由独立检查器复核** → **每个通过复核的方案都在 MuJoCo 里物理预演一遍** → 生成报告，可在地图上查看并导出实验记录。任务本身不可行时（如单趟总需求超过车队容量），智能体给出修改建议并等待批准；送入 Gazebo 仿真同样需要批准。执行中可暂停、取消、重试，或接管某一步（改用地图编辑器中的地图、接入规划工作区的求解结果）；刷新或网关重启后可从当前阶段继续。
 
-完整 ROS 2 / Gazebo 安装使用 [DEPLOY.md](../DEPLOY.md)。已配置的机器运行 `bash setup/run.sh lab --open`，该命令还会准备仿真修补库。安装器部署后的命令为 `urp up`、`urp status`、`urp down`。
+物理预演用与 Gazebo 相同的方案、路径跟踪器和车辆参数，数秒完成，不启动 ROS，也不需要批准。规划最优的方案没有通过预演时，报告说明原因，送入 Gazebo 时改用通过预演的最好方案；一个都没通过时仍由你决定，批准框里写明原因。批准后智能体守着仿真跑完，对话里实时显示进度，报告写的是实际里程、工期和横向偏差；结束后自动关闭 Gazebo 会话，并把同一方案在 MuJoCo 重放，给出两个引擎的轨迹差。
 
-## Agent
+修改合同后，报告、比较与仿真只使用与本轮冻结输入一致的运行，历史方案及原复核证据仍随会话导出保留。仅改车队或容量时原地更新地图，当前结果重新求解；车宽改变会重新生成几何。合同要求仿真且已有通过复核的方案时，运行器会提出具体批准请求；拒绝后模型不会重复要求批准，也不会启动 Gazebo。用户主动重试失败或拒绝的仿真时会重新请求批准，成功启动过的仿真不因重试报告而再次启动。切换会话、取消和刷新时，过期响应不能覆盖当前会话或较新的状态。
 
-在启动终端配置 OpenAI 兼容接口：
+**模型**：在 `设置 → 模型与用量` 里选一家服务商，粘贴 API Key，就能用。目录来自公开的 models.dev，列出 DeepSeek、智谱 GLM、Kimi、通义千问、豆包、硅基流动、OpenRouter、OpenAI、Anthropic、Gemini 等 180 多家，只保留能调用工具的模型；也可以添加任何兼容 OpenAI 接口的自定义地址。第一次连接时自动选中该服务的主力模型，之后在输入框右下角切换。Key 只保存在 `~/.config/urp-workbench/credentials.json`（权限 600），不进入前端存储、日志、仓库或导出。没有连接时，新任务走**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核、物理预演与报告，可作为对照基线。已有的订阅端点（如智谱 Coding Plan）继续出现在已连接列表里，只有手动选中才会使用，条款提示随选项显示。架构、接口与评测见 [智能体说明](../src/lab/urp_lab/agent/README.md)。
 
-```sh
-export URP_LLM_API_KEY='<接口密钥>'
-export URP_LLM_MODEL='glm-5.3'
-# URP_LLM_BASE_URL 可指定兼容接口地址
-bash setup/run.sh lab-code --open
-```
+**任务理解评测**：`cd src/lab && .venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid --provider 服务商/模型` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
 
-默认接口为智谱，密钥也可用 `ZHIPU_API_KEY`。在工具栏「智能体」输入任务，例如“生成果园地图，比较 PyVRP 和 OR-Tools，各给 3 秒”。时间线可展开工具参数、求解和验算结果；运行编号链接到场景与方案对比。每次启动仿真需在面板批准。会话和用量随运行记录保存，密钥只从环境读取。
+**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --provider 服务商/模型 --out /新的绝对路径`。5 个情景使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
 
-配置密钥、启动网关和打开面板只读取状态；点击「发送」或「交给智能体」后才调用模型。停止在当前调用返回或超时后生效，迟到答复不再作为完成结果；`URP_LLM_TIMEOUT_S` 默认 120 秒。网关关闭会结束运行中和等待批准的轮次，重启后需重新提问。
+## 主流程：一句话到多车方案
 
-当前 Agent 回归使用脚本模型和回环替身；真实模型效果待接入后评估。工具、调用预算和会话恢复规则见 [接口契约 §9](../src/lab/CONTRACT.md)。
+1. **描述任务**：在顶部输入框写一句话，例如
+   > 在 200×120 米的果园里，3 台机器人从西南角车库出发，给 40 个点采样，每台最多装 10 个样本，避开两个池塘和一栋房子
 
-## 工作流程
+   输入时下方会实时显示解析结果：深色是从描述里读到的，浅色是默认值。按回车或点「生成地图」。也可以点「导入」载入 GeoJSON（按 `role` 属性识别边界 / 地块 / 障碍 / 任务点 / 车库，经纬度自动换算为米），或在「资料 → 真实田块」里选一块真实农田来生成。
+2. **调整地图**：地图工具栏或快捷键切换工具——选择 V、平移 H、任务点 T、障碍 O（可选池塘、建筑、温室、树、水渠、石块）、地块 P、车库 D。拖动点和多边形移动，拖动顶点改形，Delete 删除，⌘Z / ⇧⌘Z 撤销重做，F 适配全图。修改自动保存；示例场景第一次修改时会另存为「我的场景」。右侧「检查器」可设置车辆数、容量、车速、单趟或多趟往返、优化目标（总里程最短 / 尽快完成）和通行方式：「沿行间与地头」（生成的地图默认）只在作物行之间的通道里行驶、经地头和机耕路换行，地图上淡显各条通道，选中地块可看行距与通道宽度；「自由通行」可在地块内任意穿行，只避开障碍（导入的地图默认）。
+3. **推荐算法**：「推荐与求解」根据任务点数、需要的趟数、障碍占地、任务聚集度和目标给出排序与理由，并默认勾选三个值得对比的算法。
+4. **求解对比**：点「对比 N 个算法」或按 ⌘Enter。地图上每台车一种颜色，箭头标方向，点上的数字是访问顺序；图例可隐藏车辆或算法，虚线叠加同口径的其他方案。底部动画是规划预览。「方案对比」按任务类型列指标，只在相同输入、目标、单位、约束和预算中标记最佳值；内部代理成本单独保存在原始记录。
+5. **验算**：「验算」逐项检查每个任务点是否恰好服务一次、每趟载重、车辆数、路线是否避开障碍且不出场地、是否从车库出发并返回、里程复算是否一致，并给出每台车的任务顺序。每个方案都能导出 JSON / CSV / GeoJSON。
+6. **田间仿真**：方案对比表里点某个多车方案的「Gazebo」，或进入「仿真」选择当前方案及倍速。工作台生成包含实体作物行和障碍的 Gazebo Fortress 世界，各差速机器人经 ROS 2 跟踪冻结路线并完成停留。当前采用串行整段交通预约，等待计入实际用时；规划预览的并行工期不等于真实串行执行工期。结果分别显示到达、完成、里程与偏差，可打开原生 Gazebo / RViz2。完成后关闭会话，核对退出和清理，再导出实验记录。
 
-1. 选择农业模板、导入地图，或输入任务描述；在编辑器检查边界、障碍、任务、车辆和单位。模板参数会保存为草稿，生成后的手工修改可追踪。
-2. 查看推荐，选择算法、时间预算和种子，提交求解。方案对比同时展示进程状态、独立验算、地图净空和输入版本。
-3. 在算法实验中批量运行与比较；查看性能剖面、ECDF、收敛、显著性和历史记录。相同 ID 的相同导入重试返回原场景，内容变更返回冲突。
-4. 已适配的米制几何路径可送入仿真，结束后导出完整记录并回放。当前执行车辆为同构差速车，多车使用串行预约；Dubins / Reeds–Shepp 用于规划比较。
+其他模型在「检查器」中编辑：点到点支持起终点、运动模型、半径、净空和终点容差；角度显示为度、保存为弧度。完整 JSON 先由后端校验再应用，未支持的时间窗等约束会明确拒绝。保存冲突时草稿保留，可另存副本；修改输入后旧路线不再叠加，原算例 BKS 也不沿用。
 
-ROS 视图使用 Foxglove Bridge，Gazebo 场景使用 gzweb。执行时钟、覆盖验收、非理想地面和原生组件配置见 [CONTRACT](../src/lab/CONTRACT.md) 与 [历次仿真验收](2026-10-15/integration/REPORT.md)。
+「仿真回放」使用记录的源时间，只在连续观测内插值；缺流留空，显示里程为已观测下界。滑块指标对应当前时刻，终态验收证据另列。TB4 当前只适配全向 XY 路径，Dubins / Reeds–Shepp 结果可用于规划研究，执行入口会明确拒绝。点到点执行按声明终点容差独立验收。
 
-## 开发与测试
+本轮可重复示例：输入「60×40米果园，2台车，8个采样点，每车容量4，1个池塘」→ 选中车库图形，在检查器将 X 改为 3 → 保存并刷新 → 按每算法 2 s、种子 42 比较 → 在仿真工作区以 4× 执行当前 PyVRP 方案 → 完成后关闭 → 回到该任务的实验结果下载完整记录、打开仿真回放。默认生成器使用种子 42；具体输入、版本和实际结果以本轮[验收证据](2026-10-18/planning-integration/summary.json)为准，时间预算求解器不承诺逐位复现路线。
 
-```sh
-uv run --no-sync python tools/check_project.py
-python3 tools/fetch_ros_maps.py
-(cd src/lab && URP_ROS_MAPS="$PWD/../../.local-state/ros-maps" \
-  .venv/bin/python -m pytest -q --require-maps)
-```
+覆盖任务要求至少覆盖 90% 的内缩作业区，地头面积单列。2026-10-18 之前的 Fields2Cover 全流程记录可能缺少最后作业段的终点，页面标为「须重求解」，不再排序或执行；请重新求解，历史记录保留。新版不对受检几何抽稀，显示抽稀仅用于历史轨迹绘制。
 
-取图命令按 [ros-maps.json](ros-maps.json) 下载固定上游提交的六个 YAML/PGM 文件，并检查大小与 SHA256；已有文件先校验。默认写 `.local-state/ros-maps/`，可用 `--destination` 指定目录。
+## CVRP 数值任务
 
-不安装地图时，直接在 `src/lab` 运行 `.venv/bin/python -m pytest -q`；仅依赖官方地图的用例跳过。指定 `URP_ROS_MAPS` 或 `--require-maps` 后，缺少必需地图会失败；损坏的已安装地图始终按错误处理。
+底栏或命令面板打开「CVRP 数值任务」（`#/jobs`），载入六点工程示例 → 运行并独立验算 → 查看路线、状态与成本 → 导出记录。刷新或重启后按任务 ID 恢复。其坐标未经米制标定，路线是访问顺序，不送入 Gazebo；工程任务不自动计入正式科研基线。档案 / Jobs 写入 `.local-state/research.sqlite3`，首次由既有档案库安全备份初始化，原始 `data/backend/` 库保留。实验档案页 `#/jobs?tab=archives` 与首页算法实验面板列出已导入的科研包。2026-10-16 补做的 CVRPLIB 基线分成「5 秒端到端」和「1 秒搜索循环」两行，两套计时各自保留。
 
-启动工作台后，运行完整 HTTP 小任务：
+## 工作区
 
-```sh
-python3 tools/smoke_workbench.py
-```
+工作台是任务对话加分层面板：左侧任务栏，中间对话，右侧面板按需打开，点一下进一层，Esc 退回一层，层级写进地址，刷新或分享链接回到同一层。
 
-它会实际生成任务，运行 PyVRP 与 savings，等待独立验算，核对 JSON 导出并读取比较结果。输出保存在新的 `.local-state/smoke/<时间>/` 目录。[本轮报告](2026-10-30/engineering/REPORT.md) 记录当前检查；CI 将全量 Lab、农业构建器和工程检查作为回归入口。
-
-从仓库根执行已有的双服务验收入口，可自行启动并关闭独立网关与档案后端：
-
-```sh
-python3 tools/smoke_dual_service.py \
-  --output "$PWD/.local-state/dual-service-$(date -u +%Y%m%dT%H%M%SZ)-$$" \
-  --port 4186 --archive-port 4187
-```
-
-先按上文准备根、Lab 两套 Python 环境与前端依赖，确保指定端口空闲，输出目录必须是新目录。脚本为失败注入与健康流程分别设置绝对 `URP_API_DB` 和 `URP_LAB_RUNTIME`，在输出目录内新建测试库；不要改为历史库或个人运行库。它检查坏解释器的明确失败、真实 Jobs、工作台求解/验算/导出、关闭与端口释放，并比较检出的冻结数据库前后字节。未检出的原始库记为 `missing`，不当作已验证；这是 HTTP 与生命周期验收，浏览器、容器及 ROS 结果单独记录。
-
-## 数据与恢复
-
-| 内容 | 位置 |
+| 位置 | 用途 |
 |---|---|
-| Lab 运行与 Agent 会话 | `src/lab/runtime/lab.sqlite3` |
-| 用户场景 | `src/lab/runtime/scenarios/` |
-| 田间仿真与日志 | `src/lab/runtime/fieldsim/<会话>/` |
-| TurtleBot4 会话 | `src/lab/runtime/sim/<会话>/` |
-| 档案 / Jobs 可写库 | `.local-state/research.sqlite3` |
-| 新研究 CLI 记录 | `experiments/runs/replay/`、`experiments/runs/cvrplib-run-registry/` |
-| 冻结协议、结果与失败 | `protocol/`、`experiments/`，按原版本保留 |
+| 新任务 | 用一句话描述任务；合同确认、工具调用、批准、报告都在对话里，右侧逐层看地图、方案、车辆、任务点、运行记录 |
+| 算法库 | 28 个算法按问题分类，按当前地图给出推荐排序。点进去是适用条件、参数、实现版本、文献、这台机器上的运行记录与同题对比，还可以在任意地图上和其他算法同台试跑 |
+| 仿真 | 田间多车仿真控制与结果；**ROS 视图**、**Gazebo 场景**、**遥测**；**物理预演**（MuJoCo 记录与双引擎对比）；TurtleBot4 + Nav2 单机仿真；回放 |
+| 地图 | 任务地图与资产库；从一句话建图，或打开规划工作面：地图编辑、推荐与求解、方案对比、验算、检查器 |
+| 实验 | 研究课题：场景 × 算法 × 时间预算 × 随机种子批量运行；性能剖面、Friedman / Nemenyi 临界差图、Wilcoxon–Holm 两两比较、收敛曲线、实例空间，导出 LaTeX 表；CVRP 数值任务；运行记录 |
+| 资料 | CVRPLIB 全部 732 个算例（含最优已知解）、Fields2Benchmark 350 块真实农田、70 篇核心文献（BibTeX）、BPP 历史结果 |
+| 设置 | 外观、模型与用量、能力、工具与闸门、智能体评测、服务、日志 |
 
-`URP_LAB_RUNTIME` 可指定独立运行目录。`GET /lab/api/runs/<run_id>/record` 下载输入、版本、原始结果、仿真及完整性字段。新运行目录已定点忽略；冻结实验目录继续受 Git 跟踪。
+需要同时看多个面板时，按右上角的网格按钮进入「自由布局」：每个面板都能拖动、合并为标签、拆分或浮动，布局按工作区记住。⌘K 打开命令面板，可搜索任务、地图、面板和操作；对话框里输入 `/` 调出命令。后台运行的求解、课题、物理运行和仿真显示在任务栏底部。
 
-旧平台使用 [2026-10-18 Release](https://github.com/peakpeng666/URP/releases/tag/platform-snapshot-20261018-ddb5113e)，清单见 [platform-snapshot.json](platform-snapshot.json)。Linux x86_64、本地 Docker 和 Python 3 环境可运行：
+## 资产库与科研图表
+
+- **资产库**（顶栏「资产库」或 `#/assets`）：拖入文件或文件夹导入。地图要先在预览里确认坐标（图片要先标定）才能用来建任务地图；车辆分“显示 / 规划 / 仿真”三级，检查器逐项列出缺什么。资产锁定后修改会生成新版本，被场景或运行记录引用时不能删除。导入不执行任何脚本。
+- **资产进入规划**：资产检查器「用此地图新建任务地图」按车体半径留出净空，生成的任务地图带底图并记录地图 / 车辆的资产版本；任务规划 → 检查器 → 车队 →「车辆资产」可换车型。只有工作台仿真真正能生成的车型才能在 Gazebo 执行，否则执行前就会说明缺项。
+- **实验结果 / 仿真回放 / 决策记录**：完成率（写明分母）、里程、时间、趟数、违规、跟踪误差、多车避碰状态；仿真轨迹按时间轴回放，可定位异常；每次运行保存提交时的推荐快照。「导出实验记录」把场景、资产版本、决策、运行与仿真绑在一个 JSON 里。
+- **科研图表**：按 Elsevier / IEEE / Springer / 学位论文版式输出 21 种图（矢量 PDF / EPS / SVG，600 dpi PNG / TIFF），中英文可切换，「论文图包」附源数据 CSV、图注和来源清单。图表使用对应实验的记录数据。
+
+验收记录见 [2026-10-16/资产库与科研图表验收.md](2026-10-16/资产库与科研图表验收.md)，需要后端配合的接口见 [2026-10-16/后端对接需求.md](2026-10-16/后端对接需求.md)。
+
+## 算法库一览
+
+侧栏「算法库」按问题分类，选一张地图后按推荐排序，并显示学习型选择器的状态。点进一个算法可以看适用条件、参数范围、实现版本、文献，以及它在这台机器上的记录：运行次数、通过检查的次数、耗时、同题对比（同一实例和时间预算下的最好次数与平均差距）、物理预演结果。页面底部可以在任意地图上试跑，也可以选几个算法同台对比，结果点进去就是规划工作面。
+
+- **多车任务**：PyVRP 固定车队、OR-Tools 车队调度（可做均衡分工）、节约算法、扫描算法、先聚类后排程；距离按绕开障碍的最短路计算。
+- **车辆路径（CVRP）**：PyVRP、OR-Tools、Clarke–Wright 节约、最近邻；CVRPLIB 算例自动给出与最优已知解的差距。
+- **转弯约束路网**：项目的转弯模式分层 DP（精确）、原图状态精确搜索、方向松弛下界，以及 PyVRP / OR-Tools + 分层补全。
+- **覆盖作业**：Fields2Cover 全流程（地头、分解、作业行方向、Dubins / Reeds–Shepp 转弯）及往复、蛇形变体；各适配器分别记录支持范围、几何验算和仿真结果。
+- **点到点运动规划**：A*、Dijkstra、Theta*，以及 OMPL 的 RRT-Connect、RRT*、Informed RRT*、BIT*、PRM*、FMT*、KPIECE，支持全向、Dubins、Reeds–Shepp 运动模型。
+
+## 仿真
+
+**物理预演与引擎对比**（MuJoCo，`仿真 → 物理预演`）：不需要 ROS，任何通过检查的多车方案都能执行，智能体也会自动做。与 Gazebo 共用方案、路径跟踪器、任务队列和车辆参数，物理引擎和接触模型不同，因此已结束的 Gazebo 记录可以点「对比」按冻结方案重放，得到轨迹差、同时刻位置差和里程、工期差。这是两个引擎之间的差距，不是实车误差。目前只覆盖理想配置；非理想执行、各向异性轮胎和 `rigid/5` 以前的记录会明确提示不支持。验收结果见[集成报告](2026-10-15/integration/REPORT.md)最上方。
+
+**田间多车仿真**（多车任务方案）：世界坐标就是任务地图坐标（米），规划路线、ROS 视图和 Gazebo 画面对齐。每车有独立停车位；当前采用保守交通预约，一次只执行一车的完整任务，完成后回自己的车位，再放行下一车。**车间物理碰撞已开启**，非地面接触或距离保护触发时全部停车并记失败；成功还需通过整段足迹、同步车间距离和接触消息完整性检查。当前为串行执行，排队时间计入实际完成用时。方案按「沿行间与地头」规划时作物行是实体，车辆在急弯处原地转向；「自由通行」里作物行只做显示。原生 Gazebo / RViz2 窗口随时可在面板打开或关闭。
+
+**TurtleBot4 单机仿真**：只有仿真地图坐标（米、与 Gazebo 世界对齐）的方案可以送进去：迷宫、仓库通道、车间空地和点到点规划。「沿规划路径行驶」由 Nav2 控制器跟踪规划出的路径；「逐点导航」按任务顺序让 Nav2 自己规划每一段。CVRPLIB 算例只在二维中比较。
+
+**可重复的短演示**：在任务规划的场景库选「官方迷宫 · 双点巡检闭环」，用推荐的分层 DP 求解并确认验算通过；在 TurtleBot4 仿真中选该结果、AMCL 定位，启动并等待就绪，再执行「沿规划路径行驶」。结果应为 2/2、轨迹及地图检查通过；导出实验 JSON 后关闭仿真。可在同一会话再试「逐点导航」，导出会明确记录 Nav2 重规划。两种模式的当前控制器均为已安装的 RPP，会话保存参数和哈希；仓库货架只作为农业行间通道代理。
+
+当前田间执行模型要求规划半径至少 0.4883 m、最多 15 台实际执行车辆，且车库附近有足够安全停车空间；各布局还需通过停车空间检查。后端核对车型资产版本、哈希、足迹、速度与容量；目前只支持内置田间差速模型，未适配的导入车型返回明确错误。规划或实际轨迹检查失败、取消都会保留记录；停留作业完成后才进入下一任务。实际里程/用时包含往返停车接驳、转向和排队，规划值从车库算起。
+
+**物理模型与指标定义**：当前田间模型为 `urp.field-diffdrive.rigid/6`，采用球面滚动参考的差速刚体（25 kg、车体 0.8×0.56 m、含轮总宽 0.96 m），圆柱接触保留为滑移诊断；运行 DART 物理引擎，默认驱动为理想关节速度伺服；可选有界力矩模式见下文。记录源仿真时间、3D 姿态、轮式里程计漂移、质量/惯量/摩擦及实际加载库哈希。直行、制动和转向测试用于模型对照；真实轮胎与松软土壤参数尚待标定。真值定位跟踪和轮式里程计误差分别评价。默认无滑移参考及仅定位扰动会话要求首姿态对齐后全轨迹位置偏差 ≤0.10 m、航向偏差 ≤0.03 rad、采样间隔 ≤0.25 s；到点完成和模型一致性分别验收，任一偏差超限即判定对应检查失败。`energy` 表示后验纵向运动学能耗代理；`urp.field-energy.post_hoc/3` 使用固定 0.2 s 平滑窗口，已修复停车尾段改变估值的问题；旧版本估值不可直接混合排名，新版本仍需物理校准才能解释为实际能效。任务完成定义为到达通道停车位并停留；采样和喷施质量另行评价。规划时间采用匀速估计，另提供含加速与转向的解析参考；实际工期以执行记录为准。旧绑定车型需在检查器重新选择当前内置车型后重新求解，历史结果保留原版本。
+
+**已知地面图规划**：完整场景 JSON 可声明 `ground.zones`（1–8 个矩形、摩擦系数、知识来源标签）。求解参数选择「风险加权与限速」后，规划按声明半径考虑低附着暴露与绕行，结果分别保留几何米、加权当量米和权重；后者是工程偏好，不是失败概率。限速剖面按含停车接驳的完整路径生成，并由真值线段独立验收。只调整定位时保留场景地面；显式执行地面设置覆盖场景地图，两者及差异均导出。仅支持自由通行、总里程目标、无曲率约束的规划；旧 `ground-risk/1` 路线须重新求解后执行，历史证据保留。
+
+**已实测的地面风险短演示**：顶部「导入」载入 [已知低附着场景](2026-10-18/ground-risk-audit/demo-scene.json) → 只选 PyVRP，时间预算 1 s、种子 42、策略「风险加权与限速」、权重 1 → 求解并查看「验算」 → 在「方案对比」点击 Gazebo。默认继承场景摩擦分区，使用真值定位参考；应看到真实停留 2/2、运行核验通过。完成后「关闭仿真」，在「实验结果」核对清理 PASS 并「导出实验记录」，再回放起点至终点。本次实际 74.33 m / 148.31 s；轮式里程计仍有约 1.74 m 发散，不能把真值控制成功当作滑移消失。实际地面可在 Gazebo 画面及导出字段核对；二维编辑器尚无专用地面分区编辑图层。
+
+**有限驱动力实验**：执行 API 可传 `physics: {"actuator_mode":"torque_limited","wheel_torque_limit_nm":8,"wheel_torque_kp":4}`，用每车独立的轮速目标驱动 Gazebo force PID，PID 输出与关节 effort 双重限幅。首次使用该模式会用已安装的 Gazebo 开发库构建项目内关节发布插件（官方 6.18 源码的 50 Hz 限频回补，无 sudo、无联网、无系统库替换）；缺编译依赖时明确失败。真实双轮连续关节角形成里程计，缺数据不算就绪，反馈或命令过期发布零目标制动。它是未标定的力矩受限刚体代理，没有电机电流、转速—力矩曲线或充气轮胎模型；`torque_traces` 为目标/实测轮速，不能当实测力矩。低力矩可能因跟踪或真实停留不合格失败。复验：在 `src/lab` 执行 `.venv/bin/python e2e/torque_mission.py --out /一个新的绝对路径`；地面策略对照用 `e2e/risk_planning.py --out /另一个新的绝对路径`。务必串行执行，当前验收范围见[集成报告](2026-10-15/integration/REPORT.md)最上方。
+
+**非理想执行**：在「执行条件」选择地面与定位预设。地面采用共面的摩擦分区（μ≈0.22、0.12、0.05），基础地面剔除对应区域，无抬高台阶或重叠平面；接触力由 DART 求解，轮式里程计由轮角积分。μ 是合成敏感性参数，**无土壤或轮胎标定依据**，不表示沉陷、压实或剪切强度。定位观测包含偏置、随机游走、噪声、延迟与失锁；三状态固定滞后 EKF 在观测的测量时刻更新后重放轮式输入，估计姿态实际进入控制器。已知出生姿态为初始先验；后续真值用于合成观测与独立评价，不直接替代估计控制。每场按原始观测、实际轮式输入重建估计，并与每个控制周期使用的姿态比对。
+
+在线保护只用控制器侧信号：新息持续异常时降速，恢复必须有连续的新鲜低新息证据；中间带、陈旧数据与失锁保持会重置连续证据，进入降速 30 s 未恢复即失败（保持时间不豁免）；它不能区分定位偏置与滑移，不能当作轮胎打滑检测器。观测断流超过 15 s 时保持，恢复后继续；保持期间不累计任务停留。定位单因素仍必须通过无滑移一致性门禁；显式物理扰动保留漂移测量，改查冻结模型、数据和执行证据，不能豁免任务检查。控制器到点与真值停留分别判定：非理想执行在轮速连续低于阈值 1 s 后才累计停留，独立检查实际车体平移/角速度及任务半径，不把轮速归零当作车体静止。详见 [接口契约](../src/lab/CONTRACT.md) §7。
+
+**已实测的非理想短演示**：顶部「导入」载入 [demo-scene.json](2026-10-18/nonideal-audit/demo-scene.json) → 以每算法 2 s、种子 42 求解并选中 PyVRP → 确认验算通过 → 仿真工作区展开「执行条件」，选择「低附着斑块 μ≈0.22」与「合成低偏置：σ2 cm」，观测种子 72、4× → 启动当前方案。应显示控制器到点与真值停留均 3/3，观测到控制重建通过；打开 Gazebo 场景核对摩擦区域及实际车辆。完成后「关闭仿真」，在实验结果核对清理 PASS、下载完整实验记录，在地图上回放起点至终点。当前本机结果为 48.91 m / 87.47 s；这些是一次运行测量，不承诺不同机器、调度或时间预算求解逐位相同。
+
+控制器使用实际控制姿态（参考模式为真值、非理想定位为估计）的源时间检查输入时效：与控制时间相差超过 0.10 s 时只发零指令，待新数据后继续，等待计入真实用时；逐周期 `pose_age_s` 可在实验记录查阅。时钟只取最新源时间，实验遥测使用配套的可靠队列；最终仍以完整轨迹检查为准，不把高倍速或窗口流畅视作物理验收通过。
+
+默认物理参数可查 `GET /lab/api/fieldsim/physics`（含非理想执行预设与 provenance 声明）。复验物理协议：在 `src/lab` 执行 `.venv/bin/python e2e/physics_backend.py --out /一个新的绝对路径 --repeats 3`；更高速度及反向转弯用 `--protocol holdout --cases step4ms,step1ms,loaded`。非理想独立验收：`.venv/bin/python e2e/nonideal_audit.py --out /一个新的绝对路径`；`--seed 73` 可复验另一观测种子。包含相同几何的摩擦对照、定位单因素、组合扰动、失锁恢复及严重误差，不把压力场景失败改成成功。控制器到点数与独立真值停留通过数分别显示；估计到点不等于真实作业合格。矩阵先写 protocol 再执行，迭代修订及首次失败全部保留，不能把工程调试说成独立预注册研究。每场保存原始日志和结构化结果，勿与其他仿真验收脚本同时运行。当前证据见 [非理想独立审计](2026-10-18/nonideal-audit/summary.json)；旧 `nonideal_backend.py` 及原数据保留为历史探索复跑。田间、TB4 和物理探针共享内核互斥锁，并发启动在建立 ROS 订阅前明确拒绝；正常退出或进程故障后自动释放，不手动删除锁文件。
+
+**本次后端短演示**：描述「60×40米果园，2台车，8个采样点，每车容量4，1个池塘」→ 对比三算法 → 验算 → PyVRP 的 Gazebo 按钮 → 等两车完成并停止。每车应回独立车位，状态依次出现“等待 / 行驶 / 完成”。固定种子的接口复验：在 `src/lab` 执行 `.venv/bin/python e2e/field_backend.py --out /一个尚不存在的绝对路径`，覆盖成功、取消、故障注入和恢复；使用隔离数据、端口及 ROS 域，不占用正式数据目录。结果和当前限制见 [集成报告](2026-10-15/integration/REPORT.md)。
+
+Gazebo 场景中「已连接」表示通信握手完成；资源计数达到完成且没有失败提示后再检查场景内容。失败/超时会显示场景不完整，可点「重新连接」。本地 STL 直接通过 Gazebo 资源通道加载；固定 gzweb 3.0.2 的修复由 `npm ci` 自动应用并校验原始及补丁后哈希，升级依赖时必须重新审查。
+
+完整服务端记录：`GET /lab/api/runs/<run_id>/record`，包含求解输入快照、资产版本、推荐、各次仿真、控制误差、作业时长和关闭报告；`integrity.sha256` 校验 `record` 对象内容，不是数字签名。页面“导出实验记录”直接下载该端点的原始 JSON，保留完整 envelope 与数字表示，不在浏览器中重新组装。科研图表使用运行保存的输入，后续编辑地图不会改写历史图表。
+
+两种仿真不同时运行。ROS 视图和 Gazebo 场景依赖的 Foxglove Bridge 用 `bash src/lab/ros/native/install-ros-extras.sh` 免 sudo 安装（`apt download` 官方 .deb 后解包到 `setup/2026-10-15/deployment/runtime/ros-extras/`，不改 `/opt/ros`）；Gazebo 的 WebSocket 服务是 Fortress 自带的 ign-launch 插件。
+
+## 数据与排错
+
+- 新部署使用 `setup/cyclonedds.xml` 和回环单播，不需要修改宿主机组播路由。旧本机环境的组播修复记录保留在历史验收报告中。
+- 运行记录：`src/lab/runtime/lab.sqlite3`；我的场景：`src/lab/runtime/scenarios/`；田间仿真（世界、计划、结果、各组件日志）：`src/lab/runtime/fieldsim/<会话>/`；TurtleBot4 仿真日志：`src/lab/runtime/sim/<会话>/`；资料缓存：`src/lab/runtime/library/`。
+- 依赖：田间求解器用 `src/lab/.venv`，档案 / CVRP 数值任务用根目录 `.venv`（均为 uv 锁定的 Python 3.12）；ROS 用系统 Python 3.10，互不替换。`lab-setup` 同时准备两个求解环境。仿真修补库被清理后，入口会自动按原命令重建（`src/lab/ros/native/rebuild-ros-overlays.sh`），产物与验收时逐字节一致。
+- `parameter_bridge` 退出竞态已用源码修复：等待 ROS 信号线程完成日志关闭后正常析构，不再使用 `_exit` 垫片。源码修复自动构建并校验指纹，详见 [集成报告](2026-10-15/integration/REPORT.md)；`URP_BRIDGE_FIX=0`、`URP_TF_FIX=0`、`URP_GUI_FIX=0` 可分别关闭对应修补做对照。
+- 桥接源码修复：`src/lab/ros/native/bridge/`，本地产物：`src/lab/runtime/native/bridge/`；依赖或源码指纹改变会明确拒绝，不能静默回退。目录说明与缓存维护见 [文档目录](../docs/README.md)。
+- 历史 BPP 数据未恢复时，「#/bpp」页面显示无历史数据。
+
+开发接口见 [CONTRACT](../src/lab/CONTRACT.md)；部署与验收记录见 [集成报告](2026-10-15/integration/REPORT.md)、[部署报告](2026-10-15/deployment/REPORT.md)。
+
+## 本地与 GitHub 的保存分工、数据与恢复（2026-11-06）
+
+本地保留 ROS/Gazebo、仿真资产、密钥、运行环境、当前状态和大体积原始数据；GitHub 保存源码、文档、依赖锁、可复现配置、实验摘要、身份与恢复索引。现有冻结证据和历史失败保持原件，沿用[资产与副本登记](../docs/assets/README.md)。运行需要的源码和安装包是本地工作副本。
+
+`URP_DATA_HOME=/绝对路径` 将新运行集中在 `runtime/` 与 `archive/research.sqlite3`；不设置时，源码版兼容原来的 `src/lab/runtime/` 和 `.local-state/research.sqlite3`。`URP_LAB_RUNTIME`、`URP_API_DB` 可单独覆盖。桌面默认仍为应用数据目录，也可在启动前设置 `URP_DATA_HOME`；内置和容器挂载同一位置，并避免两个网关同时持有运行库。`dataset.json` 标识数据集；改变路径不改变记录的 ID、种子、失败、单位与来源。历史绝对路径是来源记录，不自动改写。
+
+桌面「设置 → 数据」可备份，或从备份恢复到新目录后切换数据位置。CLI 在 `src/lab` 下使用：
 
 ```sh
+# 先有序停止所有使用这份数据的内置、源码及容器后端。
+.venv/bin/python -m urp_lab data export --runtime /原目录/runtime --archive-db /原目录/archive/research.sqlite3 --out /备份位置/urp-data.zip
+.venv/bin/python -m urp_lab data verify --bundle /备份位置/urp-data.zip --sha256 <导出回执中的SHA256>
+.venv/bin/python -m urp_lab data restore --bundle /备份位置/urp-data.zip --sha256 <SHA256> --dest /尚不存在的新数据目录
+```
+
+档案库不存在时省去 `--archive-db`。数据包使用 Zip64；SQLite 通过备份 API 纳入 WAL 内容，校验清单、SHA256、结构和表行数后才接受恢复。运行库被执行服务占用、文件改写、路径越界、重复/大小写冲突、符号链接、凭据和损坏包会明确拒绝。原目录不被覆盖。原始包保留本地或私有大容量存储，不会自动上传；回执可以随代码保存。编译的 `runtime/native/`、已下载的调试工具及锁/SQLite sidecar 不随数据包搬迁，环境在目标机器重建。
+
+仅剩公开会话 JSON 时，可用 `data recover --runtime /新数据目录/runtime --source /会话.json`（`--source` 可多次指定）补回查阅索引。带完整性信封的导出先验证摘要；原 JSON 逐字节保存。缺少模型上下文、轨迹或附件的会话标为只读，拒绝继续/重试/编辑合同；不会生成虚假的成功、轨迹或上下文，也不覆盖已有会话、场景和运行。完整运行库备份则保留真实上下文。
+
+研究基准根可设 `URP_DATA_ROOT`（包含 `research/`）；可读资产根可设 `URP_FUEL_CACHE`、`URP_ROS_SHARE`、`URP_GAZEBO_SHARE`，地图可设 `URP_ROS_MAPS`，固定包镜像源可设 `URP_PACKS_BASE_URL`。这些参数调整数据入口，不能代替安装环境，也不表示所有冻结实验脚本都支持任意重排。容器独立部署默认仍使用命名卷；已有旧卷先备份、校验、恢复到新目录，再改为桌面绑定目录，勿用 `down -v` 做同步。
+
+本机本轮把原运行库复制恢复到 `.local-state/workbench-data/`，并从 25 份完整性信封、6 份会话快照补回 31 个只读会话与 75 条求解记录。原默认运行库和一致备份均保留。此前 `/tmp/claude-1000` 临时目录已消失，其中约 1.72 GB 的完整运行原始文件及临时验收脚本没有完整副本，不能把上述部分恢复称为全量找回。[逐项证据、哈希与验收](2026-10-15/integration/REPORT.md)。
+
+## 云端 Agent 接续
+
+接续开发先读根目录 [AGENTS.md](../AGENTS.md)。普通工程验证使用根 uv 锁文件与前端 npm 锁文件，`tools/check_project.py` 汇集 16 项门禁；无 ROS/Gazebo 的环境验证代码与数值结果，仿真执行另行测试。GitHub CI 运行全量 Lab、农业构建器、桌面、工程、部署和 Windows 启动契约；普通代码回归不启动 ROS。需要田间全量测试时在 `src/lab` 运行 `uv sync --locked --inexact`、`.venv/bin/python -m pytest -q`；Fields2Cover 与现场资源按实际安装情况检查。运行目录和模型缓存不进入 Git 历史；完整平台附件的下载与验证见下文。
+
+## 历史平台复现（2026-10-18）
+
+需要重跑旧平台及其历史数据时，再使用本节的冻结镜像。日常安装与更新使用 [统一部署入口](../DEPLOY.md)。
+
+支持 **Linux x86_64 + 可用的本地 Docker Engine + Python 3**，该次验收的 Docker Engine 为 29.9.0。发布包封装本机 Ubuntu 22.04 用户空间、ROS 2 Humble / Gazebo Fortress、固定版本 Python/Node、求解环境与编译库、Fuel 模型、自建场景和运行数据库；补充包还包含旧数值基线的独立环境、JDK、原始批次及历史库。宿主机不必预装 ROS。为源码、镜像、下载缓存与实验留出至少 45 GB 空间。Docker Engine 需预先安装并能运行 `docker info`；入口不自动提权、不改系统 Python 或驱动。
+
+```bash
+git clone https://github.com/peakpeng666/URP.git
+cd URP
 bash setup/run.sh reproduce --acceptance
-bash setup/run.sh reproduce status
-bash setup/run.sh reproduce stop
 ```
 
-它下载并校验约 7.2 GB 的固定镜像与补充包。单独恢复资料时，先下载、验证，再解包到新目录：
+入口从同仓库 Release 下载约 7.2 GB 的镜像分卷及补充包，用 **仓库清单固定的 SHA256 和镜像 ID** 校验后载入、创建独立数据卷，并在新容器首次启动前恢复旧基线，再启动 **http://127.0.0.1:4100/**。镜像 ID 固定基底，补充包 SHA256 固定额外的环境和历史文件；重复启动会核对恢复标记，保留已有数据。`--acceptance` 进一步实际运行路径求解、独立验算、Gazebo 跟踪及网页桥接（双车、8 个任务，free/web 两例）；首次建议保留。重复启动用 `bash setup/run.sh reproduce`。如果同机原生平台已占用 4100，先正常关闭，入口不会抢占或终止未知进程。
+
+```bash
+bash setup/run.sh reproduce status
+bash setup/run.sh reproduce logs
+bash setup/run.sh reproduce stop
+bash setup/run.sh reproduce
+```
+
+关闭会等待会话清理并报告真实退出码。数据库、资产及新轨迹保存在 `urp-platform-runtime` / `urp-platform-state` Docker 命名卷；停止与重启不删除它们。更换镜像版本时用新的 `--name` 创建独立部署，旧容器及数据保留。`docker cp urp-platform:/home/peakpeng/Desktop/URP/src/lab/runtime ./urp-runtime-export` 可完整导出运行数据；导出前先停止。验收原始日志在容器 `.local-state/container-acceptance-*`，也可用 `docker cp` 导出。
+
+默认使用浏览器的二维视图、ROS 视图和 Gazebo 场景，物理引擎仍是真实 Gazebo。Linux X11 桌面如需原生 RViz2/Gazebo 窗口，在**首次创建**时加 `--gui`，并提供当前有效的 `DISPLAY` / `XAUTHORITY`；仅给容器传入本次显示授权，不执行 `xhost +`。Wayland/远程无桌面机器优先使用网页视图。
+
+组播配置只写容器独立网络命名空间，临时初始化完成后以非 root 账户运行；仅向宿主机 `127.0.0.1` 发布 4100、8765、9002。不会修改宿主机组播路由。镜像内保持原绝对路径，使既有 Python editable 安装和原生库指纹一致；宿主机项目可放任意目录。临时目录使用独立内存文件系统，每次重启重新生成显示授权与临时进程文件。网络中断后支持断点续传与重试，完整分卷按 SHA256 验证；也可以先 `reproduce download`，把下载目录带到另一台机器后用 `--assets-dir` 离线载入。
+
+**复现范围**：软件版本、模型、场景、配置和已保存结果固定；镜像基于 `ddb5113e641ba63846431d4e3114efaf85f2fc89`，后续源码更新不会自动混入旧镜像。硬件、内核、调度和基于时间预算的求解器仍可造成新运行数值差异，新运行的数值结果可能因机器不同而变化。ARM/macOS/Windows 原生环境未验收，可先准备符合条件的 Linux 虚拟机。所有验收范围与结果见[集成报告](2026-10-15/integration/REPORT.md)。
+
+**已知容器限制**：田间双车的正常、取消、故障及重启用例、网页桥接和 TB4 迷宫 2/2 已实跑。仓库场景的真值定位模式在容器内出现 TF 超前并中止，本机原生对照完成 5/5；原生 GUI 在容器内还出现渲染错误，不计为已验收。默认网页流程可用；上述问题详见报告的失败记录。容器默认用软件渲染，没有打包宿主机显卡驱动或保证 GPU 加速。
+
+## 历史快照文件下载与恢复
+
+[2026-10-18 平台快照](https://github.com/peakpeng666/URP/releases/tag/platform-snapshot-20261018-ddb5113e)以 `ddb5113e` 为仿真源码基线。对应源码版本和附件由仓库清单固定；Release 附件包含运行数据库、自建场景、资产库、完整逐点轨迹及历轮失败日志、Fuel 缓存、Fields2Cover wheel、原生编译产物、Python 环境及解释器、前端依赖与构建、ROS/Gazebo 已安装包文件和版本清单。附件不随普通 `git clone` 自动下载。
+
+如需单独研究和还原原始文件（不是启动容器），在安装有 Python 3.10+ 和 `zstd` 的机器执行以下命令。下载目录可断点续用，解包目标目录必须尚不存在：
 
 ```sh
-bash setup/run.sh reproduce download --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets
-python3 tools/platform_snapshot.py verify --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets
-python3 tools/platform_snapshot.py restore --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets --destination ../urp-snapshot-restored
+bash setup/run.sh reproduce download --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets-20261018
+python3 tools/platform_snapshot.py verify --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets-20261018
+python3 tools/platform_snapshot.py restore --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets-20261018 --destination ../urp-snapshot-restored-20261018
 ```
 
-旧镜像基于 `ddb5113e`；使用命名卷保存数据，停止不会删除。原生、容器及 Windows/WSL 的执行结果与已知故障见 [历史验收记录](2026-10-15/integration/REPORT.md)。
+校验清单同时保存在 [platform-snapshot.json](platform-snapshot.json)。`snapshot.json` 列出每个分包的 SHA256 和体积；`files.jsonl.zst` 给出逐文件原始/发布哈希、数据库备份与脱敏记录；`exclusions.json` 列出浏览器配置、认证文件和临时文件等排除项。下载后应先与仓库清单核对，不能只相信同一下载目录里未经核实的校验文件。
+
+恢复只写新目录：`project/` 对应原项目相对路径，`host/` 为隔离的 ROS/Gazebo 安装文件，`python/` 为解释器。可在 `restore` 后加 `--components project-runtime project-local-state fuel-cache compiled-and-wheels` 只解包所需数据。查看完成后，将所需运行目录迁入一个**全新源码检出**；保留原路径关系，不覆盖正在使用的数据库。主运行库通过 SQLite 备份接口合并已提交 WAL，再检查完整性；发布副本移除认证字段，数值与失败状态保留。2026-10-26 起，已归档的离线原始副本从下方保全索引恢复；当前运行库和资产仍在本机。清单分别记录原始文件和脱敏文件的哈希。
+
+环境快照对应 Ubuntu 22.04 x86_64、ROS 2 Humble、Gazebo Fortress，不含操作系统、驱动和个人登录信息。`host/` 不会自动安装到 `/usr` 或 `/opt/ros`；系统依赖及精确版本见解包后的 `metadata/ros-gazebo-packages.json`、`metadata/system-dependencies.json`。虚拟环境的部分启动脚本、editable 路径及本机 `.so` 受路径/ABI 限制；换路径或平台时优先用现有锁文件重建，再按 wheel 指纹补齐 Fields2Cover。新机器恢复后需重新运行仿真验收。
+
+第三方许可随包保留。Fuel 有 13 个缓存目录（含名称编码别名），逐模型作者和许可见 `metadata/fuel-licenses.json`；其中有非商业、禁止衍生分发条款，不可视为任意商用资产。上游原包及本地技术性格式/资源 URI 规范化对照一并保存。Fields2Cover wheel 的既有构建来源缺口仍如其 manifest 所述。
+
+## 本地工作保全与实验数据恢复（2026-10-26）
+
+本次按用户要求**只推送独立分支，不合并 main**。桌面工作区保存在 `codex/preserve-20261026-local`；其余 7 个工作区的精确提交和来源见 [恢复索引](2026-10-26/local-preservation/recovery-index.json)。这些是不同阶段的工作快照，不代表它们已相互集成。现有本机前后端、求解环境、ROS/Gazebo、Fuel、运行数据库与资产保留。
+
+[增量 Release](https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026)保存新增实验原始记录、浏览器验收录像和相关副本；未变化的内容按逐文件哈希引用 2026-10-18 快照。索引同时固定两次 Release 的附件 SHA256。认证字段从公开副本剔除，科研数值与失败记录保留；浏览器认证配置不公开。测试虚拟环境的一条绝对解释器链接作为宿主依赖记录，恢复不会自动安装或覆盖宿主文件。
+
+在该保全分支中运行以下命令查看或恢复原始实验记录。需要 Python 3 和 `zstd`，目标须为尚不存在的绝对路径；去掉 `--prefix` 可恢复完整保全清单，先用 `--list` 查看所需下载量：
+
+```sh
+python3 tools/restore_local_preservation.py --cache "$PWD/.local-state/preserved-downloads" --prefix project/experiments/ --list
+python3 tools/restore_local_preservation.py --cache "$PWD/.local-state/preserved-downloads" --prefix project/experiments/ --destination "$PWD/.local-state/restored-experiments-20261026"
+```
+
 
 ### 历史完整 ZIP 资料入口
 

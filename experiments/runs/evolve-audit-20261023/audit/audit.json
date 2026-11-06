@@ -1,0 +1,1559 @@
+{
+ "run_id": "evolve-audit-20261023",
+ "records": 6018,
+ "planned": 6018,
+ "families": {
+  "coverage": {
+   "instances": 388,
+   "solvable": 373,
+   "unsolved": 15,
+   "penalty": 2.0,
+   "configs": [
+    {
+     "config": "full:none/n_swath",
+     "label": "不分解·最少作业行",
+     "feasible": 326,
+     "instances": 388,
+     "mean_rho_penalised": 1.1313239475861816,
+     "mean_rho_own_feasible": 1.00608537561241,
+     "wins": 212,
+     "median_wall_s": 0.37155839200022456,
+     "p95_wall_s": 2.826805082349619,
+     "states": {
+      "feasible": 326,
+      "no_solution": 62
+     },
+     "mean_cost_own_feasible": 2379.390121530952
+    },
+    {
+     "config": "full:none/swath_length",
+     "label": "不分解·作业行最短",
+     "feasible": 291,
+     "instances": 388,
+     "mean_rho_penalised": 1.2442386609696463,
+     "mean_rho_own_feasible": 1.0312749846793063,
+     "wins": 110,
+     "median_wall_s": 0.8080637340003705,
+     "p95_wall_s": 5.717685185300606,
+     "states": {
+      "feasible": 291,
+      "no_solution": 97
+     },
+     "mean_cost_own_feasible": 2520.8852544531505
+    },
+    {
+     "config": "full:none/field_coverage",
+     "label": "不分解·覆盖最大",
+     "feasible": 303,
+     "instances": 388,
+     "mean_rho_penalised": 1.2512536182405225,
+     "mean_rho_own_feasible": 1.0782759062828882,
+     "wins": 66,
+     "median_wall_s": 2.065694164999968,
+     "p95_wall_s": 11.21153549980072,
+     "states": {
+      "feasible": 303,
+      "no_solution": 85
+     },
+     "mean_cost_own_feasible": 2471.42467996996
+    },
+    {
+     "config": "full:boustrophedon/n_swath",
+     "label": "牛耕分解·最少作业行",
+     "feasible": 254,
+     "instances": 388,
+     "mean_rho_penalised": 1.334064208802326,
+     "mean_rho_own_feasible": 1.0220706688317627,
+     "wins": 122,
+     "median_wall_s": 0.5277395104999414,
+     "p95_wall_s": 5.946989434050281,
+     "states": {
+      "feasible": 254,
+      "no_solution": 134
+     },
+     "mean_cost_own_feasible": 2421.1934743663455
+    },
+    {
+     "config": "full:boustrophedon/swath_length",
+     "label": "牛耕分解·作业行最短",
+     "feasible": 210,
+     "instances": 388,
+     "mean_rho_penalised": 1.4641700127644435,
+     "mean_rho_own_feasible": 1.04826387981494,
+     "wins": 57,
+     "median_wall_s": 1.0687702674999855,
+     "p95_wall_s": 13.282257306749981,
+     "states": {
+      "feasible": 210,
+      "no_solution": 178
+     },
+     "mean_cost_own_feasible": 2536.703428344047
+    },
+    {
+     "config": "full:boustrophedon/field_coverage",
+     "label": "牛耕分解·覆盖最大",
+     "feasible": 199,
+     "instances": 388,
+     "mean_rho_penalised": 1.5199818437776975,
+     "mean_rho_own_feasible": 1.1002674760255355,
+     "wins": 34,
+     "median_wall_s": 3.3252272825002365,
+     "p95_wall_s": 213.96434835279925,
+     "states": {
+      "feasible": 199,
+      "no_solution": 175,
+      "timeout": 14
+     },
+     "mean_cost_own_feasible": 2383.446394306522
+    },
+    {
+     "config": "full:trapezoidal/n_swath",
+     "label": "梯形分解·最少作业行",
+     "feasible": 87,
+     "instances": 388,
+     "mean_rho_penalised": 1.8107435302693675,
+     "mean_rho_own_feasible": 1.1885900780514247,
+     "wins": 1,
+     "median_wall_s": 3.497613028499927,
+     "p95_wall_s": 151.07730897174991,
+     "states": {
+      "no_solution": 287,
+      "feasible": 87,
+      "timeout": 14
+     },
+     "mean_cost_own_feasible": 3316.41503182925
+    },
+    {
+     "config": "full:trapezoidal/swath_length",
+     "label": "梯形分解·作业行最短",
+     "feasible": 16,
+     "instances": 388,
+     "mean_rho_penalised": 1.9674929156107228,
+     "mean_rho_own_feasible": 1.2421785951749746,
+     "wins": 1,
+     "median_wall_s": 11.597420304499337,
+     "p95_wall_s": 300.12132285719997,
+     "states": {
+      "no_solution": 307,
+      "timeout": 65,
+      "feasible": 16
+     },
+     "mean_cost_own_feasible": 3656.283921876271
+    },
+    {
+     "config": "full:trapezoidal/field_coverage",
+     "label": "梯形分解·覆盖最大",
+     "feasible": 2,
+     "instances": 388,
+     "mean_rho_penalised": 1.9984960842877801,
+     "mean_rho_own_feasible": 1.7195197196709588,
+     "wins": 0,
+     "median_wall_s": 114.35408856649997,
+     "p95_wall_s": 300.14816494300027,
+     "states": {
+      "timeout": 170,
+      "no_solution": 216,
+      "feasible": 2
+     },
+     "mean_cost_own_feasible": 4388.445711365833
+    },
+    {
+     "config": "single:boustrophedon",
+     "label": "单区往复",
+     "feasible": 20,
+     "instances": 388,
+     "mean_rho_penalised": 1.95127594398243,
+     "mean_rho_own_feasible": 1.0912963552723223,
+     "wins": 0,
+     "median_wall_s": 0.004219393499624857,
+     "p95_wall_s": 0.26882686099997877,
+     "states": {
+      "no_solution": 368,
+      "feasible": 20
+     },
+     "mean_cost_own_feasible": 2295.289330803703
+    },
+    {
+     "config": "single:snake",
+     "label": "单区蛇形",
+     "feasible": 20,
+     "instances": 388,
+     "mean_rho_penalised": 1.954185874018935,
+     "mean_rho_own_feasible": 1.145566550453152,
+     "wins": 0,
+     "median_wall_s": 0.004082194000147865,
+     "p95_wall_s": 0.36150262670048505,
+     "states": {
+      "no_solution": 368,
+      "feasible": 20
+     },
+     "mean_cost_own_feasible": 2396.675208322126
+    }
+   ],
+   "sbs": {
+    "config": "full:none/n_swath",
+    "label": "不分解·最少作业行",
+    "feasible": 326,
+    "mean_rho_penalised": 1.1313239475861816
+   },
+   "vbs": {
+    "feasible": 373,
+    "mean_rho_penalised": 1.0
+   },
+   "headroom": {
+    "rho": 0.1313239475861816,
+    "rho_ci95": [
+     0.0967883423584307,
+     0.1700214037150833
+    ],
+    "feasible": 47,
+    "feasible_share": 0.1211340206185567,
+    "instances_sbs_not_best": 161,
+    "sbs_infeasible_but_solvable": 47
+   },
+   "greedy_static_order": [
+    {
+     "tries": 1,
+     "config": "full:none/n_swath",
+     "label": "不分解·最少作业行",
+     "feasible": 326,
+     "mean_rho": 1.1313239475861812
+    },
+    {
+     "tries": 2,
+     "config": "full:none/field_coverage",
+     "label": "不分解·覆盖最大",
+     "feasible": 360,
+     "mean_rho": 1.0434519671131357
+    },
+    {
+     "tries": 3,
+     "config": "full:none/swath_length",
+     "label": "不分解·作业行最短",
+     "feasible": 370,
+     "mean_rho": 1.0114657490646566
+    },
+    {
+     "tries": 4,
+     "config": "full:boustrophedon/n_swath",
+     "label": "牛耕分解·最少作业行",
+     "feasible": 373,
+     "mean_rho": 1.0007909693283454
+    },
+    {
+     "tries": 5,
+     "config": "full:trapezoidal/swath_length",
+     "label": "梯形分解·作业行最短",
+     "feasible": 373,
+     "mean_rho": 1.0000977989147146
+    },
+    {
+     "tries": 6,
+     "config": "full:boustrophedon/swath_length",
+     "label": "牛耕分解·作业行最短",
+     "feasible": 373,
+     "mean_rho": 1.0000327095141521
+    },
+    {
+     "tries": 7,
+     "config": "full:trapezoidal/n_swath",
+     "label": "梯形分解·最少作业行",
+     "feasible": 373,
+     "mean_rho": 1.0000000000003517
+    },
+    {
+     "tries": 8,
+     "config": "full:boustrophedon/field_coverage",
+     "label": "牛耕分解·覆盖最大",
+     "feasible": 373,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 9,
+     "config": "full:trapezoidal/field_coverage",
+     "label": "梯形分解·覆盖最大",
+     "feasible": 373,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 10,
+     "config": "single:boustrophedon",
+     "label": "单区往复",
+     "feasible": 373,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 11,
+     "config": "single:snake",
+     "label": "单区蛇形",
+     "feasible": 373,
+     "mean_rho": 1.0
+    }
+   ],
+   "shapley": [
+    {
+     "config": "full:none/n_swath",
+     "label": "不分解·最少作业行",
+     "shapley": 0.23429277143146549,
+     "marginal": 0.031731271069272204
+    },
+    {
+     "config": "full:none/swath_length",
+     "label": "不分解·作业行最短",
+     "shapley": 0.18570374415683666,
+     "marginal": 0.016934956741588736
+    },
+    {
+     "config": "full:none/field_coverage",
+     "label": "不分解·覆盖最大",
+     "shapley": 0.19557169253775386,
+     "marginal": 0.03269916971384068
+    },
+    {
+     "config": "full:boustrophedon/n_swath",
+     "label": "牛耕分解·最少作业行",
+     "shapley": 0.1449844700636167,
+     "marginal": 0.008050145995555091
+    },
+    {
+     "config": "full:boustrophedon/swath_length",
+     "label": "牛耕分解·作业行最短",
+     "shapley": 0.09945316228620714,
+     "marginal": 6.50894005622682e-05
+    },
+    {
+     "config": "full:boustrophedon/field_coverage",
+     "label": "牛耕分解·覆盖最大",
+     "shapley": 0.08916975994051127,
+     "marginal": 3.517186542012496e-13
+    },
+    {
+     "config": "full:trapezoidal/n_swath",
+     "label": "梯形分解·最少作业行",
+     "shapley": 0.03321938272180209,
+     "marginal": 3.270951380041076e-05
+    },
+    {
+     "config": "full:trapezoidal/swath_length",
+     "label": "梯形分解·作业行最短",
+     "shapley": 0.005556342595409295,
+     "marginal": 0.000693170413630817
+    },
+    {
+     "config": "full:trapezoidal/field_coverage",
+     "label": "梯形分解·覆盖最大",
+     "shapley": 0.00024348750689271906,
+     "marginal": 0.0
+    },
+    {
+     "config": "single:boustrophedon",
+     "label": "单区往复",
+     "shapley": 0.006148430394050174,
+     "marginal": 0.0
+    },
+    {
+     "config": "single:snake",
+     "label": "单区蛇形",
+     "shapley": 0.005656756365454608,
+     "marginal": 0.0
+    }
+   ],
+   "sensitivity": [
+    {
+     "penalty": 1.5,
+     "sbs": "full:none/n_swath",
+     "headroom_rho": 0.06832126662103422
+    },
+    {
+     "penalty": 2.0,
+     "sbs": "full:none/n_swath",
+     "headroom_rho": 0.1313239475861816
+    },
+    {
+     "penalty": 3.0,
+     "sbs": "full:none/n_swath",
+     "headroom_rho": 0.25732930951647637
+    },
+    {
+     "penalty": 10.0,
+     "sbs": "full:none/n_swath",
+     "headroom_rho": 1.139366843028541
+    }
+   ],
+   "workbench_default": {
+    "config": "full:boustrophedon/n_swath",
+    "label": "牛耕分解·最少作业行",
+    "feasible": 254,
+    "mean_rho_penalised": 1.334064208802326,
+    "gap_to_vbs_rho_ci95": [
+     0.2735836447349669,
+     0.39144048612610055
+    ]
+   },
+   "slices": [
+    {
+     "dimension": "profile",
+     "slice": "robot_s",
+     "instances": 140,
+     "solvable": 140,
+     "sbs_feasible": 128,
+     "sbs_mean_rho": 1.0896681672631603,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.0896681672631605
+    },
+    {
+     "dimension": "profile",
+     "slice": "sprayer_l",
+     "instances": 110,
+     "solvable": 103,
+     "sbs_feasible": 88,
+     "sbs_mean_rho": 1.1547985830958247,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.154798583095825
+    },
+    {
+     "dimension": "profile",
+     "slice": "tractor_m",
+     "instances": 138,
+     "solvable": 130,
+     "sbs_feasible": 110,
+     "sbs_mean_rho": 1.1575848844148713,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.1575848844148708
+    },
+    {
+     "dimension": "shape",
+     "slice": "凹形（solidity<0.97）",
+     "instances": 215,
+     "solvable": 207,
+     "sbs_feasible": 169,
+     "sbs_mean_rho": 1.1902138770074084,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.1902138770074087
+    },
+    {
+     "dimension": "shape",
+     "slice": "近凸（solidity≥0.97）",
+     "instances": 173,
+     "solvable": 166,
+     "sbs_feasible": 157,
+     "sbs_mean_rho": 1.0578889151151332,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.0578889151151332
+    },
+    {
+     "dimension": "area_tercile",
+     "slice": "中",
+     "instances": 129,
+     "solvable": 124,
+     "sbs_feasible": 104,
+     "sbs_mean_rho": 1.1684291541074825,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.168429154107483
+    },
+    {
+     "dimension": "area_tercile",
+     "slice": "大",
+     "instances": 131,
+     "solvable": 128,
+     "sbs_feasible": 115,
+     "sbs_mean_rho": 1.1048749872759782,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.1048749872759784
+    },
+    {
+     "dimension": "area_tercile",
+     "slice": "小",
+     "instances": 128,
+     "solvable": 121,
+     "sbs_feasible": 107,
+     "sbs_mean_rho": 1.1212778427189471,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.1212778427189471
+    },
+    {
+     "dimension": "turn_share_tercile",
+     "slice": "中",
+     "instances": 130,
+     "solvable": 125,
+     "sbs_feasible": 113,
+     "sbs_mean_rho": 1.1021438743017162,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.1021438743017162
+    },
+    {
+     "dimension": "turn_share_tercile",
+     "slice": "低",
+     "instances": 129,
+     "solvable": 127,
+     "sbs_feasible": 115,
+     "sbs_mean_rho": 1.098632169760558,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.098632169760558
+    },
+    {
+     "dimension": "turn_share_tercile",
+     "slice": "高",
+     "instances": 129,
+     "solvable": 121,
+     "sbs_feasible": 98,
+     "sbs_mean_rho": 1.19578150911025,
+     "best_single_in_slice": "full:none/n_swath",
+     "best_single_mean_rho": 1.19578150911025
+    }
+   ],
+   "failure_taxonomy": [
+    {
+     "config": "full:boustrophedon/field_coverage",
+     "label": "牛耕分解·覆盖最大",
+     "curvature": 170,
+     "records": 175,
+     "timeout": 14,
+     "footprint": 38,
+     "other": 1
+    },
+    {
+     "config": "full:boustrophedon/n_swath",
+     "label": "牛耕分解·最少作业行",
+     "curvature": 118,
+     "records": 134,
+     "coverage<90%": 22,
+     "footprint": 17,
+     "no_path": 2
+    },
+    {
+     "config": "full:boustrophedon/swath_length",
+     "label": "牛耕分解·作业行最短",
+     "curvature": 145,
+     "records": 178,
+     "coverage<90%": 60,
+     "footprint": 22,
+     "no_path": 2
+    },
+    {
+     "config": "full:none/field_coverage",
+     "label": "不分解·覆盖最大",
+     "curvature": 80,
+     "records": 85,
+     "footprint": 6
+    },
+    {
+     "config": "full:none/n_swath",
+     "label": "不分解·最少作业行",
+     "curvature": 40,
+     "records": 62,
+     "coverage<90%": 15,
+     "footprint": 6,
+     "no_path": 2
+    },
+    {
+     "config": "full:none/swath_length",
+     "label": "不分解·作业行最短",
+     "curvature": 53,
+     "records": 97,
+     "coverage<90%": 50,
+     "no_path": 2,
+     "footprint": 6
+    },
+    {
+     "config": "full:trapezoidal/field_coverage",
+     "label": "梯形分解·覆盖最大",
+     "timeout": 170,
+     "curvature": 215,
+     "records": 216,
+     "footprint": 70,
+     "cusp": 12
+    },
+    {
+     "config": "full:trapezoidal/n_swath",
+     "label": "梯形分解·最少作业行",
+     "curvature": 274,
+     "records": 287,
+     "coverage<90%": 76,
+     "footprint": 80,
+     "timeout": 14,
+     "cusp": 2
+    },
+    {
+     "config": "full:trapezoidal/swath_length",
+     "label": "梯形分解·作业行最短",
+     "curvature": 298,
+     "records": 307,
+     "coverage<90%": 174,
+     "timeout": 65,
+     "footprint": 75,
+     "cusp": 1
+    },
+    {
+     "config": "single:boustrophedon",
+     "label": "单区往复",
+     "single_cell_only": 366,
+     "records": 368,
+     "curvature": 1,
+     "coverage<90%": 1
+    },
+    {
+     "config": "single:snake",
+     "label": "单区蛇形",
+     "single_cell_only": 366,
+     "records": 368,
+     "curvature": 1,
+     "coverage<90%": 1
+    }
+   ]
+  },
+  "fleet:total_distance": {
+   "instances": 280,
+   "solvable": 274,
+   "unsolved": 6,
+   "penalty": 2.0,
+   "configs": [
+    {
+     "config": "pyvrp.fleet",
+     "label": "pyvrp.fleet",
+     "feasible": 271,
+     "instances": 280,
+     "mean_rho_penalised": 1.0109636829444069,
+     "mean_rho_own_feasible": 1.0000149414271864,
+     "wins": 261,
+     "median_wall_s": 3.097254856499603,
+     "p95_wall_s": 3.510621632249968,
+     "states": {
+      "feasible": 271,
+      "error": 6,
+      "no_solution": 3
+     },
+     "mean_cost_own_feasible": 2099.103160600402
+    },
+    {
+     "config": "ortools.fleet",
+     "label": "ortools.fleet",
+     "feasible": 274,
+     "instances": 280,
+     "mean_rho_penalised": 1.0239470234189505,
+     "mean_rho_own_feasible": 1.02394702341895,
+     "wins": 82,
+     "median_wall_s": 3.074224770500223,
+     "p95_wall_s": 3.510718664049637,
+     "states": {
+      "feasible": 274,
+      "error": 6
+     },
+     "mean_cost_own_feasible": 2176.3892708469994
+    },
+    {
+     "config": "panel.savings_fleet",
+     "label": "panel.savings_fleet",
+     "feasible": 271,
+     "instances": 280,
+     "mean_rho_penalised": 1.0591528763882991,
+     "mean_rho_own_feasible": 1.048737594577099,
+     "wins": 22,
+     "median_wall_s": 0.08531336949999968,
+     "p95_wall_s": 0.5100304791995771,
+     "states": {
+      "feasible": 271,
+      "no_solution": 3,
+      "error": 6
+     },
+     "mean_cost_own_feasible": 2207.9427023532994
+    },
+    {
+     "config": "panel.sweep",
+     "label": "panel.sweep",
+     "feasible": 273,
+     "instances": 280,
+     "mean_rho_penalised": 1.1465214878347905,
+     "mean_rho_own_feasible": 1.143395192918434,
+     "wins": 1,
+     "median_wall_s": 0.0905641570006992,
+     "p95_wall_s": 0.5138210780499326,
+     "states": {
+      "feasible": 273,
+      "no_solution": 1,
+      "error": 6
+     },
+     "mean_cost_own_feasible": 2489.614771193737
+    },
+    {
+     "config": "panel.cluster_first",
+     "label": "panel.cluster_first",
+     "feasible": 271,
+     "instances": 280,
+     "mean_rho_penalised": 1.2717643497404303,
+     "mean_rho_own_feasible": 1.2637027004755639,
+     "wins": 3,
+     "median_wall_s": 0.08414448950043152,
+     "p95_wall_s": 0.5114578000999247,
+     "states": {
+      "feasible": 271,
+      "no_solution": 3,
+      "error": 6
+     },
+     "mean_cost_own_feasible": 2756.873561310082
+    }
+   ],
+   "sbs": {
+    "config": "pyvrp.fleet",
+    "label": "pyvrp.fleet",
+    "feasible": 271,
+    "mean_rho_penalised": 1.0109636829444069
+   },
+   "vbs": {
+    "feasible": 274,
+    "mean_rho_penalised": 1.0
+   },
+   "headroom": {
+    "rho": 0.01096368294440686,
+    "rho_ci95": [
+     4.000290765304726e-08,
+     0.029241697452809304
+    ],
+    "feasible": 3,
+    "feasible_share": 0.010714285714285714,
+    "instances_sbs_not_best": 13,
+    "sbs_infeasible_but_solvable": 3
+   },
+   "greedy_static_order": [
+    {
+     "tries": 1,
+     "config": "pyvrp.fleet",
+     "label": "pyvrp.fleet",
+     "feasible": 271,
+     "mean_rho": 1.010963682944407
+    },
+    {
+     "tries": 2,
+     "config": "ortools.fleet",
+     "label": "ortools.fleet",
+     "feasible": 274,
+     "mean_rho": 1.0001004358192442
+    },
+    {
+     "tries": 3,
+     "config": "panel.savings_fleet",
+     "label": "panel.savings_fleet",
+     "feasible": 274,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 4,
+     "config": "panel.sweep",
+     "label": "panel.sweep",
+     "feasible": 274,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 5,
+     "config": "panel.cluster_first",
+     "label": "panel.cluster_first",
+     "feasible": 274,
+     "mean_rho": 1.0
+    }
+   ],
+   "shapley": [
+    {
+     "config": "pyvrp.fleet",
+     "label": "pyvrp.fleet",
+     "shapley": 0.24148208119583994,
+     "marginal": 0.019521563776832118
+    },
+    {
+     "config": "ortools.fleet",
+     "label": "ortools.fleet",
+     "shapley": 0.22374116125887766,
+     "marginal": 0.00010369052963066228
+    },
+    {
+     "config": "panel.savings_fleet",
+     "label": "panel.savings_fleet",
+     "shapley": 0.208190245404265,
+     "marginal": 0.00010043581924423783
+    },
+    {
+     "config": "panel.sweep",
+     "label": "panel.sweep",
+     "shapley": 0.17938801815726366,
+     "marginal": 0.0
+    },
+    {
+     "config": "panel.cluster_first",
+     "label": "panel.cluster_first",
+     "shapley": 0.14719849398375381,
+     "marginal": 0.0
+    }
+   ],
+   "sensitivity": [
+    {
+     "penalty": 1.5,
+     "sbs": "pyvrp.fleet",
+     "headroom_rho": 0.005489230389662314
+    },
+    {
+     "penalty": 2.0,
+     "sbs": "pyvrp.fleet",
+     "headroom_rho": 0.01096368294440686
+    },
+    {
+     "penalty": 3.0,
+     "sbs": "pyvrp.fleet",
+     "headroom_rho": 0.021912588053895954
+    },
+    {
+     "penalty": 10.0,
+     "sbs": "ortools.fleet",
+     "headroom_rho": 0.023947023418950497
+    }
+   ]
+  },
+  "fleet:makespan": {
+   "instances": 70,
+   "solvable": 68,
+   "unsolved": 2,
+   "penalty": 2.0,
+   "configs": [
+    {
+     "config": "pyvrp.fleet",
+     "label": "pyvrp.fleet",
+     "feasible": 68,
+     "instances": 70,
+     "mean_rho_penalised": 1.1931601187522762,
+     "mean_rho_own_feasible": 1.193160118752276,
+     "wins": 2,
+     "median_wall_s": 3.274201912499848,
+     "p95_wall_s": 3.537566557350965,
+     "states": {
+      "feasible": 68,
+      "error": 1,
+      "no_solution": 1
+     },
+     "mean_cost_own_feasible": 860.0164341256283
+    },
+    {
+     "config": "ortools.fleet",
+     "label": "ortools.fleet",
+     "feasible": 68,
+     "instances": 70,
+     "mean_rho_penalised": 1.0016511180964025,
+     "mean_rho_own_feasible": 1.0016511180964025,
+     "wins": 65,
+     "median_wall_s": 3.266709452500436,
+     "p95_wall_s": 3.506557995300045,
+     "states": {
+      "feasible": 68,
+      "error": 1,
+      "no_solution": 1
+     },
+     "mean_cost_own_feasible": 718.1353657452996
+    },
+    {
+     "config": "panel.savings_fleet",
+     "label": "panel.savings_fleet",
+     "feasible": 68,
+     "instances": 70,
+     "mean_rho_penalised": 1.2691111695636828,
+     "mean_rho_own_feasible": 1.2691111695636834,
+     "wins": 0,
+     "median_wall_s": 0.2759478170000875,
+     "p95_wall_s": 0.550809274399944,
+     "states": {
+      "feasible": 68,
+      "error": 1,
+      "no_solution": 1
+     },
+     "mean_cost_own_feasible": 916.8988239413375
+    },
+    {
+     "config": "panel.sweep",
+     "label": "panel.sweep",
+     "feasible": 68,
+     "instances": 70,
+     "mean_rho_penalised": 1.3624208801826343,
+     "mean_rho_own_feasible": 1.362420880182634,
+     "wins": 0,
+     "median_wall_s": 0.28188201499960996,
+     "p95_wall_s": 0.570856570750675,
+     "states": {
+      "feasible": 68,
+      "error": 1,
+      "no_solution": 1
+     },
+     "mean_cost_own_feasible": 974.6030708939788
+    },
+    {
+     "config": "panel.cluster_first",
+     "label": "panel.cluster_first",
+     "feasible": 68,
+     "instances": 70,
+     "mean_rho_penalised": 1.4268858298935736,
+     "mean_rho_own_feasible": 1.4268858298935736,
+     "wins": 1,
+     "median_wall_s": 0.2875770665004893,
+     "p95_wall_s": 0.5610077301502314,
+     "states": {
+      "feasible": 68,
+      "error": 1,
+      "no_solution": 1
+     },
+     "mean_cost_own_feasible": 1012.5370002365846
+    }
+   ],
+   "sbs": {
+    "config": "ortools.fleet",
+    "label": "ortools.fleet",
+    "feasible": 68,
+    "mean_rho_penalised": 1.0016511180964025
+   },
+   "vbs": {
+    "feasible": 68,
+    "mean_rho_penalised": 1.0
+   },
+   "headroom": {
+    "rho": 0.001651118096402504,
+    "rho_ci95": [
+     0.0,
+     0.004146564388762687
+    ],
+    "feasible": 0,
+    "feasible_share": 0.0,
+    "instances_sbs_not_best": 3,
+    "sbs_infeasible_but_solvable": 0
+   },
+   "greedy_static_order": [
+    {
+     "tries": 1,
+     "config": "ortools.fleet",
+     "label": "ortools.fleet",
+     "feasible": 68,
+     "mean_rho": 1.0016511180964025
+    },
+    {
+     "tries": 2,
+     "config": "pyvrp.fleet",
+     "label": "pyvrp.fleet",
+     "feasible": 68,
+     "mean_rho": 1.0007134946954797
+    },
+    {
+     "tries": 3,
+     "config": "panel.cluster_first",
+     "label": "panel.cluster_first",
+     "feasible": 68,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 4,
+     "config": "panel.savings_fleet",
+     "label": "panel.savings_fleet",
+     "feasible": 68,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 5,
+     "config": "panel.sweep",
+     "label": "panel.sweep",
+     "feasible": 68,
+     "mean_rho": 1.0
+    }
+   ],
+   "shapley": [
+    {
+     "config": "pyvrp.fleet",
+     "label": "pyvrp.fleet",
+     "shapley": 0.19548496431108095,
+     "marginal": 0.000937623400922849
+    },
+    {
+     "config": "ortools.fleet",
+     "label": "ortools.fleet",
+     "shapley": 0.3671402899600411,
+     "marginal": 0.15574971865167275
+    },
+    {
+     "config": "panel.savings_fleet",
+     "label": "panel.savings_fleet",
+     "shapley": 0.16416135972041884,
+     "marginal": 0.0
+    },
+    {
+     "config": "panel.sweep",
+     "label": "panel.sweep",
+     "shapley": 0.13671938844973086,
+     "marginal": 0.0
+    },
+    {
+     "config": "panel.cluster_first",
+     "label": "panel.cluster_first",
+     "shapley": 0.13649399755872835,
+     "marginal": 0.000713494695479544
+    }
+   ],
+   "sensitivity": [
+    {
+     "penalty": 1.5,
+     "sbs": "ortools.fleet",
+     "headroom_rho": 0.001651118096402504
+    },
+    {
+     "penalty": 2.0,
+     "sbs": "ortools.fleet",
+     "headroom_rho": 0.001651118096402504
+    },
+    {
+     "penalty": 3.0,
+     "sbs": "ortools.fleet",
+     "headroom_rho": 0.001651118096402504
+    },
+    {
+     "penalty": 10.0,
+     "sbs": "ortools.fleet",
+     "headroom_rho": 0.001651118096402504
+    }
+   ]
+  },
+  "cvrp_archive": {
+   "instances": 265,
+   "solvable": 265,
+   "unsolved": 0,
+   "penalty": 2.0,
+   "configs": [
+    {
+     "config": "T",
+     "label": "T",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.2317059902865897,
+     "mean_rho_own_feasible": 1.2317059902865886,
+     "wins": 0,
+     "median_wall_s": 0.046388,
+     "p95_wall_s": 0.18340059999999997,
+     "states": {
+      "OK": 265
+     },
+     "mean_cost_own_feasible": 11217.849056603774
+    },
+    {
+     "config": "TRS",
+     "label": "TRS",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.1304483164982393,
+     "mean_rho_own_feasible": 1.1304483164982397,
+     "wins": 5,
+     "median_wall_s": 0.057078,
+     "p95_wall_s": 1.7772313999999998,
+     "states": {
+      "OK": 258,
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 7
+     },
+     "mean_cost_own_feasible": 11085.286792452831
+    },
+    {
+     "config": "TSR",
+     "label": "TSR",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.115005426561305,
+     "mean_rho_own_feasible": 1.115005426561305,
+     "wins": 5,
+     "median_wall_s": 0.052479,
+     "p95_wall_s": 1.2588974,
+     "states": {
+      "OK": 265
+     },
+     "mean_cost_own_feasible": 11079.415094339623
+    },
+    {
+     "config": "de_random_keys",
+     "label": "de_random_keys",
+     "feasible": 262,
+     "instances": 265,
+     "mean_rho_penalised": 2.201972177711274,
+     "mean_rho_own_feasible": 2.2042848362346854,
+     "wins": 0,
+     "median_wall_s": 4.997359,
+     "p95_wall_s": 5.0003096000000005,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 262,
+      "TIMEOUT_NO_SOLUTION": 3
+     },
+     "mean_cost_own_feasible": 30484.75572519084
+    },
+    {
+     "config": "ga_random_keys",
+     "label": "ga_random_keys",
+     "feasible": 262,
+     "instances": 265,
+     "mean_rho_penalised": 1.5903558709430463,
+     "mean_rho_own_feasible": 1.5856652893126228,
+     "wins": 3,
+     "median_wall_s": 4.994703,
+     "p95_wall_s": 5.0000728,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 262,
+      "TIMEOUT_NO_SOLUTION": 3
+     },
+     "mean_cost_own_feasible": 22308.992366412214
+    },
+    {
+     "config": "multistart_vnd",
+     "label": "multistart_vnd",
+     "feasible": 260,
+     "instances": 265,
+     "mean_rho_penalised": 1.0538226055501003,
+     "mean_rho_own_feasible": 1.0356268864260634,
+     "wins": 34,
+     "median_wall_s": 0.08642399999999999,
+     "p95_wall_s": 4.994252,
+     "states": {
+      "OK": 233,
+      "NO_SOLUTION": 5,
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 27
+     },
+     "mean_cost_own_feasible": 11173.053846153845
+    },
+    {
+     "config": "nearest_neighbor",
+     "label": "nearest_neighbor",
+     "feasible": 260,
+     "instances": 265,
+     "mean_rho_penalised": 1.3827867525879598,
+     "mean_rho_own_feasible": 1.3709172670608067,
+     "wins": 0,
+     "median_wall_s": 0.027048999999999997,
+     "p95_wall_s": 0.055975799999999985,
+     "states": {
+      "OK": 260,
+      "NO_SOLUTION": 5
+     },
+     "mean_cost_own_feasible": 13970.692307692309
+    },
+    {
+     "config": "ortools",
+     "label": "ortools",
+     "feasible": 260,
+     "instances": 265,
+     "mean_rho_penalised": 1.0541561101445158,
+     "mean_rho_own_feasible": 1.0359668045703714,
+     "wins": 73,
+     "median_wall_s": 4.997013999999999,
+     "p95_wall_s": 5.001697399999999,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 260,
+      "NO_SOLUTION": 5
+     },
+     "mean_cost_own_feasible": 11636.15
+    },
+    {
+     "config": "pso_random_keys",
+     "label": "pso_random_keys",
+     "feasible": 261,
+     "instances": 265,
+     "mean_rho_penalised": 2.1849956012368437,
+     "mean_rho_own_feasible": 2.1878307828649937,
+     "wins": 0,
+     "median_wall_s": 4.99691,
+     "p95_wall_s": 5.0002888,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 261,
+      "TIMEOUT_NO_SOLUTION": 4
+     },
+     "mean_cost_own_feasible": 30141.827586206895
+    },
+    {
+     "config": "pyvrp",
+     "label": "pyvrp",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.000166726035649,
+     "mean_rho_own_feasible": 1.000166726035649,
+     "wins": 257,
+     "median_wall_s": 4.998259,
+     "p95_wall_s": 5.0016096,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 265
+     },
+     "mean_cost_own_feasible": 10583.17358490566
+    },
+    {
+     "config": "random_cheapest",
+     "label": "random_cheapest",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.0395911762638317,
+     "mean_rho_own_feasible": 1.039591176263832,
+     "wins": 27,
+     "median_wall_s": 4.997534,
+     "p95_wall_s": 5.0005498,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 265
+     },
+     "mean_cost_own_feasible": 11075.815094339623
+    },
+    {
+     "config": "random_regret2",
+     "label": "random_regret2",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.021250177216425,
+     "mean_rho_own_feasible": 1.0212501772164255,
+     "wins": 72,
+     "median_wall_s": 4.997958000000001,
+     "p95_wall_s": 5.0004672,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 265
+     },
+     "mean_cost_own_feasible": 10967.626415094339
+    },
+    {
+     "config": "savings",
+     "label": "savings",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.2391745806747216,
+     "mean_rho_own_feasible": 1.2391745806747205,
+     "wins": 0,
+     "median_wall_s": 0.046378,
+     "p95_wall_s": 0.16834679999999994,
+     "states": {
+      "OK": 265
+     },
+     "mean_cost_own_feasible": 11247.22641509434
+    },
+    {
+     "config": "savings_vnd",
+     "label": "savings_vnd",
+     "feasible": 200,
+     "instances": 265,
+     "mean_rho_penalised": 1.2785267311346538,
+     "mean_rho_own_feasible": 1.0440479187534153,
+     "wins": 10,
+     "median_wall_s": 0.032402999999999994,
+     "p95_wall_s": 0.6191901999999999,
+     "states": {
+      "OK": 199,
+      "NO_SOLUTION": 65,
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 1
+     },
+     "mean_cost_own_feasible": 14309.05
+    },
+    {
+     "config": "seeded_sweep",
+     "label": "seeded_sweep",
+     "feasible": 166,
+     "instances": 265,
+     "mean_rho_penalised": 1.8472010735048079,
+     "mean_rho_own_feasible": 1.756074002884182,
+     "wins": 0,
+     "median_wall_s": 0.026025,
+     "p95_wall_s": 0.051557999999999986,
+     "states": {
+      "OK": 166,
+      "NO_SOLUTION": 99
+     },
+     "mean_cost_own_feasible": 30457.560240963856
+    },
+    {
+     "config": "worst_cheapest",
+     "label": "worst_cheapest",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.1489947233886642,
+     "mean_rho_own_feasible": 1.1489947233886628,
+     "wins": 0,
+     "median_wall_s": 4.998183,
+     "p95_wall_s": 5.0007344,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 265
+     },
+     "mean_cost_own_feasible": 11175.48679245283
+    },
+    {
+     "config": "worst_regret2",
+     "label": "worst_regret2",
+     "feasible": 265,
+     "instances": 265,
+     "mean_rho_penalised": 1.119123407967832,
+     "mean_rho_own_feasible": 1.1191234079678303,
+     "wins": 0,
+     "median_wall_s": 4.998322999999999,
+     "p95_wall_s": 5.0007234,
+     "states": {
+      "TIMEOUT_WITH_FEASIBLE_INCUMBENT": 265
+     },
+     "mean_cost_own_feasible": 11137.6
+    }
+   ],
+   "sbs": {
+    "config": "pyvrp",
+    "label": "pyvrp",
+    "feasible": 265,
+    "mean_rho_penalised": 1.000166726035649
+   },
+   "vbs": {
+    "feasible": 265,
+    "mean_rho_penalised": 1.0
+   },
+   "headroom": {
+    "rho": 0.0001667260356490452,
+    "rho_ci95": [
+     9.642891581895796e-06,
+     0.0004455005616692148
+    ],
+    "feasible": 0,
+    "feasible_share": 0.0,
+    "instances_sbs_not_best": 8,
+    "sbs_infeasible_but_solvable": 0
+   },
+   "greedy_static_order": [
+    {
+     "tries": 1,
+     "config": "pyvrp",
+     "label": "pyvrp",
+     "feasible": 265,
+     "mean_rho": 1.000166726035649
+    },
+    {
+     "tries": 2,
+     "config": "ortools",
+     "label": "ortools",
+     "feasible": 265,
+     "mean_rho": 1.0000214723113487
+    },
+    {
+     "tries": 3,
+     "config": "random_regret2",
+     "label": "random_regret2",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 4,
+     "config": "T",
+     "label": "T",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 5,
+     "config": "TRS",
+     "label": "TRS",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 6,
+     "config": "TSR",
+     "label": "TSR",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 7,
+     "config": "de_random_keys",
+     "label": "de_random_keys",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 8,
+     "config": "ga_random_keys",
+     "label": "ga_random_keys",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 9,
+     "config": "multistart_vnd",
+     "label": "multistart_vnd",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 10,
+     "config": "nearest_neighbor",
+     "label": "nearest_neighbor",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 11,
+     "config": "pso_random_keys",
+     "label": "pso_random_keys",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 12,
+     "config": "random_cheapest",
+     "label": "random_cheapest",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 13,
+     "config": "savings",
+     "label": "savings",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 14,
+     "config": "savings_vnd",
+     "label": "savings_vnd",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 15,
+     "config": "seeded_sweep",
+     "label": "seeded_sweep",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 16,
+     "config": "worst_cheapest",
+     "label": "worst_cheapest",
+     "feasible": 265,
+     "mean_rho": 1.0
+    },
+    {
+     "tries": 17,
+     "config": "worst_regret2",
+     "label": "worst_regret2",
+     "feasible": 265,
+     "mean_rho": 1.0
+    }
+   ],
+   "shapley": [
+    {
+     "config": "T",
+     "label": "T",
+     "shapley": 0.0549743878133601,
+     "marginal": 0.0
+    },
+    {
+     "config": "TRS",
+     "label": "TRS",
+     "shapley": 0.06495037750993625,
+     "marginal": 0.0
+    },
+    {
+     "config": "TSR",
+     "label": "TSR",
+     "shapley": 0.06687239498503272,
+     "marginal": 0.0
+    },
+    {
+     "config": "de_random_keys",
+     "label": "de_random_keys",
+     "shapley": 0.020721407216744005,
+     "marginal": 0.0
+    },
+    {
+     "config": "ga_random_keys",
+     "label": "ga_random_keys",
+     "shapley": 0.042648665591913715,
+     "marginal": 0.0
+    },
+    {
+     "config": "multistart_vnd",
+     "label": "multistart_vnd",
+     "shapley": 0.08002805229523734,
+     "marginal": 0.0
+    },
+    {
+     "config": "nearest_neighbor",
+     "label": "nearest_neighbor",
+     "shapley": 0.04494955903404949,
+     "marginal": 0.0
+    },
+    {
+     "config": "ortools",
+     "label": "ortools",
+     "shapley": 0.08286632859142146,
+     "marginal": 0.0001452537243005203
+    },
+    {
+     "config": "pso_random_keys",
+     "label": "pso_random_keys",
+     "shapley": 0.01725272687609943,
+     "marginal": 0.0
+    },
+    {
+     "config": "pyvrp",
+     "label": "pyvrp",
+     "shapley": 0.1039062957499862,
+     "marginal": 0.013324136635192496
+    },
+    {
+     "config": "random_cheapest",
+     "label": "random_cheapest",
+     "shapley": 0.08165031159941011,
+     "marginal": 0.0
+    },
+    {
+     "config": "random_regret2",
+     "label": "random_regret2",
+     "shapley": 0.08760365461613696,
+     "marginal": 2.147231134863592e-05
+    },
+    {
+     "config": "savings",
+     "label": "savings",
+     "shapley": 0.054274979934047146,
+     "marginal": 0.0
+    },
+    {
+     "config": "savings_vnd",
+     "label": "savings_vnd",
+     "shapley": 0.05170127177920741,
+     "marginal": 0.0
+    },
+    {
+     "config": "seeded_sweep",
+     "label": "seeded_sweep",
+     "shapley": 0.016637054466073945,
+     "marginal": 0.0
+    },
+    {
+     "config": "worst_cheapest",
+     "label": "worst_cheapest",
+     "shapley": 0.06260632077851504,
+     "marginal": 0.0
+    },
+    {
+     "config": "worst_regret2",
+     "label": "worst_regret2",
+     "shapley": 0.06635621116282872,
+     "marginal": 0.0
+    }
+   ],
+   "sensitivity": [
+    {
+     "penalty": 1.5,
+     "sbs": "pyvrp",
+     "headroom_rho": 0.0001667260356490452
+    },
+    {
+     "penalty": 2.0,
+     "sbs": "pyvrp",
+     "headroom_rho": 0.0001667260356490452
+    },
+    {
+     "penalty": 3.0,
+     "sbs": "pyvrp",
+     "headroom_rho": 0.0001667260356490452
+    },
+    {
+     "penalty": 10.0,
+     "sbs": "pyvrp",
+     "headroom_rho": 0.0001667260356490452
+    }
+   ],
+   "source": "/home/peakpeng/Desktop/URP/experiments/baselines/cvrp/results/runs.csv",
+   "note": "53 问题 × 5 种子；每个种子视为一次实例运行；53 问题均为已污染开发数据"
+  }
+ }
+}

@@ -1,0 +1,336 @@
+{
+  "schema": "urp.local-preservation/1",
+  "client_date": "2026-10-26",
+  "release_tag": "local-preservation-20261026",
+  "release_url": "https://github.com/peakpeng666/URP/releases/tag/local-preservation-20261026",
+  "base_release_url": "https://github.com/peakpeng666/URP/releases/tag/platform-snapshot-20261018-ddb5113e",
+  "source_branch": "codex/preserve-20261026-local",
+  "source_commit_before_metadata": "14d35ed8b452c58f0a5136765ec53d517ec3e776",
+  "main_unchanged": "5ddbd22f0e176b9fb6f0ed7f1eeaa8063ea1b4cb",
+  "branches": [
+    {
+      "worktree": "/home/peakpeng/Desktop/URP",
+      "original_branch": "refs/heads/evolve/decision-loop-20261023",
+      "original_head": "eca5f8c7ec58518e56de0dcc5c3097f40840e6bf",
+      "branch": "codex/preserve-20261026-local",
+      "commit": "14d35ed8b452c58f0a5136765ec53d517ec3e776",
+      "remote_verified": true,
+      "captured_paths": 198,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-local"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/happy-editor",
+      "original_branch": "refs/heads/frontend/happy-editor-20261022",
+      "original_head": "b7264dddf3fe7a873d000bed6fbab1afb227f070",
+      "branch": "codex/preserve-20261026-happy-editor",
+      "commit": "6bf21d882f486043397bb5e4e69ab23e5b7dbee4",
+      "remote_verified": true,
+      "captured_paths": 2,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-happy-editor"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/labpatch-5065046",
+      "original_branch": "refs/heads/labpatch/5065046",
+      "original_head": "5065046d7b7e0b6b682bda46ca3a6c9b42ee8c84",
+      "branch": "codex/preserve-20261026-labpatch",
+      "commit": "000157dd31281a424773f0043c483bbe286d1e2c",
+      "remote_verified": true,
+      "captured_paths": 5,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-labpatch"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/luna-agri",
+      "original_branch": "refs/heads/frontend/luna-agri-20261022",
+      "original_head": "00e4f6e46aa49ff6a696d4e2ec2e7dd32c4f2837",
+      "branch": "codex/preserve-20261026-luna-agri",
+      "commit": "ff76b03dab18e126124cef2b2dfc45ff7f1c0934",
+      "remote_verified": true,
+      "captured_paths": 2,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-luna-agri"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/mamba-20261022",
+      "original_branch": "refs/heads/frontend/mamba-20261022",
+      "original_head": "4567d161b26a5bf161fb0ea4c49c252a5b7cd3e2",
+      "branch": "codex/preserve-20261026-mamba-studio",
+      "commit": "4567d161b26a5bf161fb0ea4c49c252a5b7cd3e2",
+      "remote_verified": true,
+      "captured_paths": 0,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-mamba-studio"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/mamba-results",
+      "original_branch": "refs/heads/frontend/mamba-results",
+      "original_head": "b3e2028581e51465b97d520041b5298558434b9d",
+      "branch": "codex/preserve-20261026-mamba-results",
+      "commit": "d94af0cdc0221db290f7854e1ceee03c538b1573",
+      "remote_verified": true,
+      "captured_paths": 2,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-mamba-results"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/verify-5065046",
+      "original_branch": "refs/heads/verify/workbench-5065046",
+      "original_head": "5065046d7b7e0b6b682bda46ca3a6c9b42ee8c84",
+      "branch": "codex/preserve-20261026-verify",
+      "commit": "10c99792aefad3fa65d8f71c366712fc89c6caee",
+      "remote_verified": true,
+      "captured_paths": 127,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-verify"
+    },
+    {
+      "worktree": "/home/peakpeng/urp-worktrees/workbench-20261022",
+      "original_branch": "refs/heads/frontend/workbench-20261022",
+      "original_head": "7fa18cbf72317b9572c3da6c0bcd41d59a3550e0",
+      "branch": "codex/preserve-20261026-workbench",
+      "commit": "c9c4bc62ac6912eb26771f6f713a94a92d071b39",
+      "remote_verified": true,
+      "captured_paths": 1,
+      "excluded_transient_auth_files": [],
+      "url": "https://github.com/peakpeng666/URP/tree/codex/preserve-20261026-workbench"
+    }
+  ],
+  "map": {
+    "release_tag": "local-preservation-20261026",
+    "name": "preservation-map.jsonl.gz",
+    "bytes": 5493312,
+    "sha256": "b41a16b2d5e0c07a9bda966f1b215d4fd180fc5404fcb8322d449de3bc31207b",
+    "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/preservation-map.jsonl.gz"
+  },
+  "preserved_records": 78764,
+  "host_dependencies": [
+    {
+      "path": "external/urp-e2e/.venv/bin/python",
+      "target": "/home/peakpeng/.local/share/uv/python/cpython-3.12-linux-x86_64-gnu/bin/python3.12",
+      "note": "Absolute uv interpreter link; interpreter is kept on host and in the earlier platform snapshot. Recreate the link only after selecting a compatible installed interpreter."
+    }
+  ],
+  "assets": [
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "evidence-2026-10-16.tar.zst",
+      "bytes": 27983820,
+      "sha256": "740700f6ac3f463f6127dd064d471a141dc28250a93a2c8901645989bcebfba9",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-16.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "project-runtime.tar.zst",
+      "bytes": 326147402,
+      "sha256": "f4242c7904218f132f2c6461d51bb62c4428e056e8f0b6c33d46f26541b8a6bd",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/project-runtime.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "project-local-state.tar.zst",
+      "bytes": 4059853,
+      "sha256": "c1c1ea6a634942c514676bba07398088054c7a9f81cbf115bd3e569b1ecd8c28",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/project-local-state.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "evidence-2026-10-15.tar.zst",
+      "bytes": 25526091,
+      "sha256": "7d202bd7ec960b675b8190aab03884d280ed8ec1211d24f3744169e1aaf89a68",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-15.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "evidence-2026-10-17.tar.zst",
+      "bytes": 107378224,
+      "sha256": "78b8a547761139e8984c7ad6ed1292b1599e29866c77bebb1000c2ca09343c49",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-17.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "evidence-2026-10-18.tar.zst",
+      "bytes": 448321148,
+      "sha256": "ac51de4137d645112b3e0be2e4aaff3d5c8f615dc90b10b7dedc8964ec26186c",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/evidence-2026-10-18.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "compiled-and-wheels.tar.zst",
+      "bytes": 55249092,
+      "sha256": "5b90b8c95d8ad9dfb82382ac9bfba7005254004f5209156b71929a0e4be2af3c",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/compiled-and-wheels.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "fuel-cache.tar.zst",
+      "bytes": 144263245,
+      "sha256": "ee2d2ce72dea345b5aaac8c4fe0d3d501a8d51c3211ba1c038ca025cc0ae3b0d",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/fuel-cache.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "download-caches.tar.zst",
+      "bytes": 157435220,
+      "sha256": "af193d56559b1e0837e1bca2f43efcda38918906566ceb37c510d54b2db58569",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/download-caches.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "frontend-environment.tar.zst",
+      "bytes": 105831105,
+      "sha256": "5ab47e62b8567fc1ed04ad081f679826692e3feac414840509d3390b6eccc99f",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/frontend-environment.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "metadata.tar.zst",
+      "bytes": 10264041,
+      "sha256": "54b6b4e48a816ae03c90c02e68ac7328365728f74739ec9d90db0d0dc93b9ae7",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/metadata.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "python-environments.tar.zst",
+      "bytes": 321373486,
+      "sha256": "ddcd69456155739457dbec11aa4c32749491005f68359339a00bf46e9060b08c",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/python-environments.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "platform_snapshot.py",
+      "bytes": 18658,
+      "sha256": "49e9b2c47773b25e8dd18c48cf181a4f2f5a837f009526d78d41b91bb733a165",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform_snapshot.py"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "files.jsonl.zst",
+      "bytes": 5736042,
+      "sha256": "5afd3d492d9a2c5872592f767ab9b686c6c3a8305090ce7131aeac9ecc333792",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/files.jsonl.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "snapshot.json",
+      "bytes": 5219,
+      "sha256": "07bc846abe7d8b8819f04db35624e31969b8730a846f9b844d5294e2793166aa",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/snapshot.json"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "exclusions.json",
+      "bytes": 1524960,
+      "sha256": "2f5cdbd462f76cca4f151943ee000f66a8b5599854af04a83037756617a0227d",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/exclusions.json"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "additional-project.tar.gz",
+      "bytes": 492860756,
+      "sha256": "cb602cbbfc17e4dc85507072d5d225859496885ff3a0441f85eac9e7b8ec2b8c",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/additional-project.tar.gz"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "SHA256SUMS",
+      "bytes": 1619,
+      "sha256": "f73536aefaffc84903dab0c6a9d5e5a2832494291f98c395b4181209d997a6d8",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/SHA256SUMS"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "platform-image.json",
+      "bytes": 10149,
+      "sha256": "c49758f5ec593ed992668f93c68854598c109cb66a09875c58ba644d4c4ef100",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/platform-image.json"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "deployment-acceptance-catalog.json",
+      "bytes": 1021,
+      "sha256": "8c49f850a7c5a8763ef0b015ae8536b987aecda1a8943641679843d68f419a61",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance-catalog.json"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "deployment-acceptance-exclusions.json",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance-exclusions.json"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "deployment-acceptance.tar.zst",
+      "bytes": 46998880,
+      "sha256": "fc1793db9a74ed08926d8cab69688453f546ac8a264e3846d9ea2d641868f84c",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance.tar.zst"
+    },
+    {
+      "release_tag": "platform-snapshot-20261018-ddb5113e",
+      "name": "deployment-acceptance-files.jsonl.zst",
+      "bytes": 29796,
+      "sha256": "e947f86e08908a50ad64deb983beac25f2c0ebb6ee6c759770bc8658aa352c40",
+      "url": "https://github.com/peakpeng666/URP/releases/download/platform-snapshot-20261018-ddb5113e/deployment-acceptance-files.jsonl.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "local-delta-e2e-00.tar.zst",
+      "bytes": 136993694,
+      "sha256": "4fbd9b069a948de24059636d16876d4efd5a4c0a7b5252dbb6ecdec36fa1016e",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-00.tar.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "local-delta-e2e-01.tar.zst",
+      "bytes": 195818613,
+      "sha256": "9f440fb9e6e762917775130a59f76f50c49266a7c343c03d47baee800f0aa38c",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-01.tar.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "local-delta-e2e-02.tar.zst",
+      "bytes": 177076011,
+      "sha256": "4d71221d30c98818a01c8924fba175096c86f053ff8c269b48183d02e2ee0b23",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-e2e-02.tar.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "local-delta-experiments-00.tar.zst",
+      "bytes": 4690988,
+      "sha256": "9d5b8c35ec8b4b99e988cc1db4ad4e41f339f3461f2a3b37ed7620bfb8edceb0",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-experiments-00.tar.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "local-delta-records-00.tar.zst",
+      "bytes": 78031722,
+      "sha256": "22276a5d4a04a54cb53ac9eb76061049ae2788341b9c9dfb4cde10c734b12c58",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-records-00.tar.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "local-delta-records-01.tar.zst",
+      "bytes": 64436808,
+      "sha256": "3d39a0b0c524a20e6a8c6eb48a8e095d192e1d27f9ec582e5c5be98263be5d38",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/local-delta-records-01.tar.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "files.jsonl.zst",
+      "bytes": 1821748,
+      "sha256": "fc19ecebfc40b8f4b69ddcfbd7d7f811bb61f0208589956690cef731938682ed",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/files.jsonl.zst"
+    },
+    {
+      "release_tag": "local-preservation-20261026",
+      "name": "exclusions.json",
+      "bytes": 716277,
+      "sha256": "7bd962778e6effe05fee2b0507fd09d9b9b11276efc01fc9f0203e6c4563aa29",
+      "url": "https://github.com/peakpeng666/URP/releases/download/local-preservation-20261026/exclusions.json"
+    }
+  ],
+  "restore_policy": "Fresh absolute destination only. Copies redact authentication. Base assets and delta assets are both pinned. Host native runtime, ROS, Fuel, DBs and active assets remain on the original machine. Restore does not install host binaries.",
+  "verification_scope": "Work preservation, record/hash recovery, 14 engineering gates and 466 Lab tests. No new physical execution acceptance."
+}

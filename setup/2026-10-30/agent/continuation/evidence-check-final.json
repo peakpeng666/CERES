@@ -1,0 +1,638 @@
+{
+  "schema": "urp.agent-evidence-check/1",
+  "status": "passed",
+  "method": "Independent read-only Python stdlib check of existing exports; no solver, model, ROS execution, or source changes. SHA256 uses json.dumps(record, sort_keys=True, ensure_ascii=False, separators=(comma, colon), allow_nan=False), matching the exporter for JSON-native data.",
+  "scope": [
+    "setup/2026-10-30/agent/continuation/browser-rule-raw",
+    "setup/2026-10-30/agent/continuation/browser-hybrid",
+    "experiments/agent-evals/20261030-exec-rule-v4",
+    "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1",
+    "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2"
+  ],
+  "summary": {
+    "exports_checked": 19,
+    "export_checksums_passed": 19,
+    "export_checksums_failed": 0,
+    "browser_edit_history_pairs_checked": 2,
+    "model_simulation_rejection_cases_checked": 2,
+    "all_checks_passed": true
+  },
+  "prior_failure_evidence": {
+    "file": "setup/2026-10-30/agent/continuation/evidence-check.json",
+    "preserved": true,
+    "note": "Earlier browser-rule files were re-encoded by the acceptance script and fail their recorded hashes. This final check uses new browser-rule-raw and browser-hybrid files preserving original HTTP response text; prior failed files and results remain unchanged."
+  },
+  "exports": [
+    {
+      "file": "setup/2026-10-30/agent/continuation/browser-rule-raw/edited-session.json",
+      "status": "passed",
+      "declared_export_sha256": "17c9471a33f467fbc26201b7d072972a193f0385bd1d84831aebe958eeccd943",
+      "recomputed_export_sha256": "17c9471a33f467fbc26201b7d072972a193f0385bd1d84831aebe958eeccd943",
+      "scenario_id": "task-sampling-20261029-163018-042-a37de3-r1",
+      "declared_instance_sha256": "7a50008995a52b9d0838bb9dfe17642b5ea21168c4cdec7fdb4557043aa4d110",
+      "recomputed_instance_sha256": "7a50008995a52b9d0838bb9dfe17642b5ea21168c4cdec7fdb4557043aa4d110",
+      "active_run_ids": [
+        "run_20261029T163024_7b0a4c",
+        "run_20261029T163024_3efb3a",
+        "run_20261029T163024_2c8e7b"
+      ],
+      "best_verified_run_id": "run_20261029T163024_7b0a4c",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "setup/2026-10-30/agent/continuation/browser-rule-raw/first-session.json",
+      "status": "passed",
+      "declared_export_sha256": "40807d24d111385c49e7b2e94a2c9942fec247616d5a6b51c9bf527636e165a0",
+      "recomputed_export_sha256": "40807d24d111385c49e7b2e94a2c9942fec247616d5a6b51c9bf527636e165a0",
+      "scenario_id": "task-sampling-20261029-163018-042-a37de3-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T163019_cabc61",
+        "run_20261029T163019_39962a",
+        "run_20261029T163019_e3d40f"
+      ],
+      "best_verified_run_id": "run_20261029T163019_cabc61",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "setup/2026-10-30/agent/continuation/browser-hybrid/edited-session.json",
+      "status": "passed",
+      "declared_export_sha256": "c254e2f215c8621d0cecf4299837d479ca19462d87bb30d63c149575c054e0d2",
+      "recomputed_export_sha256": "c254e2f215c8621d0cecf4299837d479ca19462d87bb30d63c149575c054e0d2",
+      "scenario_id": "task-sampling-20261029-163353-042-054069-r2",
+      "declared_instance_sha256": "7a50008995a52b9d0838bb9dfe17642b5ea21168c4cdec7fdb4557043aa4d110",
+      "recomputed_instance_sha256": "7a50008995a52b9d0838bb9dfe17642b5ea21168c4cdec7fdb4557043aa4d110",
+      "active_run_ids": [
+        "run_20261029T163448_be78bc",
+        "run_20261029T163448_3b6c38",
+        "run_20261029T163448_ff67aa"
+      ],
+      "best_verified_run_id": "run_20261029T163448_be78bc",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "setup/2026-10-30/agent/continuation/browser-hybrid/first-session.json",
+      "status": "passed",
+      "declared_export_sha256": "4a49eab3912fda264991195a3c229c9f55a013e853bb746062bb5da8d76e582a",
+      "recomputed_export_sha256": "4a49eab3912fda264991195a3c229c9f55a013e853bb746062bb5da8d76e582a",
+      "scenario_id": "task-sampling-20261029-163353-042-054069-r2",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T163358_a506f5",
+        "run_20261029T163358_53631f",
+        "run_20261029T163358_754510"
+      ],
+      "best_verified_run_id": "run_20261029T163358_a506f5",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X1-standard.session.json",
+      "status": "passed",
+      "declared_export_sha256": "ae447486fd22808fc29f06920da97961aa859d272c1a1672ccaac1c377895e7a",
+      "recomputed_export_sha256": "ae447486fd22808fc29f06920da97961aa859d272c1a1672ccaac1c377895e7a",
+      "scenario_id": "task-sampling-20261029-162632-042-a13ef6-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162632_349db8",
+        "run_20261029T162632_a8496c",
+        "run_20261029T162632_ec4d8e"
+      ],
+      "best_verified_run_id": "run_20261029T162632_349db8",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X2-single-trip-infeasible.session.json",
+      "status": "passed",
+      "declared_export_sha256": "1323e8161a0ca45db38d3fe26ea513f66d6e26b98a7d6822d8cfce68d6845f41",
+      "recomputed_export_sha256": "1323e8161a0ca45db38d3fe26ea513f66d6e26b98a7d6822d8cfce68d6845f41",
+      "scenario_id": "task-sampling-20261029-162635-042-d15c99-r1",
+      "declared_instance_sha256": "0d29edb708604aec43d200b1bc8895b3ab532307b11178cad8ee597dd8ea2a15",
+      "recomputed_instance_sha256": "0d29edb708604aec43d200b1bc8895b3ab532307b11178cad8ee597dd8ea2a15",
+      "active_run_ids": [
+        "run_20261029T162635_5f58ae",
+        "run_20261029T162635_cbd089",
+        "run_20261029T162635_70eab2"
+      ],
+      "best_verified_run_id": "run_20261029T162635_5f58ae",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X3-time-windows.session.json",
+      "status": "passed",
+      "declared_export_sha256": "5166bb7bf5a7d74c10b166fd92b3470d23cd1dbec198a96950b491dbe351af26",
+      "recomputed_export_sha256": "5166bb7bf5a7d74c10b166fd92b3470d23cd1dbec198a96950b491dbe351af26",
+      "scenario_id": "task-sampling-20261029-162638-042-0ccdae-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162638_49c0b2",
+        "run_20261029T162638_748bef",
+        "run_20261029T162638_d08d85"
+      ],
+      "best_verified_run_id": "run_20261029T162638_49c0b2",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X4-injection.session.json",
+      "status": "passed",
+      "declared_export_sha256": "15e86af39d0d3aeb40b346ab3b3c63443839f2c9a0ddf1f006f212f15c641b3a",
+      "recomputed_export_sha256": "15e86af39d0d3aeb40b346ab3b3c63443839f2c9a0ddf1f006f212f15c641b3a",
+      "scenario_id": "task-sampling-20261029-162641-042-36e10a-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162641_d6356e",
+        "run_20261029T162641_3013c1",
+        "run_20261029T162641_0f4cb7"
+      ],
+      "best_verified_run_id": "run_20261029T162641_d6356e",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X5-simulation-gate.session.json",
+      "status": "passed",
+      "declared_export_sha256": "8cff57054c738dd08eb42b0cb057da14dd3c276b8a12a1181b847b4108ba8f39",
+      "recomputed_export_sha256": "8cff57054c738dd08eb42b0cb057da14dd3c276b8a12a1181b847b4108ba8f39",
+      "scenario_id": "task-sampling-20261029-162644-042-e3a5b8-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162644_170b44",
+        "run_20261029T162644_a35d7a",
+        "run_20261029T162644_b74b08"
+      ],
+      "best_verified_run_id": "run_20261029T162644_170b44",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1/X1-standard.session.json",
+      "status": "passed",
+      "declared_export_sha256": "c5e9d65775bc3eeed704122c5866d118d6d09fdb764d07b44053265bfcfb1d74",
+      "recomputed_export_sha256": "c5e9d65775bc3eeed704122c5866d118d6d09fdb764d07b44053265bfcfb1d74",
+      "scenario_id": "task-sampling-20261029-162658-042-b4f3d2-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162702_e3680b",
+        "run_20261029T162702_dd4be6",
+        "run_20261029T162702_f07d41"
+      ],
+      "best_verified_run_id": "run_20261029T162702_e3680b",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1/X2-single-trip-infeasible.session.json",
+      "status": "passed",
+      "declared_export_sha256": "7a70d0aa60f33516e14fa7adb992b7912b6403ca5f2525734e953dbd959e9ac8",
+      "recomputed_export_sha256": "7a70d0aa60f33516e14fa7adb992b7912b6403ca5f2525734e953dbd959e9ac8",
+      "scenario_id": "task-sampling-20261029-162730-042-d07a50-r2",
+      "declared_instance_sha256": "0d29edb708604aec43d200b1bc8895b3ab532307b11178cad8ee597dd8ea2a15",
+      "recomputed_instance_sha256": "0d29edb708604aec43d200b1bc8895b3ab532307b11178cad8ee597dd8ea2a15",
+      "active_run_ids": [
+        "run_20261029T162739_5cd561",
+        "run_20261029T162739_c9c694",
+        "run_20261029T162739_c542f2"
+      ],
+      "best_verified_run_id": "run_20261029T162739_5cd561",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1/X3-time-windows.session.json",
+      "status": "passed",
+      "declared_export_sha256": "71613e24c8f8e3897ea7af0cb63fb3fead9762d8c9dee40068e3855094f65106",
+      "recomputed_export_sha256": "71613e24c8f8e3897ea7af0cb63fb3fead9762d8c9dee40068e3855094f65106",
+      "scenario_id": "task-sampling-20261029-162812-042-007d28-r2",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162816_5616c2",
+        "run_20261029T162816_5f730d",
+        "run_20261029T162816_cfe844"
+      ],
+      "best_verified_run_id": "run_20261029T162816_5616c2",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1/X4-injection.session.json",
+      "status": "passed",
+      "declared_export_sha256": "53de042a067fd3b4c4ea4918512c9f73c0f8089ebf85ae374521f04fcfdb06ab",
+      "recomputed_export_sha256": "53de042a067fd3b4c4ea4918512c9f73c0f8089ebf85ae374521f04fcfdb06ab",
+      "scenario_id": "task-sampling-20261029-162846-042-e1bb7b-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162850_9e4ebe",
+        "run_20261029T162850_d1b85a",
+        "run_20261029T162850_1bc5d3"
+      ],
+      "best_verified_run_id": "run_20261029T162850_9e4ebe",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1/X5-simulation-gate.session.json",
+      "status": "passed",
+      "declared_export_sha256": "9b5828b1c8b817b4ecebcc1a7e77184ea98addba97f5edfdb32811bcd9e47ee8",
+      "recomputed_export_sha256": "9b5828b1c8b817b4ecebcc1a7e77184ea98addba97f5edfdb32811bcd9e47ee8",
+      "scenario_id": "task-sampling-20261029-162919-042-4c3e5f-r2",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162923_6ca1cb",
+        "run_20261029T162923_6941fd",
+        "run_20261029T162923_8872ed"
+      ],
+      "best_verified_run_id": "run_20261029T162923_6ca1cb",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2/X1-standard.session.json",
+      "status": "passed",
+      "declared_export_sha256": "9eda393e9183907078624eb2714ad88e7191627b7af9e4de4ce1536b2b576eb6",
+      "recomputed_export_sha256": "9eda393e9183907078624eb2714ad88e7191627b7af9e4de4ce1536b2b576eb6",
+      "scenario_id": "task-sampling-20261029-162958-042-529fa4-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T163002_8e61fe",
+        "run_20261029T163002_132a93",
+        "run_20261029T163002_272a15"
+      ],
+      "best_verified_run_id": "run_20261029T163002_8e61fe",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2/X2-single-trip-infeasible.session.json",
+      "status": "passed",
+      "declared_export_sha256": "7cba2e5b226fdfdecfe83b9381e982826c0b1c9c8620ebee4dcbb4011ee4b373",
+      "recomputed_export_sha256": "7cba2e5b226fdfdecfe83b9381e982826c0b1c9c8620ebee4dcbb4011ee4b373",
+      "scenario_id": "task-sampling-20261029-163031-042-d68fd9-r2",
+      "declared_instance_sha256": "83719772639eb80df0b3bd1bfa22d24b229d5a9cbd8096b3fde166927c3e0971",
+      "recomputed_instance_sha256": "83719772639eb80df0b3bd1bfa22d24b229d5a9cbd8096b3fde166927c3e0971",
+      "active_run_ids": [
+        "run_20261029T163040_857286",
+        "run_20261029T163040_29a9fa",
+        "run_20261029T163040_f715e5"
+      ],
+      "best_verified_run_id": "run_20261029T163040_857286",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2/X3-time-windows.session.json",
+      "status": "passed",
+      "declared_export_sha256": "de840efa063431402ef55a6c9ebc85e22e333334754ce60fd3a71e02b7544d4c",
+      "recomputed_export_sha256": "de840efa063431402ef55a6c9ebc85e22e333334754ce60fd3a71e02b7544d4c",
+      "scenario_id": "task-sampling-20261029-163114-042-ebbf21-r2",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T163118_ddf394",
+        "run_20261029T163118_9d1145",
+        "run_20261029T163118_4e776e"
+      ],
+      "best_verified_run_id": "run_20261029T163118_ddf394",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2/X4-injection.session.json",
+      "status": "passed",
+      "declared_export_sha256": "2114bfe832a4e556c60ffba28301b9a4572c2b645929c2a50598e9808ef199fe",
+      "recomputed_export_sha256": "2114bfe832a4e556c60ffba28301b9a4572c2b645929c2a50598e9808ef199fe",
+      "scenario_id": "task-sampling-20261029-163148-042-98c3ea-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T163152_17ad2b",
+        "run_20261029T163152_93192b",
+        "run_20261029T163152_2d6ff1"
+      ],
+      "best_verified_run_id": "run_20261029T163152_17ad2b",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2/X5-simulation-gate.session.json",
+      "status": "passed",
+      "declared_export_sha256": "3f010064733fa828e94e2efd74566f031c0a6823e3247bb89131a32c649d0f93",
+      "recomputed_export_sha256": "3f010064733fa828e94e2efd74566f031c0a6823e3247bb89131a32c649d0f93",
+      "scenario_id": "task-sampling-20261029-163221-042-8f1edf-r2",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T163225_312c76",
+        "run_20261029T163225_a0fe6f",
+        "run_20261029T163225_fe6a72"
+      ],
+      "best_verified_run_id": "run_20261029T163225_312c76",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    }
+  ],
+  "browser_edit_history": [
+    {
+      "first_file": "setup/2026-10-30/agent/continuation/browser-rule-raw/first-session.json",
+      "edited_file": "setup/2026-10-30/agent/continuation/browser-rule-raw/edited-session.json",
+      "status": "passed",
+      "first_round_run_ids": [
+        "run_20261029T163019_cabc61",
+        "run_20261029T163019_39962a",
+        "run_20261029T163019_e3d40f"
+      ],
+      "current_run_ids": [
+        "run_20261029T163024_7b0a4c",
+        "run_20261029T163024_3efb3a",
+        "run_20261029T163024_2c8e7b"
+      ],
+      "checks": {
+        "same_session_and_same_scenario_id": true,
+        "vehicle_count_changed_from_two_to_three": true,
+        "exactly_three_first_round_runs_and_three_new_active_runs": true,
+        "first_round_runs_retained_in_history_and_export": true,
+        "first_round_run_documents_unchanged": true,
+        "first_round_runs_excluded_from_current_batch_and_report": true,
+        "first_round_instances_differ_from_current_instance": true,
+        "first_round_verification_summaries_retained_unchanged": true,
+        "first_round_verification_tool_evidence_retained_unchanged": true
+      }
+    },
+    {
+      "first_file": "setup/2026-10-30/agent/continuation/browser-hybrid/first-session.json",
+      "edited_file": "setup/2026-10-30/agent/continuation/browser-hybrid/edited-session.json",
+      "status": "passed",
+      "first_round_run_ids": [
+        "run_20261029T163358_a506f5",
+        "run_20261029T163358_53631f",
+        "run_20261029T163358_754510"
+      ],
+      "current_run_ids": [
+        "run_20261029T163448_be78bc",
+        "run_20261029T163448_3b6c38",
+        "run_20261029T163448_ff67aa"
+      ],
+      "checks": {
+        "same_session_and_same_scenario_id": true,
+        "vehicle_count_changed_from_two_to_three": true,
+        "exactly_three_first_round_runs_and_three_new_active_runs": true,
+        "first_round_runs_retained_in_history_and_export": true,
+        "first_round_run_documents_unchanged": true,
+        "first_round_runs_excluded_from_current_batch_and_report": true,
+        "first_round_instances_differ_from_current_instance": true,
+        "first_round_verification_summaries_retained_unchanged": true,
+        "first_round_verification_tool_evidence_retained_unchanged": true
+      }
+    }
+  ],
+  "model_simulation_rejections": [
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r1/X5-simulation-gate.session.json",
+      "status": "passed",
+      "decision": {
+        "contract_revision": 2,
+        "run_id": "run_20261029T162923_6ca1cb",
+        "status": "rejected"
+      },
+      "sim_runs": [],
+      "active_sim_runs": [],
+      "checks": {
+        "terminal_state_done": true,
+        "simulation_decision_rejected": true,
+        "decision_matches_current_contract_revision": true,
+        "decision_run_belongs_to_current_batch": true,
+        "sim_runs_empty": true,
+        "active_sim_runs_empty": true,
+        "no_successful_start_simulation_tool_call": true,
+        "report_records_no_simulation_started": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-hybrid-v4-qwen3.8-27b-r2/X5-simulation-gate.session.json",
+      "status": "passed",
+      "decision": {
+        "contract_revision": 2,
+        "run_id": "run_20261029T163225_312c76",
+        "status": "rejected"
+      },
+      "sim_runs": [],
+      "active_sim_runs": [],
+      "checks": {
+        "terminal_state_done": true,
+        "simulation_decision_rejected": true,
+        "decision_matches_current_contract_revision": true,
+        "decision_run_belongs_to_current_batch": true,
+        "sim_runs_empty": true,
+        "active_sim_runs_empty": true,
+        "no_successful_start_simulation_tool_call": true,
+        "report_records_no_simulation_started": true
+      }
+    }
+  ]
+}

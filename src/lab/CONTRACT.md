@@ -80,9 +80,9 @@ ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDD
  "params": [{"name": "time_limit_s", "type": "number", "default": 5, "min": 0.5, "max": 120, "label": "时间预算 (s)"}],
  "description": "…"}
 ```
-当前执行 id（PyVRP 0.14.0 实际运行 IteratedLocalSearch）：
-- turn_routing：`urp.turn_mode_dp`、`urp.reset_dp`（忽略进入方向的松弛，可能违反转弯约束）、`urp.raw_oracle`（独立原图精确搜索）、`pyvrp.ils+urp.layered`、`ortools.gls+urp.layered`（第三方元启发式在松弛距离上给出分配与顺序，再由项目 `turn_modes/evaluate_candidate.py` 分层 DP 实现转弯可行路线）。
-- euclidean_cvrp：`pyvrp.ils`、`ortools.gls`。旧 `urp.js.*` 尚未纳入此网关目录。
+固定 id（`pyvrp.hgs` 为历史 API 标识；已安装的 PyVRP 0.14.0 实际运行 IteratedLocalSearch，显示名和来源使用 ILS，不把它归类为 HGS）：
+- turn_routing：`urp.turn_mode_dp`、`urp.reset_dp`（忽略进入方向的松弛，可能违反转弯约束）、`urp.raw_oracle`（独立原图精确搜索）、`pyvrp.hgs+urp.layered`、`ortools.gls+urp.layered`（第三方元启发式在松弛距离上给出分配与顺序，再由项目 `turn_modes/evaluate_candidate.py` 分层 DP 实现转弯可行路线）。
+- euclidean_cvrp：`pyvrp.hgs`、`ortools.gls`。旧 `urp.js.*` 尚未纳入此网关目录。
 - coverage：`f2c.boustrophedon`、`f2c.snake`（可选 Fields2Cover；版本和 native 指纹必须匹配 vendor 清单，否则 available=false 并说明原因）、`panel.boustrophedon`（面板基线，Shapely 实现，允许原地转向）。F2C 支持单个凸内缩作业区，采用原生 Dubins 转弯、0.02 m 离散；独立检查完整足迹、采样曲率及作业区覆盖。拒绝的几何保留在 raw_result，不能进入仿真。
 
 ### 2.4 Solve request / Solution
@@ -149,15 +149,6 @@ Solution（`GET /lab/api/runs/{run_id}`）：
 ```
 - `POST /lab/api/sim/session {"world": "warehouse", "spawn": {...}?, "gui": false, "rviz": true, "localization":"amcl"}` 启动；localization 默认为 amcl，可选 ground_truth（显式的理想定位实验，AMCL 仅旁路观测，不能用于证明传感器定位能力）。`DELETE /lab/api/sim/session` 有序关闭；`POST /lab/api/sim/gui {"on": true}`，`POST /lab/api/sim/rviz {"on": true}`。
 - `POST /lab/api/sim/runs {"run_id": "run_…", "mode": "follow_path"|"nav2_waypoints"}` → 202 SimRun；`GET /lab/api/sim/runs`、`GET /lab/api/sim/runs/{sim_run_id}`、`POST /lab/api/sim/runs/{id}/cancel`。不适用（基准坐标、世界不一致、地图检查不通过且模式为 follow_path）返回 422 `{"error":"not_simulatable","message":"…"}`；已运行世界不一致为 409 `world_mismatch`。
-- 可选执行预算：`budget_s` 为 `(0,1800]` 的有限选定时钟秒；省略时仍为原规划公式 `max(90,min(1800,planned_length_m/0.10+60))`。`time_basis` 缺省 `wall`；只有显式 `simulation` 才按 `/clock` 累计，同时必须明确给出 `(0,7200]` 有限墙钟秒的 `wall_watchdog_s`。不会按测得 RTF 自动延长，也不会静默截断请求；非法参数在启动会话/排队前返回 422 `invalid_execution_budget`。wall 模式看门狗必须等于 budget_s（或省略）。
-- `budget_policy` 默认 wall 保持原 `execution_budget_v1`，显式 simulation 使用 `execution_budget_v2`；保留原始 requested、生效 effective、planner_budget_s、规划公式标识和预算来源，排队响应、实时状态、终态、JSON 导出均保留；CSV 保持原有六列 `sim_run_id,source,t_sim,x_m,y_m,yaw_rad`，不追加预算列；完整计时策略必须从 JSON 导出读取。`planned.length_m` 保留公式所用长度。历史记录不补造新协议。
-- 一个执行起点覆盖接驳和全部分段/任务。默认 wall 模式保留 NavigateToPose 的 90 墙钟秒子上限，并受共享总预算约束；simulation 模式明确只用共享模拟时间总预算和墙钟看门狗，没有额外 90 墙钟秒或新建 90 模拟秒的子预算。每次发目标前、服务发现后核查同一起点，耗尽后不再给予 `max(.1/1, remaining)` 新时间。
-- 默认 wall 的必需 clock/scan/odom/ground_truth 流仍严格按 `age > 3` 墙钟秒失败，字段及检查次序不变。simulation v2 改为 scan/odom/ground_truth 的 `age > 3` **模拟秒**，并分别保留 `receipt_age > 30` 与 `progress_age > 30` 墙钟秒硬后备；这是新的显式计时协议，不是原实时安全口径的等价声明，不按 RTF 外推。慢速仿真中的孤立传感器中断可能超过 3 墙钟秒，但不能超过 3 模拟秒或 30 墙钟秒中先到的界限。`/clock` 缺失、非有限、倒退明确失败；重复时钟消息不重置 `no_progress >= 30` 墙钟秒保护。执行总看门狗仍单独生效。
-- simulation v2 同时记录实际缓存消息的 header、接收墙钟及接收时最新 `/clock`。源 header 缺失、非有限、负值或倒退明确失败，故障在会话中锁存，需重启会话；不以历史最大 header 掩盖旧缓存。因跨 topic 回调可能乱序，header 最多可领先接收时 `/clock` 3 模拟秒，超过即 `stream_stamp_future`；允许窗口内的有效新鲜度只记到接收时 `/clock`，重复同一 header 不刷新该信用或源进展墙钟。`/clock` 先恢复而缓存数据仍落后超过 3 模拟秒时保守失败，不增加追赶宽限或新预算。
-- 唯一零 header 特例是现有 `/ground_truth/poses` 中 turtlebot4 的 Pose_V 桥接消息：持续零 header 以接收 `/clock` 为来源，标记 `clock_at_receive_zero_stamp`，`source_age_sim_s=null`。该来源只能证明回调/接收时钟新鲜度，不能分辨不断重播的旧零时间戳变换与当前变换；不声称验证了测量源年龄或严格同步。已出现非零 header 后退回零仍失败。scan/odom 不使用此回退，原几何、碰撞、任务、终点和覆盖核验不变。
-- `execution_timing` 记录固定起点、触发原因、终态累计、各流年龄最大值和一次完整原子观察；simulation v2 另保留至多 8 条、间隔至少 1 墙钟秒的观察和独立触发快照，避免首个失败流短路后遗漏其他流。物理暂停不会增加模拟年龄，但消费者停顿后时钟跳跃可能造成真实可观察的缓存陈旧；这些诊断不能单独证明暂停原因。终态回调仍不能掩盖时钟/传感器故障，也不把结果处理耗时倒推成预算超时。ROS 发现、目标响应、取消、停车与清理仍分别使用有限墙钟等待。启动 Undock 的 35 模拟秒/700 墙钟秒协议不变。
-- `e2e/full_loop.py` 显式选项为 `--execution-time-basis simulation --execution-wall-watchdog 900`，可另设 `--execution-budget`。默认 `--budget 1800` 仍是整体墙钟上限，默认两种 modes 不自动删减。运行前及会话就绪后逐次核查剩余墙钟至少覆盖提交 30 秒 + 执行看门狗 + 终态处理 90 秒；不足时拒绝派发，不把模拟秒误用于外层轮询。READY 上限 1200 秒不变，关闭另受已有有限墙钟上限约束。显式 maze 单模式示例：`--scenario maze-inspection --modes follow_path --execution-time-basis simulation --execution-wall-watchdog 900 --budget 1800`。warehouse 长预算协议应显式规划，例如单模式 watchdog 5400、overall 7200；CI/job 总时限还需包含环境准备及关闭，不能沿用短 maze 时限。
-- 这些预算选项不修改已验几何、碰撞、任务顺序、端点误差或覆盖率阈值；模拟时钟协议不是原生成功证据，也不能与默认墙钟实验混为同一协议比较。
 - SimRun：
 ```jsonc
 {"sim_run_id": "sim_run_…", "run_id": "run_…", "session_id": "…", "world": "warehouse", "mode": "follow_path",
@@ -188,16 +179,13 @@ Solution（`GET /lab/api/runs/{run_id}`）：
 - 田间结果增加 `replay_contract`（`urp.replay/1`），声明源仿真时钟、真值位置、米/弧度及最大插值间隔 0.25 s。前端不跨缺流插值或累计跨缺口里程；不单调时间戳拒绝单轴重放。回放里程/偏差随选定时刻计算，完整终态证据另列；任务到达与作业停留完成分开。显示抽稀不改原始遥测和实验导出。
 
 ### 2.8 SSE `GET /lab/api/events`
-`event:` 类型与 `data:` JSON：`services`（完整 services 列表，状态变化时）、`job`（`{job_id, run_id, state}`）、`run`（完整 Solution，完成时）、`sim_state`（SimState，≤ 4 Hz，当前为完整状态与轨迹快照）、`sim_run`（SimRun 完成或状态变化）、`log`（`{log, lines}`；当前前端通过日志接口轮询）、`agent`（`{session_id, state, steps, updated_utc}`，智能体会话每次保存，见 §9）。心跳 `event: ping` 每 15 s。
+`event:` 类型与 `data:` JSON：`services`（完整 services 列表，状态变化时）、`job`（`{job_id, run_id, state}`）、`run`（完整 Solution，完成时）、`sim_state`（SimState，≤ 4 Hz，当前为完整状态与轨迹快照）、`sim_run`（SimRun 完成或状态变化）、`log`（`{log, lines}`；当前前端通过日志接口轮询）。心跳 `event: ping` 每 15 s。
 
 ### 2.9 其他
 - `GET /lab/api/health` → `{"status":"ok","version":"0.1.0","executes_solvers":true}`
 - `GET /lab/api/maps/{world}` → `{"world","resolution","origin","width","height","image":"/lab/api/maps/{world}.png"}`；`.png` 为灰度栅格（行 0 在图像顶部，对应 map y 最大处）。
 - `GET /lab/api/runs?scenario_id=&limit=` → `{"runs":[Solution 摘要…]}`；`DELETE` 不提供（历史保留）。
-- 导出：`GET /lab/api/runs/{run_id}/export?format=json|csv|tasks-csv|geojson`、`GET /lab/api/sim/runs/{id}/export?format=json|csv`、`POST /lab/api/compare/export {"run_ids":[…], "format":"csv"|"json"}`。
-  - 规划 `csv` 保持几何点格式及既有列 `run_id,vehicle,point,x,y,units,instance_sha256`，包括回仓点；不静默替换为任务表。规划文件名沿用原 `run_id`，不补造导出时间。
-  - 显式 `tasks-csv` 仅支持 `fleet_routing`，文件名为 `{run_id}-tasks.csv`。列为 `run_id,instance_sha256,units,row_kind,vehicle,vehicle_name,trip,order,task,label,x,y,demand`；`row_kind=task_service`，`vehicle` 保留原车辆编号，`trip/order` 从1开始，逐 `routes[].trips[][]` 服务任务展开。旧记录无分趟时以 `sequence` 作为单趟。任务坐标、标签、需求来自原 `instance.tasks`；`units` 保留原坐标单位，不表示需求单位。回仓/补给几何点不是任务服务行，应从几何CSV或JSON读取。
-  - 两种CSV均保留原 `run_id`、输入哈希及坐标单位；来源身份已失效的记录先清除有效路线，两种CSV只留下表头。原始审计记录不改写，JSON仍是完整谱系入口。
+- 导出：`GET /lab/api/runs/{run_id}/export?format=json|csv|geojson`、`GET /lab/api/sim/runs/{id}/export?format=json|csv`、`POST /lab/api/compare/export {"run_ids":[…], "format":"csv"|"json"}`。文件名带 run id 与 UTC 时间。
 - 错误格式统一 `{"error": "code", "message": "中文说明"}`。网关只监听 127.0.0.1；POST 只接受 `application/json`，拒绝跨源写入（Origin 与 Host 不一致 → 403）。
 
 ## 3. Python 模块接口（网关 ↔ 核心）
@@ -270,7 +258,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 - `fleet_routing`（多车任务分配与路径）：`{boundary, plots[{id,name,crop,rows_deg,polygon}], obstacles[{id,kind,name,polygon}], depot, tasks[{id,xy,demand,label,plot,service_s}], vehicles{count,capacity,speed_mps,trips:'multi'|'single',travel:'rows'|'free',names,fleet?}, objective:'total_distance'|'makespan', robot_radius, units:'m'}`。障碍 `kind ∈ pond|building|greenhouse|tree|ditch|rock|other`。
   `vehicles.fleet`（可选，2026-10-17 第三轮）是异构车队类别清单：`[{name?, count, capacity, speed_mps?, robot_radius?, payload:'load'|'none', min_turn_radius_m?, asset?:{id,version,sha256}}]`（1–8 类，总台数 ≤ 60；给出 `fleet` 时不再单独给 `count`/`capacity`/`names`）。`min_turn_radius_m`（0–10 m，默认 0 = 可原地转向）为正的类别按 Dubins (1957) 曲线实现路径（OMPL `DubinsStateSpace`，仅前进不倒车）：航向在路段间携带，每个航向变化成为曲率受约束的转弯；路点航向按离散化集合做动态规划选取（Le Ny et al. 2007 / Cohen & Epstein 2017 的 discretised-DTSP 方案，12 向候选；启发式、非连续最优），分配在直线图距离上优化，实现的曲线长度作为执行指标（`curvature_constrained_vehicles`、逐路线 `min_turn_radius_m` / `curvature_radius_m`）。实现采用分级回退：解析实现（含拐点外移 0.6/1.2×R 两级）净空不过时，回退到 OMPL RRT-Connect 在 Dubins 空间采样（停靠航向自由、逐腿求解、5 cm 采样）——能穿解析方案穿不过的窄缝（复合 S 形机动），代价如实计入里程；全部尝试记录在 `raw_result.curvature_realization_attempts`。检查器按连续三点外接圆独立复核最小转弯半径（Dubins 弧段上采样曲率精确）并要求采样间距 ≤ 0.15 m。`travel='rows'` 暂不支持曲率约束（通道内转弯规划未实现，校验直接拒绝）；执行侧田间仿真为可原地转向差速模型，曲率约束类别求解/验算可行但启动执行返回 422（`curvature_constrained_execution`）。每条结果路线带自己的类别字段 `fleet_class, capacity, speed_mps, robot_radius`；`pyvrp.fleet` 与 `ortools.fleet`（两种目标）按类别容量 / 车速求解，makespan 时为每类车速建独立时间矩阵与每车容量；构造基线（sweep / cluster_first / savings）只支持同构车队，异构输入直接报错。通行图与障碍膨胀按车队最大足迹半径（`robot_radius` 归一为最大值），独立检查器按各车自身足迹、容量与车速复算并核对路线声明的类别字段；类别可声明 `footprint`（body 系多边形，外接半径不得超过该类规划圆，2026-10-17 第八轮）：检查器按路径切线朝向后验采样多边形净空并记录 `oriented_clearance_m`（含作物行）——量化外接圆假设的保守差值，只记录不门控；朝向感知规划未实现；`payload:'none'` 的类别容量取总需求（不构成约束）。按类 `asset` 引用进入提交快照与一致性校验；执行侧田间仿真当前只生成同构内置差速机器人，多类别方案可求解 / 验算，但启动执行返回 422（`heterogeneous_fleet_execution`）。旧实例无 `fleet` 时行为与历史完全一致（单类别路径）。
   实例可含 `depots[[x,y],…]`（2026-10-17 第六轮，第 7 项）：1–8 个车库，车辆按表序轮询分配到家库（出发与结束回家库；无补给点时每趟也返家库）；pyvrp.fleet / ortools.fleet 总里程目标支持多车库（pyvrp 每库建 depot、OR-Tools 每车 start/end），路线带 `depot`（家库下标）与 `depot_xy`，检查器按家库复核起终点与分趟返库，生成世界时各库独立安排停车位。构造基线拒绝多车库输入（makespan 目标已支持：每车 start/end 家库、按库补货节点经 VehicleVar 成员限制只服务本库车辆，多库时首解策略切换为 PARALLEL_CHEAPEST_INSERTION——PATH_CHEAPEST_ARC 在补货必访时无法完成首解）。实例可含 `unload_points[[x,y],…]`（≤16，2026-10-17 第九轮）：补给点进入图节点与 makespan 补货模型（任意车辆可用，区别于家库限定），分趟可在补给点卸货后继续，路线以 `reload_stops` 声明趟间补给停靠，检查器验证停靠 ∈ 补给点 ∪ 家库且折线按序经过；任务始终回家库起返。GeoJSON 的 unload/supply 点要素导入为 `unload_points` 并原样导出。距离模式（总里程目标）不建模中途补给（趟次仍以家库为界）。旧实例无 `depots` 时等价单库，行为不变。
-  实例可含 `corridors[{id,name,polygon}]`（2026-10-17 第五轮，第 8 项）：GeoJSON 里 role/type/name 含 road/track/headland/道路/机耕道/地头 等词的面要素成为通行走廊，线要素按 `width_m`（或 `width`）缓冲成面；显式值须为 1–8 m 的有限数值，字段缺省时取 2.5 m；行间通行（`rows`）下走廊不种植、自动并入开阔区（地头 / 机耕路的通行网络直接吃这些要素），`free` 通行下它们不构成约束。导出 GeoJSON 原样保留走廊要素（role=corridor）。
+  实例可含 `corridors[{id,name,polygon}]`（2026-10-17 第五轮，第 8 项）：GeoJSON 里 role/type/name 含 road/track/headland/道路/机耕道/地头 等词的面要素成为通行走廊，线要素按 `width_m`（1–8 m，默认 2.5）缓冲成面；行间通行（`rows`）下走廊不种植、自动并入开阔区（地头 / 机耕路的通行网络直接吃这些要素），`free` 通行下它们不构成约束。导出 GeoJSON 原样保留走廊要素（role=corridor）。
   `vehicles.travel` 决定距离模型（生成的农田地图默认 `rows`，导入 / 旧场景缺省为 `free`）：
   - `free`：机器人半径膨胀障碍上的可视图最短路，地块可任意穿行。
   - `rows`：田间通行图（`urp_lab/lanes.py`）。每个地块按 `rows_deg` 与作物行距（作物表 `lanes.CROPS`，未知作物用默认行距；单块超过 160 行时等比放宽）种植作物行，地块边缘留 0.8 m、地块内障碍周围留 `2r + 1` m 不种；行间净宽 ≥ 2(r + 0.1) m 时每两行之间是一条通道，否则每两行留出一条作业道（空出 1 个或多个行位）。通道中线向外延伸到开阔区（地头、机耕路、障碍周围的空地）处为出入口；开阔区内是可视图，通道内只能沿中线行驶，不得穿过作物行。每个任务在离它最近的通道点或开阔区点作业（超过 `max(3 m, 最大通道间隔)` 报错），车库须在开阔区。
@@ -278,14 +266,14 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
   验算（`fleet.check`）另核对：每个任务的作业位置在路线上，且是离任务最近的可达处（`free` 时必须是任务点本身）；`rows` 时由地块重新生成作物行与通道，每段路线都须落在开阔区或通道中线上，否则报“离开行间通道和地头，斜穿了作物”。
 - `point_to_point`：`{start:[x,y,yaw], goal:[x,y,yaw], motion_model:'holonomic'|'dubins'|'reeds_shepp', turning_radius, robot_radius, clearance_margin, goal_tolerance}`，地图坐标，可仿真（单条路线，终点为唯一任务点）。
 - `euclidean_cvrp.objective` 可为 `sum_rounded_euclidean_distance`（TSPLIB EUC_2D，CVRPLIB 用）；场景可带 `reference{bks, optimal, routes}`，结果给出 `metrics.gap_to_bks_pct`。
-- 所有结果可带 `trace: [[秒, 当前最好目标值], …]`（PyVRP、OR-Tools、OMPL 渐近最优规划器）。OR-Tools makespan 回调读取失败时省略该样本，保留有效解；`raw_result.trace_diagnostics` 记录 `samples_read`、`samples_omitted` 与 `first_error`。
+- 所有结果可带 `trace: [[秒, 当前最好目标值], …]`（PyVRP、OR-Tools、OMPL 渐近最优规划器）。
 
 ### 5.2 新增接口（`/lab/api`）
 | 方法 | 路径 | 用途 |
 |---|---|---|
 | GET | `compose/examples` | 示例任务描述 |
 | POST | `compose/parse {text}` | 解析结果 `{spec, found, defaults, cards}` |
-| POST | `compose {text, seed?, overrides?, field_id?}` | 生成并保存多车任务地图（201，返回场景及生成数量状态） |
+| POST | `compose {text, seed?, overrides?, field_id?}` | 生成并保存多车任务地图（201，返回场景） |
 | PUT | `scenarios/{id} {instance?, title?, summary?}` | 更新我的场景（内置 / 资源库 403） |
 | POST | `scenarios/{id}/fork {instance?, title?}` | 另存为我的场景 |
 | POST | `scenarios/import/geojson {geojson, title?, vehicles?}` | GeoJSON 导入 |
@@ -298,17 +286,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 | POST / GET | `studies`、`studies/{id}`、`studies/{id}/cancel`、`studies/{id}/analysis`、`studies/{id}/instance-space`、`studies/{id}/export?format=csv\|json\|latex` | 研究课题与统计分析 |
 | POST | `analysis {run_ids}` | 任意运行集合的统计分析 |
 
-生成场景的 `compose.generation` 保存 `requested`、`actual`、`shortfalls` 和 `status`（`complete` / `partial`）。卡片显示实际数量，摘要列出未满足的数量，原请求仍保存在 provenance 中。显式种子 `0` 原样使用。作物行预览中输入错误返回 400，内部执行故障返回 500。
-
 场景 id：CVRPLIB 为 `cvrplib-<算例名小写>`，真实田块为 `field-<国家>-field-<编号>`，打开后记入“最近打开”。
-
-### 5.1 统计、轨迹与实例空间合同（refresh 2）
-
-- `analysis.block_contract` (`urp.analysis-blocks/1`) 区分展示场景别名、完整比较输入与声明的底本/田块组；记录每组的 `run_ids`、`scenario_ids`、输入/终态/齐全数量和别名折叠数。完整输入（或匹配的冻结 planning 身份）相同则强制同 block；只有旧 hash 而没有完整规划语义时保留隔离，不假称已经去重。原始运行和输入不修改，运行数仍为全部终态数。
-- 推断只审核实际参与的齐全 blocks；缺少独立单位来源或同底本有多个不同输入变体时，保留所有描述统计，禁 Friedman/Nemenyi/Wilcoxon 显著性。内置 `cvrp_synthetic` 和 `turn_modes/grid` 按生成器族+生成 seed 识别同随机流组；不同 seed 只是该生成协议下的假设，**不是独立性证明**。未知历史记录不回填声明。
-- 自定义底本分组使用现有场景 JSON 导入入口：`provenance.params.analysis_unit = {"schema":"urp.analysis-unit/1", "group_id":"田块或底本标识", "independent":true}`。导入后新运行的 `scenario_snapshot` 保留声明；同底本变体必须用同组，不能靠改别名/声明绕过相同完整输入合并。声明并非证明；多变体组仍需预先确定合法组内汇总设计，本版不自动平均后放行。
-- `anytime` (`urp.anytime/2`) 是**成功且有合法目标遥测的条件质量曲线**，不是全终态预算成功分布。`counts[algorithm]` 给出终态总数/成功数、有效轨迹数及互斥排除原因（明确预算内无解、失败/中断、成功无遥测、代理/未知语义、非法轨迹、缺少正参照），各原因加有效轨迹数等于终态总数。结构、时间顺序、非增 incumbent 以及终值必须合法；`observed_counts[algorithm][time_index]` 是该时刻真实分母。首次记录前未知，不补∞；记录间沿用已观测 incumbent。中断即使有末次 incumbent 也仍归中断，不冒充终态验算成功。
-- `instance-space` (`urp.instance-space/2`) 返回 `panels`，按问题特征 schema、目标/单位/环境/约束语义及预算分面，算法版本及参数与主分析同标签分候选列。点带完整比较 key 和 run IDs。候选不齐全、仅单候选、全失败或并列均不指定唯一 `best`。CVRP、turn 与 fleet 特征分开；fleet 的 `fleet_routing.features/1` 仅从冻结输入计算任务数、车辆数、总需求/单车容量、边界面积和障碍面积占比（米制面积为 m²），不借用变化的推荐器特征。缺失/无效几何或容量明确不投影。每面板至少 3 个真实输入才 PCA；同输入别名不增点。图表导出逐面板绘制，带面板合同及轨迹实际分母，不回退到另一套 winner 聚合。
 
 ## 6. 田间多车仿真与浏览器里的 ROS / Gazebo 视图（2026-10-16）
 
@@ -403,50 +381,44 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - **关节反馈**：关节发布器使用重复 joint_name 标签，经 gz Model→ROS JointState；本机官方 6.18 不支持 update_rate，采用 `ros/native/joint_state` 固定上游源码的项目内限频回补（唯一插件别名 `urp::systems::JointStatePublisher`、50 Hz 源仿真时间发布，原关节测量逻辑保留）。按需构建于 runtime，记录来源、补丁、源码与实际加载库 SHA256；ROS 最新样本队列与 ≤50 Hz 派生里程计发布避免积压，源时间缺口门槛不变。连续轮角按源时间差分并作 SE(2) 积分，不包装角增量至 ±π，不用目标轮速补数据。双轮缺失、重复、非有限、零/倒退时间不刷新就绪，源间隔>0.25 s 失效；反馈过期或 Twist 过期 0.25 s 时发布零目标（有界主动制动，并不保证立即静止）。结果 `wheel_feedback` 记录有效/拒收计数；发布 `/{vehicle}/odom`。`torque_traces` 记录目标与实际轮速，未观测指令或实际作用力矩，饱和影响由运动响应对照支持。
 - **统一验收**：力矩模式保持无滑移参考门禁（除显式摩擦/接触扰动）、足迹、完整路径、同步交通、真值停留及静止门禁；压力场景失败保留真实原因与退出码。`ground_speed` 进入正式 fieldcheck，测试脚本不能另行扩大范围。执行源码、模型、SDF、算法输入/参数/seed 随记录导出。有限工程重复不能推出真实土壤/轮胎可信度或算法学术优越性。
 
-## 9. 科研智能体（2026-10-30）
+## 9. 任务智能体（2026-10-30）
 
-工作台内的大模型智能体（`urp_lab/agent/`）：模型只负责计划与表述，动作只能经下列工作台工具执行；求解与面板共用 `urp_lab/solve_request.py` 的校验和错误码。方案是否成立仍以运行记录 `state=done` 且独立检查 `check.valid=true` 为准，智能体的文字不构成验算。
+接口前缀 `/lab/api/agent`：`GET /providers`、`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages`、`POST /sessions/{id}/control`（`pause|resume|cancel|retry|confirm|approve|reject|takeover`）、`PATCH /sessions/{id}/contract`。SSE 事件 `agent_session` 携带 `session_id、state、phase、updated_utc`。会话存于 `runtime/agent.sqlite3`，与科研对话的 `lab.sqlite3/agent_sessions` 分开保存。
 
-### 9.1 模型配置
-- 网关启动时读取环境：`URP_LLM_API_KEY`（或 `ZHIPU_API_KEY`）必填；可选 `URP_LLM_MODEL`（默认 `glm-5.3`）、`URP_LLM_BASE_URL`（默认 `https://open.bigmodel.cn/api/paas/v4`）、`URP_LLM_TEMPERATURE`（0–2，默认 0.2）、`URP_LLM_TIMEOUT_S`（5–900，默认 120）、`URP_LLM_MAX_TOKENS`（≥256）。修改后重启网关。
-- 配置、启动与 GET 状态读取只建立本地配置；发送消息、交接任务或继续已批准轮次时才调用模型。模型配置改变后，继续会话会记录前后模型描述；历史提示快照保留原版本。
-- 协议：OpenAI 兼容 `POST {base}/chat/completions`，携带 `tools` 与 `tool_choice:"auto"`，非流式；读取 `tool_calls`，`reasoning_content` 只用于展示。基址须为 https，http 只允许 localhost / 回环地址；含用户信息、查询串或片段的基址拒绝。
-- 环境密钥用于请求头，接口错误摘要剔除已知密钥值。`model` 记录 provider、主机名、模型名、温度、超时与 max_tokens。未配置时 `GET agent` 返回 `configured:false` 与原因，写接口 503 `agent_unconfigured`。
+- 任务合同 `urp.task-contract/1` 与会话 `urp.agent-session/1` 的字段、来源标签和状态机见 [agent/README](urp_lab/agent/README.md)。
+- 工具只调用本契约已有接口的同一实现（`compose`、`recommend`、`JobManager.submit`、`solvers.fleet.check`、`FieldSimManager.start`）；Gazebo 会话与改变任务本身的修复须经用户批准。
+- 报告前对本会话所有报告可行的运行重新执行 `fleet.check`，并与存档判定比对；不一致归类为软件实现错误。
+- 模型密钥只在服务端配置中；接口与导出不返回密钥。没有可用模型时 `mode=auto` 使用规则流程并在会话中注明，`mode=llm|hybrid` 返回 409 `llm_unavailable`。
 
-### 9.2 接口（`/lab/api`）
-| 方法 | 路径 | 用途 |
-|---|---|---|
-| GET | `agent` | 是否已配置、模型描述、系统提示 `urp.agent.system/2` 与其 SHA256、预算、工具清单 |
-| GET | `agent/sessions?limit=` | 会话列表（不含消息） |
-| POST | `agent/sessions {message}` | 新建会话并开始第一轮（202） |
-| GET | `agent/sessions/{id}?messages=true` | 会话；`messages=true` 另含发给模型的完整消息（系统提示、工具结果） |
-| POST | `agent/sessions/{id}/messages {message}` | 继续提问（202）；进行中或等待批准时 409 `agent_busy` |
-| POST | `agent/sessions/{id}/approval {call_id, approve, note?}` | 批准或拒绝等待中的执行调用（202）；不匹配时 409 `no_pending_approval` |
-| POST | `agent/sessions/{id}/cancel {}` | 停止这一轮 |
+## 10. 算法库记录、物理运行与能力清单（2026-11-05）
 
-`message` 为 1–4000 字；同时运行的会话最多 2 个，超出 429 `agent_saturated`。
+接口前缀 `/lab/api`，全部是增量接口：
 
-### 9.3 工具与分级
-- **只读**：`list_scenarios`、`get_scenario`、`parse_task`、`list_algorithms`、`recommend`、`validate_planning`、`get_runs`、`list_runs`、`compare_runs`、`list_fields`、`get_study`、`study_analysis`。`recommend` 返回实际 `policy`（`rules-*` 为规则推荐；学习选择器只在已评估范围内启用）。
-- **计算**：`compose_scenario` 新建“我的场景”、不覆盖已有场景，`overrides` 只接受解析器字段白名单，`field_id` 使用真实田块边界；`solve` 每次 ≤6 个算法，与 `POST solve` 同一校验，标签默认 `agent:<会话 id>`；`wait_for_runs` ≤120 s 并响应停止；`create_study` 展开后超过 60 次运行即拒绝。
-- **执行**：`start_field_simulation` 每次调用都须用户在面板批准，批准只对该调用有效；准入、ROS 2 / Gazebo 依赖与 §6 相同。
-- 未知工具、非 JSON 参数和越界参数作为工具错误返回模型，不执行。
+- `GET /algorithms/stats`、`GET /algorithms/{id}/history`：从 `runs` 表只读计算，不存储。同题对比只比较 `comparison_key` 和时间预算都相同、且通过独立检查的运行；`physical` 汇总该算法方案的物理运行。
+- `GET /physics/engines`（`gazebo_gap` 说明这台电脑为什么不能跑 Gazebo，能跑时为空）；`POST /physics/runs {run_id | session_id}`（202）；`GET /physics/runs?run_id=`；`GET /physics/runs/{id}`；`POST /physics/runs/{id}/cancel`。SSE 事件 `physics_run`。
+- `GET /agent/capabilities`（`algorithms`、`simulators`、`learners`、`transfers`，每项带 `status`）；`GET /agent/jobs`（正在运行的 `solve`、`study`、`physics`、`fieldsim`、`tb4`）。
 
-### 9.4 会话记录、预算与停止
-- 记录在 `runtime/lab.sqlite3` 的 `agent_sessions`：`state ∈ idle|running|awaiting_approval|error|canceled`，`model`、`prompt {id, sha256}`、`policy`、`messages`，以及 `steps`。步骤类型有 `user`、`assistant`（思考摘要与请求的调用）、`tool`（参数、结果 ≤20000 字、耗时、错误）、`approval`（`pending|approved|denied|canceled`）、`final`（含 `grounding`）、`notice`、`error`。另有 `evidence`（`scenarios`、`runs`、`jobs`、`studies`、`field_sessions`）和 `usage`（调用次数与 token）。
-- 预算 `urp.agent/1`：每轮模型 ≤16 次、工具 ≤30 次、≤900 s（等待批准不计时）；发给模型的工具结果截断到 6000 字。超出预算以 `error` 结束并写明原因，可以继续提问。
-- 停止只结束智能体这一轮：在途调用在下一个检查点结束（`wait_for_runs` 立即返回已有结果），已提交的求解运行照常完成并保留，需要时在运行记录中取消。
-- 取消后的迟到答复或接口错误仍以 `canceled` 结束；模型调用次数按请求尝试记录，包括失败，token 数按接口返回的 usage 记录。关闭网关时，运行中和等待批准的轮次均结束为 `error`，批准取消，迟到回调不再写入已关闭的存储。
-- 每轮结束时，每个已请求的工具调用都恰有一条回复（结果、拒绝、取消或中断）。网关重启或内部错误中断的轮次标为 `error`，未执行的调用回复为中断，不会在下一轮执行，批准也不跨轮保留。
+物理运行记录 `urp.physics-run/1`：
 
-### 9.5 数字核对（`heuristic-v1`）
-最终答复中的数字须能在本会话的工具结果或用户消息中找到（相对容差 0.5%，或按所写位数舍入一致；百分数也与比值比对），≤10 的整数与年份不核对；记录编号须在本会话出现过。结果 `{checked, grounded, skipped, not_found, unknown_ids}` 在面板显示为徽标。它只核对数字与编号的出处，不核对推理或措辞：例如两个算法目标值相同、答复却称其中一个“最短”，核对仍会通过。
+- `run_id` 路径用 `fieldworld.build` 得到与 Gazebo 相同的计划，校验门槛与 `FieldSimManager.start` 相同；`session_id` 路径直接读取该会话冻结的 `plan.json`，并在结束后写入 `comparison`（`urp.sim2sim/1`）。
+- 同一方案、`Driver`、`MissionQueue`、车辆质量惯量几何摩擦、速度限幅、控制与真值频率；不同的是物理引擎。Gazebo 的关节速度由 DART 直接满足，MuJoCo 由 `velocity` 执行器达到，增益 `SERVO_KV = 30` 固定，不按记录拟合。接触模型按引擎各自实现。
+- 只覆盖理想配置。`execution` 非空、`wheel_lateral_friction` 已设或模型参数不全时，返回 422 `unsupported_plan`，不做近似。
+- 独立进程运行，结果在 `runtime/physics/<id>/`：`plan.json`、`result.json`（50 Hz 真值）。接口返回 2 Hz 轨迹。`check` 复用 `fieldcheck.track_check`，另检车间同步距离与接触。网关重启时运行中的记录标为 `failed`。
 
-### 9.6 验证范围（2026-10-30）
-- `tests/test_agent.py` 共 21 项，纳入 CI 全量 Lab。脚本模型驱动真实求解和检查，覆盖生成、推荐、对比、批准、拒绝、取消、关闭、恢复、预算、配置变化和错误响应；客户端测试使用 `httpx.MockTransport`。结束的轮次核对工具调用与回复配对。
-- 浏览器检查 `setup/2026-10-29/agent/browser_check.sh`：回环替身模型驱动真实 HTTP 客户端、网关、求解器、检查器与面板，结果见集成报告最上方。
-- 真实模型质量与 ROS / Gazebo 物理执行另测；本轮仿真调用覆盖批准与拒绝，执行入口使用测试替身。
+`urp.sim2sim/1` 分别回答走到哪和什么时候到：`path_*` 是两条轨迹之间的双向最近距离，不受时间平移影响；`time_rmse_m` 是从各车出发起算同一时刻的位置差；`task_arrival_s` 是到点时刻差。这是两个引擎之间的差距，不是实车误差，也不设通过阈值。
 
-### PyVRP 标识兼容
+## 11. 模型服务与桌面应用（2026-11-05）
 
-新目录、推荐和新运行使用 `pyvrp.ils` / `pyvrp.ils+urp.layered`。求解 API、Agent、课题与直接求解入口仍接受旧 `pyvrp.hgs` / `pyvrp.hgs+urp.layered`，仅在执行边界解析为当前 ID。旧运行、课题、模型及评估记录不做落盘重写；旧 ID 本身不证明历史使用 ILS。带校验摘要的模型先验证原始 artifact 指纹，再对预测键做内存兼容；同时存在旧/新键且数值冲突时拒绝模型，不静默覆盖。
+- **模型**：`/lab/api/agent/providers`（目录、已连接服务、当前模型）、`/providers/{id}/models`、`/providers/{id}/connect {api_key}`、`/providers/{id}/disconnect`、`/providers/custom {name, base_url, api_key, models?}`、`/providers/refresh`、`/model {model}`。模型地址是 `服务商/模型`，会话的 `provider.id` 记这个值，旧会话记录的裸 id 解析到该服务的第一个模型。任何响应都不含 Key，写接口受现有的同源检查保护。设计见 [agent/README](urp_lab/agent/README.md) §4。不再有本地模型接口；历史评测记录保留。
+- **数据包**：`GET /lab/api/packs`、`POST /packs/{id}/install|cancel|remove`，SSE 事件 `pack`。清单 `urp_lab/data/packs.json` 写明 SHA256 和解压大小；下载支持续传，校验通过后解压到新目录再移入 `runtime/packs/<id>-<version>/`，路径越界、符号链接和超出声明大小的包一律拒绝。`/data/*` 优先读构建产物，其次读 `history` 包；`URP_PACKS_BASE_URL` 可替换下载地址。
+- **桌面进程**：`python -m urp_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `URP_DESKTOP=1`、`URP_NODE`（JS 基线使用的运行时）、`URP_MODELS_REFRESH=1`。`URP_DESKTOP=1` 时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；Gazebo 由容器后端提供，容器里没有这个变量。
+- **Windows**：`urp_lab/compat.py` 在 Windows 上提供 `signal.SIGKILL` 和基于 `taskkill` 的 `os.killpg`，因此 `services.py` 等进程代码不需要分支。`worker.py` 没有 `SIGALRM` 时用看门狗线程上报同样的超时结果。
+
+
+## 12. 主线科研对话与数据互通（2026-11-06）
+
+主线科研对话保留 `AgentManager`、原工具及批准/取消/预算/接地检查，统一接口为 `/lab/api/research/agent`：根 `GET` 状态，`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages|cancel|approval`（具体请求结构见 `agent/routes.py`）。UI 入口为算法实验中的「科研对话」。任务流程仍使用第 9 节 `/agent` 与独立的 `agent.sqlite3`；两类会话 schema 不互相冒充。科研对话复用已选择的模型服务配置，兼容旧环境变量；每轮固定模型，读取配置、启动与状态查询不调用模型。
+
+`python -m urp_lab data` 提供离线 `export|verify|restore|recover`；`urp.runtime-bundle/1` 清单含数据集 ID、来源版本、相对路径、逐文件大小和 SHA256、SQLite schema 指纹及表行数。完整备份保留状态、上下文与原文件；仅 JSON 导出恢复的会话带 `restoration.read_only=true`、缺失项与原件 SHA256，任务消息/控制/合同编辑返回 409 `recovered_read_only`。恢复仅写全新绝对目录，拒绝覆盖、未来 schema、路径和校验错误。操作与目录参数见唯一[使用入口](../../setup/README.md#本地与-github-的保存分工数据与恢复2026-11-06)。
+
+桌面 IPC `data:info|export|restore` 受同源限制，选择备份/恢复位置使用系统文件对话框。导入成功后才更新数据位置；失败保留原配置。`URP_DATA_HOME`、`URP_LAB_RUNTIME`、`URP_API_DB` 对应共享持久根、Lab 库和档案库，桌面 Compose 绑定同一目录并匹配宿主 UID/GID。

@@ -1,0 +1,621 @@
+{
+ "schema": "urp.library-ledger/1",
+ "generated_utc": "2026-10-23T08:19:05Z",
+ "scope": "覆盖配置；开发侧（荷兰 140 块田 × 3 机具）；封存田块未运行",
+ "sources": [
+  "evolve-audit-20261023",
+  "evolve-repair-20261023"
+ ],
+ "verdicts": {
+  "official": {
+   "instances": 388,
+   "solvable": 384,
+   "shapley_method": "exact",
+   "unverifiable_cells": 0,
+   "incomplete": {}
+  },
+  "fillet": {
+   "instances": 388,
+   "solvable": 361,
+   "shapley_method": "exact",
+   "unverifiable_cells": 14,
+   "incomplete": {
+    "repair:none/n_swath": 0.6162,
+    "repair:none/swath_length": 0.6433,
+    "repair:none/field_coverage": 0.6789,
+    "repair:boustrophedon/n_swath": 0.5761,
+    "repair:boustrophedon/swath_length": 0.6212,
+    "repair:boustrophedon/field_coverage": 0.634
+   }
+  },
+  "strict": {
+   "instances": 388,
+   "solvable": 310,
+   "shapley_method": "exact",
+   "unverifiable_cells": 23,
+   "incomplete": {}
+  }
+ },
+ "members": [
+  {
+   "id": "full:none/n_swath",
+   "label": "不分解·最少作业行",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "none",
+    "swath_objective": "n_swath",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 1 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 326,
+     "mean_rho_penalised": 1.1567614315624224,
+     "shapley": 0.09948008660563977,
+     "best_on": 207
+    },
+    "fillet": {
+     "feasible": 298,
+     "mean_rho_penalised": 1.1792531751251532,
+     "shapley": 0.24829687000960693,
+     "best_on": 198
+    },
+    "strict": {
+     "feasible": 177,
+     "mean_rho_penalised": 1.4321900929756077,
+     "shapley": 0.09304762025312281,
+     "best_on": 124
+    }
+   }
+  },
+  {
+   "id": "full:none/swath_length",
+   "label": "不分解·作业行最短",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "none",
+    "swath_objective": "swath_length",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 3 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 291,
+     "mean_rho_penalised": 1.266773539848792,
+     "shapley": 0.07788271779104912,
+     "best_on": 100
+    },
+    "fillet": {
+     "feasible": 263,
+     "mean_rho_penalised": 1.2946828939268613,
+     "shapley": 0.1922294424527434,
+     "best_on": 101
+    },
+    "strict": {
+     "feasible": 144,
+     "mean_rho_penalised": 1.5534179100339613,
+     "shapley": 0.063798071225529,
+     "best_on": 66
+    }
+   }
+  },
+  {
+   "id": "full:none/field_coverage",
+   "label": "不分解·覆盖最大",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "none",
+    "swath_objective": "field_coverage",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 2 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 303,
+     "mean_rho_penalised": 1.2751562883365746,
+     "shapley": 0.0828393624344218,
+     "best_on": 56
+    },
+    "fillet": {
+     "feasible": 296,
+     "mean_rho_penalised": 1.2375703427191016,
+     "shapley": 0.23941716855475792,
+     "best_on": 78
+    },
+    "strict": {
+     "feasible": 219,
+     "mean_rho_penalised": 1.3442496418861616,
+     "shapley": 0.13354160660563977,
+     "best_on": 90
+    }
+   }
+  },
+  {
+   "id": "full:boustrophedon/n_swath",
+   "label": "牛耕分解·最少作业行",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "boustrophedon",
+    "swath_objective": "n_swath",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "工作台现行默认",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 254,
+     "mean_rho_penalised": 1.3533753670978312,
+     "shapley": 0.06629885559666482,
+     "best_on": 121
+    },
+    "fillet": {
+     "feasible": 188,
+     "mean_rho_penalised": 1.484013312772753,
+     "shapley": 0.11427675119622356,
+     "best_on": 113
+    },
+    "strict": {
+     "feasible": 118,
+     "mean_rho_penalised": 1.6220015954524438,
+     "shapley": 0.04511920909488576,
+     "best_on": 84
+    }
+   }
+  },
+  {
+   "id": "full:boustrophedon/swath_length",
+   "label": "牛耕分解·作业行最短",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "boustrophedon",
+    "swath_objective": "swath_length",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 6 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 210,
+     "mean_rho_penalised": 1.4797319580738533,
+     "shapley": 0.046628298310831484,
+     "best_on": 56
+    },
+    "fillet": {
+     "feasible": 171,
+     "mean_rho_penalised": 1.5449510674783986,
+     "shapley": 0.0857792341013011,
+     "best_on": 58
+    },
+    "strict": {
+     "feasible": 100,
+     "mean_rho_penalised": 1.6922491459665014,
+     "shapley": 0.03070798442359799,
+     "best_on": 43
+    }
+   }
+  },
+  {
+   "id": "full:boustrophedon/field_coverage",
+   "label": "牛耕分解·覆盖最大",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "boustrophedon",
+    "swath_objective": "field_coverage",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 8 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 199,
+     "mean_rho_penalised": 1.533979873872072,
+     "shapley": 0.0427451787976617,
+     "best_on": 30
+    },
+    "fillet": {
+     "feasible": 177,
+     "mean_rho_penalised": 1.5473833828464496,
+     "shapley": 0.091526246015171,
+     "best_on": 39
+    },
+    "strict": {
+     "feasible": 140,
+     "mean_rho_penalised": 1.5851092736099073,
+     "shapley": 0.05268317467606817,
+     "best_on": 44
+    }
+   }
+  },
+  {
+   "id": "full:trapezoidal/n_swath",
+   "label": "梯形分解·最少作业行",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "trapezoidal",
+    "swath_objective": "n_swath",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 7 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 87,
+     "mean_rho_penalised": 1.8164763071242864,
+     "shapley": 0.016030299521412984,
+     "best_on": 0
+    },
+    "fillet": {
+     "feasible": 36,
+     "mean_rho_penalised": 1.9135404453803164,
+     "shapley": 0.014894110525618197,
+     "best_on": 1
+    },
+    "strict": {
+     "feasible": 23,
+     "mean_rho_penalised": 1.935752412403075,
+     "shapley": 0.015992316449863826,
+     "best_on": 3
+    }
+   }
+  },
+  {
+   "id": "full:trapezoidal/swath_length",
+   "label": "梯形分解·作业行最短",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "trapezoidal",
+    "swath_objective": "swath_length",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 5 位",
+   "dominated_under": [
+    "strict"
+   ],
+   "evidence": {
+    "official": {
+     "feasible": 16,
+     "mean_rho_penalised": 1.9684241081322906,
+     "shapley": 0.0032543120297724767,
+     "best_on": 1
+    },
+    "fillet": {
+     "feasible": 3,
+     "mean_rho_penalised": 1.9926301430082947,
+     "shapley": 0.0010547767534178556,
+     "best_on": 0
+    },
+    "strict": {
+     "feasible": 0,
+     "mean_rho_penalised": 2.0,
+     "shapley": 0.0,
+     "best_on": 0
+    }
+   }
+  },
+  {
+   "id": "full:trapezoidal/field_coverage",
+   "label": "梯形分解·覆盖最大",
+   "algorithm_id": "f2c.full",
+   "params": {
+    "decomposition": "trapezoidal",
+    "swath_objective": "field_coverage",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 9 位",
+   "dominated_under": [
+    "fillet",
+    "strict"
+   ],
+   "evidence": {
+    "official": {
+     "feasible": 2,
+     "mean_rho_penalised": 1.9985391652066198,
+     "shapley": 0.00013933776770190924,
+     "best_on": 0
+    },
+    "fillet": {
+     "feasible": 0,
+     "mean_rho_penalised": 2.0,
+     "shapley": 0.0,
+     "best_on": 0
+    },
+    "strict": {
+     "feasible": 0,
+     "mean_rho_penalised": 2.0,
+     "shapley": 0.0,
+     "best_on": 0
+    }
+   }
+  },
+  {
+   "id": "single:boustrophedon",
+   "label": "单区往复",
+   "algorithm_id": "f2c.boustrophedon",
+   "params": {},
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 10 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 20,
+     "mean_rho_penalised": 1.9526716851704338,
+     "shapley": 0.0034992713531050777,
+     "best_on": 0
+    },
+    "fillet": {
+     "feasible": 20,
+     "mean_rho_penalised": 1.9496563077713198,
+     "shapley": 0.006519848991145806,
+     "best_on": 0
+    },
+    "strict": {
+     "feasible": 20,
+     "mean_rho_penalised": 1.9413443101716832,
+     "shapley": 0.006934340393737706,
+     "best_on": 1
+    }
+   }
+  },
+  {
+   "id": "single:snake",
+   "label": "单区蛇形",
+   "algorithm_id": "f2c.snake",
+   "params": {},
+   "runnable_in_workbench": true,
+   "parent": null,
+   "operation": "Fields2Cover 注册配置",
+   "introduced_in": "evolve-audit-20261023",
+   "status": "已上线：经验静态尝试顺序第 11 位",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 20,
+     "mean_rho_penalised": 1.955498257836102,
+     "shapley": 0.003231931606567251,
+     "best_on": 0
+    },
+    "fillet": {
+     "feasible": 20,
+     "mean_rho_penalised": 1.952662966784108,
+     "shapley": 0.006005551400014174,
+     "best_on": 0
+    },
+    "strict": {
+     "feasible": 20,
+     "mean_rho_penalised": 1.944844973219783,
+     "shapley": 0.006457755715494675,
+     "best_on": 0
+    }
+   }
+  },
+  {
+   "id": "repair:none/n_swath",
+   "label": "修补·不分解·最少作业行",
+   "algorithm_id": "evolve.f2c_repair",
+   "params": {
+    "decomposition": "none",
+    "swath_objective": "n_swath",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": false,
+   "parent": "full:none/n_swath",
+   "operation": "修补 v1：官方检查可见曲率缺陷的局部 Dubins 替换",
+   "introduced_in": "evolve-repair-20261023",
+   "status": "研究候选：证据支持准入（official、strict 判定下 Shapley > 0），待负责方集成后才能上线",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 357,
+     "mean_rho_penalised": 1.0770799909200104,
+     "shapley": 0.11454394434430161,
+     "best_on": 219
+    },
+    "fillet": null,
+    "strict": {
+     "feasible": 190,
+     "mean_rho_penalised": 1.3904773464469709,
+     "shapley": 0.10859785083686063,
+     "best_on": 132
+    }
+   }
+  },
+  {
+   "id": "repair:none/swath_length",
+   "label": "修补·不分解·作业行最短",
+   "algorithm_id": "evolve.f2c_repair",
+   "params": {
+    "decomposition": "none",
+    "swath_objective": "swath_length",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": false,
+   "parent": "full:none/swath_length",
+   "operation": "修补 v1：官方检查可见曲率缺陷的局部 Dubins 替换",
+   "introduced_in": "evolve-repair-20261023",
+   "status": "研究候选：证据支持准入（official、strict 判定下 Shapley > 0），待负责方集成后才能上线",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 328,
+     "mean_rho_penalised": 1.1760377584498283,
+     "shapley": 0.09142992541009713,
+     "best_on": 107
+    },
+    "fillet": null,
+    "strict": {
+     "feasible": 157,
+     "mean_rho_penalised": 1.5130464293523394,
+     "shapley": 0.07351364775693495,
+     "best_on": 68
+    }
+   }
+  },
+  {
+   "id": "repair:none/field_coverage",
+   "label": "修补·不分解·覆盖最大",
+   "algorithm_id": "evolve.f2c_repair",
+   "params": {
+    "decomposition": "none",
+    "swath_objective": "field_coverage",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": false,
+   "parent": "full:none/field_coverage",
+   "operation": "修补 v1：官方检查可见曲率缺陷的局部 Dubins 替换",
+   "introduced_in": "evolve-repair-20261023",
+   "status": "研究候选：证据支持准入（official、strict 判定下 Shapley > 0），待负责方集成后才能上线",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 380,
+     "mean_rho_penalised": 1.1124079124850763,
+     "shapley": 0.11273965093555827,
+     "best_on": 72
+    },
+    "fillet": null,
+    "strict": {
+     "feasible": 269,
+     "mean_rho_penalised": 1.2121403867300142,
+     "shapley": 0.20658334119941835,
+     "best_on": 116
+    }
+   }
+  },
+  {
+   "id": "repair:boustrophedon/n_swath",
+   "label": "修补·牛耕分解·最少作业行",
+   "algorithm_id": "evolve.f2c_repair",
+   "params": {
+    "decomposition": "boustrophedon",
+    "swath_objective": "n_swath",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": false,
+   "parent": "full:boustrophedon/n_swath",
+   "operation": "修补 v1：官方检查可见曲率缺陷的局部 Dubins 替换",
+   "introduced_in": "evolve-repair-20261023",
+   "status": "研究候选：证据支持准入（official、strict 判定下 Shapley > 0），待负责方集成后才能上线",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 335,
+     "mean_rho_penalised": 1.159560363995081,
+     "shapley": 0.09748816506254503,
+     "best_on": 130
+    },
+    "fillet": null,
+    "strict": {
+     "feasible": 129,
+     "mean_rho_penalised": 1.5892626661027351,
+     "shapley": 0.05178155524471873,
+     "best_on": 86
+    }
+   }
+  },
+  {
+   "id": "repair:boustrophedon/swath_length",
+   "label": "修补·牛耕分解·作业行最短",
+   "algorithm_id": "evolve.f2c_repair",
+   "params": {
+    "decomposition": "boustrophedon",
+    "swath_objective": "swath_length",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": false,
+   "parent": "full:boustrophedon/swath_length",
+   "operation": "修补 v1：官方检查可见曲率缺陷的局部 Dubins 替换",
+   "introduced_in": "evolve-repair-20261023",
+   "status": "研究候选：证据支持准入（official、strict 判定下 Shapley > 0），待负责方集成后才能上线",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 293,
+     "mean_rho_penalised": 1.29151473069597,
+     "shapley": 0.07186693967438817,
+     "best_on": 60
+    },
+    "fillet": null,
+    "strict": {
+     "feasible": 111,
+     "mean_rho_penalised": 1.659759750797836,
+     "shapley": 0.03616899820381374,
+     "best_on": 44
+    }
+   }
+  },
+  {
+   "id": "repair:boustrophedon/field_coverage",
+   "label": "修补·牛耕分解·覆盖最大",
+   "algorithm_id": "evolve.f2c_repair",
+   "params": {
+    "decomposition": "boustrophedon",
+    "swath_objective": "field_coverage",
+    "turn_model": "dubins"
+   },
+   "runnable_in_workbench": false,
+   "parent": "full:boustrophedon/field_coverage",
+   "operation": "修补 v1：官方检查可见曲率缺陷的局部 Dubins 替换",
+   "introduced_in": "evolve-repair-20261023",
+   "status": "研究候选：证据支持准入（official、strict 判定下 Shapley > 0），待负责方集成后才能上线",
+   "dominated_under": [],
+   "evidence": {
+    "official": {
+     "feasible": 306,
+     "mean_rho_penalised": 1.3431120432261956,
+     "shapley": 0.06990172275828144,
+     "best_on": 33
+    },
+    "fillet": null,
+    "strict": {
+     "feasible": 167,
+     "mean_rho_penalised": 1.5189072935064594,
+     "shapley": 0.07507252792031396,
+     "best_on": 56
+    }
+   }
+  }
+ ],
+ "content_sha256": "a1b0f55b14f750d04bdae9237c75427e98fdf690ec89ea258e51a27300d408e8"
+}

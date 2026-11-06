@@ -1,0 +1,3 @@
+Unmodified copies of the depot, maze and warehouse maps from the ROS 2 package turtlebot4_navigation 1.0.5
+(https://github.com/turtlebot/turtlebot4), licensed under the Apache License, Version 2.0:
+https://www.apache.org/licenses/LICENSE-2.0

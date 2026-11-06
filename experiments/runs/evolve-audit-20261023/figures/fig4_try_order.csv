@@ -1,0 +1,16 @@
+tries,feasible_pct_of_solvable,config,policy,mean_tries_to_feasible_cv,first_try_feasible_cv
+1,87.39946380697052,full:none/n_swath,,,
+2,96.51474530831099,full:none/field_coverage,,,
+3,99.19571045576407,full:none/swath_length,,,
+4,100.0,full:boustrophedon/n_swath,,,
+5,100.0,full:trapezoidal/swath_length,,,
+6,100.0,full:boustrophedon/swath_length,,,
+7,100.0,full:trapezoidal/n_swath,,,
+8,100.0,full:boustrophedon/field_coverage,,,
+9,100.0,full:trapezoidal/field_coverage,,,
+10,100.0,single:boustrophedon,,,
+11,100.0,single:snake,,,
+,,,default,1.4798927613941015,0.680965147453083
+,,,static,1.1699731903485253,0.8739946380697049
+,,,logit:agri,1.1970509383378016,0.8592493297587129
+,,,knn5:agri,1.2359249329758712,0.8597855227882037

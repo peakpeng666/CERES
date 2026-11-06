@@ -87,7 +87,7 @@ export function ConsolePanel() {
         </Select>
       </div>
       <pre ref={pre} onScroll={(e) => { const el = e.currentTarget; follow.current = el.scrollHeight - el.scrollTop - el.clientHeight < 24; }}
-        style={{ flex: 1, margin: 0, padding: '8px 12px', overflow: 'auto', font: '11px/1.55 var(--mac-mono)', background: '#1d1f21', color: '#d6d6d6' }}>
+        style={{ flex: 1, margin: 0, padding: '8px 12px', overflow: 'auto', font: '11.5px/1.6 var(--mac-mono)', background: 'var(--mac-inset)', color: 'var(--mac-label-2)' }}>
         {lines.join('\n') || '（暂无输出）'}
       </pre>
     </div>

@@ -1,0 +1,302 @@
+[
+ {
+  "key": "fig1_headroom",
+  "lang": "zh",
+  "files": [
+   "fig1_headroom_zh.pdf",
+   "fig1_headroom_zh.svg",
+   "fig1_headroom_zh.png"
+  ],
+  "source_csv": "fig1_headroom.csv",
+  "caption": "各任务族的算法选择余量（开发集）。(a) 单一最优配置（SBS，平均惩罚化成本比最低）相对虚拟最优配置（VBS）的平均惩罚化成本比之差，误差线为按田块/基准实例自助 95% 置信区间，横轴为对数刻度；(b) 仅非 SBS 配置通过独立检验的实例比例。成本比以各实例最优可行成本为 1，不可行解计 2；无可行配置的实例不计入 (a)。",
+  "size_mm": [
+   190.0,
+   79.8
+  ]
+ },
+ {
+  "key": "fig1_headroom",
+  "lang": "en",
+  "files": [
+   "fig1_headroom_en.pdf",
+   "fig1_headroom_en.svg",
+   "fig1_headroom_en.png"
+  ],
+  "source_csv": "fig1_headroom.csv",
+  "caption": "Algorithm-selection headroom by task family (development set). (a) Mean penalised cost-ratio gap between the single best solver (SBS, lowest mean penalised ratio) and the virtual best solver (VBS), with field/base-instance bootstrap 95% CIs, log scale; (b) share of instances feasible only for non-SBS configurations under the independent checker. Ratios are relative to the best feasible cost per instance; infeasible results count as 2; instances without a feasible configuration are excluded from (a).",
+  "size_mm": [
+   190.0,
+   79.8
+  ]
+ },
+ {
+  "key": "fig2_coverage_feasibility",
+  "lang": "zh",
+  "files": [
+   "fig2_coverage_feasibility_zh.pdf",
+   "fig2_coverage_feasibility_zh.svg",
+   "fig2_coverage_feasibility_zh.png"
+  ],
+  "source_csv": "fig2_coverage_feasibility.csv",
+  "caption": "Fields2Cover 配置在荷兰开发集田块上的可行率（按机型分组）。柱为通过足迹、采样曲率与内缩区覆盖率 ≥ 90% 检验的实例比例，虚线为任一配置可行（VBS）的比例；共 388 个田块 × 机型实例。工作台默认配置（牛耕式分解 · 最少作业行数）可行 254 个。",
+  "size_mm": [
+   190.0,
+   104.5
+  ]
+ },
+ {
+  "key": "fig2_coverage_feasibility",
+  "lang": "en",
+  "files": [
+   "fig2_coverage_feasibility_en.pdf",
+   "fig2_coverage_feasibility_en.svg",
+   "fig2_coverage_feasibility_en.png"
+  ],
+  "source_csv": "fig2_coverage_feasibility.csv",
+  "caption": "Feasibility of Fields2Cover configurations on the Dutch development fields by machine type. Bars: share passing the footprint, sampled-curvature and ≥ 90% inner-coverage checks; dashed lines: share solved by any configuration (VBS); 388 field × machine instances. The workbench default (Boustrophedon, fewest swaths) is feasible on 254.",
+  "size_mm": [
+   190.0,
+   104.5
+  ]
+ },
+ {
+  "key": "fig3_shapley",
+  "lang": "zh",
+  "files": [
+   "fig3_shapley_zh.pdf",
+   "fig3_shapley_zh.svg",
+   "fig3_shapley_zh.png"
+  ],
+  "source_csv": "fig3_shapley.csv",
+  "caption": "覆盖配置对虚拟最优组合的贡献。v(S) 为实例平均的 [2 − min_{a∈S} ρ]；Shapley 贡献按全部子集精确计算（Fréchette 等，2016），边际贡献为自完整组合移除该配置后的价值损失。边际贡献近零而 Shapley 贡献非零，表示该配置与其他配置可相互替代。",
+  "size_mm": [
+   90.0,
+   49.5
+  ]
+ },
+ {
+  "key": "fig3_shapley",
+  "lang": "en",
+  "files": [
+   "fig3_shapley_en.pdf",
+   "fig3_shapley_en.svg",
+   "fig3_shapley_en.png"
+  ],
+  "source_csv": "fig3_shapley.csv",
+  "caption": "Contributions of coverage configurations to the virtual-best portfolio. v(S) is the instance mean of [2 − min_{a∈S} ρ]; Shapley contributions are exact over all subsets (Fréchette et al. 2016); the marginal contribution is the loss when the configuration is removed from the full portfolio. A near-zero marginal contribution with a non-zero Shapley contribution indicates substitutability.",
+  "size_mm": [
+   90.0,
+   49.5
+  ]
+ },
+ {
+  "key": "fig4_try_order",
+  "lang": "zh",
+  "files": [
+   "fig4_try_order_zh.pdf",
+   "fig4_try_order_zh.svg",
+   "fig4_try_order_zh.png"
+  ],
+  "source_csv": "fig4_try_order.csv",
+  "caption": "尝试顺序与可行率。曲线为在全部开发集数据上按边际收益贪心构造的固定顺序（样本内）；散点为田块分组交叉验证中各策略获得首个可行路径所需的平均尝试次数（留出田块）。",
+  "size_mm": [
+   90.0,
+   49.5
+  ]
+ },
+ {
+  "key": "fig4_try_order",
+  "lang": "en",
+  "files": [
+   "fig4_try_order_en.pdf",
+   "fig4_try_order_en.svg",
+   "fig4_try_order_en.png"
+  ],
+  "source_csv": "fig4_try_order.csv",
+  "caption": "Try-order and feasibility. The curve is a fixed order built greedily by marginal gain on all development data (in-sample); markers give the mean number of attempts to the first feasible path for each policy under field-grouped cross-validation (held-out fields).",
+  "size_mm": [
+   90.0,
+   49.5
+  ]
+ },
+ {
+  "key": "fig5_learning_curve",
+  "lang": "zh",
+  "files": [
+   "fig5_learning_curve_zh.pdf",
+   "fig5_learning_curve_zh.svg",
+   "fig5_learning_curve_zh.png"
+  ],
+  "source_csv": "fig5_learning_curve.csv",
+  "caption": "先测后学（prequential）评价：按 20 个随机田块顺序逐块处理，每块先由当前策略决定尝试顺序并计分，再将该田块的全部结果并入经验库。前 10 块采用冷启动顺序（默认配置优先），竖虚线后启用学习策略。实线为均值，阴影为第 10–90 百分位。",
+  "size_mm": [
+   190.0,
+   117.8
+  ]
+ },
+ {
+  "key": "fig5_learning_curve",
+  "lang": "en",
+  "files": [
+   "fig5_learning_curve_en.pdf",
+   "fig5_learning_curve_en.svg",
+   "fig5_learning_curve_en.png"
+  ],
+  "source_csv": "fig5_learning_curve.csv",
+  "caption": "Prequential (test-then-train) evaluation over 20 random field orders: each field is first decided by the current policy and scored, then all of its results enter the experience base. The first 10 fields use the cold-start order (default first); learned policies start after the dotted line. Lines: mean; bands: 10th–90th percentiles.",
+  "size_mm": [
+   190.0,
+   117.8
+  ]
+ },
+ {
+  "key": "fig6_instance_space",
+  "lang": "zh",
+  "files": [
+   "fig6_instance_space_zh.pdf",
+   "fig6_instance_space_zh.svg",
+   "fig6_instance_space_zh.png"
+  ],
+  "source_csv": "fig6_instance_space.csv",
+  "caption": "实例空间：农艺结构特征的主成分投影（Smith-Miles 实例空间分析的线性简化）。颜色与标记表示该实例上成本比最低的配置，× 为无配置通过独立检验的实例。",
+  "size_mm": [
+   90.0,
+   103.5
+  ]
+ },
+ {
+  "key": "fig6_instance_space",
+  "lang": "en",
+  "files": [
+   "fig6_instance_space_en.pdf",
+   "fig6_instance_space_en.svg",
+   "fig6_instance_space_en.png"
+  ],
+  "source_csv": "fig6_instance_space.csv",
+  "caption": "Instance space: principal components of the agronomic features (a linear simplification of Smith-Miles instance space analysis). Colour and marker: configuration with the lowest ratio on the instance; ×: no configuration passes the independent checker.",
+  "size_mm": [
+   90.0,
+   103.5
+  ]
+ },
+ {
+  "key": "fig7_execution_feedback",
+  "lang": "zh",
+  "files": [
+   "fig7_execution_feedback_zh.pdf",
+   "fig7_execution_feedback_zh.svg",
+   "fig7_execution_feedback_zh.png"
+  ],
+  "source_csv": "fig7_execution_feedback.csv",
+  "caption": "执行反馈信号：26 场成功田间仿真中 66 次车辆运行的规划时间与仿真驾驶时间（已扣除串行预约的排队等待）。驾驶/规划时间比中位数 1.079，第 10–90 百分位 1.025–1.218；会话包含同一方案的重复执行，共 10 个不同方案。二者之差源于加减速、转向与跟踪误差，即执行反馈学习的校正对象。",
+  "size_mm": [
+   90.0,
+   55.8
+  ]
+ },
+ {
+  "key": "fig7_execution_feedback",
+  "lang": "en",
+  "files": [
+   "fig7_execution_feedback_en.pdf",
+   "fig7_execution_feedback_en.svg",
+   "fig7_execution_feedback_en.png"
+  ],
+  "source_csv": "fig7_execution_feedback.csv",
+  "caption": "Execution-feedback signal: planned duration versus simulated driving time (serial-reservation queue waits removed) for 66 vehicle runs in 26 successful field simulations. Median driving/planned ratio 1.079 (10th–90th percentile 1.025–1.218); sessions repeat plans (10 distinct). The gap arises from acceleration, turning and tracking error and is the quantity execution-feedback learning corrects.",
+  "size_mm": [
+   90.0,
+   55.8
+  ]
+ },
+ {
+  "key": "fig8_three_verdicts",
+  "lang": "zh",
+  "files": [
+   "fig8_three_verdicts_zh.pdf",
+   "fig8_three_verdicts_zh.svg",
+   "fig8_three_verdicts_zh.png"
+  ],
+  "source_csv": "fig8_three_verdicts.csv",
+  "caption": "三种可执行性检验下的可行路径数（开发集：荷兰 140 块田 × 3 机型；1728 条原生可行路径为分母）。原生曲率检验只在原始采样点检查曲率；圆角可执行性检验要求拐角能用最小转弯半径圆弧在相邻直段内倒圆、且倒圆后通过未修改的原生检验（偏离容差 1 cm，0.5/2 cm 结果相同）；加密曲率检验把每条弦加密到 2 cm。柱顶为条数与占该机型原生可行数的比例；圆角检验另有 14 条因重跑无法再现记录路径而无法核验，按不可行计入。",
+  "size_mm": [
+   90.0,
+   46.8
+  ]
+ },
+ {
+  "key": "fig9_admission_rules",
+  "lang": "zh",
+  "files": [
+   "fig9_admission_rules_zh.pdf",
+   "fig9_admission_rules_zh.svg",
+   "fig9_admission_rules_zh.png"
+  ],
+  "source_csv": "fig9_admission_rules.csv",
+  "caption": "准入规则 × 库容量（开发集，留出田块）。上排为首次尝试可行率，下排为终止成本比减 1；左列为原生曲率检验，右列为圆角可执行性检验。每条规则只用外层训练田块选择成员，评价在外层测试田块；误差线为按田块自助法 95% 区间，灰色点线为旧库（L0）单独使用时的同一指标及其区间。容量 m 为在 L0 之上新增的成员数；随机规则每个划分抽 20 次。",
+  "size_mm": [
+   190.0,
+   117.8
+  ]
+ },
+ {
+  "key": "fig10_dynamic_value",
+  "lang": "zh",
+  "files": [
+   "fig10_dynamic_value_zh.pdf",
+   "fig10_dynamic_value_zh.svg",
+   "fig10_dynamic_value_zh.png"
+  ],
+  "source_csv": "fig10_dynamic_value.csv",
+  "caption": "动态任务流中重优化策略相对增量插入的总行驶里程与平均响应时间变化（开发集，规划层仿真；180 条流，30 块田 × 3 到达密度 × 2 车队规模）。负值更好；误差线为按流自助法 95% 区间。实心标记为 2 台、空心为 4 台；每流 40 个任务、其中 30 个在班次内到达，重优化为 PyVRP 0.3 s 开放路线优化。计时使用恒速模型。",
+  "size_mm": [
+   190.0,
+   104.5
+  ]
+ },
+ {
+  "key": "fig8_three_verdicts",
+  "lang": "en",
+  "files": [
+   "fig8_three_verdicts_en.pdf",
+   "fig8_three_verdicts_en.svg",
+   "fig8_three_verdicts_en.png"
+  ],
+  "source_csv": "fig8_three_verdicts.csv",
+  "caption": "Feasible paths under three executability checks (development set: 140 Dutch fields × 3 machine profiles; 1728 natively feasible paths as denominator). Native: sampled-point curvature only; fillet: every corner must be roundable by a minimum-radius arc inside its adjacent long chords and the rounded path must pass the unchanged native check (1 cm deviation tolerance; 0.5/2 cm identical); densified: every chord densified to 2 cm. Labels give counts and share of the profile's natively feasible paths; 14 fillet-unverifiable paths (hash not reproduced) count as infeasible.",
+  "size_mm": [
+   90.0,
+   46.8
+  ]
+ },
+ {
+  "key": "fig9_admission_rules",
+  "lang": "en",
+  "files": [
+   "fig9_admission_rules_en.pdf",
+   "fig9_admission_rules_en.svg",
+   "fig9_admission_rules_en.png"
+  ],
+  "source_csv": "fig9_admission_rules.csv",
+  "caption": "Admission rule × library capacity (development set, held-out fields). Top: first-try feasibility; bottom: penalised cost ratio at stop minus 1. Left: native curvature check; right: fillet executability check. Each rule selects members using outer-training fields only and is evaluated on outer-test fields; error bars are field-bootstrap 95 % intervals; grey dotted lines are the old library (L0) alone with its interval. Capacity m counts members added to L0; the random rule draws 20 candidate sets per split.",
+  "size_mm": [
+   190.0,
+   117.8
+  ]
+ },
+ {
+  "key": "fig10_dynamic_value",
+  "lang": "en",
+  "files": [
+   "fig10_dynamic_value_en.pdf",
+   "fig10_dynamic_value_en.svg",
+   "fig10_dynamic_value_en.png"
+  ],
+  "source_csv": "fig10_dynamic_value.csv",
+  "caption": "Change in total travel distance and mean response time of re-optimisation policies versus incremental insertion in dynamic task streams (development set, planning-level simulation; 180 streams, 30 fields × 3 arrival densities × 2 fleet sizes). Lower is better; error bars are stream bootstrap 95 % intervals. Filled markers: 2 vehicles; open: 4. Each stream has 40 tasks, 30 released during the shift; re-optimisation is a 0.3 s open-route PyVRP solve. Timing uses the constant-speed model.",
+  "size_mm": [
+   190.0,
+   104.5
+  ]
+ }
+]

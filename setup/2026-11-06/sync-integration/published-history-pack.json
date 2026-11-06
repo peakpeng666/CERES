@@ -1,0 +1,20 @@
+{
+  "source": "anonymous public GitHub Release through PackManager default URL",
+  "pack": {
+    "id": "history",
+    "name": "历史实验档案",
+    "summary": "BPP 历史结果、实验档案与研究数据库",
+    "bytes": 51543685,
+    "unpacked_bytes": 206462338,
+    "version": 1,
+    "state": "installed",
+    "progress": null,
+    "error": null
+  },
+  "installed": "/home/peakpeng/urp-worktrees/sync-20261105/.local-state/published-history-pack-check/packs/history-1",
+  "archive": {
+    "quick_check": "ok",
+    "experiments": 9
+  },
+  "initial_probe_note": "Initial polling wrapper saw the completed job removed from the internal jobs dict; the public installed/list state confirms completion."
+}

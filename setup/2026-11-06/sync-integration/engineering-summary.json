@@ -1,0 +1,429 @@
+{
+  "schema": "urp-engineering-checks-v1",
+  "generated_utc": "20261105T155145664553Z",
+  "python": "3.12.13 (main, Mar 10 2026, 18:17:25) [Clang 21.1.4 ]",
+  "status": "passed",
+  "gates": [
+    {
+      "name": "backend",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "src/backend",
+      "elapsed_seconds": 12.095,
+      "log": "backend.log",
+      "log_sha256": "e818304a3063441e4504e5d668b51a90246e70c818e605b4b036744c885e93b1",
+      "tests_run": 97,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "backend_packages",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "integration_backend.py",
+        "-v"
+      ],
+      "cwd": "src/backend",
+      "elapsed_seconds": 0.299,
+      "log": "backend_packages.log",
+      "log_sha256": "8cf95dcf09df0761398315f451b2fa0566f172fa0cdc2d04a7818f6c1fca824c",
+      "tests_run": 1,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "backend_route_contracts",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "integration_route_scene.py",
+        "-v"
+      ],
+      "cwd": "src/backend",
+      "elapsed_seconds": 1.049,
+      "log": "backend_route_contracts.log",
+      "log_sha256": "1a693467f4eefb8f5b93c3ed59e60677a6fe46c4a141f5ea5c65860e9cd481d4",
+      "tests_run": 1,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "research",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "scripts/test.py"
+      ],
+      "cwd": "src/research",
+      "elapsed_seconds": 4.012,
+      "log": "research.log",
+      "log_sha256": "159d93dbade16e759cfa90960d512396e5ec7fd0a408a8305c9ae641d9272a79",
+      "tests_run": 114,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "generator",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "-v",
+        "test_runner"
+      ],
+      "cwd": "src/research/generator",
+      "elapsed_seconds": 0.604,
+      "log": "generator.log",
+      "log_sha256": "532b0ac183185a8d88de619da6abcacd191a2982459d09688449345ca467445c",
+      "tests_run": 12,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "supervision",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "src/research/execution",
+      "elapsed_seconds": 8.219,
+      "log": "supervision.log",
+      "log_sha256": "c57a264c4c3c8b07044d9e862c13f623b40fe84a3cf7384b08158a971cd79b9c",
+      "tests_run": 27,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "baseline_aggregation",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "protocol",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "elapsed_seconds": 0.093,
+      "log": "baseline_aggregation.log",
+      "log_sha256": "1c2de9ecab3535a088b2011e3c16511b127abbf9a0f4e7869d93f362565d41d9",
+      "tests_run": 13,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "independent_validator",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "independent",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "elapsed_seconds": 0.292,
+      "log": "independent_validator.log",
+      "log_sha256": "6925c5383c8db1c6f51b5b91fac6de183d17192c2d34ca3aa98a8198974805c4",
+      "tests_run": 32,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "public_cli",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/tests",
+        "-v"
+      ],
+      "cwd": ".",
+      "elapsed_seconds": 3.457,
+      "log": "public_cli.log",
+      "log_sha256": "7addcc3182ae5914ecdc54ac53ad48871bed59d4eb86a1bc07a64cb7343ac90d",
+      "tests_run": 77,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "robotics_core",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "urp_route_sim/test",
+        "-v"
+      ],
+      "cwd": "src/robotics",
+      "elapsed_seconds": 0.207,
+      "log": "robotics_core.log",
+      "log_sha256": "c7627732c4a25739ed7980f2767a6d8aa57181139e1fa94c6eaed4e6ddc4f5b2",
+      "tests_run": 56,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_data",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 3.303,
+      "log": "frontend_data.log",
+      "log_sha256": "1e36962042ce7a4f41388d1c124b0b76a4bd26e5787a364d7d1a77aa073d6c38",
+      "tests_run": 28,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_ui",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "npm",
+        "run",
+        "test:ui"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 1.607,
+      "log": "frontend_ui.log",
+      "log_sha256": "8a99ed2a8585c96284ede0712dfda046751282a1dd4e64204471866e026948ff",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "desktop_shell",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "node",
+        "--test",
+        "test/main.test.js"
+      ],
+      "cwd": "src/desktop",
+      "elapsed_seconds": 0.201,
+      "log": "desktop_shell.log",
+      "log_sha256": "4996b5fe4ee483fb4f51ca08e97ace745a0afd455d93da02a4b7e0c4b853fcf3",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_replay",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "node",
+        "--test",
+        "core/routing/tests/model-result.test.js",
+        "tests/replay-client.test.mjs",
+        "tests/replay-real.test.mjs",
+        "tests/replay.test.mjs"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 1.457,
+      "log": "frontend_replay.log",
+      "log_sha256": "96ae6e6380b5f19de0e36911e02a759bbd4469b48433cd8cb3e12a1921924d02",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "bpp_scientific_readback",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "/home/peakpeng/urp-worktrees/sync-20261105/.venv/bin/python3",
+        "scripts/validate_data.py",
+        "--output",
+        "/home/peakpeng/urp-worktrees/sync-20261105/.local-state/integration-checks/engineering/bpp_validation.json"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 6.482,
+      "log": "bpp_scientific_readback.log",
+      "log_sha256": "2ad9826af5e39d94d629f1cc387729f1d0711acdf02841dad403b593522cf0c1",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_build",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 8.275,
+      "log": "frontend_build.log",
+      "log_sha256": "ee25659f24d55c9eb8a07303b74d14ac0b134e817695d06c69b49d4bb14a618b",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    }
+  ],
+  "omitted": [],
+  "scope": "Engineering regressions and frozen BPP readback; no formal baseline re-execution, live LLM, ROS or Gazebo physics."
+}

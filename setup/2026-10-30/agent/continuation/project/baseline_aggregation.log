@@ -1,0 +1,18 @@
+test_denominators_and_pairs (test_aggregate.TestAggregate.test_denominators_and_pairs) ... ok
+test_duplicate_attempt_never_becomes_best_of_retries (test_aggregate.TestAggregate.test_duplicate_attempt_never_becomes_best_of_retries) ... ok
+test_duplicate_axes_denominator_and_schedule_rejected (test_aggregate.TestAggregate.test_duplicate_axes_denominator_and_schedule_rejected) ... ok
+test_invalid_measurement_and_checker_kept_in_denominator (test_aggregate.TestAggregate.test_invalid_measurement_and_checker_kept_in_denominator) ... ok
+test_reference_and_gap_corruption_retains_feasibility_without_quality (test_aggregate.TestAggregate.test_reference_and_gap_corruption_retains_feasibility_without_quality) ... ok
+test_truthy_flags_and_noninteger_cost_do_not_pass (test_aggregate.TestAggregate.test_truthy_flags_and_noninteger_cost_do_not_pass) ... ok
+test_conflicting_resource_and_host_declarations_rejected (test_aggregate_hosts.HostTests.test_conflicting_resource_and_host_declarations_rejected) ... ok
+test_declaration_only_cannot_claim_verified_timing_or_pairs (test_aggregate_hosts.HostTests.test_declaration_only_cannot_claim_verified_timing_or_pairs) ... ok
+test_duplicate_seed_ownership_rejected (test_aggregate_hosts.HostTests.test_duplicate_seed_ownership_rejected) ... ok
+test_host_partition_no_cross_host_pairs_or_speed_pool (test_aggregate_hosts.HostTests.test_host_partition_no_cross_host_pairs_or_speed_pool) ... ok
+test_missing_or_mismatched_environment_rejected (test_aggregate_hosts.HostTests.test_missing_or_mismatched_environment_rejected) ... ok
+test_nearer_unverified_manifest_blocks_parent_inheritance (test_aggregate_hosts.HostTests.test_nearer_unverified_manifest_blocks_parent_inheritance) ... ok
+test_wrong_plan_manifest_rejected (test_aggregate_hosts.HostTests.test_wrong_plan_manifest_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.011s
+
+OK

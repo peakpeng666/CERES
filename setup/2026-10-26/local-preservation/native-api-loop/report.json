@@ -1,0 +1,225 @@
+{
+  "started_utc": "2026-10-25T16:25:55.070142+00:00",
+  "gateway": "http://127.0.0.1:4100",
+  "scenario": "maze-inspection",
+  "steps": [
+    {
+      "name": "gateway health",
+      "ok": true,
+      "wall_s": 0.0,
+      "response": {
+        "status": "ok",
+        "version": "0.1.0",
+        "executes_solvers": true
+      }
+    },
+    {
+      "name": "service inventory",
+      "ok": true,
+      "wall_s": 0.01,
+      "states": {
+        "gateway": "running",
+        "archive": "running",
+        "solver": "ready",
+        "fields2cover": "ready",
+        "ros": "ready",
+        "sim": "stopped",
+        "rviz": "unavailable",
+        "gazebo_gui": "unavailable"
+      },
+      "note": "gateway=running, archive=running, solver=ready, fields2cover=ready, ros=ready, sim=stopped, rviz=unavailable, gazebo_gui=unavailable"
+    },
+    {
+      "name": "load scenario",
+      "ok": true,
+      "wall_s": 0.01,
+      "frame": "map",
+      "sim": {
+        "supported": true,
+        "world": "maze",
+        "spawn": {
+          "x": 0.0,
+          "y": 0.0,
+          "yaw": 0.0
+        },
+        "reason": null
+      },
+      "note": "turn_routing · map"
+    },
+    {
+      "name": "recommendation",
+      "ok": true,
+      "wall_s": 0.02,
+      "recommended": "urp.turn_mode_dp",
+      "learned_selector": {
+        "id": "urp.cvrp_selection.knn_crc",
+        "status": "not_applicable",
+        "reason": null,
+        "required": [
+          "/home/peakpeng/Desktop/URP/data/research/cvrp-selection-crc/data/raw.jsonl"
+        ],
+        "prediction": null
+      },
+      "ranking": [
+        {
+          "algorithm_id": "urp.turn_mode_dp",
+          "rank": 1,
+          "applicable": true,
+          "score": 3.0,
+          "suitability": "推荐",
+          "reasons": [
+            "任务数 2 ≤ 12：优先尝试精确分层 DP，是否证最优以终态和预算为准"
+          ],
+          "suggested_params": {
+            "time_limit_s": 3,
+            "seed": 42
+          }
+        },
+        {
+          "algorithm_id": "pyvrp.hgs+urp.layered",
+          "rank": 2,
+          "applicable": true,
+          "score": 2.0,
+          "suitability": "可用",
+          "reasons": [
+            "规模较大时的首选：PyVRP 定顺序，项目分层 DP 补全转弯可行路径"
+          ],
+          "suggested_params": {
+            "time_limit_s": 3,
+            "seed": 42
+          }
+        },
+        {
+          "algorithm_id": "ortools.gls+urp.layered",
+          "rank": 3,
+          "applicable": true,
+          "score": 1.5,
+          "suitability": "可用",
+          "reasons": [
+            "与 PyVRP 方案互为对照"
+          ],
+          "suggested_params": {
+            "time_limit_s": 3,
+            "seed": 42
+          }
+        },
+        {
+          "algorithm_id": "urp.raw_oracle",
+          "rank": 4,
+          "applicable": true,
+          "score": 1.0,
+          "suitability": "可用",
+          "reasons": [
+            "小规模时可用独立精确搜索交叉验证最优值"
+          ],
+          "suggested_params": {
+            "time_limit_s": 3,
+            "seed": 42
+          }
+        },
+        {
+          "algorithm_id": "urp.reset_dp",
+          "rank": 5,
+          "applicable": true,
+          "score": -5.0,
+          "suitability": "可用",
+          "reasons": [
+            "只作下界参考：忽略进入方向，路线可能违反转弯规则"
+          ],
+          "suggested_params": {
+            "time_limit_s": 3,
+            "seed": 42
+          }
+        }
+      ],
+      "note": "recommended urp.turn_mode_dp; learned selector not_applicable"
+    },
+    {
+      "name": "submit solve job",
+      "ok": true,
+      "wall_s": 0.05,
+      "job": {
+        "job_id": "job_20261025T162555_513f74",
+        "runs": [
+          "run_20261025T162555_ff8705"
+        ]
+      },
+      "note": "1 algorithms: urp.turn_mode_dp"
+    },
+    {
+      "name": "all solver runs terminal",
+      "ok": true,
+      "wall_s": 0.56,
+      "table": [
+        {
+          "algorithm": "urp.turn_mode_dp",
+          "source": "project",
+          "state": "done",
+          "status": "optimal",
+          "objective": 490,
+          "unit": "cm_equivalent",
+          "check_valid": true,
+          "check_errors": [],
+          "map_collision_free": true,
+          "min_clearance_m": 0.9100735712051392,
+          "length": 4.3,
+          "wall_s": 0.025854041000457073,
+          "run_id": "run_20261025T162555_ff8705"
+        }
+      ]
+    },
+    {
+      "name": "recommended run valid and checked",
+      "ok": true,
+      "wall_s": 0.56,
+      "run_id": "run_20261025T162555_ff8705",
+      "note": "objective {'value': 490, 'unit': 'cm_equivalent', 'lower_bound': None} check src/research/src/urp_research/turn_modes/checker.py"
+    },
+    {
+      "name": "map check collision-free",
+      "ok": true,
+      "wall_s": 0.56,
+      "map_check": {
+        "checked": true,
+        "collision_free": true,
+        "min_clearance_m": 0.9100735712051392,
+        "robot_radius_m": 0.175,
+        "margin_m": 0.05,
+        "violations": [],
+        "violation_count": 0,
+        "method": "沿整条路径按半个栅格采样，距离变换给出保守净空；未知区与地图外按障碍"
+      }
+    },
+    {
+      "name": "export json",
+      "ok": true,
+      "wall_s": 0.56,
+      "bytes": 33313,
+      "content_type": "application/json"
+    },
+    {
+      "name": "export csv",
+      "ok": true,
+      "wall_s": 0.56,
+      "bytes": 593,
+      "content_type": "text/csv; charset=utf-8"
+    },
+    {
+      "name": "export geojson",
+      "ok": true,
+      "wall_s": 0.56,
+      "bytes": 613,
+      "content_type": "application/json"
+    },
+    {
+      "name": "compare export",
+      "ok": true,
+      "wall_s": 0.56,
+      "bytes": 383
+    }
+  ],
+  "status": "PASS_SOLVER_ONLY",
+  "sim_skipped": "requested",
+  "finished_utc": "2026-10-25T16:25:55.631385+00:00",
+  "wall_s": 0.6
+}

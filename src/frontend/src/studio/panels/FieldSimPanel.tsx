@@ -29,7 +29,7 @@ const STATE_TEXT: Record<FieldVehicleState['state'], string> = { waiting: '等�
 const pct = (a?: number | null, b?: number | null) => (a != null && b ? `${a >= b ? '+' : ''}${fmt.num(((a - b) / b) * 100, 1)}%` : '');
 
 /** Starts the field simulation for a fleet run and brings the simulation workspace forward. */
-export async function startFieldSim(runId: string, opts: { gui?: boolean; rviz?: boolean; real_time_factor?: number; physics?: Record<string, unknown>; execution?: { ground_preset?: string; localization_preset?: string; seed?: number; slip_protection?: boolean } } = {}) {
+export async function startFieldSim(runId: string, opts: { gui?: boolean; rviz?: boolean; real_time_factor?: number; physics?: Record<string, unknown>; execution?: { ground_preset?: string; localization_preset?: string; seed?: number; slip_protection?: boolean } } = {}, where: { stay?: boolean } = {}) {
   const st = useStudio.getState();
   setFieldSimActionError(null);
   try {
@@ -54,7 +54,7 @@ export async function startFieldSim(runId: string, opts: { gui?: boolean; rviz?:
   try {
     await studio.startFieldsim(runId, opts);
     await refreshFieldSim();
-    st.setWorkspace('sim');
+    if (!where.stay) st.setWorkspace('sim');
     st.notify('info', '正在生成田间场景并启动 Gazebo…');
   } catch (e) {
     const message = executionErrorMessage(e);
@@ -125,7 +125,7 @@ export function FieldSimPanel() {
           <h3><Tractor size={14} style={{ verticalAlign: -2 }} /> 田间多车仿真</h3>
           <Badge tone={phase.tone}>{phase.text}</Badge>
         </div>
-        <p className={s.meta}>Gazebo Fortress 按任务地图生成场景。车辆由 URP 跟踪规划路径，规划路线与实际轨迹分别记录，完成状态以执行检查为准。</p>
+        <p className={s.meta}>Gazebo Fortress 按任务地图生成场景。车辆跟踪规划路径，规划路线与实际轨迹分别记录，完成状态以执行检查为准。</p>
         {error && <Notice tone="error">仿真状态读取失败：{error}</Notice>}
         {actionError && <Notice tone="error">{actionError}<div className={s.row}><Button size="sm" onClick={() => void refreshFieldSim()}>刷新会话状态</Button><Button size="sm" variant="plain" onClick={() => setFieldSimActionError(null)}>知道了</Button></div></Notice>}
 

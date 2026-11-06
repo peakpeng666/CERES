@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<title>农业机器人路径规划工作台</title>
+<style>
+  :root { color-scheme: light dark; --bg: #f7f5ef; --ink: #2b2a26; --dim: #76736a; --line: #dcd8cc; --accent: #4a6a3a; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #21201d; --ink: #e8e5dc; --dim: #9b978b; --line: #3a3833; --accent: #9dbb86; } }
+  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.6 system-ui, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
+  main { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 32px; box-sizing: border-box; text-align: center; }
+  svg { width: 48px; height: 48px; }
+  h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  #status { color: var(--dim); min-height: 22px; max-width: 640px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #failure { display: none; max-width: 720px; width: 100%; text-align: left; }
+  #failure p { margin: 0 0 8px; }
+  pre { margin: 0; max-height: 240px; overflow: auto; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: 12px/1.5 ui-monospace, monospace; white-space: pre-wrap; color: var(--dim); }
+  .actions { display: flex; gap: 8px; margin-top: 12px; }
+  button { height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: none; color: inherit; font: inherit; cursor: pointer; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+</style>
+</head>
+<body>
+<main>
+  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 3.5v17M3.5 12h17" stroke="currentColor" stroke-width="1.6"/><circle cx="7.6" cy="16.4" r="2" fill="currentColor"/></svg>
+  <h1>农业机器人路径规划工作台</h1>
+  <div id="status">正在启动</div>
+  <div id="failure">
+    <p>后端没有启动成功。</p>
+    <pre id="detail"></pre>
+    <div class="actions">
+      <button class="primary" id="retry">重试</button>
+      <button id="native" hidden>改用内置后端</button>
+      <button id="logs">打开日志目录</button>
+    </div>
+  </div>
+</main>
+<script>
+  const show = (id, on) => { document.getElementById(id).style.display = on ? '' : 'none'; };
+  window.desktop.onBootStatus((text) => { document.getElementById('status').textContent = text; });
+  window.desktop.onBootError(({ message, mode }) => {
+    show('status', false);
+    document.getElementById('failure').style.display = 'block';
+    document.getElementById('detail').textContent = message;
+    document.getElementById('native').hidden = mode !== 'container';
+  });
+  document.getElementById('retry').onclick = () => {
+    show('status', true);
+    document.getElementById('failure').style.display = 'none';
+    document.getElementById('status').textContent = '正在启动';
+    window.desktop.retry();
+  };
+  document.getElementById('native').onclick = () => window.desktop.useNative();
+  document.getElementById('logs').onclick = () => window.desktop.openLogs();
+</script>
+</body>
+</html>

@@ -4,10 +4,7 @@
   grid-template-columns: calc(var(--mac-sidebar-w) + 8px) minmax(0, 1fr);
   min-height: 100vh;
   min-height: 100dvh;
-  background:
-    radial-gradient(1200px 600px at -10% -20%, rgba(0, 122, 255, 0.06), transparent 60%),
-    radial-gradient(900px 500px at 0% 110%, rgba(52, 199, 89, 0.05), transparent 60%),
-    var(--mac-window);
+  background: var(--mac-window);
 }
 
 .main {
@@ -81,3 +78,5 @@
     --topbar-h: calc(48px + var(--mac-toolbar-h));
   }
 }
+
+.bppChip { display: flex; justify-content: flex-end; padding: 8px 16px 0; }

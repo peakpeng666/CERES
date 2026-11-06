@@ -1,0 +1,46 @@
+wineboot exit 0
+installer exit 0 in 37 s
+found: /tmp/w/drive_c/users/root/AppData/Local/Programs/agri-route-workbench/agri-route-workbench.exe
+1013M	/tmp/w/drive_c/users/root/AppData/Local/Programs/agri-route-workbench
+LICENSE.electron.txt
+LICENSES.chromium.html
+Uninstall agri-route-workbench.exe
+agri-route-workbench.exe
+chrome_100_percent.pak
+chrome_200_percent.pak
+d3dcompiler_47.dll
+dxcompiler.dll
+electron_wer.dll
+ffmpeg.dll
+icudtl.dat
+locales
+resources
+resources.pak
+snapshot_blob.bin
+v8_context_snapshot.bin
+vk_swiftshader.dll
+vk_swiftshader_icd.json
+vulkan-1.dll
+app-update.yml
+app.asar
+backend
+compose
+elevate.exe
+✓ 后端就绪 {"seconds": 2.4}
+✓ 算法目录 {"total": 28, "unavailable": {"urp.js.savings": "没有可用的 Node 运行时", "urp.js.nearest_neighbor": "没有可用的 Node 运行时", "f2c.full"
+✓ 界面可以打开 
+✓ 能力清单 {"simulators": {"gazebo.field": "unavailable", "gazebo.tb4": "unavailable", "mujoco.field": "ready"}, "learners": 3}
+✓ 模型目录 {"services": 183}
+✓ 只读接口全部可用 {"routes": 35}
+✓ 任务走完：建图、求解、复核、物理预演、报告 {"best": "PyVRP 固定车队", "physics": "3/3", "wall_s": [1.648, 1.646, 1.751]}
+✓ 数据包下载、校验、解压，/data 可用 {"bytes": 51543685, "catalog_bytes": 1438793}
+✓ 档案后端随数据包启动 {"mode": "local_import_query"}
+✓ 有序退出 {"code": 0}
+installed smoke exit 0
+tracebacks: 0
+--- shortcuts
+/tmp/w/drive_c/users/root/Desktop/农业机器人路径规划工作台.lnk
+/tmp/w/drive_c/users/root/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/农业机器人路径规划工作台.lnk
+--- uninstall
+uninstaller exit 0
+ls: cannot access '/tmp/w/drive_c/users/root/AppData/Local/Programs/agri-route-workbench': No such file or directory

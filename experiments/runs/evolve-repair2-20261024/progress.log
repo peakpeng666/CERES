@@ -1,0 +1,65 @@
+2026-10-23T10:08:44Z plan 2328 jobs, 0 recorded, 2328 pending, workers=16
+2026-10-23T10:09:14Z recorded 87/2328 {'feasible': 86, 'no_solution': 1} busy=16 queue=2225
+2026-10-23T10:09:44Z recorded 190/2328 {'feasible': 175, 'no_solution': 15} busy=16 queue=2122
+2026-10-23T10:10:14Z recorded 211/2328 {'feasible': 195, 'no_solution': 16} busy=16 queue=2101
+2026-10-23T10:10:44Z recorded 252/2328 {'feasible': 232, 'no_solution': 20} busy=16 queue=2060
+2026-10-23T10:11:14Z recorded 279/2328 {'feasible': 257, 'no_solution': 22} busy=16 queue=2033
+2026-10-23T10:11:44Z recorded 285/2328 {'feasible': 263, 'no_solution': 22} busy=16 queue=2027
+2026-10-23T10:12:14Z recorded 298/2328 {'feasible': 276, 'no_solution': 22} busy=16 queue=2014
+2026-10-23T10:12:45Z recorded 333/2328 {'feasible': 309, 'no_solution': 24} busy=16 queue=1979
+2026-10-23T10:13:15Z recorded 357/2328 {'feasible': 332, 'no_solution': 25} busy=16 queue=1955
+2026-10-23T10:13:45Z recorded 367/2328 {'feasible': 342, 'no_solution': 25} busy=16 queue=1945
+2026-10-23T10:14:15Z recorded 373/2328 {'feasible': 347, 'no_solution': 26} busy=16 queue=1939
+2026-10-23T10:14:45Z recorded 391/2328 {'feasible': 363, 'no_solution': 26, 'timeout': 2} busy=16 queue=1921
+2026-10-23T10:15:15Z recorded 421/2328 {'feasible': 387, 'no_solution': 32, 'timeout': 2} busy=16 queue=1891
+2026-10-23T10:15:45Z recorded 484/2328 {'feasible': 441, 'no_solution': 40, 'timeout': 3} busy=16 queue=1828
+2026-10-23T10:16:15Z recorded 540/2328 {'feasible': 485, 'no_solution': 50, 'timeout': 5} busy=15 queue=1773
+2026-10-23T10:16:45Z recorded 600/2328 {'feasible': 537, 'no_solution': 58, 'timeout': 5} busy=16 queue=1712
+2026-10-23T10:17:15Z recorded 630/2328 {'feasible': 564, 'no_solution': 61, 'timeout': 5} busy=16 queue=1682
+2026-10-23T10:17:45Z recorded 664/2328 {'feasible': 595, 'no_solution': 64, 'timeout': 5} busy=16 queue=1648
+2026-10-23T10:18:15Z recorded 732/2328 {'feasible': 655, 'no_solution': 70, 'timeout': 7} busy=16 queue=1580
+2026-10-23T10:18:45Z recorded 784/2328 {'feasible': 704, 'no_solution': 73, 'timeout': 7} busy=16 queue=1528
+2026-10-23T10:19:15Z recorded 870/2328 {'feasible': 777, 'no_solution': 85, 'timeout': 8} busy=15 queue=1443
+2026-10-23T10:19:45Z recorded 904/2328 {'feasible': 810, 'no_solution': 86, 'timeout': 8} busy=16 queue=1408
+2026-10-23T10:20:16Z recorded 979/2328 {'feasible': 880, 'no_solution': 91, 'timeout': 8} busy=16 queue=1333
+2026-10-23T10:20:46Z recorded 1030/2328 {'feasible': 921, 'no_solution': 101, 'timeout': 8} busy=16 queue=1282
+2026-10-23T10:21:16Z recorded 1082/2328 {'feasible': 964, 'no_solution': 109, 'timeout': 9} busy=16 queue=1230
+2026-10-23T10:21:46Z recorded 1140/2328 {'feasible': 1015, 'no_solution': 115, 'timeout': 10} busy=16 queue=1172
+2026-10-23T10:22:16Z recorded 1225/2328 {'feasible': 1092, 'no_solution': 123, 'timeout': 10} busy=16 queue=1087
+2026-10-23T10:22:46Z recorded 1317/2328 {'feasible': 1180, 'no_solution': 127, 'timeout': 10} busy=16 queue=995
+2026-10-23T10:23:16Z recorded 1376/2328 {'feasible': 1234, 'no_solution': 132, 'timeout': 10} busy=16 queue=936
+2026-10-23T10:23:46Z recorded 1443/2328 {'feasible': 1297, 'no_solution': 135, 'timeout': 11} busy=15 queue=870
+2026-10-23T10:24:16Z recorded 1492/2328 {'feasible': 1337, 'no_solution': 144, 'timeout': 11} busy=16 queue=820
+2026-10-23T10:24:46Z recorded 1588/2328 {'feasible': 1424, 'no_solution': 151, 'timeout': 13} busy=14 queue=726
+2026-10-23T10:25:16Z recorded 1635/2328 {'feasible': 1463, 'no_solution': 159, 'timeout': 13} busy=15 queue=678
+2026-10-23T10:25:46Z recorded 1649/2328 {'feasible': 1475, 'no_solution': 161, 'timeout': 13} busy=16 queue=663
+2026-10-23T10:26:17Z recorded 1670/2328 {'feasible': 1492, 'no_solution': 165, 'timeout': 13} busy=15 queue=643
+2026-10-23T10:26:47Z recorded 1717/2328 {'feasible': 1537, 'no_solution': 167, 'timeout': 13} busy=16 queue=595
+2026-10-23T10:27:17Z recorded 1735/2328 {'feasible': 1551, 'no_solution': 171, 'timeout': 13} busy=16 queue=577
+2026-10-23T10:27:47Z recorded 1747/2328 {'feasible': 1562, 'no_solution': 172, 'timeout': 13} busy=16 queue=565
+2026-10-23T10:28:17Z recorded 1760/2328 {'feasible': 1572, 'no_solution': 174, 'timeout': 14} busy=16 queue=552
+2026-10-23T10:28:47Z recorded 1792/2328 {'feasible': 1595, 'no_solution': 183, 'timeout': 14} busy=15 queue=521
+2026-10-23T10:29:17Z recorded 1846/2328 {'feasible': 1643, 'no_solution': 188, 'timeout': 15} busy=16 queue=466
+2026-10-23T10:29:47Z recorded 1882/2328 {'feasible': 1678, 'no_solution': 189, 'timeout': 15} busy=16 queue=430
+2026-10-23T10:30:17Z recorded 1940/2328 {'feasible': 1726, 'no_solution': 197, 'timeout': 17} busy=16 queue=372
+2026-10-23T10:30:47Z recorded 1982/2328 {'feasible': 1763, 'no_solution': 202, 'timeout': 17} busy=16 queue=330
+2026-10-23T10:31:17Z recorded 2016/2328 {'feasible': 1794, 'no_solution': 205, 'timeout': 17} busy=15 queue=297
+2026-10-23T10:31:47Z recorded 2059/2328 {'feasible': 1836, 'no_solution': 206, 'timeout': 17} busy=16 queue=253
+2026-10-23T10:32:18Z recorded 2072/2328 {'feasible': 1846, 'no_solution': 209, 'timeout': 17} busy=16 queue=240
+2026-10-23T10:32:48Z recorded 2123/2328 {'feasible': 1880, 'no_solution': 224, 'timeout': 19} busy=16 queue=189
+2026-10-23T10:33:18Z recorded 2176/2328 {'feasible': 1928, 'no_solution': 229, 'timeout': 19} busy=14 queue=138
+2026-10-23T10:33:48Z recorded 2196/2328 {'feasible': 1946, 'no_solution': 230, 'timeout': 20} busy=16 queue=116
+2026-10-23T10:34:18Z recorded 2230/2328 {'feasible': 1974, 'no_solution': 236, 'timeout': 20} busy=16 queue=82
+2026-10-23T10:34:48Z recorded 2251/2328 {'feasible': 1989, 'no_solution': 242, 'timeout': 20} busy=16 queue=61
+2026-10-23T10:35:18Z recorded 2283/2328 {'feasible': 2021, 'no_solution': 242, 'timeout': 20} busy=16 queue=29
+2026-10-23T10:35:48Z recorded 2316/2328 {'feasible': 2050, 'no_solution': 245, 'timeout': 21} busy=12 queue=0
+2026-10-23T10:36:18Z recorded 2320/2328 {'feasible': 2053, 'no_solution': 245, 'timeout': 22} busy=8 queue=0
+2026-10-23T10:36:48Z recorded 2322/2328 {'feasible': 2054, 'no_solution': 246, 'timeout': 22} busy=6 queue=0
+2026-10-23T10:37:18Z recorded 2323/2328 {'feasible': 2055, 'no_solution': 246, 'timeout': 22} busy=5 queue=0
+2026-10-23T10:37:48Z recorded 2325/2328 {'feasible': 2056, 'no_solution': 246, 'timeout': 23} busy=3 queue=0
+2026-10-23T10:38:18Z recorded 2326/2328 {'feasible': 2057, 'no_solution': 246, 'timeout': 23} busy=2 queue=0
+2026-10-23T10:38:48Z recorded 2327/2328 {'feasible': 2057, 'no_solution': 246, 'timeout': 24} busy=1 queue=0
+2026-10-23T10:39:18Z recorded 2327/2328 {'feasible': 2057, 'no_solution': 246, 'timeout': 24} busy=1 queue=0
+2026-10-23T10:39:48Z recorded 2327/2328 {'feasible': 2057, 'no_solution': 246, 'timeout': 24} busy=1 queue=0
+2026-10-23T10:40:18Z recorded 2327/2328 {'feasible': 2057, 'no_solution': 246, 'timeout': 24} busy=1 queue=0
+2026-10-23T10:40:25Z finished {'feasible': 2057, 'no_solution': 246, 'timeout': 25}

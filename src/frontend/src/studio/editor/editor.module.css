@@ -3,7 +3,7 @@
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #eef0ea;
+  background: var(--map-bg);
   touch-action: none;
   user-select: none;
 }
@@ -23,24 +23,24 @@
   display: block;
 }
 .backdrop {
-  fill: #edefe8;
+  fill: var(--map-bg);
 }
 .grid line {
-  stroke: rgba(60, 70, 50, 0.07);
+  stroke: var(--map-grid);
   stroke-width: 1;
 }
 .boundary {
-  fill: #f6f3e9;
-  stroke: #8b7d5c;
-  stroke-width: 2;
+  fill: var(--map-ground);
+  stroke: var(--map-edge);
+  stroke-width: 1.2;
   vector-effect: non-scaling-stroke;
   stroke-linejoin: round;
   cursor: default;
 }
 .plot {
-  fill: rgba(126, 190, 102, 0.22);
-  stroke: #6aa05a;
-  stroke-width: 1.4;
+  fill: var(--map-field);
+  stroke: none;
+  stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 .plotRows {
@@ -49,12 +49,12 @@
   cursor: move;
 }
 .cropRow {
-  stroke: rgba(84, 142, 64, 0.38);
+  stroke: var(--map-row);
   stroke-width: 0.35;
 }
 .lanes polyline {
   fill: none;
-  stroke: rgba(150, 118, 46, 0.34);
+  stroke: var(--map-lane);
   stroke-width: 1;
   stroke-dasharray: 5 3;
   vector-effect: non-scaling-stroke;
@@ -87,44 +87,44 @@
 }
 .selected {
   fill: none;
-  stroke: var(--mac-accent, #007aff);
+  stroke: var(--mac-accent);
   stroke-width: 2.2;
   stroke-dasharray: 6 4;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 .rubber {
-  fill: rgba(0, 122, 255, 0.12);
-  stroke: var(--mac-accent, #007aff);
+  fill: color-mix(in srgb, var(--mac-accent) 12%, transparent);
+  stroke: var(--mac-accent);
   stroke-width: 1.4;
   stroke-dasharray: 4 3;
   pointer-events: none;
 }
 .plotLabel {
-  font: 600 11px var(--mac-font);
-  fill: rgba(47, 85, 38, 0.75);
+  font: 500 11px var(--mac-font);
+  fill: var(--map-text);
   text-anchor: middle;
   pointer-events: none;
   paint-order: stroke;
-  stroke: rgba(246, 243, 233, 0.85);
+  stroke: var(--map-ground);
   stroke-width: 3px;
 }
 .taskG {
   cursor: pointer;
 }
 .task {
-  fill: #fff;
-  stroke: #1d1d1f;
-  stroke-width: 2;
+  fill: var(--map-halo);
+  stroke: var(--map-ink);
+  stroke-width: 1.5;
 }
 .taskBad {
-  fill: #ffe5e3;
-  stroke: #e5352b;
+  fill: var(--mac-red-soft);
+  stroke: var(--mac-red);
   stroke-width: 2.4;
 }
 .taskHalo {
-  fill: rgba(0, 122, 255, 0.16);
-  stroke: var(--mac-accent, #007aff);
+  fill: color-mix(in srgb, var(--mac-accent) 16%, transparent);
+  stroke: var(--mac-accent);
   stroke-width: 1.5;
 }
 .order {
@@ -134,60 +134,60 @@
 }
 .taskLabel {
   font: 500 10px var(--mac-font);
-  fill: #3a3a3c;
+  fill: var(--map-text);
   pointer-events: none;
   paint-order: stroke;
-  stroke: rgba(255, 255, 255, 0.9);
+  stroke: var(--map-halo);
   stroke-width: 3px;
 }
 .depot {
   cursor: move;
 }
 .depot rect {
-  fill: #1d1d1f;
-  stroke: #fff;
+  fill: var(--map-ink);
+  stroke: var(--map-halo);
   stroke-width: 1.5;
 }
 .depot path {
   fill: none;
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 1.6;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 .vehicle circle {
-  stroke: #fff;
+  stroke: var(--map-halo);
   stroke-width: 2;
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
 }
 .vertex {
-  fill: #fff;
-  stroke: var(--mac-accent, #007aff);
+  fill: var(--map-halo);
+  stroke: var(--mac-accent);
   stroke-width: 1.5;
   cursor: crosshair;
 }
 .violation {
-  fill: rgba(229, 53, 43, 0.18);
-  stroke: #e5352b;
+  fill: color-mix(in srgb, var(--mac-red) 18%, transparent);
+  stroke: var(--mac-red);
   stroke-width: 2;
   pointer-events: none;
 }
 .scale line {
-  stroke: #3a3a3c;
+  stroke: var(--map-text);
   stroke-width: 1.5;
 }
 .scale text,
 .extent {
   font: 500 11px var(--mac-font);
-  fill: #3a3a3c;
+  fill: var(--map-text);
 }
 .extent {
   text-anchor: end;
-  fill: #86868b;
+  fill: var(--mac-label-3);
 }
 .corridor {
-  fill: rgba(194, 157, 74, 0.28);
-  stroke: #9a7b3c;
+  fill: var(--map-soil);
+  stroke: var(--map-soil-edge);
   stroke-width: 1.6;
   stroke-dasharray: 7 3;
   vector-effect: non-scaling-stroke;
@@ -197,16 +197,16 @@
   cursor: move;
 }
 .unload path {
-  fill: #bf5af2;
-  stroke: #fff;
+  fill: var(--mac-purple);
+  stroke: var(--map-halo);
   stroke-width: 1.6;
 }
 .unload text,
 .depot text {
   font: 600 10px var(--mac-font);
-  fill: #3a3a3c;
+  fill: var(--map-text);
   paint-order: stroke;
-  stroke: rgba(255, 255, 255, 0.9);
+  stroke: var(--map-halo);
   stroke-width: 3px;
   pointer-events: none;
 }

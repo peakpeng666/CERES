@@ -16,7 +16,7 @@ export interface KnownIssue {
 export const SCOPE_NOTES: KnownIssue[] = [
   {
     source: '历史数据',
-    text: 'BPP 历史结果在「#/bpp」，原始实验数据放回 data/、experiments/ 后自动显示。',
+    text: 'BPP 历史结果在 资料 → BPP 历史，在 设置 → 数据 下载历史档案后显示。',
   },
   {
     source: '仿真机器人',

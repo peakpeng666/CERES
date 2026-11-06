@@ -234,6 +234,7 @@ def gate_commands(py, output, skip_build=False):
         ('robotics_core', 'src/robotics', [py, '-m', 'unittest', 'discover', '-s', 'urp_route_sim/test', '-v']),
         ('frontend_data', 'src/frontend', [py, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_*.py', '-v']),
         ('frontend_ui', 'src/frontend', ['npm', 'run', 'test:ui']),
+        ('desktop_shell', 'src/desktop', ['node', '--test', 'test/main.test.js']),
         ('frontend_replay', 'src/frontend', ['node', '--test', 'core/routing/tests/model-result.test.js',
                                           'tests/replay-client.test.mjs', 'tests/replay-real.test.mjs', 'tests/replay.test.mjs']),
         ('bpp_scientific_readback', 'src/frontend', [py, 'scripts/validate_data.py', '--output', str(output / 'bpp_validation.json')]),
@@ -263,7 +264,7 @@ def main():
         for index, (name, cwd, command) in enumerate(commands):
             print(f'{name}: running', flush=True)
             result = run_gate(name, cwd, command, output,
-                              require_tests=name not in {'frontend_ui', 'frontend_replay',
+                              require_tests=name not in {'frontend_ui', 'frontend_replay', 'desktop_shell',
                                                          'bpp_scientific_readback', 'frontend_build'})
             results.append(result)
             print(f'{name}: {result["status"]}', flush=True)

@@ -1,0 +1,495 @@
+{
+  "gateway_pid": 48407,
+  "runtime": "/home/peakpeng/Desktop/URP/.local-state/inspection-20261025T152450Z/native-platform-runtime-final",
+  "simulation_executed": false,
+  "health": {
+    "status": "ok",
+    "version": "0.1.0",
+    "executes_solvers": true
+  },
+  "services": {
+    "services": [
+      {
+        "id": "gateway",
+        "name": "工作台网关",
+        "kind": "process",
+        "state": "running",
+        "detail": "127.0.0.1:4100，提供面板、/lab/api 与 /api 代理",
+        "pid": 48407,
+        "port": 4100,
+        "url": "http://127.0.0.1:4100/",
+        "started_utc": "2026-10-25T16:25:54.082Z",
+        "controls": [],
+        "log": "gateway",
+        "facts": [
+          {
+            "label": "Python",
+            "value": "3.12.13"
+          },
+          {
+            "label": "FastAPI",
+            "value": "0.143.1"
+          },
+          {
+            "label": "运行目录",
+            "value": "/home/peakpeng/Desktop/URP/.local-state/inspection-20261025T152450Z/native-platform-runtime-final"
+          },
+          {
+            "label": "前端构建",
+            "value": "2026-10-26 01:10"
+          },
+          {
+            "label": "求解并发",
+            "value": "6"
+          }
+        ],
+        "known_issues": []
+      },
+      {
+        "id": "archive",
+        "name": "档案后端",
+        "kind": "process",
+        "state": "running",
+        "detail": "由网关启动；面板经 /api 同源代理访问",
+        "pid": 48472,
+        "port": 4180,
+        "url": "http://127.0.0.1:4180/api/health",
+        "started_utc": "2026-10-25T16:25:54.469Z",
+        "controls": [
+          "stop",
+          "restart"
+        ],
+        "log": "archive",
+        "facts": [
+          {
+            "label": "模式",
+            "value": "local_import_query_and_cvrp_jobs"
+          },
+          {
+            "label": "执行实验",
+            "value": "True"
+          }
+        ],
+        "known_issues": []
+      },
+      {
+        "id": "solver",
+        "name": "求解环境",
+        "kind": "check",
+        "state": "ready",
+        "detail": "28 个算法可用；每次求解独立子进程",
+        "pid": null,
+        "port": null,
+        "url": null,
+        "started_utc": null,
+        "controls": [],
+        "log": null,
+        "facts": [
+          {
+            "label": "Python",
+            "value": "3.12.13"
+          },
+          {
+            "label": "fastapi",
+            "value": "0.143.1"
+          },
+          {
+            "label": "uvicorn",
+            "value": "0.54.0"
+          },
+          {
+            "label": "pyvrp",
+            "value": "0.14.0"
+          },
+          {
+            "label": "ortools",
+            "value": "9.15.6755"
+          },
+          {
+            "label": "shapely",
+            "value": "2.2.0"
+          },
+          {
+            "label": "numpy",
+            "value": "2.5.4"
+          },
+          {
+            "label": "scipy",
+            "value": "1.18.1"
+          },
+          {
+            "label": "httpx",
+            "value": "0.28.1"
+          },
+          {
+            "label": "pillow",
+            "value": "12.3.0"
+          },
+          {
+            "label": "研究模块",
+            "value": "6/6 可导入"
+          },
+          {
+            "label": "Node",
+            "value": "v24.14.0"
+          },
+          {
+            "label": "项目 JS 求解器",
+            "value": "src/frontend/core/routing/cvrp-solver.js"
+          },
+          {
+            "label": "可用算法",
+            "value": "28/28"
+          }
+        ],
+        "known_issues": []
+      },
+      {
+        "id": "fields2cover",
+        "name": "Fields2Cover",
+        "kind": "check",
+        "state": "ready",
+        "detail": "第三方覆盖路径库可用（f2c.* 算法）",
+        "pid": null,
+        "port": null,
+        "url": null,
+        "started_utc": null,
+        "controls": [],
+        "log": null,
+        "facts": [
+          {
+            "label": "版本",
+            "value": "2.1.0"
+          }
+        ],
+        "known_issues": []
+      },
+      {
+        "id": "ros",
+        "name": "ROS 2 Humble",
+        "kind": "check",
+        "state": "ready",
+        "detail": "ROS 2 Humble + Gazebo Fortress + Nav2 + TurtleBot4 仿真可用",
+        "pid": null,
+        "port": null,
+        "url": null,
+        "started_utc": null,
+        "controls": [],
+        "log": null,
+        "facts": [
+          {
+            "label": "rclpy",
+            "value": "可导入（humble，/usr/bin/python3）"
+          },
+          {
+            "label": "RMW",
+            "value": "rmw_cyclonedds_cpp"
+          },
+          {
+            "label": "Gazebo",
+            "value": "Fortress（ign gazebo 6.18.0）"
+          },
+          {
+            "label": "ros_gz_bridge",
+            "value": "0.244.26"
+          },
+          {
+            "label": "官方地图",
+            "value": "warehouse, depot, maze"
+          },
+          {
+            "label": "图形显示",
+            "value": ":0"
+          },
+          {
+            "label": "桥接关闭",
+            "value": "已选择 parameter_bridge 源码关闭修复，启动时校验源码与依赖指纹；等待 ROS 信号线程结束后正常析构，不使用 _exit。"
+          }
+        ],
+        "known_issues": []
+      },
+      {
+        "id": "sim",
+        "name": "仿真会话",
+        "kind": "process",
+        "state": "stopped",
+        "detail": "未运行；可选择世界启动（官方 TurtleBot4 + Gazebo Fortress + Nav2）",
+        "pid": null,
+        "port": 4191,
+        "url": null,
+        "started_utc": null,
+        "controls": [
+          "start"
+        ],
+        "log": null,
+        "facts": [
+          {
+            "label": "桥接关闭",
+            "value": "已选择 parameter_bridge 源码关闭修复，启动时校验源码与依赖指纹；等待 ROS 信号线程结束后正常析构，不使用 _exit。"
+          }
+        ],
+        "known_issues": []
+      },
+      {
+        "id": "rviz",
+        "name": "RViz2",
+        "kind": "process",
+        "state": "unavailable",
+        "detail": "仿真会话未运行",
+        "pid": null,
+        "port": null,
+        "url": null,
+        "started_utc": null,
+        "controls": [],
+        "log": null,
+        "facts": [],
+        "known_issues": []
+      },
+      {
+        "id": "gazebo_gui",
+        "name": "Gazebo 界面",
+        "kind": "process",
+        "state": "unavailable",
+        "detail": "仿真会话未运行",
+        "pid": null,
+        "port": null,
+        "url": null,
+        "started_utc": null,
+        "controls": [],
+        "log": null,
+        "facts": [],
+        "known_issues": []
+      }
+    ]
+  },
+  "frontend_http_status": 200,
+  "recommended": "urp.turn_mode_dp",
+  "api_loop_exit": 0,
+  "api_loop": {
+    "started_utc": "2026-10-25T16:20:56.156459+00:00",
+    "gateway": "http://127.0.0.1:4100",
+    "scenario": "maze-inspection",
+    "steps": [
+      {
+        "name": "gateway health",
+        "ok": true,
+        "wall_s": 0.0,
+        "response": {
+          "status": "ok",
+          "version": "0.1.0",
+          "executes_solvers": true
+        }
+      },
+      {
+        "name": "service inventory",
+        "ok": true,
+        "wall_s": 0.01,
+        "states": {
+          "gateway": "running",
+          "archive": "running",
+          "solver": "ready",
+          "fields2cover": "ready",
+          "ros": "starting",
+          "sim": "stopped",
+          "rviz": "unavailable",
+          "gazebo_gui": "unavailable"
+        },
+        "note": "gateway=running, archive=running, solver=ready, fields2cover=ready, ros=starting, sim=stopped, rviz=unavailable, gazebo_gui=unavailable"
+      },
+      {
+        "name": "load scenario",
+        "ok": true,
+        "wall_s": 0.01,
+        "frame": "map",
+        "sim": {
+          "supported": true,
+          "world": "maze",
+          "spawn": {
+            "x": 0.0,
+            "y": 0.0,
+            "yaw": 0.0
+          },
+          "reason": null
+        },
+        "note": "turn_routing · map"
+      },
+      {
+        "name": "recommendation",
+        "ok": true,
+        "wall_s": 0.02,
+        "recommended": "urp.turn_mode_dp",
+        "learned_selector": {
+          "id": "urp.cvrp_selection.knn_crc",
+          "status": "not_applicable",
+          "reason": null,
+          "required": [
+            "/home/peakpeng/Desktop/URP/data/research/cvrp-selection-crc/data/raw.jsonl"
+          ],
+          "prediction": null
+        },
+        "ranking": [
+          {
+            "algorithm_id": "urp.turn_mode_dp",
+            "rank": 1,
+            "applicable": true,
+            "score": 3.0,
+            "suitability": "推荐",
+            "reasons": [
+              "任务数 2 ≤ 12：优先尝试精确分层 DP，是否证最优以终态和预算为准"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "pyvrp.hgs+urp.layered",
+            "rank": 2,
+            "applicable": true,
+            "score": 2.0,
+            "suitability": "可用",
+            "reasons": [
+              "规模较大时的首选：PyVRP 定顺序，项目分层 DP 补全转弯可行路径"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "ortools.gls+urp.layered",
+            "rank": 3,
+            "applicable": true,
+            "score": 1.5,
+            "suitability": "可用",
+            "reasons": [
+              "与 PyVRP 方案互为对照"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "urp.raw_oracle",
+            "rank": 4,
+            "applicable": true,
+            "score": 1.0,
+            "suitability": "可用",
+            "reasons": [
+              "小规模时可用独立精确搜索交叉验证最优值"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          },
+          {
+            "algorithm_id": "urp.reset_dp",
+            "rank": 5,
+            "applicable": true,
+            "score": -5.0,
+            "suitability": "可用",
+            "reasons": [
+              "只作下界参考：忽略进入方向，路线可能违反转弯规则"
+            ],
+            "suggested_params": {
+              "time_limit_s": 3,
+              "seed": 42
+            }
+          }
+        ],
+        "note": "recommended urp.turn_mode_dp; learned selector not_applicable"
+      },
+      {
+        "name": "submit solve job",
+        "ok": true,
+        "wall_s": 0.05,
+        "job": {
+          "job_id": "job_20261025T162056_700c61",
+          "runs": [
+            "run_20261025T162056_16d2df"
+          ]
+        },
+        "note": "1 algorithms: urp.turn_mode_dp"
+      },
+      {
+        "name": "all solver runs terminal",
+        "ok": true,
+        "wall_s": 0.56,
+        "table": [
+          {
+            "algorithm": "urp.turn_mode_dp",
+            "source": "project",
+            "state": "done",
+            "status": "optimal",
+            "objective": 490,
+            "unit": "cm_equivalent",
+            "check_valid": true,
+            "check_errors": [],
+            "map_collision_free": true,
+            "min_clearance_m": 0.9100735712051392,
+            "length": 4.3,
+            "wall_s": 0.025126262999947357,
+            "run_id": "run_20261025T162056_16d2df"
+          }
+        ]
+      },
+      {
+        "name": "recommended run valid and checked",
+        "ok": true,
+        "wall_s": 0.56,
+        "run_id": "run_20261025T162056_16d2df",
+        "note": "objective {'value': 490, 'unit': 'cm_equivalent', 'lower_bound': None} check src/research/src/urp_research/turn_modes/checker.py"
+      },
+      {
+        "name": "map check collision-free",
+        "ok": true,
+        "wall_s": 0.56,
+        "map_check": {
+          "checked": true,
+          "collision_free": true,
+          "min_clearance_m": 0.9100735712051392,
+          "robot_radius_m": 0.175,
+          "margin_m": 0.05,
+          "violations": [],
+          "violation_count": 0,
+          "method": "沿整条路径按半个栅格采样，距离变换给出保守净空；未知区与地图外按障碍"
+        }
+      },
+      {
+        "name": "export json",
+        "ok": true,
+        "wall_s": 0.56,
+        "bytes": 33304,
+        "content_type": "application/json"
+      },
+      {
+        "name": "export csv",
+        "ok": true,
+        "wall_s": 0.56,
+        "bytes": 593,
+        "content_type": "text/csv; charset=utf-8"
+      },
+      {
+        "name": "export geojson",
+        "ok": true,
+        "wall_s": 0.56,
+        "bytes": 613,
+        "content_type": "application/json"
+      },
+      {
+        "name": "compare export",
+        "ok": true,
+        "wall_s": 0.56,
+        "bytes": 383
+      }
+    ],
+    "status": "PASS_SOLVER_ONLY",
+    "sim_skipped": "requested",
+    "finished_utc": "2026-10-25T16:20:56.718801+00:00",
+    "wall_s": 0.6
+  },
+  "shutdown_http_status": 202,
+  "gateway_exit": 0
+}

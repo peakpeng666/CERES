@@ -1,0 +1,6467 @@
+{
+ "run": "evolve-determinism-20261024",
+ "tasks": 143,
+ "repeats_per_task": 5,
+ "repeats_observed": 715,
+ "repeats_expected": 715,
+ "overall": {
+  "tasks": 143,
+  "repeats_observed": 715,
+  "repeats_expected": 715,
+  "missing_repeats": 0,
+  "reproducible_tasks": 88,
+  "reproducible_share": 0.6153846153846154,
+  "stable_tasks": 128,
+  "stable_share": 0.8951048951048951,
+  "flip_tasks": 3,
+  "flip_rate": 0.02097902097902098,
+  "flip_wilson95": [
+   0.007159887536964584,
+   0.05986199182147335
+  ],
+  "flip_any_tasks": 9,
+  "flip_any_rate": 0.06293706293706294,
+  "flip_any_wilson95": [
+   0.03346110825773375,
+   0.11528148239777533
+  ],
+  "cost_cv_median": 0.0,
+  "cost_cv_max": 0.014479104807190175,
+  "cost_cv_tasks": 110,
+  "status_counts": {
+   "feasible": 537,
+   "no_solution": 146,
+   "timeout": 32
+  },
+  "source_match_share": 0.8017699115044248
+ },
+ "by_sample_group": {
+  "feasible": {
+   "tasks": 90,
+   "repeats_observed": 450,
+   "repeats_expected": 450,
+   "missing_repeats": 0,
+   "reproducible_tasks": 87,
+   "reproducible_share": 0.9666666666666667,
+   "stable_tasks": 90,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.04093706842168078
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.04093706842168078
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.01283140634312944,
+   "cost_cv_tasks": 90,
+   "status_counts": {
+    "feasible": 450
+   },
+   "source_match_share": 0.9866666666666667
+  },
+  "infeasible": {
+   "tasks": 30,
+   "repeats_observed": 150,
+   "repeats_expected": 150,
+   "missing_repeats": 0,
+   "reproducible_tasks": 0,
+   "reproducible_share": 0.0,
+   "stable_tasks": 26,
+   "stable_share": 0.8666666666666667,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "cost_cv_median": null,
+   "cost_cv_max": null,
+   "cost_cv_tasks": 0,
+   "status_counts": {
+    "no_solution": 135,
+    "timeout": 15
+   },
+   "source_match_share": null
+  },
+  "mismatch": {
+   "tasks": 23,
+   "repeats_observed": 115,
+   "repeats_expected": 115,
+   "missing_repeats": 0,
+   "reproducible_tasks": 1,
+   "reproducible_share": 0.043478260869565216,
+   "stable_tasks": 12,
+   "stable_share": 0.5217391304347826,
+   "flip_tasks": 3,
+   "flip_rate": 0.13043478260869565,
+   "flip_wilson95": [
+    0.04537576514344702,
+    0.32127897973018194
+   ],
+   "flip_any_tasks": 9,
+   "flip_any_rate": 0.391304347826087,
+   "flip_any_wilson95": [
+    0.22157377982382145,
+    0.5921482039625402
+   ],
+   "cost_cv_median": 0.001981529547417161,
+   "cost_cv_max": 0.014479104807190175,
+   "cost_cv_tasks": 20,
+   "status_counts": {
+    "feasible": 87,
+    "no_solution": 11,
+    "timeout": 17
+   },
+   "source_match_share": 0.0782608695652174
+  }
+ },
+ "by_config": {
+  "full:boustrophedon/field_coverage": {
+   "tasks": 6,
+   "repeats_observed": 30,
+   "repeats_expected": 30,
+   "missing_repeats": 0,
+   "reproducible_tasks": 3,
+   "reproducible_share": 0.5,
+   "stable_tasks": 5,
+   "stable_share": 0.8333333333333334,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.3903430336530645
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.3903430336530645
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.00036613054959287245,
+   "cost_cv_tasks": 4,
+   "status_counts": {
+    "feasible": 20,
+    "no_solution": 2,
+    "timeout": 8
+   },
+   "source_match_share": 0.85
+  },
+  "full:boustrophedon/n_swath": {
+   "tasks": 6,
+   "repeats_observed": 30,
+   "repeats_expected": 30,
+   "missing_repeats": 0,
+   "reproducible_tasks": 5,
+   "reproducible_share": 0.8333333333333334,
+   "stable_tasks": 6,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.3903430336530645
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.3903430336530645
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.3981387008519857e-16,
+   "cost_cv_tasks": 5,
+   "status_counts": {
+    "feasible": 25,
+    "no_solution": 5
+   },
+   "source_match_share": 1.0
+  },
+  "full:boustrophedon/swath_length": {
+   "tasks": 10,
+   "repeats_observed": 50,
+   "repeats_expected": 50,
+   "missing_repeats": 0,
+   "reproducible_tasks": 4,
+   "reproducible_share": 0.4,
+   "stable_tasks": 10,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.0,
+   "cost_cv_tasks": 4,
+   "status_counts": {
+    "feasible": 20,
+    "no_solution": 30
+   },
+   "source_match_share": 1.0
+  },
+  "full:none/field_coverage": {
+   "tasks": 4,
+   "repeats_observed": 20,
+   "repeats_expected": 20,
+   "missing_repeats": 0,
+   "reproducible_tasks": 2,
+   "reproducible_share": 0.5,
+   "stable_tasks": 4,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.48990002040399916
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.48990002040399916
+   ],
+   "cost_cv_median": 6.248530772713795e-17,
+   "cost_cv_max": 1.249706154542759e-16,
+   "cost_cv_tasks": 2,
+   "status_counts": {
+    "feasible": 10,
+    "no_solution": 10
+   },
+   "source_match_share": 1.0
+  },
+  "full:none/n_swath": {
+   "tasks": 7,
+   "repeats_observed": 35,
+   "repeats_expected": 35,
+   "missing_repeats": 0,
+   "reproducible_tasks": 6,
+   "reproducible_share": 0.8571428571428571,
+   "stable_tasks": 7,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.35433884297520657
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.35433884297520657
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.4368266902223976e-16,
+   "cost_cv_tasks": 6,
+   "status_counts": {
+    "feasible": 30,
+    "no_solution": 5
+   },
+   "source_match_share": 1.0
+  },
+  "full:none/swath_length": {
+   "tasks": 5,
+   "repeats_observed": 25,
+   "repeats_expected": 25,
+   "missing_repeats": 0,
+   "reproducible_tasks": 4,
+   "reproducible_share": 0.8,
+   "stable_tasks": 5,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.43449149475208104
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.43449149475208104
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.0,
+   "cost_cv_tasks": 4,
+   "status_counts": {
+    "feasible": 20,
+    "no_solution": 5
+   },
+   "source_match_share": 1.0
+  },
+  "full:trapezoidal/field_coverage": {
+   "tasks": 4,
+   "repeats_observed": 20,
+   "repeats_expected": 20,
+   "missing_repeats": 0,
+   "reproducible_tasks": 0,
+   "reproducible_share": 0.0,
+   "stable_tasks": 2,
+   "stable_share": 0.5,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.48990002040399916
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.48990002040399916
+   ],
+   "cost_cv_median": null,
+   "cost_cv_max": null,
+   "cost_cv_tasks": 0,
+   "status_counts": {
+    "no_solution": 14,
+    "timeout": 6
+   },
+   "source_match_share": null
+  },
+  "full:trapezoidal/n_swath": {
+   "tasks": 36,
+   "repeats_observed": 180,
+   "repeats_expected": 180,
+   "missing_repeats": 0,
+   "reproducible_tasks": 27,
+   "reproducible_share": 0.75,
+   "stable_tasks": 32,
+   "stable_share": 0.8888888888888888,
+   "flip_tasks": 1,
+   "flip_rate": 0.027777777777777776,
+   "flip_wilson95": [
+    0.004920280295569679,
+    0.141700337350308
+   ],
+   "flip_any_tasks": 2,
+   "flip_any_rate": 0.05555555555555555,
+   "flip_any_wilson95": [
+    0.015369663767066846,
+    0.18144974107611211
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.005822488224659493,
+   "cost_cv_tasks": 32,
+   "status_counts": {
+    "feasible": 157,
+    "no_solution": 15,
+    "timeout": 8
+   },
+   "source_match_share": 0.7647058823529411
+  },
+  "full:trapezoidal/swath_length": {
+   "tasks": 8,
+   "repeats_observed": 40,
+   "repeats_expected": 40,
+   "missing_repeats": 0,
+   "reproducible_tasks": 3,
+   "reproducible_share": 0.375,
+   "stable_tasks": 7,
+   "stable_share": 0.875,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.3244156195108769
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.005400685786160879,
+   "cost_cv_tasks": 4,
+   "status_counts": {
+    "feasible": 20,
+    "no_solution": 19,
+    "timeout": 1
+   },
+   "source_match_share": 0.85
+  },
+  "repair:boustrophedon/field_coverage": {
+   "tasks": 19,
+   "repeats_observed": 95,
+   "repeats_expected": 95,
+   "missing_repeats": 0,
+   "reproducible_tasks": 8,
+   "reproducible_share": 0.42105263157894735,
+   "stable_tasks": 14,
+   "stable_share": 0.7368421052631579,
+   "flip_tasks": 1,
+   "flip_rate": 0.05263157894736842,
+   "flip_wilson95": [
+    0.009351752490529969,
+    0.2463921533654521
+   ],
+   "flip_any_tasks": 5,
+   "flip_any_rate": 0.2631578947368421,
+   "flip_any_wilson95": [
+    0.11806238339540162,
+    0.48791968441070643
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.014479104807190175,
+   "cost_cv_tasks": 14,
+   "status_counts": {
+    "feasible": 64,
+    "no_solution": 23,
+    "timeout": 8
+   },
+   "source_match_share": 0.6
+  },
+  "repair:boustrophedon/n_swath": {
+   "tasks": 7,
+   "repeats_observed": 35,
+   "repeats_expected": 35,
+   "missing_repeats": 0,
+   "reproducible_tasks": 5,
+   "reproducible_share": 0.7142857142857143,
+   "stable_tasks": 7,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.35433884297520657
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.35433884297520657
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.013088628713801918,
+   "cost_cv_tasks": 7,
+   "status_counts": {
+    "feasible": 35
+   },
+   "source_match_share": 0.7428571428571429
+  },
+  "repair:boustrophedon/swath_length": {
+   "tasks": 12,
+   "repeats_observed": 60,
+   "repeats_expected": 60,
+   "missing_repeats": 0,
+   "reproducible_tasks": 3,
+   "reproducible_share": 0.25,
+   "stable_tasks": 10,
+   "stable_share": 0.8333333333333334,
+   "flip_tasks": 1,
+   "flip_rate": 0.08333333333333333,
+   "flip_wilson95": [
+    0.014864709450773478,
+    0.35388592179859524
+   ],
+   "flip_any_tasks": 2,
+   "flip_any_rate": 0.16666666666666666,
+   "flip_any_wilson95": [
+    0.04696414761482223,
+    0.44803635738467273
+   ],
+   "cost_cv_median": 0.0003694504469101434,
+   "cost_cv_max": 0.009412336551009964,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 46,
+    "no_solution": 13,
+    "timeout": 1
+   },
+   "source_match_share": 0.46
+  },
+  "repair:none/field_coverage": {
+   "tasks": 6,
+   "repeats_observed": 30,
+   "repeats_expected": 30,
+   "missing_repeats": 0,
+   "reproducible_tasks": 6,
+   "reproducible_share": 1.0,
+   "stable_tasks": 6,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.3903430336530645
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.3903430336530645
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.0,
+   "cost_cv_tasks": 6,
+   "status_counts": {
+    "feasible": 30
+   },
+   "source_match_share": 1.0
+  },
+  "repair:none/n_swath": {
+   "tasks": 9,
+   "repeats_observed": 45,
+   "repeats_expected": 45,
+   "missing_repeats": 0,
+   "reproducible_tasks": 8,
+   "reproducible_share": 0.8888888888888888,
+   "stable_tasks": 9,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.2991527535509594
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.2991527535509594
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.3357154178269715e-16,
+   "cost_cv_tasks": 8,
+   "status_counts": {
+    "feasible": 40,
+    "no_solution": 5
+   },
+   "source_match_share": 1.0
+  },
+  "repair:none/swath_length": {
+   "tasks": 4,
+   "repeats_observed": 20,
+   "repeats_expected": 20,
+   "missing_repeats": 0,
+   "reproducible_tasks": 4,
+   "reproducible_share": 1.0,
+   "stable_tasks": 4,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.48990002040399916
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.48990002040399916
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.0,
+   "cost_cv_tasks": 4,
+   "status_counts": {
+    "feasible": 20
+   },
+   "source_match_share": 1.0
+  }
+ },
+ "by_decomposition": {
+  "boustrophedon": {
+   "tasks": 60,
+   "repeats_observed": 300,
+   "repeats_expected": 300,
+   "missing_repeats": 0,
+   "reproducible_tasks": 28,
+   "reproducible_share": 0.4666666666666667,
+   "stable_tasks": 52,
+   "stable_share": 0.8666666666666667,
+   "flip_tasks": 2,
+   "flip_rate": 0.03333333333333333,
+   "flip_wilson95": [
+    0.009189126490150246,
+    0.11363987528925378
+   ],
+   "flip_any_tasks": 7,
+   "flip_any_rate": 0.11666666666666667,
+   "flip_any_wilson95": [
+    0.05767647403450049,
+    0.2217902059985814
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.014479104807190175,
+   "cost_cv_tasks": 44,
+   "status_counts": {
+    "feasible": 210,
+    "no_solution": 73,
+    "timeout": 17
+   },
+   "source_match_share": 0.6933333333333334
+  },
+  "none": {
+   "tasks": 35,
+   "repeats_observed": 175,
+   "repeats_expected": 175,
+   "missing_repeats": 0,
+   "reproducible_tasks": 30,
+   "reproducible_share": 0.8571428571428571,
+   "stable_tasks": 35,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.09890426758938868
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.09890426758938868
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.4368266902223976e-16,
+   "cost_cv_tasks": 30,
+   "status_counts": {
+    "feasible": 150,
+    "no_solution": 25
+   },
+   "source_match_share": 1.0
+  },
+  "trapezoidal": {
+   "tasks": 48,
+   "repeats_observed": 240,
+   "repeats_expected": 240,
+   "missing_repeats": 0,
+   "reproducible_tasks": 30,
+   "reproducible_share": 0.625,
+   "stable_tasks": 41,
+   "stable_share": 0.8541666666666666,
+   "flip_tasks": 1,
+   "flip_rate": 0.020833333333333332,
+   "flip_wilson95": [
+    0.003687015979399688,
+    0.10899469137531158
+   ],
+   "flip_any_tasks": 2,
+   "flip_any_rate": 0.041666666666666664,
+   "flip_any_wilson95": [
+    0.011501652078965613,
+    0.13975911147771472
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.005822488224659493,
+   "cost_cv_tasks": 36,
+   "status_counts": {
+    "feasible": 177,
+    "no_solution": 48,
+    "timeout": 15
+   },
+   "source_match_share": 0.7736842105263158
+  }
+ },
+ "by_profile": {
+  "robot_s": {
+   "tasks": 57,
+   "repeats_observed": 285,
+   "repeats_expected": 285,
+   "missing_repeats": 0,
+   "reproducible_tasks": 29,
+   "reproducible_share": 0.5087719298245614,
+   "stable_tasks": 43,
+   "stable_share": 0.7543859649122807,
+   "flip_tasks": 3,
+   "flip_rate": 0.05263157894736842,
+   "flip_wilson95": [
+    0.01805996809628102,
+    0.14369777660471303
+   ],
+   "flip_any_tasks": 9,
+   "flip_any_rate": 0.15789473684210525,
+   "flip_any_wilson95": [
+    0.08535699749316844,
+    0.2736342190428858
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.014479104807190175,
+   "cost_cv_tasks": 50,
+   "status_counts": {
+    "feasible": 237,
+    "no_solution": 20,
+    "timeout": 28
+   },
+   "source_match_share": 0.5849056603773585
+  },
+  "sprayer_l": {
+   "tasks": 45,
+   "repeats_observed": 225,
+   "repeats_expected": 225,
+   "missing_repeats": 0,
+   "reproducible_tasks": 30,
+   "reproducible_share": 0.6666666666666666,
+   "stable_tasks": 45,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.07865426194064076
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.07865426194064076
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.3981387008519857e-16,
+   "cost_cv_tasks": 30,
+   "status_counts": {
+    "feasible": 150,
+    "no_solution": 75
+   },
+   "source_match_share": 1.0
+  },
+  "tractor_m": {
+   "tasks": 41,
+   "repeats_observed": 205,
+   "repeats_expected": 205,
+   "missing_repeats": 0,
+   "reproducible_tasks": 29,
+   "reproducible_share": 0.7073170731707317,
+   "stable_tasks": 40,
+   "stable_share": 0.975609756097561,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.08567044886890744
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.08567044886890744
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.01283140634312944,
+   "cost_cv_tasks": 30,
+   "status_counts": {
+    "feasible": 150,
+    "no_solution": 51,
+    "timeout": 4
+   },
+   "source_match_share": 0.9866666666666667
+  }
+ },
+ "by_decomposition_profile": {
+  "boustrophedon|robot_s": {
+   "tasks": 27,
+   "repeats_observed": 135,
+   "repeats_expected": 135,
+   "missing_repeats": 0,
+   "reproducible_tasks": 9,
+   "reproducible_share": 0.3333333333333333,
+   "stable_tasks": 19,
+   "stable_share": 0.7037037037037037,
+   "flip_tasks": 2,
+   "flip_rate": 0.07407407407407407,
+   "flip_wilson95": [
+    0.020554221697383523,
+    0.2336997729073062
+   ],
+   "flip_any_tasks": 7,
+   "flip_any_rate": 0.25925925925925924,
+   "flip_any_wilson95": [
+    0.13170208422866778,
+    0.4467893040261568
+   ],
+   "cost_cv_median": 0.00026471000914412754,
+   "cost_cv_max": 0.014479104807190175,
+   "cost_cv_tasks": 24,
+   "status_counts": {
+    "feasible": 110,
+    "no_solution": 8,
+    "timeout": 17
+   },
+   "source_match_share": 0.464
+  },
+  "boustrophedon|sprayer_l": {
+   "tasks": 15,
+   "repeats_observed": 75,
+   "repeats_expected": 75,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 0.6666666666666666,
+   "stable_tasks": 15,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.3981387008519857e-16,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50,
+    "no_solution": 25
+   },
+   "source_match_share": 1.0
+  },
+  "boustrophedon|tractor_m": {
+   "tasks": 18,
+   "repeats_observed": 90,
+   "repeats_expected": 90,
+   "missing_repeats": 0,
+   "reproducible_tasks": 9,
+   "reproducible_share": 0.5,
+   "stable_tasks": 18,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.1758845505823749
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.1758845505823749
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.01283140634312944,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50,
+    "no_solution": 40
+   },
+   "source_match_share": 0.96
+  },
+  "none|robot_s": {
+   "tasks": 10,
+   "repeats_observed": 50,
+   "repeats_expected": 50,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 1.0,
+   "stable_tasks": 10,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.4368266902223976e-16,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50
+   },
+   "source_match_share": 1.0
+  },
+  "none|sprayer_l": {
+   "tasks": 15,
+   "repeats_observed": 75,
+   "repeats_expected": 75,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 0.6666666666666666,
+   "stable_tasks": 15,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.3055607756836684e-16,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50,
+    "no_solution": 25
+   },
+   "source_match_share": 1.0
+  },
+  "none|tractor_m": {
+   "tasks": 10,
+   "repeats_observed": 50,
+   "repeats_expected": 50,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 1.0,
+   "stable_tasks": 10,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.249706154542759e-16,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50
+   },
+   "source_match_share": 1.0
+  },
+  "trapezoidal|robot_s": {
+   "tasks": 20,
+   "repeats_observed": 100,
+   "repeats_expected": 100,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 0.5,
+   "stable_tasks": 14,
+   "stable_share": 0.7,
+   "flip_tasks": 1,
+   "flip_rate": 0.05,
+   "flip_wilson95": [
+    0.008881219432873136,
+    0.23613589351256675
+   ],
+   "flip_any_tasks": 2,
+   "flip_any_rate": 0.1,
+   "flip_any_wilson95": [
+    0.027865893984153206,
+    0.30103820641179335
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.005822488224659493,
+   "cost_cv_tasks": 16,
+   "status_counts": {
+    "feasible": 77,
+    "no_solution": 12,
+    "timeout": 11
+   },
+   "source_match_share": 0.5222222222222223
+  },
+  "trapezoidal|sprayer_l": {
+   "tasks": 15,
+   "repeats_observed": 75,
+   "repeats_expected": 75,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 0.6666666666666666,
+   "stable_tasks": 15,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.3936495673300729e-16,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50,
+    "no_solution": 25
+   },
+   "source_match_share": 1.0
+  },
+  "trapezoidal|tractor_m": {
+   "tasks": 13,
+   "repeats_observed": 65,
+   "repeats_expected": 65,
+   "missing_repeats": 0,
+   "reproducible_tasks": 10,
+   "reproducible_share": 0.7692307692307693,
+   "stable_tasks": 12,
+   "stable_share": 0.9230769230769231,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.22810184305529166
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.22810184305529166
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.0,
+   "cost_cv_tasks": 10,
+   "status_counts": {
+    "feasible": 50,
+    "no_solution": 11,
+    "timeout": 4
+   },
+   "source_match_share": 1.0
+  }
+ },
+ "by_sample_decomposition": {
+  "feasible|boustrophedon": {
+   "tasks": 30,
+   "repeats_observed": 150,
+   "repeats_expected": 150,
+   "missing_repeats": 0,
+   "reproducible_tasks": 28,
+   "reproducible_share": 0.9333333333333333,
+   "stable_tasks": 30,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.01283140634312944,
+   "cost_cv_tasks": 30,
+   "status_counts": {
+    "feasible": 150
+   },
+   "source_match_share": 0.98
+  },
+  "feasible|none": {
+   "tasks": 30,
+   "repeats_observed": 150,
+   "repeats_expected": 150,
+   "missing_repeats": 0,
+   "reproducible_tasks": 30,
+   "reproducible_share": 1.0,
+   "stable_tasks": 30,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 1.4368266902223976e-16,
+   "cost_cv_tasks": 30,
+   "status_counts": {
+    "feasible": 150
+   },
+   "source_match_share": 1.0
+  },
+  "feasible|trapezoidal": {
+   "tasks": 30,
+   "repeats_observed": 150,
+   "repeats_expected": 150,
+   "missing_repeats": 0,
+   "reproducible_tasks": 29,
+   "reproducible_share": 0.9666666666666667,
+   "stable_tasks": 30,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.113517091390478
+   ],
+   "cost_cv_median": 0.0,
+   "cost_cv_max": 0.005400685786160879,
+   "cost_cv_tasks": 30,
+   "status_counts": {
+    "feasible": 150
+   },
+   "source_match_share": 0.98
+  },
+  "infeasible|boustrophedon": {
+   "tasks": 15,
+   "repeats_observed": 75,
+   "repeats_expected": 75,
+   "missing_repeats": 0,
+   "reproducible_tasks": 0,
+   "reproducible_share": 0.0,
+   "stable_tasks": 14,
+   "stable_share": 0.9333333333333333,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.20388926630434784
+   ],
+   "cost_cv_median": null,
+   "cost_cv_max": null,
+   "cost_cv_tasks": 0,
+   "status_counts": {
+    "no_solution": 67,
+    "timeout": 8
+   },
+   "source_match_share": null
+  },
+  "infeasible|none": {
+   "tasks": 5,
+   "repeats_observed": 25,
+   "repeats_expected": 25,
+   "missing_repeats": 0,
+   "reproducible_tasks": 0,
+   "reproducible_share": 0.0,
+   "stable_tasks": 5,
+   "stable_share": 1.0,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.43449149475208104
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.43449149475208104
+   ],
+   "cost_cv_median": null,
+   "cost_cv_max": null,
+   "cost_cv_tasks": 0,
+   "status_counts": {
+    "no_solution": 25
+   },
+   "source_match_share": null
+  },
+  "infeasible|trapezoidal": {
+   "tasks": 10,
+   "repeats_observed": 50,
+   "repeats_expected": 50,
+   "missing_repeats": 0,
+   "reproducible_tasks": 0,
+   "reproducible_share": 0.0,
+   "stable_tasks": 7,
+   "stable_share": 0.7,
+   "flip_tasks": 0,
+   "flip_rate": 0.0,
+   "flip_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "flip_any_tasks": 0,
+   "flip_any_rate": 0.0,
+   "flip_any_wilson95": [
+    0.0,
+    0.2775401687666166
+   ],
+   "cost_cv_median": null,
+   "cost_cv_max": null,
+   "cost_cv_tasks": 0,
+   "status_counts": {
+    "no_solution": 43,
+    "timeout": 7
+   },
+   "source_match_share": null
+  },
+  "mismatch|boustrophedon": {
+   "tasks": 15,
+   "repeats_observed": 75,
+   "repeats_expected": 75,
+   "missing_repeats": 0,
+   "reproducible_tasks": 0,
+   "reproducible_share": 0.0,
+   "stable_tasks": 8,
+   "stable_share": 0.5333333333333333,
+   "flip_tasks": 2,
+   "flip_rate": 0.13333333333333333,
+   "flip_wilson95": [
+    0.0373604698913593,
+    0.3788249920651624
+   ],
+   "flip_any_tasks": 7,
+   "flip_any_rate": 0.4666666666666667,
+   "flip_any_wilson95": [
+    0.24809225259746442,
+    0.6988336984894921
+   ],
+   "cost_cv_median": 0.001981529547417161,
+   "cost_cv_max": 0.014479104807190175,
+   "cost_cv_tasks": 14,
+   "status_counts": {
+    "feasible": 60,
+    "no_solution": 6,
+    "timeout": 9
+   },
+   "source_match_share": 0.12
+  },
+  "mismatch|trapezoidal": {
+   "tasks": 8,
+   "repeats_observed": 40,
+   "repeats_expected": 40,
+   "missing_repeats": 0,
+   "reproducible_tasks": 1,
+   "reproducible_share": 0.125,
+   "stable_tasks": 4,
+   "stable_share": 0.5,
+   "flip_tasks": 1,
+   "flip_rate": 0.125,
+   "flip_wilson95": [
+    0.02241690886329617,
+    0.4708948057698615
+   ],
+   "flip_any_tasks": 2,
+   "flip_any_rate": 0.25,
+   "flip_any_wilson95": [
+    0.07147768885802763,
+    0.5907301208974108
+   ],
+   "cost_cv_median": 0.0027213275886792637,
+   "cost_cv_max": 0.005822488224659493,
+   "cost_cv_tasks": 6,
+   "status_counts": {
+    "feasible": 27,
+    "no_solution": 5,
+    "timeout": 8
+   },
+   "source_match_share": 0.0
+  }
+ },
+ "per_task": [
+  {
+   "source_job": "159fdaf8d7bb7c3f",
+   "config": "full:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_87",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "468d9217aa937300",
+   "config": "full:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_112",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "6f4dd829f6c92ae2",
+   "config": "full:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_79",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 2,
+   "source_available": true,
+   "cost_cv": 0.00036613054959287245,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "ac050a1613dab791",
+   "config": "full:boustrophedon/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_21",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "timeout",
+    "timeout",
+    "timeout",
+    "timeout",
+    "timeout"
+   ],
+   "statuses": [
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "timeout": 5
+   }
+  },
+  {
+   "source_job": "b347ef62032668bb",
+   "config": "full:boustrophedon/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_165",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "no_solution",
+    "timeout",
+    "timeout",
+    "timeout",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 2,
+    "timeout": 3
+   }
+  },
+  {
+   "source_job": "b7ded549dcba8ce5",
+   "config": "full:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_36",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "06fed406cb62471d",
+   "config": "full:boustrophedon/n_swath",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_158",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "402233233a1b3d3b",
+   "config": "full:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_147",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "558f02b70051c72f",
+   "config": "full:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_137",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.3981387008519857e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "ad241f69d8e77473",
+   "config": "full:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_85439",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.3388004039770527e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "bf8f64a79c5deb79",
+   "config": "full:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_716551",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "fe18819dd9fb5328",
+   "config": "full:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_44",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "3487dc46587d92d4",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_36",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "45c3bb3daa3b6932",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_1",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "67f2b43917cdc102",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_59131",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "8dc1839becdb9ed6",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_39",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "986a6c3b7058be84",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_20",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "c86f42006f2862a5",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_134649",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "d10ef62a67d323b3",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_58",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "d4119f05c038e818",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_100",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "e7268b1030dd4266",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_168",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "fce6fb28c9f82547",
+   "config": "full:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_69",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "7d9c9186f5a677a4",
+   "config": "full:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_52",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.249706154542759e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "99dcf8dbdc117935",
+   "config": "full:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_61",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "b6a4fcba0f998bf5",
+   "config": "full:none/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_58",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "d22204c298881092",
+   "config": "full:none/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_18",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "062b313544d8ff04",
+   "config": "full:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_59131",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "13195c77037ec68b",
+   "config": "full:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_85",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "14cd74a4694d1b91",
+   "config": "full:none/n_swath",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_30475",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "154f4797dcbf131b",
+   "config": "full:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_39",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "175bc7034453f160",
+   "config": "full:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_119",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "9502a85fa75d5a41",
+   "config": "full:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_23",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.2990963726437592e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "c650d29d8b980342",
+   "config": "full:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_10",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.4368266902223976e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "062c204c667add4b",
+   "config": "full:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_338399",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "85a968c7859c3dc9",
+   "config": "full:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_89",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "abcbfad25aa2b141",
+   "config": "full:none/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_178",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "f04fc21c62be253e",
+   "config": "full:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_47",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "febf40e938dbf063",
+   "config": "full:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_40",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "3f59c7d9f2b79df5",
+   "config": "full:trapezoidal/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_70",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "timeout",
+    "timeout",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "timeout": 2,
+    "no_solution": 3
+   }
+  },
+  {
+   "source_job": "6dd787c4db3c2347",
+   "config": "full:trapezoidal/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_576946",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "8914b4413639f8b8",
+   "config": "full:trapezoidal/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_462244",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "timeout",
+    "timeout",
+    "timeout",
+    "timeout"
+   ],
+   "statuses": [
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 1,
+    "timeout": 4
+   }
+  },
+  {
+   "source_job": "b05b65d5bc765dd8",
+   "config": "full:trapezoidal/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_90",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "0036d0edf4f4d519",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_7",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "1310bee93f92403b",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_49",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "13d7beec082e580b",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_29",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "171e4d8b5f89515e",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_94",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "1d5f26df9270617a",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_85439",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.005822488224659493,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "216350e101e59b09",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_94",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "319a5dcc5ccf4b48",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_70",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "334e9abc84143775",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_113",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "36e30a0ecdd1328c",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_60",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "403a6f269001dc63",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_12",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0008731887047023973,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "4077d55e1ef97262",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_20",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "44a58c7b18102b53",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_136",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "4f54123d6fb47296",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_117",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "643bcfcb051ca4c2",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_30",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "6e121d657bda0717",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_99",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.2980381536474728e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "796fab70dc75f598",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_702198",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "no_solution"
+   ],
+   "statuses": [
+    "feasible",
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": true,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.00456946647265613,
+   "feasible_repeats": 4,
+   "status_counts": {
+    "feasible": 4,
+    "no_solution": 1
+   }
+  },
+  {
+   "source_job": "81e8c1517e1bf66f",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_78",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "8792aeb4e5a72873",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_158",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.005230512126731132,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "98952b0558a8b90f",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_52",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "timeout",
+    "timeout",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 3,
+   "status_counts": {
+    "feasible": 3,
+    "timeout": 2
+   }
+  },
+  {
+   "source_job": "a47e2a76dd3bec7d",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_101",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "a5cafc3c4bbea271",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_104",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "a6c988370339787b",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_29",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "a95c69d5b625e107",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_187",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "ad4de9fe3e6c8748",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_87",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "b72f349ae571ae93",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_174",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "no_solution",
+    "timeout",
+    "timeout",
+    "timeout",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 2,
+    "timeout": 3
+   }
+  },
+  {
+   "source_job": "bf7896fbbd10f5ab",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_53",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "c0b9bfd51fd37167",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_70",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "c72dff0104b98636",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_100",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.3936495673300729e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "d858f9567b3df898",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_36",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "e13ff647771322bb",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_99",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "e3960bf85eeaaa29",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_100",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "e5d274d25f4a53f6",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_119",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "eaa1c20914642375",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_31",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "f08cb4dfcc2bbd0a",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_60",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "f5ee4e5618171830",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_532603",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "no_solution",
+    "timeout",
+    "no_solution",
+    "timeout",
+    "timeout"
+   ],
+   "statuses": [
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 2,
+    "timeout": 3
+   }
+  },
+  {
+   "source_job": "ff732f7794835918",
+   "config": "full:trapezoidal/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_300075",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "02fd2d1723db55f4",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_100",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "391caea8943c39e3",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_19",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "3daedd3c48b7fa88",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_149",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "73be3f7eb89e950e",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_56",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 2,
+   "source_available": true,
+   "cost_cv": 0.005400685786160879,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "7c1727aa2736ae64",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_300075",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "8c211802765a6990",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_48",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "910b319342ee3ba2",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "trapezoidal",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_44",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "f80a390f0eb0f205",
+   "config": "full:trapezoidal/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "trapezoidal",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_1",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "timeout",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 4,
+    "timeout": 1
+   }
+  },
+  {
+   "source_job": "03ea03228b21b8b0",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_42",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 3,
+   "source_available": true,
+   "cost_cv": 0.01283140634312944,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "18c3c3c444baa35c",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_8",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "19a7ffc6655cf434",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_188",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "1c3b97ca68e4f258",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_29",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "timeout",
+    "timeout"
+   ],
+   "statuses": [
+    "feasible",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 3,
+   "status_counts": {
+    "feasible": 3,
+    "timeout": 2
+   }
+  },
+  {
+   "source_job": "1d883a4b10361e02",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_21",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "271aad75141d579f",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_117",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "timeout",
+    "feasible",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "feasible",
+    "no_solution",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": true,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": null,
+   "feasible_repeats": 1,
+   "status_counts": {
+    "timeout": 1,
+    "feasible": 1,
+    "no_solution": 3
+   }
+  },
+  {
+   "source_job": "4af0dea3ac4acca7",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_119",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "6b7546d4b30e85e4",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_21",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.3745207037899268e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "84335c365e5c04d8",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_462244",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 2,
+   "source_available": true,
+   "cost_cv": 0.005806489013488287,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "9f525917267222f3",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_108",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "aca8bc127915c630",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_151",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "b4c0c22f2d2747bc",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_112",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "bd8dd2ec5faca35a",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_165",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "timeout"
+   ],
+   "statuses": [
+    "feasible",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 4,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.014479104807190175,
+   "feasible_repeats": 4,
+   "status_counts": {
+    "feasible": 4,
+    "timeout": 1
+   }
+  },
+  {
+   "source_job": "c5156af4fb927e9f",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_30475",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "timeout",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0026587838434395943,
+   "feasible_repeats": 4,
+   "status_counts": {
+    "feasible": 4,
+    "timeout": 1
+   }
+  },
+  {
+   "source_job": "cf744a9c6728e42a",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_36",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "ea057495b13c5516",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_71",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "ec38fcca5a05cb24",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_19",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "edfb00b994dfcb5a",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_50",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "f0573e9327c5adf2",
+   "config": "repair:boustrophedon/field_coverage",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_119",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "timeout",
+    "timeout",
+    "feasible",
+    "feasible",
+    "timeout"
+   ],
+   "statuses": [
+    "feasible",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.006494339351242382,
+   "feasible_repeats": 2,
+   "status_counts": {
+    "timeout": 3,
+    "feasible": 2
+   }
+  },
+  {
+   "source_job": "2d3ef69dfd89291e",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_73",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "3cf103ed2c5e5b6c",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_729253",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 4,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0010095204011316096,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "6a2ccd770108927b",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_300075",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.5181785485248458e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "704a0f5b28072393",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_532603",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 1,
+   "source_available": true,
+   "cost_cv": 0.013088628713801918,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "b84e46bc38e4cbeb",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_152",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "dfbf2291918ec8ea",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_63",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "fb3279064069c037",
+   "config": "repair:boustrophedon/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_1",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "33ff80f4b1a8fdb6",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_60",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "49eef6184c1ae649",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_586195",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.003880299602686284,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "4c687dac227ba838",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_532603",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible",
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": true,
+   "flip_any": true,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 2,
+   "status_counts": {
+    "feasible": 2,
+    "no_solution": 3
+   }
+  },
+  {
+   "source_job": "5d75cb509e8b6cbd",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_104",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 3,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.0001632894686953826,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "66922e122820a077",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_112",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "7b02c2337b521c75",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_174",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 4,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 1,
+   "source_available": true,
+   "cost_cv": 0.0013042752513947283,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "a1519d5b0c0486c8",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_36",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "a2f90842a7d1719a",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "boustrophedon",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_168",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "b2f3007c9133e598",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_37",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 4,
+   "source_available": true,
+   "cost_cv": 0.009412336551009964,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "dfe0d7f8c358fafa",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_729253",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "timeout",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible",
+    "timeout"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 2,
+   "reproducible": false,
+   "stable_feasibility": false,
+   "flip": false,
+   "flip_any": true,
+   "matches_source": 3,
+   "source_available": true,
+   "cost_cv": 0.0005756114251249042,
+   "feasible_repeats": 4,
+   "status_counts": {
+    "timeout": 1,
+    "feasible": 4
+   }
+  },
+  {
+   "source_job": "e0d8c3ad5dfb262b",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_25",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "e5a863e23e799605",
+   "config": "repair:boustrophedon/swath_length",
+   "sample_group": "mismatch",
+   "source_status": "feasible",
+   "decomposition": "boustrophedon",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_191476",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 4,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": true,
+   "cost_cv": 0.007912075215935718,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "142bc3e6f35ec06d",
+   "config": "repair:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_372467",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "163424c17a49087c",
+   "config": "repair:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_127",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "3bc821c06b015b5e",
+   "config": "repair:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_178",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "53198c0e2dc07c56",
+   "config": "repair:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_106",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "5e2f1c273c1f9a01",
+   "config": "repair:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_151",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "7cee592c05416e75",
+   "config": "repair:none/field_coverage",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_54",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "0a572dff21bff3ef",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_7",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "0ead1bf9017a1a45",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_19",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "20158044a4d89319",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_82",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "376c6464d35b67c0",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_1",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "3e29ead9465129c9",
+   "config": "repair:none/n_swath",
+   "sample_group": "infeasible",
+   "source_status": "no_solution",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_200637",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution",
+    "no_solution"
+   ],
+   "statuses": [
+    "no_solution"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 0,
+   "reproducible": false,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 0,
+   "source_available": false,
+   "cost_cv": null,
+   "feasible_repeats": 0,
+   "status_counts": {
+    "no_solution": 5
+   }
+  },
+  {
+   "source_job": "8865d870624700aa",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_36",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.3055607756836684e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "9374fcf32432bf05",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_702198",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 1.3357154178269715e-16,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "ae90e985cfc1f364",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "robot_s",
+   "instance": {
+    "field": "nl_field_171",
+    "profile": "robot_s"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "b51340ffe4791272",
+   "config": "repair:none/n_swath",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_462244",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "13fe694f35703e4f",
+   "config": "repair:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_149",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "523043d82a0fb3dd",
+   "config": "repair:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_85",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "9ee33937a564986c",
+   "config": "repair:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "tractor_m",
+   "instance": {
+    "field": "nl_field_143",
+    "profile": "tractor_m"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  },
+  {
+   "source_job": "da062f95bb559b74",
+   "config": "repair:none/swath_length",
+   "sample_group": "feasible",
+   "source_status": "feasible",
+   "decomposition": "none",
+   "profile": "sprayer_l",
+   "instance": {
+    "field": "nl_field_163",
+    "profile": "sprayer_l"
+   },
+   "outcomes": [
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible",
+    "feasible"
+   ],
+   "statuses": [
+    "feasible"
+   ],
+   "observed": 5,
+   "expected": 5,
+   "distinct_hashes": 1,
+   "reproducible": true,
+   "stable_feasibility": true,
+   "flip": false,
+   "flip_any": false,
+   "matches_source": 5,
+   "source_available": true,
+   "cost_cv": 0.0,
+   "feasible_repeats": 5,
+   "status_counts": {
+    "feasible": 5
+   }
+  }
+ ]
+}

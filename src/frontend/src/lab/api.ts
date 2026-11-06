@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type {
   Algorithm,
+  AlgorithmHistory,
+  AlgorithmStat,
+  DataPack,
+  PhysicsRun,
   Instance,
   MapMeta,
   Recommendation,
@@ -84,6 +88,16 @@ export const lab = {
   map: (world: string) => request<MapMeta>('GET', `/maps/${encodeURIComponent(world)}`),
 
   algorithms: () => request<{ algorithms: Algorithm[] }>('GET', '/algorithms'),
+  algorithmStats: () => request<{ stats: Record<string, AlgorithmStat> }>('GET', '/algorithms/stats'),
+  algorithmHistory: (id: string) => request<AlgorithmHistory>('GET', `/algorithms/${encodeURIComponent(id)}/history`),
+  packs: () => request<{ packs: DataPack[] }>('GET', '/packs'),
+  packInstall: (id: string) => request<DataPack>('POST', `/packs/${encodeURIComponent(id)}/install`, {}),
+  packCancel: (id: string) => request<{ id: string }>('POST', `/packs/${encodeURIComponent(id)}/cancel`, {}),
+  packRemove: (id: string) => request<{ id: string }>('POST', `/packs/${encodeURIComponent(id)}/remove`, {}),
+  physicsEngines: () => request<{ engines: { id: string; name: string; available: boolean; reason: string | null; version: string | null }[]; gazebo_gap: string | null }>('GET', '/physics/engines'),
+  physicsSubmit: (body: { run_id?: string; session_id?: string }) => request<PhysicsRun>('POST', '/physics/runs', body),
+  physicsRuns: (run_id?: string) => request<{ runs: PhysicsRun[] }>('GET', `/physics/runs${run_id ? `?run_id=${encodeURIComponent(run_id)}` : ''}`),
+  physicsRun: (id: string) => request<PhysicsRun>('GET', `/physics/runs/${encodeURIComponent(id)}`),
   recommend: (scenario_id: string, instance?: Instance) =>
     request<Recommendation>('POST', '/recommend', { scenario_id, instance }),
   solve: (scenario_id: string, algorithms: { id: string; params?: Record<string, unknown> }[], instance?: Instance, label?: string) =>
@@ -152,7 +166,7 @@ class EventHub {
   private stateListeners = new Set<() => void>();
   private hiddenTimer = 0;
   connected = false;
-  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent'];
+  private readonly types = ['services', 'job', 'run', 'sim_state', 'sim_run', 'log', 'ping', 'agent_session', 'physics_run', 'pack', 'agent'];
 
   constructor() {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
@@ -238,7 +252,7 @@ export function useGatewayConnected(): boolean {
 export function useLabResource<T>(
   key: string,
   load: (signal: AbortSignal) => Promise<T>,
-  options: { event?: string; select?: (data: unknown) => T | null; pollMs?: number } = {},
+  options: { event?: string; select?: (data: unknown) => T | null; pollMs?: number; reloadOn?: string } = {},
 ): { data: T | null; error: Error | null; loading: boolean; reload: () => void } {
   const [result, setResult] = useState<{ key: string; data: T | null; error: Error | null; loading: boolean }>(
     { key, data: null, error: null, loading: true },
@@ -275,6 +289,17 @@ export function useLabResource<T>(
       if (next !== null && next !== undefined) setResult({ key, data: next, error: null, loading: false });
     });
   }, [key, options.event]);
+
+  useEffect(() => {
+    if (!options.reloadOn) return;
+    let timer = 0;
+    const off = events.subscribe((type) => {
+      if (type !== options.reloadOn) return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setNonce((n) => n + 1), 400);
+    });
+    return () => { off(); window.clearTimeout(timer); };
+  }, [options.reloadOn]);
 
   // A changed key must never render the previous resource, even before effects run.
   const current = result.key === key ? result : { data: null, error: null, loading: true };

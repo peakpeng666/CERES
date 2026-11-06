@@ -1,0 +1,2 @@
+﻿run_id,scenario,instance_sha256,algorithm,name,state,status,cost,unit,valid,length,total_distance_m,makespan_s,vehicles_used,trips,balance_cv,gap_to_bks_pct,wall_s
+run_20261025T162555_ff8705,maze-inspection,e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548,urp.turn_mode_dp,转弯模式分层 DP,done,optimal,490,cm_equivalent,True,4.3,,,,,,,0.025854041000457073

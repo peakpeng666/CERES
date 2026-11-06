@@ -1,0 +1,272 @@
+{
+ "instances": 388,
+ "library": [
+  "full:none/n_swath",
+  "full:none/swath_length",
+  "full:none/field_coverage",
+  "full:boustrophedon/n_swath",
+  "full:boustrophedon/swath_length",
+  "full:boustrophedon/field_coverage",
+  "full:trapezoidal/n_swath",
+  "full:trapezoidal/swath_length",
+  "full:trapezoidal/field_coverage",
+  "single:boustrophedon",
+  "single:snake"
+ ],
+ "candidates": [
+  "repair:none/n_swath",
+  "repair:none/swath_length",
+  "repair:none/field_coverage",
+  "repair:boustrophedon/n_swath",
+  "repair:boustrophedon/swath_length",
+  "repair:boustrophedon/field_coverage"
+ ],
+ "excluded_incomplete": 0,
+ "single_member": [
+  {
+   "config": "full:none/n_swath",
+   "feasible": 326,
+   "mean_rho": 1.1567614315624224
+  },
+  {
+   "config": "full:none/swath_length",
+   "feasible": 291,
+   "mean_rho": 1.266773539848792
+  },
+  {
+   "config": "full:none/field_coverage",
+   "feasible": 303,
+   "mean_rho": 1.2751562883365746
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "feasible": 254,
+   "mean_rho": 1.3533753670978312
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "feasible": 210,
+   "mean_rho": 1.4797319580738533
+  },
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "feasible": 199,
+   "mean_rho": 1.533979873872072
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "feasible": 87,
+   "mean_rho": 1.8164763071242864
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "feasible": 16,
+   "mean_rho": 1.9684241081322906
+  },
+  {
+   "config": "full:trapezoidal/field_coverage",
+   "feasible": 2,
+   "mean_rho": 1.9985391652066198
+  },
+  {
+   "config": "single:boustrophedon",
+   "feasible": 20,
+   "mean_rho": 1.9526716851704338
+  },
+  {
+   "config": "single:snake",
+   "feasible": 20,
+   "mean_rho": 1.955498257836102
+  },
+  {
+   "config": "repair:none/n_swath",
+   "feasible": 357,
+   "mean_rho": 1.0770799909200104
+  },
+  {
+   "config": "repair:none/swath_length",
+   "feasible": 328,
+   "mean_rho": 1.1760377584498283
+  },
+  {
+   "config": "repair:none/field_coverage",
+   "feasible": 380,
+   "mean_rho": 1.1124079124850763
+  },
+  {
+   "config": "repair:boustrophedon/n_swath",
+   "feasible": 335,
+   "mean_rho": 1.159560363995081
+  },
+  {
+   "config": "repair:boustrophedon/swath_length",
+   "feasible": 293,
+   "mean_rho": 1.29151473069597
+  },
+  {
+   "config": "repair:boustrophedon/field_coverage",
+   "feasible": 306,
+   "mean_rho": 1.3431120432261956
+  }
+ ],
+ "vbs": {
+  "old_library_mean_rho": 1.0318287741504266,
+  "new_library_mean_rho": 1.0,
+  "old_library_feasible": 373,
+  "new_library_feasible": 384,
+  "vbs_increment_rho": 0.03182877415042662
+ },
+ "shapley": [
+  {
+   "config": "full:none/n_swath",
+   "shapley": 0.09948008660563977
+  },
+  {
+   "config": "full:none/swath_length",
+   "shapley": 0.07788271779104912
+  },
+  {
+   "config": "full:none/field_coverage",
+   "shapley": 0.0828393624344218
+  },
+  {
+   "config": "full:boustrophedon/n_swath",
+   "shapley": 0.06629885559666482
+  },
+  {
+   "config": "full:boustrophedon/swath_length",
+   "shapley": 0.046628298310831484
+  },
+  {
+   "config": "full:boustrophedon/field_coverage",
+   "shapley": 0.0427451787976617
+  },
+  {
+   "config": "full:trapezoidal/n_swath",
+   "shapley": 0.016030299521412984
+  },
+  {
+   "config": "full:trapezoidal/swath_length",
+   "shapley": 0.0032543120297724767
+  },
+  {
+   "config": "full:trapezoidal/field_coverage",
+   "shapley": 0.00013933776770190924
+  },
+  {
+   "config": "single:boustrophedon",
+   "shapley": 0.0034992713531050777
+  },
+  {
+   "config": "single:snake",
+   "shapley": 0.003231931606567251
+  },
+  {
+   "config": "repair:none/n_swath",
+   "shapley": 0.11454394434430161
+  },
+  {
+   "config": "repair:none/swath_length",
+   "shapley": 0.09142992541009713
+  },
+  {
+   "config": "repair:none/field_coverage",
+   "shapley": 0.11273965093555827
+  },
+  {
+   "config": "repair:boustrophedon/n_swath",
+   "shapley": 0.09748816506254503
+  },
+  {
+   "config": "repair:boustrophedon/swath_length",
+   "shapley": 0.07186693967438817
+  },
+  {
+   "config": "repair:boustrophedon/field_coverage",
+   "shapley": 0.06990172275828144
+  }
+ ],
+ "controls": {
+  "old_library": {
+   "static": {
+    "first_try_feasible": 0.8489583333333331,
+    "stop_rho": 1.0419590254097104,
+    "tries": 1.4515624999999996,
+    "instances": 384
+   },
+   "logit:agri": {
+    "first_try_feasible": 0.8359375,
+    "stop_rho": 1.047946100876896,
+    "tries": 1.4742187499999997,
+    "instances": 384
+   },
+   "knn5:agri": {
+    "first_try_feasible": 0.8317708333333332,
+    "stop_rho": 1.0541509365228612,
+    "tries": 1.5200520833333335,
+    "instances": 384
+   }
+  },
+  "new_library": {
+   "static": {
+    "first_try_feasible": 0.9296874999999999,
+    "stop_rho": 1.0106402108299306,
+    "tries": 1.0776041666666665,
+    "instances": 384
+   },
+   "logit:agri": {
+    "first_try_feasible": 0.9539062499999998,
+    "stop_rho": 1.0345371657058602,
+    "tries": 1.0677083333333333,
+    "instances": 384
+   },
+   "knn5:agri": {
+    "first_try_feasible": 0.9408854166666666,
+    "stop_rho": 1.0246929390891093,
+    "tries": 1.1330729166666667,
+    "instances": 384
+   }
+  },
+  "member_alone:repair:none/n_swath": {
+   "feasible_share": 0.9201030927835051
+  },
+  "member_alone:repair:none/swath_length": {
+   "feasible_share": 0.845360824742268
+  },
+  "member_alone:repair:none/field_coverage": {
+   "feasible_share": 0.979381443298969
+  },
+  "member_alone:repair:boustrophedon/n_swath": {
+   "feasible_share": 0.8634020618556701
+  },
+  "member_alone:repair:boustrophedon/swath_length": {
+   "feasible_share": 0.7551546391752577
+  },
+  "member_alone:repair:boustrophedon/field_coverage": {
+   "feasible_share": 0.788659793814433
+  },
+  "training_sbs_old": {
+   "config": "full:none/n_swath",
+   "feasible_share": 0.8402061855670103
+  }
+ },
+ "actual_policy_gain": {
+  "static": {
+   "first_try_feasible": 0.08072916666666674,
+   "stop_rho": 0.03131881457977981,
+   "tries": 0.37395833333333317
+  },
+  "logit:agri": {
+   "first_try_feasible": 0.11796874999999984,
+   "stop_rho": 0.013408935171035807,
+   "tries": 0.40651041666666643
+  },
+  "knn5:agri": {
+   "first_try_feasible": 0.10911458333333335,
+   "stop_rho": 0.02945799743375188,
+   "tries": 0.3869791666666669
+  }
+ },
+ "yardstick": "两种组合都以扩展后组合的逐实例最好可行成本为 1；分母为扩展后组合可解的实例",
+ "keys_sha256": "457a8f41e6d979484b39a893f35408126ece836f61313547bc9c75cdba08d7a9"
+}

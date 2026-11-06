@@ -8,6 +8,7 @@ if [[ "$URP_RUNTIME_PYTHON" == */* && "$URP_RUNTIME_PYTHON" != /* ]]; then
   URP_RUNTIME_PYTHON="$(pwd -P)/$URP_RUNTIME_PYTHON"
 fi
 URP_DEFAULT_DB="$URP_SRC/../.local-state/research.sqlite3"
+if [[ -n "${URP_DATA_HOME:-}" ]]; then URP_DEFAULT_DB="${URP_DATA_HOME%/}/archive/research.sqlite3"; fi
 URP_DB="${URP_API_DB:-$URP_DEFAULT_DB}"
 if [[ "$URP_DB" != /* ]]; then URP_DB="$(pwd -P)/$URP_DB"; fi
 prepare_default_database() {

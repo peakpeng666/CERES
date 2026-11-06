@@ -1,0 +1,16 @@
+{
+ "schema": "urp.data-packs/1",
+ "base_url": "https://github.com/peakpeng666/URP/releases/download/desktop-data-1",
+ "packs": [
+  {
+   "id": "history",
+   "name": "历史实验档案",
+   "summary": "BPP 历史结果、实验档案与研究数据库",
+   "file": "history-1.zip",
+   "sha256": "c7dc7424abfd08480d20421ace01a8625d790709cd3d9b9c9b37b139177d816a",
+   "bytes": 51543685,
+   "unpacked_bytes": 206462338,
+   "version": 1
+  }
+ ]
+}

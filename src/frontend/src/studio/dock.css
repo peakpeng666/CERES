@@ -4,11 +4,11 @@
   --dv-paneview-active-outline-color: var(--mac-accent);
   --dv-tabs-and-actions-container-font-size: 12px;
   --dv-tabs-and-actions-container-height: 32px;
-  --dv-drag-over-background-color: rgba(0, 122, 255, 0.14);
-  --dv-drag-over-border-color: rgba(0, 122, 255, 0.55);
-  --dv-tabs-container-scrollbar-color: rgba(0, 0, 0, 0.2);
+  --dv-drag-over-background-color: color-mix(in srgb, var(--mac-accent) 14%, transparent);
+  --dv-drag-over-border-color: color-mix(in srgb, var(--mac-accent) 55%, transparent);
+  --dv-tabs-container-scrollbar-color: var(--mac-label-4);
   --dv-group-view-background-color: var(--mac-content);
-  --dv-tabs-and-actions-container-background-color: rgba(244, 244, 247, 0.96);
+  --dv-tabs-and-actions-container-background-color: var(--mac-window);
   --dv-activegroup-visiblepanel-tab-background-color: var(--mac-content);
   --dv-activegroup-hiddenpanel-tab-background-color: transparent;
   --dv-inactivegroup-visiblepanel-tab-background-color: var(--mac-content);
@@ -21,7 +21,7 @@
   --dv-separator-border: var(--mac-separator-strong);
   --dv-paneview-header-border-color: var(--mac-separator);
   --dv-sash-color: transparent;
-  --dv-active-sash-color: rgba(0, 122, 255, 0.5);
+  --dv-active-sash-color: color-mix(in srgb, var(--mac-accent) 50%, transparent);
   --dv-icon-hover-background-color: var(--mac-hover);
   --dv-floating-box-shadow: var(--mac-shadow-pop);
   font-family: var(--mac-font);

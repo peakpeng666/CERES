@@ -168,7 +168,7 @@ Windows 上也可以双击 `启动实验台.bat`。它只调用 Docker 或 `wsl`
 | `docker pull` 要求登录或 403 | 核对标签是否已发布及包是否公开；使用者无需登录 |
 | 浏览器打不开 localhost:4100 | Docker 引擎是否已启动；WSL 里 `urp status` |
 | 页面 403，提示拒绝的 Host | 用 http://localhost:4100/ |
-| `sh` 脚本报 `$'\r'` | `*.sh` 在 `.gitattributes` 里是 LF |
+| `sh` 脚本报 `$'\r'` | 项目自身的 `*.sh` 在 `.gitattributes` 里是 LF；`src/repos` 第三方快照按采集原字节保存（`-text`），其中个别脚本仍是 CRLF，运行前先转换副本 |
 | WSL 里仿真被杀掉 | 把 `setup/ubuntu/wslconfig.example` 复制为 Windows 用户目录的 `.wslconfig`，然后 `wsl --shutdown` |
 | warehouse 或 depot 报世界资源不完整 | `urp fuel`。maze 不需要 |
 | 指纹不符 | 核对源码、系统库和构建 profile 是否来自同一版本；重新按所选版本构建 |

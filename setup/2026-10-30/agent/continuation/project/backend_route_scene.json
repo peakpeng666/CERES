@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "evidence_type": "synthetic_contract_fixture_only",
+  "transport": "actual_loopback_http",
+  "route_source_formats": 4,
+  "scene_exports": 14,
+  "http_requests": 60,
+  "node_exports": 630,
+  "vehicle_polylines": 11,
+  "solution_statuses": [
+    "feasible",
+    "infeasible",
+    "invalid",
+    "no_solution",
+    "partial"
+  ],
+  "json_schema_validation": "Draft 2020-12, all 14 scenes",
+  "nonfinite_json_rejected": true,
+  "provenance_artifact_sha256_checked": true,
+  "source_files_unchanged": true,
+  "database_unchanged_during_gets_and_rejected_posts": true,
+  "solver_executed": false,
+  "ros_executed": false,
+  "gazebo_executed": false,
+  "real_research_archives_revalidated": false,
+  "deployed": false
+}

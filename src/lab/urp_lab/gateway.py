@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import re
 import importlib
+import hashlib
+import json
 import logging
 import threading
 import time
@@ -97,14 +100,19 @@ class Lab:
             self.fieldsim = FieldSimManager(self.store, self.services, self.runtime, port=config.field_sim_port)
             from .studies import StudyManager
             self.studies = StudyManager(self.store, self.jobs, self.bus)
+            from .physics import PhysicsManager
+            self.physics = PhysicsManager(self.store, self.runtime, self.bus, self.fieldsim)
+            from .datapacks import PackManager
+            self.packs = PackManager(self.runtime, self.bus)
             from .agent import AgentManager
-            self.agent = AgentManager(self, model=config.agent_model)
+            self.research_agent = AgentManager(self, model=config.agent_model)
         except BaseException:
             self.store.close()
             raise
         self._catalog: tuple[float, list[dict]] | None = None
         self._catalog_lock = threading.Lock()
         self.shutdown_event = threading.Event()
+        self.agent = None  # created on first /lab/api/agent request (urp_lab.agent.runner.AgentRunner)
 
     def start(self):
         self.jobs.start()
@@ -116,11 +124,19 @@ class Lab:
                 self.services.start_archive()
             except Exception:
                 log.exception('archive autostart failed')
+        else:
+            if os.environ.get('URP_DESKTOP') == '1':   # the source tree's start script is not installed
+                self.services.start_archive = lambda: self.packs.start_archive(self.services)
+            self.packs.on_installed = lambda: self.packs.start_archive(self.services)
+            self.packs.start_archive(self.services)
 
     def shutdown(self):
         try:
-            self.agent.shutdown()
+            if getattr(self, 'agent', None) is not None:
+                self.agent.shutdown()
+            self.research_agent.shutdown()
             self.jobs.shutdown()
+            self.physics.shutdown()
             self.fieldsim.shutdown()
             self.services.shutdown()
             self.sim.stop()
@@ -331,7 +347,13 @@ def create_app(config: Config | None = None) -> FastAPI:
     # ------------------------------------------------------------ status --
     @app.get(f'{api}/health')
     def health():
+        try:
+            identity = json.loads((lab.runtime.parent / 'dataset.json').read_text(encoding='utf-8'))
+            dataset_id = identity['dataset_id'] if identity.get('schema') == 'urp.dataset/1' else None
+        except (OSError, ValueError, KeyError, TypeError):
+            dataset_id = None
         return {'status': 'ok', 'version': VERSION, 'executes_solvers': True,
+                'runtime_id': hashlib.sha256(str(lab.runtime.resolve()).encode()).hexdigest(), 'dataset_id': dataset_id,
                 'archive_required': config.archive_autostart}
 
     @app.get(f'{api}/fieldsim/physics')
@@ -354,15 +376,26 @@ def create_app(config: Config | None = None) -> FastAPI:
         lab.shutdown_event.set()
         return {'accepted': True, 'message': '正在有序关闭求解、仿真与网关；日志保留'}
 
+    def installed_rows(rows: list[dict]) -> list[dict]:
+        """In an installed app the archive backend comes from the history pack, not from a source tree's virtual environment."""
+        if os.environ.get('URP_DESKTOP') == '1':
+            for row in rows:
+                if row['id'] == 'archive' and row['state'] == 'unavailable':
+                    if lab.packs.installed('history'):
+                        row.update(state='stopped', detail='未运行；历史档案视图需要它', controls=['start'])
+                    else:
+                        row['detail'] = '下载历史档案后自动启动，见 设置 → 数据'
+        return rows
+
     @app.get(f'{api}/services')
     def services(refresh: bool = False):
         if refresh:
             lab.services.refresh_checks_async()
-        return {'services': lab.services.services()}
+        return {'services': installed_rows(lab.services.services())}
 
     @app.post(f'{api}/services/{{sid}}/{{action}}')
     def service_action(sid: str, action: str, payload: Any = Body(None)):
-        return {'services': lab.services.action(sid, action, body_dict(payload))}
+        return {'services': installed_rows(lab.services.action(sid, action, body_dict(payload)))}
 
     @app.get(f'{api}/logs')
     def logs():
@@ -455,6 +488,77 @@ def create_app(config: Config | None = None) -> FastAPI:
     def algorithms():
         return {'algorithms': lab.catalog()}
 
+    @app.get(f'{api}/algorithms/stats')
+    def algorithm_stats():
+        return {'stats': core('algorithm_stats').summaries(lab.store.run_digest())}
+
+    @app.get(f'{api}/algorithms/{{algorithm_id}}/history')
+    def algorithm_history(algorithm_id: str):
+        if not any(a['id'] == algorithm_id for a in lab.catalog()):
+            raise ApiError(404, 'unknown_algorithm', f'没有算法 {algorithm_id}')
+        return core('algorithm_stats').history(lab.store.run_digest(), algorithm_id, lab.store.list_physics_runs(limit=2000))
+
+    # ---------------------------------------------------------- physics --
+    def physics_call(fn, *args, **kwargs):
+        from .physics import PhysicsError
+        try:
+            return fn(*args, **kwargs)
+        except PhysicsError as exc:
+            raise ApiError(exc.status, exc.code, exc.message) from None
+
+    @app.get(f'{api}/physics/engines')
+    def physics_engines():
+        return {'engines': [{'id': 'mujoco', 'name': 'MuJoCo', **core('physics').available()}], 'gazebo_gap': paths.gazebo_gap()}
+
+    @app.post(f'{api}/physics/runs', status_code=202)
+    def physics_submit(payload: Any = Body(None)):
+        body = body_dict(payload)
+        if not body.get('run_id') and not body.get('session_id'):
+            raise ApiError(400, 'invalid_request', '需要 run_id 或 session_id')
+        return physics_call(lab.physics.submit, run_id=body.get('run_id'), session_id=body.get('session_id'))
+
+    @app.get(f'{api}/physics/runs')
+    def physics_runs(run_id: str | None = None, limit: int = 100):
+        return {'runs': lab.store.list_physics_runs(run_id, max(1, min(limit, 500)))}
+
+    @app.get(f'{api}/physics/runs/{{physics_run_id}}')
+    def physics_run(physics_run_id: str):
+        rec = lab.physics.get(physics_run_id)
+        if not rec:
+            raise ApiError(404, 'unknown_physics_run', f'没有物理运行 {physics_run_id}')
+        return rec
+
+    @app.post(f'{api}/physics/runs/{{physics_run_id}}/cancel')
+    def physics_cancel(physics_run_id: str):
+        rec = lab.physics.cancel(physics_run_id)
+        if not rec:
+            raise ApiError(404, 'unknown_physics_run', f'没有物理运行 {physics_run_id}')
+        return rec
+
+    # ------------------------------------------------------ data packs --
+    def pack_call(fn, *args):
+        from .datapacks import PackError
+        try:
+            return fn(*args)
+        except PackError as exc:
+            raise ApiError(exc.status, exc.code, exc.message) from None
+
+    @app.get(f'{api}/packs')
+    def packs():
+        return {'packs': lab.packs.list()}
+
+    @app.post(f'{api}/packs/{{pack_id}}/install', status_code=202)
+    def pack_install(pack_id: str):
+        return pack_call(lab.packs.install, pack_id)
+
+    @app.post(f'{api}/packs/{{pack_id}}/cancel')
+    def pack_cancel(pack_id: str):
+        return pack_call(lab.packs.cancel, pack_id)
+
+    @app.post(f'{api}/packs/{{pack_id}}/remove')
+    def pack_remove(pack_id: str):
+        return pack_call(lab.packs.remove, pack_id)
+
     @app.post(f'{api}/recommend')
     def recommend(payload: Any = Body(None)):
         body = body_dict(payload)
@@ -545,8 +649,14 @@ def create_app(config: Config | None = None) -> FastAPI:
     def fieldsim_state():
         return lab.fieldsim.state()
 
+    def require_gazebo():
+        gap = paths.gazebo_gap()
+        if gap:
+            raise ApiError(503, 'simulator_unavailable', gap)
+
     @app.post(f'{api}/fieldsim', status_code=202)
     def fieldsim_start(payload: Any = Body(None)):
+        require_gazebo()
         return lab.fieldsim.start(body_dict(payload))
 
     @app.post(f'{api}/fieldsim/stop', status_code=202)
@@ -582,6 +692,7 @@ def create_app(config: Config | None = None) -> FastAPI:
 
     @app.post(f'{api}/sim/session', status_code=202)
     def sim_start(payload: Any = Body(None)):
+        require_gazebo()
         lab.services.start_sim(body_dict(payload))
         return lab.sim.current_state()
 
@@ -902,16 +1013,19 @@ def create_app(config: Config | None = None) -> FastAPI:
     # Research figures in publication formats (urp_lab/figures): drawn only from recorded runs / simulations / studies.
     from .figures.api import router as figures_router
     app.include_router(figures_router, prefix=api)
+    # Task agent (urp_lab/agent): natural-language request → confirmed task contract → validated tool calls.
+    from .agent.api import router as agent_router
+    app.include_router(agent_router, prefix=api)
     # Research agent (CONTRACT §9): LLM planning over the same tools, checks and records as the panel.
     from .agent.routes import install as install_agent
     install_agent(app, lab, api)
 
-    @app.api_route(f'{api}/{{rest:path}}', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
+    @app.api_route(f'{api}/{{rest:path}}', methods=['GET', 'POST', 'PUT', 'PATCH', 'DELETE'], include_in_schema=False)
     def api_not_found(rest: str):
         raise ApiError(404, 'not_found', f'没有接口 /lab/api/{rest}')
 
     # ------------------------------------------------------ archive proxy --
-    @app.api_route('/api/{rest:path}', methods=['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'])
+    @app.api_route('/api/{rest:path}', methods=['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], include_in_schema=False)
     async def archive_proxy(request: Request, rest: str):
         url = f'{config.archive_url}/api/{rest}'
         if request.url.query:
@@ -926,7 +1040,7 @@ def create_app(config: Config | None = None) -> FastAPI:
         try:
             resp = await client.send(upstream, stream=True)
         except (httpx.ConnectError, httpx.ConnectTimeout):
-            return error(503, 'archive_offline', '档案后端未运行，可在概览页启动')
+            return error(503, 'archive_offline', '档案后端未运行：下载历史档案后自动启动，见 设置 → 数据' if os.environ.get('URP_DESKTOP') else '档案后端未运行，可在概览页启动')
         except httpx.HTTPError as exc:
             return error(502, 'archive_error', f'档案后端请求失败：{type(exc).__name__}')
         out = StreamingResponse(resp.aiter_raw(), status_code=resp.status_code, background=BackgroundTask(resp.aclose))
@@ -955,9 +1069,9 @@ def create_app(config: Config | None = None) -> FastAPI:
 
     @app.get('/data/{rest:path}', include_in_schema=False)
     def data(rest: str):
-        path = static_file(f'data/{rest}')
+        path = static_file(f'data/{rest}') or lab.packs.web_file(rest)
         if path is None:
-            return error(404, 'not_found', f'无历史数据：/data/{rest} 不存在（历史实验数据未恢复）')
+            return error(404, 'not_found', '这份历史数据还没有下载，可在 设置 → 数据 下载历史档案')
         return FileResponse(path, headers={'Cache-Control': 'no-cache'})
 
     @app.get('/{rest:path}', include_in_schema=False)

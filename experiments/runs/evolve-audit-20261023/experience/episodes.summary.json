@@ -1,0 +1,96 @@
+{
+ "episodes": {
+  "workbench_run": 297,
+  "field_execution": 31,
+  "portfolio_sweep": 8346
+ },
+ "workbench_runs": {
+  "per_problem_class": {
+   "turn_routing": {
+    "runs": 84,
+    "instances": 10,
+    "multi_algorithm_instances": 4
+   },
+   "euclidean_cvrp": {
+    "runs": 28,
+    "instances": 5,
+    "multi_algorithm_instances": 5
+   },
+   "coverage": {
+    "runs": 13,
+    "instances": 3,
+    "multi_algorithm_instances": 2
+   },
+   "fleet_routing": {
+    "runs": 157,
+    "instances": 31,
+    "multi_algorithm_instances": 23
+   },
+   "point_to_point": {
+    "runs": 15,
+    "instances": 5,
+    "multi_algorithm_instances": 4
+   }
+  },
+  "full_information_instances": 38,
+  "submissions_matching_recommendation": [
+   92,
+   252
+  ],
+  "note": "提交与推荐一致不等于用户采纳了推荐；多算法同实例记录才是全信息样本"
+ },
+ "field_execution": {
+  "sessions": 31,
+  "succeeded": 26,
+  "makespan_actual_over_planned": {
+   "n": 26,
+   "median": 1.2576490937648939,
+   "p10": 1.0191479888177728,
+   "p90": 2.0797789845507815,
+   "min": 1.013058172489398,
+   "max": 2.724840233251438
+  },
+  "distance_actual_over_planned": {
+   "n": 26,
+   "median": 1.0319879722881755,
+   "p10": 0.9982574359456328,
+   "p90": 1.099464777766333,
+   "min": 0.9949181522620998,
+   "max": 1.0999143646719827
+  },
+  "vehicle_duration_actual_over_planned": {
+   "n": 66,
+   "median": 1.0793891867795204,
+   "p10": 1.0248027036815706,
+   "p90": 2.758200466475396,
+   "min": 1.0129113056372872,
+   "max": 3.001941963154627
+  },
+  "vehicle_driving_over_planned": {
+   "n": 66,
+   "median": 1.0791444766510248,
+   "p10": 1.0248027036815706,
+   "p90": 1.2176442033625618,
+   "min": 1.0129113056372872,
+   "max": 2.072749232572074
+  },
+  "vehicle_driving_over_reference": {
+   "n": 23,
+   "median": 0.9979608352046953,
+   "p10": 0.9823010269469957,
+   "p90": 1.0536607222800873,
+   "min": 0.9709578778445572,
+   "max": 1.7717843892205818
+  },
+  "distinct_plans": 10,
+  "serial_traffic_sessions": 16,
+  "note": "会话含同一方案的重复执行，独立样本按不同方案计；串行预约会话的最晚完成含排队，驾驶用时=用时−排队等待；规划用时为匀速代理，停—转—走参考为解析参考，均不是控制器时间预测"
+ },
+ "portfolio_sweeps": {
+  "records": 8346,
+  "runs": [
+   "evolve-audit-20261023",
+   "evolve-repair-20261023"
+  ]
+ }
+}

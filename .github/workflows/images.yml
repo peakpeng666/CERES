@@ -3,8 +3,12 @@ name: Publish images
 on:
   push:
     branches: [deploy]
-    tags: ['v*']
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      checks_passed:
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -20,12 +24,14 @@ env:
 
 jobs:
   checks:
+    if: ${{ !inputs.checks_passed }}
     uses: ./.github/workflows/ci.yml
     permissions:
       contents: read
 
   bench:
     needs: checks
+    if: ${{ always() && (needs.checks.result == 'success' || (inputs.checks_passed && needs.checks.result == 'skipped')) }}
     runs-on: ubuntu-22.04
     timeout-minutes: 90
     steps:
@@ -59,6 +65,7 @@ jobs:
 
   sim:
     needs: checks
+    if: ${{ always() && (needs.checks.result == 'success' || (inputs.checks_passed && needs.checks.result == 'skipped')) }}
     runs-on: ubuntu-22.04
     timeout-minutes: 240
     steps:

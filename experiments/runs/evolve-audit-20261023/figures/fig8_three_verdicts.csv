@@ -1,0 +1,10 @@
+profile,verdict,feasible,official_denominator
+robot_s,official,712,712
+tractor_m,official,552,552
+sprayer_l,official,464,464
+robot_s,fillet,566,712
+tractor_m,fillet,509,552
+sprayer_l,fillet,397,464
+robot_s,strict,177,712
+tractor_m,strict,423,552
+sprayer_l,strict,361,464

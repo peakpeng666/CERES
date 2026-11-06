@@ -45,3 +45,13 @@ def isolated_evolve_field_cache(request, tmp_path, monkeypatch):
         raise AssertionError('Evolve offline contracts must not download field data')
 
     monkeypatch.setattr(fields, '_download', blocked_download)
+
+
+REAL_GAZEBO_GAP = paths.gazebo_gap
+
+
+@pytest.fixture(autouse=True)
+def simulator_present(monkeypatch):
+    """Tests replace the simulator with fakes, so whether this machine has ROS must not change their outcome."""
+    monkeypatch.setattr('urp_lab.paths.gazebo_gap', lambda: None)
+    monkeypatch.setattr('urp_lab.agent.tools.gazebo_gap', lambda: None)

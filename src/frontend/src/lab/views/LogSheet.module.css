@@ -16,7 +16,7 @@
   width: min(960px, 100%);
   height: min(760px, calc(100dvh - 56px));
   border-radius: 14px;
-  background: rgba(250, 250, 252, 0.97);
+  background: var(--mac-glass);
   -webkit-backdrop-filter: var(--mac-blur);
   backdrop-filter: var(--mac-blur);
   box-shadow: var(--mac-shadow-pop);
@@ -76,8 +76,8 @@
   padding: 10px 12px;
   overflow: auto;
   border-radius: 9px;
-  background: #1e1e22;
-  color: #e6e6ea;
+  background: var(--mac-inset);
+  color: var(--mac-label-2);
   font-family: var(--mac-mono);
   font-size: 12px;
   line-height: 1.5;
@@ -87,7 +87,7 @@
 }
 
 .pre:focus-visible {
-  outline: 3px solid rgba(0, 122, 255, 0.45);
+  outline: 3px solid color-mix(in srgb, var(--mac-accent) 45%, transparent);
 }
 
 .foot {

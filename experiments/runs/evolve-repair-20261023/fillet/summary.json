@@ -1,0 +1,45 @@
+{
+ "jobs": 1999,
+ "by_config": {
+  "repair:boustrophedon/field_coverage": {
+   "invalid": 86,
+   "not_filletable": 86,
+   "valid": 211,
+   "unverifiable": 9
+  },
+  "repair:boustrophedon/n_swath": {
+   "valid": 214,
+   "invalid": 117,
+   "not_filletable": 117,
+   "unverifiable": 4
+  },
+  "repair:boustrophedon/swath_length": {
+   "valid": 201,
+   "invalid": 86,
+   "not_filletable": 86,
+   "unverifiable": 6
+  },
+  "repair:none/field_coverage": {
+   "valid": 363,
+   "invalid": 17,
+   "not_filletable": 17
+  },
+  "repair:none/n_swath": {
+   "valid": 322,
+   "invalid": 35,
+   "not_filletable": 35
+  },
+  "repair:none/swath_length": {
+   "valid": 296,
+   "invalid": 31,
+   "not_filletable": 31,
+   "unverifiable": 1
+  }
+ },
+ "tolerance_sensitivity_m": {
+  "0.005": 1607,
+  "0.01": 1607,
+  "0.02": 1608
+ },
+ "note": "倒圆判定：拐角能在相邻直段内用最小转弯半径圆弧倒圆，且倒圆后路径通过未修改的官方检查；单区适配器等同官方∧严格"
+}

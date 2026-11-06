@@ -9,7 +9,7 @@ import { normalizeFleetInstance } from './fleet';
 import { filterRecommendation, planningBlockReason } from './capabilities';
 import { comparable, verifiedPlan } from './comparison';
 
-export type Workspace = 'plan' | 'assets' | 'experiments' | 'sim' | 'library' | 'system';
+export type Workspace = 'agent' | 'plan' | 'assets' | 'experiments' | 'sim' | 'library' | 'system';
 
 type SaveState = 'idle' | 'dirty' | 'saving' | 'saved' | 'error';
 
@@ -52,7 +52,7 @@ interface StudioState {
   studyId: string | null;
 
   setWorkspace: (w: Workspace) => void;
-  open: (id: string) => Promise<void>;
+  open: (id: string, options?: { reload?: boolean }) => Promise<boolean>;
   edit: (fn: (inst: Instance) => Instance) => void;
   undo: () => void;
   redo: () => void;
@@ -104,7 +104,7 @@ const draftOf = (scenario: Scenario): Instance => scenario.problem_class === 'fl
   : scenario.instance;
 
 export const useStudio = create<StudioState>((set, get) => ({
-  workspace: 'plan',
+  workspace: 'agent',
   scenarioId: null,
   editorSession: null,
   scenario: null,
@@ -143,20 +143,24 @@ export const useStudio = create<StudioState>((set, get) => ({
 
   setWorkspace: (workspace) => set({ workspace }),
 
-  async open(id) {
-    if (get().scenarioId === id && get().scenario) return;
+  async open(id, options) {
+    if (get().scenarioId === id && get().scenario && !options?.reload) return true;
     const previous = get();
+    if (options?.reload && previous.scenarioId === id && previous.draft && ['dirty', 'saving', 'error'].includes(previous.save)) {
+      previous.notify('error', '当前地图有未保存的修改，已保留草稿；请先处理草稿，再重新打开智能体会话以载入更新后的地图。');
+      return false;
+    }
     if (previous.scenarioId && previous.draft && previous.save === 'error') {
       previous.notify('error', `当前草稿尚未保存，已留在本场景：${previous.saveError ?? '请先重试保存'}`);
       navigate(`#/plan/${encodeURIComponent(previous.scenarioId)}`, { replace: true });
-      return;
+      return false;
     }
     if (previous.scenarioId && previous.draft && ['dirty', 'saving'].includes(previous.save)) {
       await flushSave();
       if (get().save !== 'saved') {
         get().notify('error', `当前草稿尚未保存，已留在本场景：${get().saveError ?? '请重试保存'}`);
         navigate(`#/plan/${encodeURIComponent(previous.scenarioId!)}`, { replace: true });
-        return;
+        return false;
       }
     }
     draftRevision += 1;
@@ -167,18 +171,21 @@ export const useStudio = create<StudioState>((set, get) => ({
           runIds: [], runs: {}, runErrors: {}, recommending: false, focusRun: null, manualFocus: false, recommendation: null, playback: null, hiddenVehicles: [], paramOverrides: {} });
     try {
       const sc = await lab.scenario(id);
-      if (get().scenarioId !== id || loadSequence !== loadToken) return;
+      if (get().scenarioId !== id || loadSequence !== loadToken) return false;
       set({ scenario: sc, draft: draftOf(sc), busy: null });
       void get().refreshRecommendation();
       const recent = await lab.runs({ scenario_id: id, limit: 30 });
-      if (get().scenarioId !== id || loadSequence !== loadToken || get().runIds.length || get().busy === '求解中') return;
+      if (get().scenarioId !== id || loadSequence !== loadToken) return false;
+      if (get().runIds.length || get().busy === '求解中') return true;
       const runs = Object.fromEntries(recent.runs.map((r) => [r.run_id, r]));
       const latestJob = recent.runs[0]?.job_id;
       const ids = recent.runs.filter((r) => r.job_id === latestJob).map((r) => r.run_id);
       set({ runs, runIds: ids, focusRun: pickBest(ids.map((i) => runs[i])) });
       for (const id of ids) if (['queued', 'running'].includes(runs[id].state)) void pollRun(id);
+      return true;
     } catch (e) {
       if (get().scenarioId === id && loadSequence === loadToken) set({ loadError: message(e), busy: null });
+      return false;
     }
   },
 
@@ -427,6 +434,16 @@ async function pollRun(id: string) {
     await new Promise((r) => setTimeout(r, i < 20 ? 300 : 1000));
   }
   if (active()) useStudio.setState((s) => ({ runErrors: { ...s.runErrors, [id]: '运行状态跟踪已超时；请重新打开场景读取最新状态' } }));
+}
+
+/** Show a given set of runs (for example those an agent session produced) on the map, comparison and checks. */
+export function showRuns(ids: string[]) {
+  const s = useStudio.getState();
+  if (!ids.length) return;
+  const same = ids.length === s.runIds.length && ids.every((id, i) => s.runIds[i] === id);
+  if (same) return;
+  useStudio.setState({ runIds: ids, focusRun: null, manualFocus: false, playback: null });
+  for (const id of ids) void pollRun(id);
 }
 
 events.subscribe((type, data) => {

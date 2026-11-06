@@ -1,0 +1,29 @@
+{
+ "python": "3.12.13",
+ "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+ "machine": "x86_64",
+ "cpu_count": 24,
+ "packages": {
+  "pyvrp": "0.14.0",
+  "ortools": "9.15.6755",
+  "shapely": "2.2.0",
+  "numpy": "2.5.4",
+  "scipy": "1.18.1",
+  "fields2cover": "2.1.0",
+  "pyproj": "3.8.0"
+ },
+ "fields2cover": {
+  "available": true,
+  "version": "2.1.0",
+  "reason": null,
+  "binary_sha256": "f9737d9c997b96c59e63b38b1461613dd624b2dacbc1d9d006f15a6660baa64a",
+  "wheel_sha256": "0fe53e459024b282be455b2a4bdbca3d93efa029539ff87c88c1105361344c19"
+ },
+ "thread_env": {
+  "OMP_NUM_THREADS": "1",
+  "OPENBLAS_NUM_THREADS": "1",
+  "MKL_NUM_THREADS": "1",
+  "NUMEXPR_NUM_THREADS": "1"
+ },
+ "recorded_utc": "2026-10-23T01:22:37Z"
+}

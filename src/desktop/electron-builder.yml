@@ -1,0 +1,56 @@
+# The installer name stays ASCII so install paths and the deb package are predictable; people see the Chinese name
+# from the desktop entry, the Start menu shortcut and the window title.
+appId: com.peakpeng.agri-route-workbench
+productName: agri-route-workbench
+copyright: Copyright © 2026 peakpeng666
+directories:
+  output: dist
+  buildResources: build
+files:
+  - main/**
+  - preload.js
+  - splash.html
+  - package.json
+asar: true
+extraResources:
+  - from: build/backend/${os}
+    to: backend
+    filter: ["**/*"]
+  - from: ../../deploy/docker-compose.sim.yml
+    to: compose/docker-compose.sim.yml
+  - from: ../../deploy/docker-compose.desktop.yml
+    to: compose/docker-compose.desktop.yml
+# Releases are published under the repository's latest release, which every desktop release claims.
+publish:
+  provider: generic
+  url: https://github.com/peakpeng666/URP/releases/latest/download
+linux:
+  target: [AppImage, deb]
+  category: Science
+  icon: build/icons
+  executableName: agri-route-workbench
+  artifactName: agri-route-workbench-${version}-linux-${arch}.${ext}
+  synopsis: 农业机器人路径规划工作台
+  description: 用自然语言下达农业多车作业任务，算法库求解，MuJoCo 与 Gazebo 仿真验证。
+  desktop:
+    entry:
+      Name: 农业机器人路径规划工作台
+      Comment: 农业多车作业的规划与仿真
+      StartupWMClass: agri-route-workbench
+deb:
+  packageName: agri-route-workbench
+  maintainer: peakpeng666 <270361242+peakpeng666@users.noreply.github.com>
+win:
+  target: [nsis]
+  icon: build/icon.ico
+  executableName: agri-route-workbench
+  artifactName: agri-route-workbench-${version}-windows-${arch}.${ext}
+nsis:
+  language: "2052"
+  installerLanguages: [zh_CN, en_US]
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  shortcutName: 农业机器人路径规划工作台
+  uninstallDisplayName: 农业机器人路径规划工作台
+  deleteAppDataOnUninstall: false

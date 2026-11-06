@@ -117,7 +117,7 @@ def test_prediction_rejects_conflicting_means():
 def test_api_and_agent_submit_canonical_ids(tmp_path):
     from fastapi.testclient import TestClient
     from urp_lab.gateway import create_app, Config
-    from urp_lab.agent import tools
+    from urp_lab.agent import research_tools as tools
     app = create_app(Config(runtime=tmp_path, background=False, extra_hosts={'testserver'}))
     with TestClient(app) as client:
         response = client.post('/lab/api/solve', json={

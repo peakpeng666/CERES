@@ -1,0 +1,5334 @@
+{
+ "identical_mismatches": [
+  "1310bee93f92403b",
+  "1d5f26df9270617a",
+  "403a6f269001dc63",
+  "6f4dd829f6c92ae2",
+  "796fab70dc75f598",
+  "8792aeb4e5a72873",
+  "98952b0558a8b90f",
+  "b72f349ae571ae93",
+  "f5ee4e5618171830"
+ ],
+ "strict_infeasible_jobs": [
+  "0036d0edf4f4d519",
+  "0055ef5f6599f74a",
+  "00a527d320d0f2a7",
+  "011a3bb24e09cf76",
+  "0143b81fe87072d7",
+  "024fa0f014c643d3",
+  "038f7e28450169c8",
+  "03b6731adea25fca",
+  "03e1cc98bcabcb40",
+  "04098591ad9182a7",
+  "04feb82bf71c5798",
+  "05677fed5fb00794",
+  "056a307501ccc17e",
+  "05e520370d522456",
+  "05f083836e182a00",
+  "062b313544d8ff04",
+  "062c204c667add4b",
+  "0631f885a3ec4b80",
+  "06f278ce4fd939a3",
+  "06f43ddc57ddc988",
+  "072b87e02295de1b",
+  "07beeda6e8898009",
+  "07ca31bd41dcde90",
+  "081b4ad15c5e25f9",
+  "08a6ba68e71bd527",
+  "0900f949672ccb3f",
+  "0902b7e9cc993ebd",
+  "090706228ccce645",
+  "09a048be7ca20aba",
+  "09fb3bc118bad145",
+  "0a2a800eb4ea90c0",
+  "0a41ac78349af590",
+  "0aa9c0c4d2f7a2dc",
+  "0bee1bacf634b779",
+  "0c652e03eef69ab3",
+  "0cc65e9ca09c6c18",
+  "0ce3c12b995170f9",
+  "0d2a82f15bf34cb8",
+  "0d62b934cd9d9ba7",
+  "0d8acdd001c5360f",
+  "0e457228e1500e25",
+  "0e623fc50929010e",
+  "0eb7ce7237c98ef5",
+  "0efdaf543eb6274e",
+  "0f16706e420509ba",
+  "1028dc573cf3d17c",
+  "106b661624c0c11a",
+  "10ce9faec00afd34",
+  "110b6820e3a2fd11",
+  "1173e1d02b00de09",
+  "11957452937ef400",
+  "11b1ac36e87ab5e7",
+  "11d2936e1d969e8a",
+  "1310bee93f92403b",
+  "13195c77037ec68b",
+  "141b5c4ba7fdbabd",
+  "144a1f60f9d3ea64",
+  "14d46e9224a4289c",
+  "15404e1894c3a643",
+  "154f4797dcbf131b",
+  "156af5872d65e952",
+  "15793ef0a6675690",
+  "159fdaf8d7bb7c3f",
+  "15d05588b1d0f60d",
+  "15f8b4c46e7dbf4b",
+  "1697e808a4bae729",
+  "175bc7034453f160",
+  "17b6bc2dc1d1483c",
+  "186b3e79582f895b",
+  "18b3f060bbb87422",
+  "190e97fbdda5311e",
+  "19205b06e2050690",
+  "194d3e66c4f537ea",
+  "1959b07e25959d42",
+  "1aa90f1dde39d2c8",
+  "1c2e3f5ecfa6ec55",
+  "1c57ac1627f9d9a8",
+  "1c5f5c4bc890ea8e",
+  "1cec93c2efc94f22",
+  "1d5f26df9270617a",
+  "1d78139537de2fd0",
+  "1dea33ef092f6946",
+  "1e0b363300edf9b3",
+  "1e5c025c27299d81",
+  "1eaf0fb609ee2344",
+  "1eb05d3e39fb4244",
+  "1fc5c2c1789fe664",
+  "2060db1d0adeba89",
+  "206bdd5eb749b8b9",
+  "20766edbc17d1a33",
+  "2119f34c4f16ed46",
+  "211dc4274b21ac49",
+  "213b92aa406ed31e",
+  "2150516b4a7c861c",
+  "22004ba4f0d7f4ac",
+  "2283749a5e6ff8fe",
+  "2339d78d6bcb74db",
+  "237dafa98e342682",
+  "2387006aa937e040",
+  "23e3c032fc4fd6b3",
+  "2425d7482accef45",
+  "243a87ef85b1685e",
+  "24609979b4269b1d",
+  "2463fcf84e9b70e9",
+  "24f88440ffa3d92b",
+  "251825341bb5886b",
+  "254438fc8e5b466f",
+  "25e0e373197a3935",
+  "2632536ff2f45069",
+  "267b5683ba3ec06c",
+  "26c9579e67d417c5",
+  "26dfff694d521c9b",
+  "273b0e2cb835c1ee",
+  "274f529cc58ffc6d",
+  "2826406247c4ed07",
+  "28b583899e2ffa2b",
+  "28ba8df061606dab",
+  "2980332461c4f890",
+  "29f26af06d3c3263",
+  "2a200393f821a713",
+  "2a6832f30d2a51a1",
+  "2a702712f287888b",
+  "2abf6f8d943107a6",
+  "2b3334287372cb83",
+  "2b6dc714f631e158",
+  "2b97dca1efd6e2ac",
+  "2ba3c9fa83165ca8",
+  "2c1e6e80f789e381",
+  "2c70394bbb9b0d58",
+  "2c8384c6ec7710d3",
+  "2c8e658e941cc423",
+  "2c8ff1d8892fa575",
+  "2e15a15c0fa3f497",
+  "2e624d484404923d",
+  "2ed33ef5a56a1522",
+  "2ef90cf28193a788",
+  "2f2fb8f6598fee74",
+  "2f738632c205d46a",
+  "2fd283b90039eef0",
+  "2ff5a2fc20f43c43",
+  "315aa836f08032a8",
+  "317493f589ab9902",
+  "319a5dcc5ccf4b48",
+  "31c952482a964029",
+  "329d03a297eae3c6",
+  "334e9abc84143775",
+  "340b9273d1504d6e",
+  "34941f68f27f3194",
+  "3563f2cfd41201ae",
+  "3567c1d4cb5673cf",
+  "360a851e123c8c9b",
+  "362b18dd8fac824a",
+  "363299d36a65e129",
+  "3665c0786573222d",
+  "3695cd7e72176cb7",
+  "36a62a50eddcb3a4",
+  "36af782c7707b06c",
+  "36b7bf2f5e8418b1",
+  "36de529856ee52e1",
+  "36e30a0ecdd1328c",
+  "3716292bbe463316",
+  "378ef2fe0e2f127f",
+  "381465aa74155bc6",
+  "386087313ddd27d0",
+  "38cf0bcaa5b42247",
+  "39e5d410d91b5bd3",
+  "3a2c5ddd3819965f",
+  "3a51dbf22faba96b",
+  "3b93b2dabbdce5a6",
+  "3cebb8ef579e9fb7",
+  "3d1af31443f1a82b",
+  "3d26eadc84f80f0b",
+  "3d26eb4bd2ce8d61",
+  "3d90f6a266ec682d",
+  "3daedd3c48b7fa88",
+  "3e99e925045a8f8b",
+  "3eb8577d18f4e044",
+  "3f4b4b0a2868fe80",
+  "3f749fa5dffd06a8",
+  "3ff58b746b1aa117",
+  "402233233a1b3d3b",
+  "403a6f269001dc63",
+  "4077d55e1ef97262",
+  "409244ebac296ff4",
+  "40fda6548244c0cd",
+  "4164e41af3c34188",
+  "4186303b40a05422",
+  "41b61d4d3f93f06b",
+  "41b89c375a5e1cb5",
+  "426b3dc09f7daad2",
+  "434b71c97954ff17",
+  "4351fa9fd8e9baa4",
+  "4531b630fd274196",
+  "459510237c919239",
+  "45c3bb3daa3b6932",
+  "45f9a4f9ab0daf4c",
+  "4614d101a12e51e4",
+  "467bdc226dfa99cf",
+  "467f3080700b5b89",
+  "468d9217aa937300",
+  "469c1c67032a28eb",
+  "46ba61e1b0167dbd",
+  "4745d50501d268e6",
+  "47fa1ebe164b42e3",
+  "484b26c89c49ae7f",
+  "48a165c6a6dbd8d4",
+  "490303359a992c5c",
+  "491bb8e8b2fe6276",
+  "49572faf1cbaaf0f",
+  "498732645b2d412f",
+  "49d45562f87df6d2",
+  "4a04c7ff7b86e8c1",
+  "4a393a483ced3de3",
+  "4a6b84825a796365",
+  "4bfef985a1360813",
+  "4c1292afe44be742",
+  "4c1654ea18aea52d",
+  "4c2c953071c27376",
+  "4c58eeef44f3a8f7",
+  "4c6a38670de92415",
+  "4cb9b267de19151c",
+  "4d1cb6291d3fe742",
+  "4d6dac7db701787a",
+  "4e131638662ca812",
+  "4e867d16ddafec55",
+  "4eb1c68f71824e20",
+  "4ef8251ad5c04a0e",
+  "4f1372ae0ee4647e",
+  "4f323715c912489c",
+  "4f54123d6fb47296",
+  "4fbc76fb17e3ef36",
+  "5062f37fa222ace0",
+  "50e22f0794d52121",
+  "51254500cf140dd4",
+  "5137313d6ca3caef",
+  "516aab4c2e5c5577",
+  "51c81a3b1d73f901",
+  "51e06a4fdaab3e2e",
+  "533551c44c52fda7",
+  "53655116ff71d0b7",
+  "53cc7695a4ed320b",
+  "53fd2fe9e9fa2ad9",
+  "53fe010b1e80659e",
+  "542e99ec01d8014a",
+  "545921498b8f3769",
+  "5487860283ac2c86",
+  "5487f63d65c60750",
+  "549dc2fc3e42f0c8",
+  "54e50a7d90843bab",
+  "54f17a959dad6261",
+  "556e22a419fafdd4",
+  "558f02b70051c72f",
+  "55acbc19de624773",
+  "56ddaee9e343f63a",
+  "56ef5a8d8189d80c",
+  "5716f300a839f059",
+  "57517dd9c95438de",
+  "579f5556ca532afd",
+  "579fd74759996606",
+  "57ea0df2bbd16967",
+  "58890d6ad92937cb",
+  "58958c9888900235",
+  "58bc13b983507dfb",
+  "58ce69fe5476b4ba",
+  "58fe985246ed2a7b",
+  "59161f4ba978b4f2",
+  "5927b6932cfd63e4",
+  "5a485b987d5b0ebb",
+  "5a69c45b825693ed",
+  "5a9ca542e8189ab1",
+  "5b07fe970a9e0ab7",
+  "5b0af167a4d5a29e",
+  "5b3c70253641db8a",
+  "5c260c3e266f6676",
+  "5d4768a16a7ef8d0",
+  "5d72649fe075235d",
+  "5ea1528a5583c7a1",
+  "5ea1f02123265cf6",
+  "5f4dd23f9c9e899f",
+  "5f56696eab075161",
+  "5f7e2ed85e10d165",
+  "5fdf71e6447bddc8",
+  "602b5fa785d76184",
+  "60f60b942391a483",
+  "61204356d945119a",
+  "616b281f20f9d1fb",
+  "61c19094fe41264f",
+  "61c5403cda22b9b1",
+  "62627c98c9165750",
+  "63079b6ae0bd4750",
+  "6374b8830403fb37",
+  "639306d18201dc2b",
+  "642372b111df15fd",
+  "64947f9233a4e5fa",
+  "650b2992c7156530",
+  "654539af725d120c",
+  "6592ee14202837bd",
+  "663e92a98dfa5ffc",
+  "666b23ff0bc4d1bb",
+  "66bde40a903f9adb",
+  "67a16d2ce8b42787",
+  "6830ededa0d32cc7",
+  "6975ea16d4643323",
+  "69b92855e642ab54",
+  "6a80a00e31c4c032",
+  "6b1e8fda815ad0af",
+  "6b5a54bbeae96ad6",
+  "6b987b9ce4d41208",
+  "6c21d2d44d0ea37f",
+  "6c6ae9405625412b",
+  "6c9da61c815665a9",
+  "6cb93d4326ea3fe0",
+  "6cbb1302113c5cfa",
+  "6cccfb10a141ee6c",
+  "6ce0f324109e812d",
+  "6d814af03e500881",
+  "6dbf57d521ac8241",
+  "6e121d657bda0717",
+  "6e81de7928846d82",
+  "6ed72fda02680020",
+  "6eef635ca6065bc3",
+  "6f4dd829f6c92ae2",
+  "70304eb2c1e539c2",
+  "707858bab2f51d1d",
+  "709faf022edfd4e9",
+  "70fbe5b874042827",
+  "7207b9ecd704365f",
+  "724af2de2d08e455",
+  "72a1b415b4bd32f7",
+  "730f09d4151473a4",
+  "737492ffd5ae8968",
+  "73be3f7eb89e950e",
+  "7493287952568236",
+  "757e447b310992b4",
+  "75b5bd76501943db",
+  "75f9dd894add30a2",
+  "76340a130a8fcf54",
+  "7644425c134f07eb",
+  "76dc16045541df37",
+  "7765c20f828418e4",
+  "78720d4356b743a8",
+  "794741786e3d754a",
+  "796fab70dc75f598",
+  "796fd4d723ecce7b",
+  "799e5640f7644a6d",
+  "79f168bb3c9a6144",
+  "7b06b33b26bb84a9",
+  "7b1c810a42a827da",
+  "7c1727aa2736ae64",
+  "7c929152ed9f8abb",
+  "7cb0bd66bad3aa9e",
+  "7d59eb453db32d0d",
+  "7e78f795535f97b1",
+  "7ed1089d8ff952bc",
+  "7f136d385408bc8e",
+  "7f157a63484d1b77",
+  "7f57eb43645f5357",
+  "7fee66b93c89f2e5",
+  "80c24b071a80654f",
+  "81e8c1517e1bf66f",
+  "82332b1e427351b2",
+  "838384591bcdda35",
+  "838cf4b1c6454099",
+  "83a280ac822f5b9f",
+  "843d29799a51fd7e",
+  "844ca2e9cb9fb59a",
+  "84744a662c654c1b",
+  "84f009a2673a86e8",
+  "8519e9cbac9d83f1",
+  "856f2eb0128bb70a",
+  "85bb5578aeaf9877",
+  "861e040d2148e766",
+  "8716102707edd3e8",
+  "8764d6c919c088eb",
+  "8792aeb4e5a72873",
+  "8834ae748cf7f6d7",
+  "883cffdb821bb5a9",
+  "8889b6d587cfc75d",
+  "88af2ea1e261186b",
+  "88afa585dd1f278d",
+  "8955c7ece8f6f4e7",
+  "8a25886f985fc80f",
+  "8aba575dab17f626",
+  "8ac5b2ac60f9271e",
+  "8b971acea829995d",
+  "8ba56048c6adef5e",
+  "8bfdbdaf7fa46236",
+  "8c89cad191ea6b67",
+  "8ce1450ea1678fe5",
+  "8d2d9f0f4a47c3e5",
+  "8d4a15891922c270",
+  "8eac01664c5a4a3e",
+  "8f19ae6a06ea682a",
+  "8f5205daee96c4ba",
+  "8f698394863106ed",
+  "8fe4c75abf334ada",
+  "8ff4582fb811f317",
+  "902599b83a6f8b3a",
+  "905d1b22e198508e",
+  "910b319342ee3ba2",
+  "927dcd1afb339a56",
+  "929e51b9071b3b7a",
+  "92bb32c770f3de23",
+  "92fd1e2b73a26180",
+  "936915e93327afab",
+  "9397ccf8d0ee9b46",
+  "947f31d07cfc0fc2",
+  "94aaa99c01014716",
+  "9563052f03db171e",
+  "9580473b9e1adad9",
+  "95a27dc1ddb4df6b",
+  "95db1b8fa523e841",
+  "95eb042b3fd7b16e",
+  "95f0e27598161b30",
+  "95fd0df336936f48",
+  "9651f24752aff6f7",
+  "96bfb357e005897c",
+  "97201ee8813610e1",
+  "98952b0558a8b90f",
+  "9904ebfa02393214",
+  "99dc9fdd7287b96e",
+  "99eba2458791796f",
+  "9a20faaea8fac415",
+  "9a3c61325d5181bd",
+  "9afe001708433c88",
+  "9b46428b830c843c",
+  "9b47670079a202fd",
+  "9b73f2fcb3b90fab",
+  "9bb43c2c4aab93ba",
+  "9bc80117798af734",
+  "9c0a5b60da2ee748",
+  "9c0d80dd0760dc51",
+  "9c4ca7054ae120b4",
+  "9c529a4950918609",
+  "9cec4da91c2891c9",
+  "9cf10df933e18912",
+  "9d0300c18af4753b",
+  "9d3f3c5159398e21",
+  "9dae8f421f332a3e",
+  "9dbc4c4edce8192c",
+  "9de31f9b182b36db",
+  "9deb8cb551ecccca",
+  "9df201bbe8920b43",
+  "9dfddae155e03977",
+  "9e30c53120ccd58e",
+  "9ec9493e7a12789a",
+  "9eda4a544e10b5f6",
+  "9f59d5d94a7cc63f",
+  "9f5de81820f36642",
+  "9f61abc36abbcbbf",
+  "9fb1220eaeb118d2",
+  "a094f9eb395c9916",
+  "a0adfcd26856e2c8",
+  "a11c4fe1731e122a",
+  "a1acba39e47fbf22",
+  "a1b812fa3e9970c5",
+  "a204b65c160c9962",
+  "a336851a6f150f66",
+  "a34aa7251339b5a0",
+  "a3a7b50b24df76a5",
+  "a3e5cfc47f53e817",
+  "a42220e4a59b82c6",
+  "a47e2a76dd3bec7d",
+  "a4af1ccaf456fe67",
+  "a4b3a66168454d4a",
+  "a4db9537c088ca69",
+  "a4fb3b5e826c5bed",
+  "a51b76818c14240f",
+  "a5338ab9de66e85d",
+  "a5618360a96b970e",
+  "a57362a55bdc0f4b",
+  "a5d620bdb38ba680",
+  "a5d9d4bf5aba744b",
+  "a5e7fda0d7375c5a",
+  "a5f4b1721fcc7f7a",
+  "a61f7519cce5c591",
+  "a69d0769241d6bff",
+  "a7903fa427897471",
+  "a7a16f00cc133027",
+  "a7ced9acb509bba9",
+  "a84ed0d191e93b80",
+  "a86d0846067fd97b",
+  "a87f45760f4b0d88",
+  "a8f7f7cffc6050f6",
+  "a951117980f338c7",
+  "a95c69d5b625e107",
+  "a95f09b035e93d88",
+  "a97905cdc31c2d13",
+  "a9dbc787758512fd",
+  "aabd09f295da62d2",
+  "ab11d6efd87395e8",
+  "ab3d4e896fc5d3a2",
+  "ab5c81bd47ce48cb",
+  "ab5ce29b326fba46",
+  "ab61d98ef22b32f6",
+  "ab71221bf9ea8368",
+  "ab9839b18262f0e7",
+  "aba571c1ae994e57",
+  "aba891fb77597ab3",
+  "abcdef7e69f02100",
+  "ac27db98dd5972ca",
+  "ac86ac454cb26128",
+  "ad1bc162e2257455",
+  "ad241f69d8e77473",
+  "ad6b3bf3941139fc",
+  "add26e062335fe7e",
+  "ade81a6a4f0e748a",
+  "ae0371e2d3a9e745",
+  "ae37f50502d28f8f",
+  "ae5f0c2bda216e26",
+  "ae84e0609f68b8c8",
+  "af5c7a3408e56514",
+  "af9585dd1cfb5fe6",
+  "afd16cc6d1f1d645",
+  "b17b9a01ec573304",
+  "b1857bb626e7a55a",
+  "b208e5363c4dd67a",
+  "b29b4b15289437f0",
+  "b2e16ede683bee02",
+  "b3a862e960c5fcbf",
+  "b3b6f284dc7860b6",
+  "b456731113db2085",
+  "b5317ad02e38be0f",
+  "b541e5ececd1381d",
+  "b57e36530b2b48bf",
+  "b5aa68bd80353266",
+  "b5bf468ace192ffb",
+  "b5c798c10bd06e7e",
+  "b61d651b96677e75",
+  "b63837b8c793708d",
+  "b638d45d70c00875",
+  "b667c6da5f505de3",
+  "b681d81e187766bc",
+  "b6a004e3ebb7a07f",
+  "b72f349ae571ae93",
+  "b7d0a61b5a97845d",
+  "b8bf42f011db5e83",
+  "b8c24403815a1e8e",
+  "b8e676e8de009831",
+  "b97526da8d34533c",
+  "b99861894f6c6253",
+  "b9b26ed83ff874c6",
+  "bad9db5fa7a33e90",
+  "bb66b94a9084a42e",
+  "bbadd50893afdba2",
+  "bbb8381558bcc59c",
+  "bc082ec43ac2a320",
+  "bc22d0905a0e6567",
+  "bc327c3397e1d463",
+  "bc9a010c2897cd8d",
+  "bca1a082bacd1f7b",
+  "bd737e8d033b4bca",
+  "bdae02a5e286b7cb",
+  "be4b2375f04d81c6",
+  "bef9eb0429ff1749",
+  "bf0f54522b1ab322",
+  "bf7896fbbd10f5ab",
+  "c01cbe23903f28f9",
+  "c073a7bb500fcbf2",
+  "c0a0beec4d921d68",
+  "c0b9bfd51fd37167",
+  "c0bac4bacf651cb8",
+  "c0e612e2b02f2b9a",
+  "c1257ba221a38fff",
+  "c15a382211447c99",
+  "c15f51987453b7c7",
+  "c2d78c8e1eb0073d",
+  "c2eec7aafd263eaa",
+  "c30cf28a55fd0209",
+  "c35fc237c8d815e2",
+  "c49be92e9b709165",
+  "c52452007a64da2e",
+  "c57f8d787db504eb",
+  "c58f4e2c53b77325",
+  "c5b7accb7446a0a9",
+  "c5b8abe50927f51f",
+  "c5d02ca6be555954",
+  "c650d29d8b980342",
+  "c692dfa8a9e8ab1d",
+  "c702f7d96c93992b",
+  "c708a6105116fb11",
+  "c72c9772c9f22864",
+  "c72dff0104b98636",
+  "c73dcdc17e9657af",
+  "c7c68dcdf21cdc8f",
+  "c80c29220f392ec5",
+  "c82858d925fe22f0",
+  "c847de13110257e3",
+  "c861a628752ab7bf",
+  "c9cfb145e029953f",
+  "ca13d8b16cb71203",
+  "ca76fecba0c30164",
+  "cab96ae786f612a6",
+  "cb214f3572aa9ca6",
+  "cb235c0d5830f866",
+  "cb96ebf0d5a1da36",
+  "cc157ee1379961ca",
+  "cc5e9cdd76239f1b",
+  "cc74996fad197cde",
+  "cc8504c41d2be349",
+  "ccaf7d0194f34a4a",
+  "cd784bbce9df48e0",
+  "cd7c87be78b2f828",
+  "ce6aa0640752ed74",
+  "ceb78a1ee5723ca1",
+  "ced4cd2ef322fe68",
+  "cf2226ce86e624b5",
+  "d01446451e9b827a",
+  "d01c8326b594273c",
+  "d05c033d648be67f",
+  "d10c6caa4d538e24",
+  "d13f8c8a17d5309b",
+  "d15e6124026aba6b",
+  "d184657353e920e9",
+  "d2220c326463dbef",
+  "d235559402372b8e",
+  "d284dab10c1a7f4a",
+  "d287b9039392e98b",
+  "d29331445793b578",
+  "d29410bf74065da9",
+  "d390003416a85fea",
+  "d39a3262b3c01d6a",
+  "d3cb44f42d391aec",
+  "d3d66ce72004d563",
+  "d415e8fbc019c1dc",
+  "d52029d85c3a25ae",
+  "d56b6c9edb17f203",
+  "d59693060d591989",
+  "d5973f4523786b88",
+  "d5c58ee917171f98",
+  "d5ce9a29a32ca382",
+  "d5f8e8b96fd9b5b0",
+  "d68d954c60ac57a7",
+  "d6b260a3f6eb3cb5",
+  "d6c2e23c70fd5acc",
+  "d6e9eb8f359ba792",
+  "d71dfeb5c3098acd",
+  "d73b09974be6c57a",
+  "d8669813bb0172a5",
+  "d86bfe98adc0a7c8",
+  "d86fb030c14a21f5",
+  "d93a9e059895818a",
+  "d9489f92df4b976e",
+  "d95b3b2ed92753f7",
+  "d9c70cd7c71911a6",
+  "da22d380c565df1c",
+  "dabd4f4fa79ad1d1",
+  "db1ddce4750455a7",
+  "db4bcd52d75959e5",
+  "dbcbbe3109b5ea55",
+  "dbdd97f41294afa2",
+  "dbefd758a8dccace",
+  "dc6accabfc7905dd",
+  "dca395277fd947d6",
+  "dcef38f4aaa8360a",
+  "dd7154000a4ff7e3",
+  "dd9065e37960988a",
+  "dde3c28aac3fedf3",
+  "ddf0cb9a7ecc281a",
+  "ddf5736cedf749bf",
+  "ddf6c35debd90038",
+  "de83023331f0af7c",
+  "deb5e6ced017d84a",
+  "df5c943e4aa003d2",
+  "df73a153d50f71ed",
+  "df82890f2d86f9bb",
+  "dfbb4e8260f3a72d",
+  "e02e8bda1b67919a",
+  "e03d7abef8536fe6",
+  "e03eba43808c35c0",
+  "e12814b225813252",
+  "e1f18fad669cdbab",
+  "e2059866bf5cc8dd",
+  "e2130b53bf6793dd",
+  "e25d291df7bc064e",
+  "e2b6faf330c8b2d3",
+  "e34c93b157aa7f9b",
+  "e35dbf8194eaa7b0",
+  "e3bea18ecb672121",
+  "e3e576d0c12164c4",
+  "e405b470be4b7e11",
+  "e4f5cc32382f3698",
+  "e51404c658c93268",
+  "e5654a18806618f7",
+  "e5cdf6d69f2dc39f",
+  "e5d274d25f4a53f6",
+  "e6279e67dfdbd979",
+  "e6694e6a284d5543",
+  "e671a487caa672b5",
+  "e6a9bd0aaa0605ea",
+  "e72c23a34544c735",
+  "e75d9a1f87c92563",
+  "e766cfcf94fdec63",
+  "e7ba4a67923f7024",
+  "e7c10179d52260c2",
+  "e7ebe83d7bfbf6da",
+  "e7f96187edf3613d",
+  "e7ffc2d5caceadc7",
+  "e8dad62066a55681",
+  "e98c528294591a75",
+  "e9c330fc9a10ed16",
+  "e9ead21f57f1d35f",
+  "ea3e143d62d2e78b",
+  "ea46574e94c9cba6",
+  "eaa1c20914642375",
+  "eabbf9adc94791e1",
+  "eb20f11960fe501a",
+  "eb2e4b1a961b2f30",
+  "ebc297941e75abc5",
+  "ec408912f83fa046",
+  "ed282b8dec5123c0",
+  "ed585102f6cce8c0",
+  "ed63dedcde4097bd",
+  "ee9beee19d3005f1",
+  "efb997f40e97533c",
+  "efc91f05ffe1a70e",
+  "efe919acd0457b12",
+  "f08cb4dfcc2bbd0a",
+  "f08cbd253b6a3857",
+  "f0de259b8f2af2d7",
+  "f22f5b898d457dd7",
+  "f2a16fbf806749f8",
+  "f2e2e6d289ba5112",
+  "f3a47751e0335a33",
+  "f3ea2c7e16637b51",
+  "f4272dd71dc409c8",
+  "f44c21c5be878943",
+  "f57302b7269ad94d",
+  "f57baa8d5a6d56ac",
+  "f5c7c911ff606fce",
+  "f5ee4e5618171830",
+  "f6310f496d99711f",
+  "f63d071471301b8c",
+  "f676bb6ddc039330",
+  "f67d049b18c2428a",
+  "f68483d7417133b9",
+  "f68b09c04b763b9b",
+  "f7343f6e8a54a829",
+  "f811a4d415a3e0d7",
+  "f8fd5559ddfc374f",
+  "f95bfd6c34bc805b",
+  "f9b6d8a8a7b32e58",
+  "f9ce5ba979027047",
+  "fa1b61d7449dc32f",
+  "fa27084cbf59b7d0",
+  "fa69d1423f1b71cd",
+  "fa6a3159ea460ed0",
+  "fabf875fffcf4587",
+  "fac3c73097186d5d",
+  "fb1ac32b7bfab356",
+  "fb5f2d324e93720e",
+  "fb894f318b521d96",
+  "fbaf0d19a49ee820",
+  "fbf3200fff1fa866",
+  "fc688d0bbf5e3f90",
+  "fd5e9346656bddf3",
+  "fd6fd3e6e73dadf6",
+  "fdb4a21a1c36855d",
+  "fdc518f1a1b27d9a",
+  "fe52fb583c4e97a7",
+  "feb699588f1718be",
+  "fee5debbfb634b92",
+  "fef6b53171b1a01a",
+  "fef768cc09ba4557",
+  "fefd6aa8852441de",
+  "ff732f7794835918",
+  "ffe58adcc512a90b"
+ ],
+ "flipped_instance_configs": [
+  {
+   "field": "nl_field_1",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_1",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_1",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_1",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_1",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_1",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_1",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_10",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_100",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_101",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_104",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_104",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_104",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_104",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_105",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_105",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_105",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_105",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_105",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_106",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_106",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_106",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_106",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_106",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_108",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_108",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_109",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_11",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_11",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_11",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_11",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_110",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_110",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_110",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_110",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_111",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_111",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_112",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_113",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_113",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_113",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_113",
+   "profile": "tractor_m",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_117",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_117",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_117",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_117",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_117",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_117",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_119",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_12",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_122",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_123",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_123",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_123",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_123",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_123",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_123",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_127",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_127",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/field_coverage"
+  },
+  {
+   "field": "nl_field_13",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_13",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_134",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_134",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_134",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_134649",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_134649",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_134649",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_134649",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_136",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_136",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_136",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_136",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_136",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_137",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_138",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_138",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_139",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_14",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_14",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_14",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_14",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_14",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_143",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_143",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_143",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_143",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_143",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_147",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_149",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_15",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_15",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_15",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_15",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_15",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_15",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_151",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_151",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_151",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_151",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_151",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_151",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_152",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_152",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_158",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_159417",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_160",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_160",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_160",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_160",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_160",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_162",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_162",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_162",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_162",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_162",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_162",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_163",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_165",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_166",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_166",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_166",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_166",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_168",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_168",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_168",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_168",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_17",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_17",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_17",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_17",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_171",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_171",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_171",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_174",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_175965",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_175965",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_175965",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_175965",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_175965",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_178",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_18",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_18",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_18",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_18",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_18",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_18",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_187",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_187",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_187",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_187",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_187374",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_187374",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_187374",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_188",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_188",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_188",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_19",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_191476",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_191476",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_2",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_2",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_2",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_2",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_2",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_2",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_20",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_20",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_20",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_20",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_20",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_20",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_200637",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_21",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_21",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_21",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_21",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_21",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_21",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_22",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_22",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_22",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_22",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_23",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_23",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_23",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_24",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_24",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_24",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_24",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_24",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_25",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_26",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_278678",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_278678",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_28",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_29",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_30",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_300075",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_300075",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_300075",
+   "profile": "tractor_m",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_30475",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_30475",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_31",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_32",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_32",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_33",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_33",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_33",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_33",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_33",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_33",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_338399",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_338399",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_338399",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_338399",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_35",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_36",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_36",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_36",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/field_coverage"
+  },
+  {
+   "field": "nl_field_37",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_37",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_371656",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_371656",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_371656",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_371656",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_372467",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_372467",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_372467",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_372467",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_39",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_39",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_39",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_39",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_39",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_39",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_42",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_43",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_43",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_43",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_43",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_43",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_43",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_44",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_44",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_44",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_44",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_44",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_44",
+   "profile": "tractor_m",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_44533",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_44533",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_46",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_46",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_46",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_46",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_46",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_46",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_462244",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_462244",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_462244",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_462244",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_462244",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_462244",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_47",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_47",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_47",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_47",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_47",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_47",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_48",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_49",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_50",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_52",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_52",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_52",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_52",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_52",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_53",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_532603",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_532603",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_532603",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_54",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_54",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_54",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_54",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_558824",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_558824",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_56",
+   "profile": "tractor_m",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_57",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_576946",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_576946",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_576946",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_576946",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_576946",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_58",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_58",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_586195",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_586195",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_586195",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_586195",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_586195",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_59",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_59",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_59",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_59131",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_59131",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_59131",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_59131",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_60",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_60",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_61",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_61",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_61",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_61",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_62",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_62",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_62",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_62",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_62",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_62",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_63",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_63",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_64",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_64",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_64",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_64",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_65",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_65",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_65",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_65",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_657406",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_657406",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_657406",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_657406",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_66",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_66",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_66",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_66",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_67",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_67",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_67",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_69",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_69",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_69",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_69",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_7",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_7",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_7",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_7",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_7",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_7",
+   "profile": "tractor_m",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_70",
+   "profile": "tractor_m",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_702198",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_702198",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_702198",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_702198",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_702198",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_702198",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_71",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_716551",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_716551",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_716551",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_716551",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_716551",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_716551",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_72",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_72",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_72",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_72",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_729253",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_729253",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_729253",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_729253",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_729253",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_73",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_77",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_77",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_77",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_77",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_77",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_77",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_78",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_79",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_8",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_81",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_81",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_82",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_82",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_82",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_82",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_82",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_82",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_83",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_83",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_83",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_84",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_84",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_84",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_84",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_85",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_85439",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "sprayer_l",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "tractor_m",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_87",
+   "profile": "tractor_m",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_88",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_89",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_89",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_89",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_89",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_89",
+   "profile": "tractor_m",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_89",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_90",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_91",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_91",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_94",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_94",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_94",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_94",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_94",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/swath_length"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_95",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/field_coverage"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "sprayer_l",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_96",
+   "profile": "sprayer_l",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "robot_s",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "sprayer_l",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_98",
+   "profile": "tractor_m",
+   "config": "full:none/field_coverage"
+  },
+  {
+   "field": "nl_field_99",
+   "profile": "robot_s",
+   "config": "full:none/n_swath"
+  },
+  {
+   "field": "nl_field_99",
+   "profile": "robot_s",
+   "config": "full:none/swath_length"
+  },
+  {
+   "field": "nl_field_99",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/n_swath"
+  },
+  {
+   "field": "nl_field_99",
+   "profile": "robot_s",
+   "config": "full:boustrophedon/swath_length"
+  },
+  {
+   "field": "nl_field_99",
+   "profile": "robot_s",
+   "config": "full:trapezoidal/n_swath"
+  },
+  {
+   "field": "nl_field_99",
+   "profile": "sprayer_l",
+   "config": "full:trapezoidal/n_swath"
+  }
+ ],
+ "coverage_strict": {
+  "instances": 388,
+  "solvable": 279,
+  "unsolved": 109,
+  "penalty": 2.0,
+  "configs": [
+   {
+    "config": "full:none/n_swath",
+    "label": "不分解·最少作业行",
+    "feasible": 177,
+    "instances": 388,
+    "mean_rho_penalised": 1.368932014785849,
+    "mean_rho_own_feasible": 1.005265718221762,
+    "wins": 124,
+    "median_wall_s": 0.37155839200022456,
+    "p95_wall_s": 2.826805082349619,
+    "states": {
+     "feasible": 326,
+     "no_solution": 62
+    },
+    "mean_cost_own_feasible": 1887.5534008546197
+   },
+   {
+    "config": "full:none/swath_length",
+    "label": "不分解·作业行最短",
+    "feasible": 144,
+    "instances": 388,
+    "mean_rho_penalised": 1.5037547928187678,
+    "mean_rho_own_feasible": 1.0385249110863606,
+    "wins": 66,
+    "median_wall_s": 0.8080637340003705,
+    "p95_wall_s": 5.717685185300606,
+    "states": {
+     "feasible": 291,
+     "no_solution": 97
+    },
+    "mean_cost_own_feasible": 1978.877435710672
+   },
+   {
+    "config": "full:none/field_coverage",
+    "label": "不分解·覆盖最大",
+    "feasible": 219,
+    "instances": 388,
+    "mean_rho_penalised": 1.2692550862792495,
+    "mean_rho_own_feasible": 1.0690510003283598,
+    "wins": 94,
+    "median_wall_s": 2.065694164999968,
+    "p95_wall_s": 11.21153549980072,
+    "states": {
+     "feasible": 303,
+     "no_solution": 85
+    },
+    "mean_cost_own_feasible": 2230.307048250974
+   },
+   {
+    "config": "full:boustrophedon/n_swath",
+    "label": "牛耕分解·最少作业行",
+    "feasible": 118,
+    "instances": 388,
+    "mean_rho_penalised": 1.5800017727249365,
+    "mean_rho_own_feasible": 1.0069533439852305,
+    "wins": 84,
+    "median_wall_s": 0.5277395104999414,
+    "p95_wall_s": 5.946989434050281,
+    "states": {
+     "feasible": 254,
+     "no_solution": 134
+    },
+    "mean_cost_own_feasible": 1812.5471799132854
+   },
+   {
+    "config": "full:boustrophedon/swath_length",
+    "label": "牛耕分解·作业行最短",
+    "feasible": 100,
+    "instances": 388,
+    "mean_rho_penalised": 1.6580546066294441,
+    "mean_rho_own_feasible": 1.0459723524961497,
+    "wins": 43,
+    "median_wall_s": 1.0687702674999855,
+    "p95_wall_s": 13.282257306749981,
+    "states": {
+     "feasible": 210,
+     "no_solution": 178
+    },
+    "mean_cost_own_feasible": 1917.8971617164445
+   },
+   {
+    "config": "full:boustrophedon/field_coverage",
+    "label": "牛耕分解·覆盖最大",
+    "feasible": 140,
+    "instances": 388,
+    "mean_rho_penalised": 1.538771989199306,
+    "mean_rho_own_feasible": 1.0808384641900444,
+    "wins": 46,
+    "median_wall_s": 3.3252272825002365,
+    "p95_wall_s": 213.96434835279925,
+    "states": {
+     "feasible": 199,
+     "no_solution": 175,
+     "timeout": 14
+    },
+    "mean_cost_own_feasible": 2098.572832211811
+   },
+   {
+    "config": "full:trapezoidal/n_swath",
+    "label": "梯形分解·最少作业行",
+    "feasible": 23,
+    "instances": 388,
+    "mean_rho_penalised": 1.928480995394569,
+    "mean_rho_own_feasible": 1.13244337891673,
+    "wins": 4,
+    "median_wall_s": 3.497613028499927,
+    "p95_wall_s": 151.07730897174991,
+    "states": {
+     "no_solution": 287,
+     "feasible": 87,
+     "timeout": 14
+    },
+    "mean_cost_own_feasible": 2531.0227955761516
+   },
+   {
+    "config": "full:trapezoidal/swath_length",
+    "label": "梯形分解·作业行最短",
+    "feasible": 0,
+    "instances": 388,
+    "mean_rho_penalised": 2.0,
+    "mean_rho_own_feasible": null,
+    "wins": 0,
+    "median_wall_s": 11.597420304499337,
+    "p95_wall_s": 300.12132285719997,
+    "states": {
+     "no_solution": 307,
+     "timeout": 65,
+     "feasible": 16
+    },
+    "mean_cost_own_feasible": null
+   },
+   {
+    "config": "full:trapezoidal/field_coverage",
+    "label": "梯形分解·覆盖最大",
+    "feasible": 0,
+    "instances": 388,
+    "mean_rho_penalised": 2.0,
+    "mean_rho_own_feasible": null,
+    "wins": 0,
+    "median_wall_s": 114.35408856649997,
+    "p95_wall_s": 300.14816494300027,
+    "states": {
+     "timeout": 170,
+     "no_solution": 216,
+     "feasible": 2
+    },
+    "mean_cost_own_feasible": null
+   },
+   {
+    "config": "single:boustrophedon",
+    "label": "单区往复",
+    "feasible": 20,
+    "instances": 388,
+    "mean_rho_penalised": 1.9348270113018697,
+    "mean_rho_own_feasible": 1.0908368076610835,
+    "wins": 1,
+    "median_wall_s": 0.004219393499624857,
+    "p95_wall_s": 0.26882686099997877,
+    "states": {
+     "no_solution": 368,
+     "feasible": 20
+    },
+    "mean_cost_own_feasible": 2295.289330803703
+   },
+   {
+    "config": "single:snake",
+    "label": "单区蛇形",
+    "feasible": 20,
+    "instances": 388,
+    "mean_rho_penalised": 1.9387166369108697,
+    "mean_rho_own_feasible": 1.1450970849066313,
+    "wins": 0,
+    "median_wall_s": 0.004082194000147865,
+    "p95_wall_s": 0.36150262670048505,
+    "states": {
+     "no_solution": 368,
+     "feasible": 20
+    },
+    "mean_cost_own_feasible": 2396.675208322126
+   }
+  ],
+  "sbs": {
+   "config": "full:none/field_coverage",
+   "label": "不分解·覆盖最大",
+   "feasible": 219,
+   "mean_rho_penalised": 1.2692550862792495
+  },
+  "vbs": {
+   "feasible": 279,
+   "mean_rho_penalised": 1.0
+  },
+  "headroom": {
+   "rho": 0.26925508627924954,
+   "rho_ci95": [
+    0.2214673253523982,
+    0.318368926061778
+   ],
+   "feasible": 60,
+   "feasible_share": 0.15463917525773196,
+   "instances_sbs_not_best": 185,
+   "sbs_infeasible_but_solvable": 60
+  },
+  "greedy_static_order": [
+   {
+    "tries": 1,
+    "config": "full:none/field_coverage",
+    "label": "不分解·覆盖最大",
+    "feasible": 219,
+    "mean_rho": 1.26925508627925
+   },
+   {
+    "tries": 2,
+    "config": "full:none/n_swath",
+    "label": "不分解·最少作业行",
+    "feasible": 265,
+    "mean_rho": 1.0601719313902613
+   },
+   {
+    "tries": 3,
+    "config": "full:none/swath_length",
+    "label": "不分解·作业行最短",
+    "feasible": 273,
+    "mean_rho": 1.0242178643586501
+   },
+   {
+    "tries": 4,
+    "config": "full:trapezoidal/n_swath",
+    "label": "梯形分解·最少作业行",
+    "feasible": 276,
+    "mean_rho": 1.0134214462631392
+   },
+   {
+    "tries": 5,
+    "config": "full:boustrophedon/n_swath",
+    "label": "牛耕分解·最少作业行",
+    "feasible": 278,
+    "mean_rho": 1.0035842293915045
+   },
+   {
+    "tries": 6,
+    "config": "single:boustrophedon",
+    "label": "单区往复",
+    "feasible": 279,
+    "mean_rho": 1.0000000000008236
+   },
+   {
+    "tries": 7,
+    "config": "full:boustrophedon/field_coverage",
+    "label": "牛耕分解·覆盖最大",
+    "feasible": 279,
+    "mean_rho": 1.0
+   },
+   {
+    "tries": 8,
+    "config": "full:boustrophedon/swath_length",
+    "label": "牛耕分解·作业行最短",
+    "feasible": 279,
+    "mean_rho": 1.0
+   },
+   {
+    "tries": 9,
+    "config": "full:trapezoidal/swath_length",
+    "label": "梯形分解·作业行最短",
+    "feasible": 279,
+    "mean_rho": 1.0
+   },
+   {
+    "tries": 10,
+    "config": "full:trapezoidal/field_coverage",
+    "label": "梯形分解·覆盖最大",
+    "feasible": 279,
+    "mean_rho": 1.0
+   },
+   {
+    "tries": 11,
+    "config": "single:snake",
+    "label": "单区蛇形",
+    "feasible": 279,
+    "mean_rho": 1.0
+   }
+  ],
+  "shapley": [
+   {
+    "config": "full:none/n_swath",
+    "label": "不分解·最少作业行",
+    "shapley": 0.21833140434570988,
+    "marginal": 0.0574849347587435
+   },
+   {
+    "config": "full:none/swath_length",
+    "label": "不分解·作业行最短",
+    "shapley": 0.14456480974543812,
+    "marginal": 0.022877284495043337
+   },
+   {
+    "config": "full:none/field_coverage",
+    "label": "不分解·覆盖最大",
+    "shapley": 0.30310617324144934,
+    "marginal": 0.12935417824235007
+   },
+   {
+    "config": "full:boustrophedon/n_swath",
+    "label": "牛耕分解·最少作业行",
+    "shapley": 0.10221184019661408,
+    "marginal": 0.009837216871634635
+   },
+   {
+    "config": "full:boustrophedon/swath_length",
+    "label": "牛耕分解·作业行最短",
+    "shapley": 0.06865639736764195,
+    "marginal": 0.0
+   },
+   {
+    "config": "full:boustrophedon/field_coverage",
+    "label": "牛耕分解·覆盖最大",
+    "shapley": 0.11730075328598707,
+    "marginal": 8.235634396669411e-13
+   },
+   {
+    "config": "full:trapezoidal/n_swath",
+    "label": "梯形分解·最少作业行",
+    "shapley": 0.02364638515590016,
+    "marginal": 0.010796418095510907
+   },
+   {
+    "config": "full:trapezoidal/swath_length",
+    "label": "梯形分解·作业行最短",
+    "shapley": 0.0,
+    "marginal": 0.0
+   },
+   {
+    "config": "full:trapezoidal/field_coverage",
+    "label": "梯形分解·覆盖最大",
+    "shapley": 0.0,
+    "marginal": 0.0
+   },
+   {
+    "config": "single:boustrophedon",
+    "label": "单区往复",
+    "shapley": 0.011523740409628018,
+    "marginal": 7.735467286373865e-05
+   },
+   {
+    "config": "single:snake",
+    "label": "单区蛇形",
+    "shapley": 0.010658496251631362,
+    "marginal": 0.0
+   }
+  ],
+  "sensitivity": [
+   {
+    "penalty": 1.5,
+    "sbs": "full:none/field_coverage",
+    "headroom_rho": 0.1617282045588191
+   },
+   {
+    "penalty": 2.0,
+    "sbs": "full:none/field_coverage",
+    "headroom_rho": 0.26925508627924954
+   },
+   {
+    "penalty": 3.0,
+    "sbs": "full:none/field_coverage",
+    "headroom_rho": 0.48430884972010957
+   },
+   {
+    "penalty": 10.0,
+    "sbs": "full:none/field_coverage",
+    "headroom_rho": 1.9896851938061313
+   }
+  ],
+  "workbench_default": {
+   "config": "full:boustrophedon/n_swath",
+   "label": "牛耕分解·最少作业行",
+   "feasible": 118,
+   "mean_rho_penalised": 1.5800017727249365,
+   "gap_to_vbs_rho_ci95": [
+    0.512880833286798,
+    0.647573798822213
+   ]
+  },
+  "slices": [
+   {
+    "dimension": "profile",
+    "slice": "robot_s",
+    "instances": 140,
+    "solvable": 68,
+    "sbs_feasible": 52,
+    "sbs_mean_rho": 1.2420636808550451,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.2420636808550454
+   },
+   {
+    "dimension": "profile",
+    "slice": "sprayer_l",
+    "instances": 110,
+    "solvable": 97,
+    "sbs_feasible": 80,
+    "sbs_mean_rho": 1.249624687022297,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.2496246870222967
+   },
+   {
+    "dimension": "profile",
+    "slice": "tractor_m",
+    "instances": 138,
+    "solvable": 114,
+    "sbs_feasible": 87,
+    "sbs_mean_rho": 1.302177580110569,
+    "best_single_in_slice": "full:none/n_swath",
+    "best_single_mean_rho": 1.282579305291361
+   },
+   {
+    "dimension": "shape",
+    "slice": "凹形（solidity<0.97）",
+    "instances": 215,
+    "solvable": 143,
+    "sbs_feasible": 109,
+    "sbs_mean_rho": 1.2735519267923345,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.2735519267923345
+   },
+   {
+    "dimension": "shape",
+    "slice": "近凸（solidity≥0.97）",
+    "instances": 173,
+    "solvable": 136,
+    "sbs_feasible": 110,
+    "sbs_mean_rho": 1.2647370848574038,
+    "best_single_in_slice": "full:none/n_swath",
+    "best_single_mean_rho": 1.2307809106131824
+   },
+   {
+    "dimension": "area_tercile",
+    "slice": "中",
+    "instances": 129,
+    "solvable": 95,
+    "sbs_feasible": 72,
+    "sbs_mean_rho": 1.3068727323692835,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.3068727323692833
+   },
+   {
+    "dimension": "area_tercile",
+    "slice": "大",
+    "instances": 131,
+    "solvable": 88,
+    "sbs_feasible": 60,
+    "sbs_mean_rho": 1.3537803728920914,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.3537803728920912
+   },
+   {
+    "dimension": "area_tercile",
+    "slice": "小",
+    "instances": 128,
+    "solvable": 96,
+    "sbs_feasible": 87,
+    "sbs_mean_rho": 1.1545477779408835,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.1545477779408835
+   },
+   {
+    "dimension": "turn_share_tercile",
+    "slice": "中",
+    "instances": 130,
+    "solvable": 109,
+    "sbs_feasible": 82,
+    "sbs_mean_rho": 1.323689559207956,
+    "best_single_in_slice": "full:none/n_swath",
+    "best_single_mean_rho": 1.3163446019201837
+   },
+   {
+    "dimension": "turn_share_tercile",
+    "slice": "低",
+    "instances": 129,
+    "solvable": 60,
+    "sbs_feasible": 43,
+    "sbs_mean_rho": 1.2913451040261976,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.2913451040261976
+   },
+   {
+    "dimension": "turn_share_tercile",
+    "slice": "高",
+    "instances": 129,
+    "solvable": 110,
+    "sbs_feasible": 94,
+    "sbs_mean_rho": 1.2032663716061063,
+    "best_single_in_slice": "full:none/field_coverage",
+    "best_single_mean_rho": 1.2032663716061063
+   }
+  ]
+ },
+ "policy_cv": {
+  "default": {
+   "first_try_feasible": 0.4229390681003583,
+   "one_shot_rho": 1.580001772724936,
+   "stop_rho": 1.0060403205128763,
+   "tries": 2.21505376344086,
+   "wall_s": 5.009480333003607
+  },
+  "sbs": {
+   "first_try_feasible": 0.7849462365591395,
+   "one_shot_rho": 1.26925508627925,
+   "stop_rho": 1.0545323538682743,
+   "tries": 1.3222222222222222,
+   "wall_s": 4.509650847385273
+  },
+  "static": {
+   "first_try_feasible": 0.7849462365591395,
+   "one_shot_rho": 1.26925508627925,
+   "stop_rho": 1.0545323538682743,
+   "tries": 1.3222222222222222,
+   "wall_s": 4.509650847385273
+  },
+  "random": {
+   "first_try_feasible": 0.3078853046594982,
+   "one_shot_rho": 1.707016547031268,
+   "stop_rho": 1.0343593405900708,
+   "tries": 3.410035842293907,
+   "wall_s": 72.62916493515444
+  },
+  "oracle": {
+   "first_try_feasible": 0.9999999999999998,
+   "one_shot_rho": 0.9999999999999998,
+   "stop_rho": 0.9999999999999998,
+   "tries": 0.9999999999999998,
+   "wall_s": 1.4202805546236679
+  },
+  "knn1:size": {
+   "first_try_feasible": 0.6347670250896056,
+   "one_shot_rho": 1.388654753226514,
+   "stop_rho": 1.03006028942417,
+   "tries": 1.718279569892473,
+   "wall_s": 6.059621086049847
+  },
+  "knn1:agri": {
+   "first_try_feasible": 0.6734767025089605,
+   "one_shot_rho": 1.344567455212476,
+   "stop_rho": 1.021029630246434,
+   "tries": 1.6369175627240142,
+   "wall_s": 6.176974910964874
+  },
+  "knn5:size": {
+   "first_try_feasible": 0.675268817204301,
+   "one_shot_rho": 1.3527952819793119,
+   "stop_rho": 1.0333317330688245,
+   "tries": 1.702867383512545,
+   "wall_s": 5.434396671914669
+  },
+  "knn5:agri": {
+   "first_try_feasible": 0.746594982078853,
+   "one_shot_rho": 1.2779674852557914,
+   "stop_rho": 1.0273911072549655,
+   "tries": 1.5121863799283153,
+   "wall_s": 6.780717453998933
+  },
+  "logit:size": {
+   "first_try_feasible": 0.7810035842293906,
+   "one_shot_rho": 1.2697529060041786,
+   "stop_rho": 1.0512446373720385,
+   "tries": 1.37921146953405,
+   "wall_s": 3.7964425680992613
+  },
+  "logit:agri": {
+   "first_try_feasible": 0.7422939068100358,
+   "one_shot_rho": 1.2931418770584102,
+   "stop_rho": 1.0381620115759527,
+   "tries": 1.436559139784946,
+   "wall_s": 4.442188701743682
+  }
+ },
+ "policy_comparisons": [
+  {
+   "a": "static",
+   "b": "default",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 89,
+   "mean_diff": 0.3623737373737373,
+   "hodges_lehmann": 0.41666666666666663,
+   "bootstrap_ci95": [
+    0.2765151515151515,
+    0.4469696969696969
+   ],
+   "wilcoxon_p_one_sided": 6.544429411220722e-11,
+   "wins_losses_ties": [
+    76,
+    13,
+    43
+   ]
+  },
+  {
+   "a": "knn1:agri",
+   "b": "static",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 88,
+   "mean_diff": -0.09040404040404038,
+   "hodges_lehmann": -0.09999999999999998,
+   "bootstrap_ci95": [
+    -0.1569539141414141,
+    -0.022222222222222216
+   ],
+   "wilcoxon_p_one_sided": 0.9981530300316019,
+   "wins_losses_ties": [
+    32,
+    56,
+    44
+   ]
+  },
+  {
+   "a": "knn5:agri",
+   "b": "static",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 75,
+   "mean_diff": -0.011994949494949479,
+   "hodges_lehmann": 0.0,
+   "bootstrap_ci95": [
+    -0.0664141414141414,
+    0.04799558080808072
+   ],
+   "wilcoxon_p_one_sided": 0.8181752793269609,
+   "wins_losses_ties": [
+    29,
+    46,
+    57
+   ]
+  },
+  {
+   "a": "logit:agri",
+   "b": "static",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 68,
+   "mean_diff": -0.03636363636363635,
+   "hodges_lehmann": 0.0,
+   "bootstrap_ci95": [
+    -0.08864898989898988,
+    0.014921085858585752
+   ],
+   "wilcoxon_p_one_sided": 0.9159197799958267,
+   "wins_losses_ties": [
+    26,
+    42,
+    64
+   ]
+  },
+  {
+   "a": "knn1:size",
+   "b": "static",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 81,
+   "mean_diff": -0.12222222222222222,
+   "hodges_lehmann": -0.09999999999999998,
+   "bootstrap_ci95": [
+    -0.20278724747474747,
+    -0.044185606060606085
+   ],
+   "wilcoxon_p_one_sided": 0.9988001337607793,
+   "wins_losses_ties": [
+    23,
+    58,
+    51
+   ]
+  },
+  {
+   "a": "knn5:size",
+   "b": "static",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 69,
+   "mean_diff": -0.09583333333333333,
+   "hodges_lehmann": -0.024999999999999994,
+   "bootstrap_ci95": [
+    -0.15644886363636362,
+    -0.035094696969696984
+   ],
+   "wilcoxon_p_one_sided": 0.9992465980428556,
+   "wins_losses_ties": [
+    21,
+    48,
+    63
+   ]
+  },
+  {
+   "a": "logit:size",
+   "b": "static",
+   "metric": "first",
+   "fields": 132,
+   "nonzero": 27,
+   "mean_diff": 0.005934343434343437,
+   "hodges_lehmann": 0.0,
+   "bootstrap_ci95": [
+    -0.03522727272727272,
+    0.04975378787878785
+   ],
+   "wilcoxon_p_one_sided": 0.4473811231246407,
+   "wins_losses_ties": [
+    14,
+    13,
+    105
+   ]
+  }
+ ],
+ "note": "严格判定（每条弦加密至 2 cm 后的三点曲率）替换可行性后的敏感性分析；官方判定与正式结论不变"
+}

@@ -1,0 +1,85 @@
+{
+ "note": "PyVRP 多车路线被独立检查器判为足迹越界的复现与侵入深度。通行图用 quad_segs=4 的多边形近似障碍圆形膨胀（内接，半径 0.5 m 时最多少膨胀约 9.6 mm），检查器按到原多边形的精确距离判定（容差 1e-6 m）。3 s 时限下 PyVRP 结果随墙钟变化，重跑可能通过。",
+ "cases": [
+  {
+   "field": "nl_field_188",
+   "travel": "rows",
+   "objective": "makespan",
+   "n_tasks": 60,
+   "seed": 5114,
+   "recorded_errors": [
+    "车辆 ① 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "rerun_status": "no_solution",
+   "rerun_errors": [
+    "车辆 ① 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "vehicle": 0,
+   "obstacle_kind": "tree",
+   "min_obstacle_distance_m": 0.4999428023861973,
+   "min_boundary_distance_m": 0.6858984709270957,
+   "radius_m": 0.5,
+   "penetration_mm": 0.057
+  },
+  {
+   "field": "nl_field_50",
+   "travel": "free",
+   "objective": "total_distance",
+   "n_tasks": 120,
+   "seed": 1038,
+   "recorded_errors": [
+    "车辆 ② 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "rerun_status": "no_solution",
+   "rerun_errors": [
+    "车辆 ② 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "vehicle": 1,
+   "obstacle_kind": "tree",
+   "min_obstacle_distance_m": 0.4996717260977118,
+   "min_boundary_distance_m": 18.6852529961244,
+   "radius_m": 0.5,
+   "penetration_mm": 0.328
+  },
+  {
+   "field": "nl_field_66921",
+   "travel": "free",
+   "objective": "total_distance",
+   "n_tasks": 60,
+   "seed": 1118,
+   "recorded_errors": [
+    "车辆 ① 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "rerun_status": "no_solution",
+   "rerun_errors": [
+    "车辆 ① 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "vehicle": 0,
+   "obstacle_kind": "pond",
+   "min_obstacle_distance_m": 0.49796109844708486,
+   "min_boundary_distance_m": 3.9457916684830256,
+   "radius_m": 0.5,
+   "penetration_mm": 2.039
+  },
+  {
+   "field": "nl_field_50",
+   "travel": "rows",
+   "objective": "total_distance",
+   "n_tasks": 120,
+   "seed": 1038,
+   "recorded_errors": [
+    "车辆 ② 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "rerun_status": "no_solution",
+   "rerun_errors": [
+    "车辆 ② 号车 的机器人占用空间穿过障碍或越出边界"
+   ],
+   "vehicle": 1,
+   "obstacle_kind": "tree",
+   "min_obstacle_distance_m": 0.4996717260977118,
+   "min_boundary_distance_m": 18.6852529961244,
+   "radius_m": 0.5,
+   "penetration_mm": 0.328
+  }
+ ]
+}

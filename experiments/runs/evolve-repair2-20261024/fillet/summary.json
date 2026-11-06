@@ -1,0 +1,34 @@
+{
+ "jobs": 2057,
+ "by_config": {
+  "repair2:boustrophedon/field_coverage": {
+   "valid": 297,
+   "unverifiable": 28
+  },
+  "repair2:boustrophedon/n_swath": {
+   "valid": 338,
+   "unverifiable": 8
+  },
+  "repair2:boustrophedon/swath_length": {
+   "unverifiable": 11,
+   "valid": 296
+  },
+  "repair2:none/field_coverage": {
+   "valid": 380,
+   "unverifiable": 1
+  },
+  "repair2:none/n_swath": {
+   "valid": 365
+  },
+  "repair2:none/swath_length": {
+   "valid": 331,
+   "unverifiable": 2
+  }
+ },
+ "tolerance_sensitivity_m": {
+  "0.005": 2004,
+  "0.01": 2007,
+  "0.02": 2007
+ },
+ "note": "倒圆判定：拐角能在相邻直段内用最小转弯半径圆弧倒圆，且倒圆后路径通过未修改的官方检查；单区适配器等同官方∧严格"
+}

@@ -1,0 +1,383 @@
+{
+ "folds": 5,
+ "recall_target": 0.8,
+ "gates": {
+  "0": {
+   "tau": 0.14431359649835548,
+   "train_decisions": 4320,
+   "train_positive_share": 0.12523148148148147
+  },
+  "1": {
+   "tau": 0.13195022121557307,
+   "train_decisions": 4320,
+   "train_positive_share": 0.12129629629629629
+  },
+  "2": {
+   "tau": 0.14760521828228362,
+   "train_decisions": 4320,
+   "train_positive_share": 0.13240740740740742
+  },
+  "3": {
+   "tau": 0.15437900907618665,
+   "train_decisions": 4320,
+   "train_positive_share": 0.1386574074074074
+  },
+  "4": {
+   "tau": 0.13947448806338622,
+   "train_decisions": 4320,
+   "train_positive_share": 0.12777777777777777
+  }
+ },
+ "streams": 180,
+ "cells": {
+  "sparse@k2": {
+   "n": 30,
+   "gate_vs_insert_distance_m": {
+    "mean_rel": -0.008628735031641866,
+    "ci95": [
+     -0.021416670128586248,
+     0.0010117151006751853
+    ],
+    "p_two_sided": 0.275390625
+   },
+   "gate_vs_reopt_distance_m": {
+    "mean_rel": 0.007081464217773021,
+    "ci95": [
+     0.0003113809582862148,
+     0.017805858687799114
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_distance_m": {
+    "mean_rel": 0.005684114633024648,
+    "ci95": [
+     -0.002203354544329244,
+     0.01613389836804698
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_insert_mean_response_s": {
+    "mean_rel": -0.035798589042951835,
+    "ci95": [
+     -0.07024409290971703,
+     -0.009074372694391769
+    ],
+    "p_two_sided": 0.02734375
+   },
+   "gate_vs_reopt_mean_response_s": {
+    "mean_rel": 0.0026472552760247767,
+    "ci95": [
+     3.120779272148775e-05,
+     0.00700724934804635
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_mean_response_s": {
+    "mean_rel": -5.9409863949575e-05,
+    "ci95": [
+     -0.006640876157361058,
+     0.005903799082764943
+    ],
+    "p_two_sided": null
+   },
+   "solver_calls": {
+    "gate": 1.9,
+    "always_reopt": 30.0,
+    "saved_share": 0.9366666666666666
+   }
+  },
+  "sparse@k4": {
+   "n": 30,
+   "gate_vs_insert_distance_m": {
+    "mean_rel": -0.015319299406147758,
+    "ci95": [
+     -0.03059736926799829,
+     -0.003758449509747666
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_reopt_distance_m": {
+    "mean_rel": 0.0023181170430915323,
+    "ci95": [
+     -0.01111758568736756,
+     0.01521152459617625
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_distance_m": {
+    "mean_rel": 9.928101901710208e-05,
+    "ci95": [
+     -0.013172790878060921,
+     0.012886562430476669
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_insert_mean_response_s": {
+    "mean_rel": -0.03855695049585526,
+    "ci95": [
+     -0.0793155490175151,
+     -0.0072397231176829415
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_reopt_mean_response_s": {
+    "mean_rel": 0.003432766860965353,
+    "ci95": [
+     -0.001312077398852734,
+     0.010113787140897541
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_mean_response_s": {
+    "mean_rel": 0.0012616762364596593,
+    "ci95": [
+     -0.0018980333410127176,
+     0.005973753801788202
+    ],
+    "p_two_sided": null
+   },
+   "solver_calls": {
+    "gate": 1.9333333333333333,
+    "always_reopt": 30.0,
+    "saved_share": 0.9355555555555556
+   }
+  },
+  "medium@k2": {
+   "n": 30,
+   "gate_vs_insert_distance_m": {
+    "mean_rel": -0.006316777258853307,
+    "ci95": [
+     -0.041732772134328855,
+     0.030730604643717935
+    ],
+    "p_two_sided": 0.479096382856369
+   },
+   "gate_vs_reopt_distance_m": {
+    "mean_rel": 0.019451749664912452,
+    "ci95": [
+     0.002193612184414428,
+     0.03992930226276573
+    ],
+    "p_two_sided": 0.02154541015625
+   },
+   "gate_vs_rollout_distance_m": {
+    "mean_rel": 0.008924492130006925,
+    "ci95": [
+     -0.0053822353439901185,
+     0.02657864576691794
+    ],
+    "p_two_sided": 0.5798416137695312
+   },
+   "gate_vs_insert_mean_response_s": {
+    "mean_rel": -0.08282502809328422,
+    "ci95": [
+     -0.1518382728140199,
+     -0.023318989099048826
+    ],
+    "p_two_sided": 0.07353667169809341
+   },
+   "gate_vs_reopt_mean_response_s": {
+    "mean_rel": -0.008269077655821723,
+    "ci95": [
+     -0.04842167512757485,
+     0.030372331172068102
+    ],
+    "p_two_sided": 0.979949951171875
+   },
+   "gate_vs_rollout_mean_response_s": {
+    "mean_rel": -0.011044167052517284,
+    "ci95": [
+     -0.04218024564190842,
+     0.019381472511918917
+    ],
+    "p_two_sided": 0.8650436401367188
+   },
+   "solver_calls": {
+    "gate": 11.9,
+    "always_reopt": 30.0,
+    "saved_share": 0.6033333333333333
+   }
+  },
+  "medium@k4": {
+   "n": 30,
+   "gate_vs_insert_distance_m": {
+    "mean_rel": -0.0051096065350225515,
+    "ci95": [
+     -0.038749970618749456,
+     0.03253267593234139
+    ],
+    "p_two_sided": 0.325391948223114
+   },
+   "gate_vs_reopt_distance_m": {
+    "mean_rel": 0.010043423313305662,
+    "ci95": [
+     -0.0012003744227861786,
+     0.02258629655856939
+    ],
+    "p_two_sided": 0.065399169921875
+   },
+   "gate_vs_rollout_distance_m": {
+    "mean_rel": 0.0059902843651361256,
+    "ci95": [
+     -0.00672918225215282,
+     0.020880147318014547
+    ],
+    "p_two_sided": 0.5798416137695312
+   },
+   "gate_vs_insert_mean_response_s": {
+    "mean_rel": -0.08049261268505184,
+    "ci95": [
+     -0.15706790795414274,
+     -0.01378314215210123
+    ],
+    "p_two_sided": 0.08513903617858887
+   },
+   "gate_vs_reopt_mean_response_s": {
+    "mean_rel": 0.027569434023757586,
+    "ci95": [
+     -0.006656389445970638,
+     0.06613395649465668
+    ],
+    "p_two_sided": 0.083251953125
+   },
+   "gate_vs_rollout_mean_response_s": {
+    "mean_rel": 0.021069304459397295,
+    "ci95": [
+     -0.025001595139955528,
+     0.0797360025355116
+    ],
+    "p_two_sided": 0.83172607421875
+   },
+   "solver_calls": {
+    "gate": 9.466666666666667,
+    "always_reopt": 30.0,
+    "saved_share": 0.6844444444444444
+   }
+  },
+  "dense@k2": {
+   "n": 30,
+   "gate_vs_insert_distance_m": {
+    "mean_rel": -0.027423079693654928,
+    "ci95": [
+     -0.04811137154148449,
+     -0.003515106468270777
+    ],
+    "p_two_sided": 0.006639536470174789
+   },
+   "gate_vs_reopt_distance_m": {
+    "mean_rel": 0.0046441590670044984,
+    "ci95": [
+     0.0,
+     0.013142283907961223
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_distance_m": {
+    "mean_rel": 0.00020508526925510704,
+    "ci95": [
+     -0.009826345057327386,
+     0.012027983597585903
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_insert_mean_response_s": {
+    "mean_rel": -0.11579785619838545,
+    "ci95": [
+     -0.1792795783835594,
+     -0.05829378273629696
+    ],
+    "p_two_sided": 0.0004183966666460037
+   },
+   "gate_vs_reopt_mean_response_s": {
+    "mean_rel": -0.0011657196186610624,
+    "ci95": [
+     -0.008240078642711106,
+     0.004600167591152757
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_mean_response_s": {
+    "mean_rel": 0.0014250858521487706,
+    "ci95": [
+     -0.01845196578149033,
+     0.026374053257616274
+    ],
+    "p_two_sided": null
+   },
+   "solver_calls": {
+    "gate": 25.033333333333335,
+    "always_reopt": 30.0,
+    "saved_share": 0.16555555555555546
+   }
+  },
+  "dense@k4": {
+   "n": 30,
+   "gate_vs_insert_distance_m": {
+    "mean_rel": -0.023953630109222183,
+    "ci95": [
+     -0.04569669601374565,
+     -0.0016134139801537645
+    ],
+    "p_two_sided": 0.01283373311161995
+   },
+   "gate_vs_reopt_distance_m": {
+    "mean_rel": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_distance_m": {
+    "mean_rel": -0.0008042844102292157,
+    "ci95": [
+     -0.006511234914260157,
+     0.0036835433668942143
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_insert_mean_response_s": {
+    "mean_rel": -0.16900890511090474,
+    "ci95": [
+     -0.2412248718917259,
+     -0.08986160673523666
+    ],
+    "p_two_sided": 1.0609626770019531e-05
+   },
+   "gate_vs_reopt_mean_response_s": {
+    "mean_rel": 4.8629864031590326e-05,
+    "ci95": [
+     0.0,
+     0.00014588959209477098
+    ],
+    "p_two_sided": null
+   },
+   "gate_vs_rollout_mean_response_s": {
+    "mean_rel": 0.004176741697933751,
+    "ci95": [
+     -0.016695256828922814,
+     0.02918313680303712
+    ],
+    "p_two_sided": null
+   },
+   "solver_calls": {
+    "gate": 23.8,
+    "always_reopt": 30.0,
+    "saved_share": 0.20666666666666667
+   }
+  }
+ },
+ "features": [
+  "pending",
+  "pending_per_vehicle",
+  "load_imbalance",
+  "insertion_delta_rel",
+  "insertion_delta_scaled",
+  "since_reopt",
+  "inserted_since_reopt",
+  "inserted_share",
+  "spread",
+  "time_share"
+ ],
+ "note": "门控在其他田块的 rollout 决策上训练（按田块分组），只在预测概率超过阈值时调用求解器；规划层仿真，匀速代理计时"
+}

@@ -1,0 +1,65 @@
+{
+ "jobs": 1728,
+ "by_config": {
+  "full:boustrophedon/field_coverage": {
+   "valid": 177,
+   "invalid": 20,
+   "not_filletable": 20,
+   "unverifiable": 2
+  },
+  "full:boustrophedon/n_swath": {
+   "invalid": 64,
+   "not_filletable": 64,
+   "valid": 188,
+   "unverifiable": 2
+  },
+  "full:boustrophedon/swath_length": {
+   "invalid": 37,
+   "not_filletable": 37,
+   "valid": 171,
+   "unverifiable": 2
+  },
+  "full:none/field_coverage": {
+   "valid": 296,
+   "invalid": 7,
+   "not_filletable": 7
+  },
+  "full:none/n_swath": {
+   "valid": 298,
+   "invalid": 28,
+   "not_filletable": 28
+  },
+  "full:none/swath_length": {
+   "valid": 263,
+   "invalid": 28,
+   "not_filletable": 28
+  },
+  "full:trapezoidal/field_coverage": {
+   "invalid": 2,
+   "not_filletable": 2
+  },
+  "full:trapezoidal/n_swath": {
+   "valid": 36,
+   "invalid": 43,
+   "not_filletable": 43,
+   "unverifiable": 8
+  },
+  "full:trapezoidal/swath_length": {
+   "valid": 3,
+   "invalid": 13,
+   "not_filletable": 12
+  },
+  "single:boustrophedon": {
+   "valid": 20
+  },
+  "single:snake": {
+   "valid": 20
+  }
+ },
+ "tolerance_sensitivity_m": {
+  "0.005": 1472,
+  "0.01": 1472,
+  "0.02": 1472
+ },
+ "note": "倒圆判定：拐角能在相邻直段内用最小转弯半径圆弧倒圆，且倒圆后路径通过未修改的官方检查；单区适配器等同官方∧严格"
+}

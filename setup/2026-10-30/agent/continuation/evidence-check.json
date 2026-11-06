@@ -1,0 +1,229 @@
+{
+  "schema": "urp.agent-evidence-check/1",
+  "status": "failed",
+  "method": "Independent read-only Python stdlib check of existing exports; no solver, model, or ROS execution. SHA256 over json.dumps(record, sort_keys=True, ensure_ascii=False, separators=(comma, colon), allow_nan=False), matching the exporter for JSON-native data.",
+  "summary": {
+    "exports_checked": 7,
+    "export_checksums_passed": 5,
+    "export_checksums_failed": 2,
+    "all_current_batch_and_history_semantic_checks_passed": true
+  },
+  "failure_scope": "The two browser-rule evidence files were saved after response.json() and JSON.stringify() in browser_e2e.mjs (lines 78 and 101-104), which changes numeric representations such as 1.0 to 1. Their declared export and instance hashes therefore cannot be validated from these re-encoded files. This is damage introduced by the acceptance script, not evidence of a product download defect. Browser workflow and current-batch/history semantic checks pass; original failed evidence is preserved.",
+  "exports": [
+    {
+      "file": "setup/2026-10-30/agent/continuation/browser-rule/first-session.json",
+      "status": "failed",
+      "declared_export_sha256": "a7bae6bfa777cc6ece7eedd68044b35221d4ef5f532ad4bb064f49a28438408b",
+      "recomputed_export_sha256": "aba5968e953b933c997b99532ca6a5ab946c762cbeaba25b53af2277e6c8aab1",
+      "scenario_id": "task-sampling-20261029-162519-042-147802-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "2a9cc7ccc5450009178f3cd9b38f00bb97d569ab3cfcdbad96aa55c64c20ddf6",
+      "active_run_ids": [
+        "run_20261029T162519_d5ca2e",
+        "run_20261029T162519_80876a",
+        "run_20261029T162519_eb100a"
+      ],
+      "best_verified_run_id": "run_20261029T162519_d5ca2e",
+      "checks": {
+        "export_canonical_sha256_matches": false,
+        "current_instance_matches_session_cached_sha256": false,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "setup/2026-10-30/agent/continuation/browser-rule/edited-session.json",
+      "status": "failed",
+      "declared_export_sha256": "5f798c02b2201e684263150d4be06f1142b054fc390c79a39c8fc0b0d9f5255d",
+      "recomputed_export_sha256": "1262986d0f5c97cd182ddbb35986ef163217ced22c01820db649fba4cbe7baee",
+      "scenario_id": "task-sampling-20261029-162519-042-147802-r1",
+      "declared_instance_sha256": "7a50008995a52b9d0838bb9dfe17642b5ea21168c4cdec7fdb4557043aa4d110",
+      "recomputed_instance_sha256": "dbe1dc3c8d35f3081a6479febdf8e576cba378f37d41a2cb59ea8324ed999ad4",
+      "active_run_ids": [
+        "run_20261029T162524_8f5394",
+        "run_20261029T162524_6c91a8",
+        "run_20261029T162524_0f495c"
+      ],
+      "best_verified_run_id": "run_20261029T162524_8f5394",
+      "checks": {
+        "export_canonical_sha256_matches": false,
+        "current_instance_matches_session_cached_sha256": false,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X1-standard.session.json",
+      "status": "passed",
+      "declared_export_sha256": "ae447486fd22808fc29f06920da97961aa859d272c1a1672ccaac1c377895e7a",
+      "recomputed_export_sha256": "ae447486fd22808fc29f06920da97961aa859d272c1a1672ccaac1c377895e7a",
+      "scenario_id": "task-sampling-20261029-162632-042-a13ef6-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162632_349db8",
+        "run_20261029T162632_a8496c",
+        "run_20261029T162632_ec4d8e"
+      ],
+      "best_verified_run_id": "run_20261029T162632_349db8",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X2-single-trip-infeasible.session.json",
+      "status": "passed",
+      "declared_export_sha256": "1323e8161a0ca45db38d3fe26ea513f66d6e26b98a7d6822d8cfce68d6845f41",
+      "recomputed_export_sha256": "1323e8161a0ca45db38d3fe26ea513f66d6e26b98a7d6822d8cfce68d6845f41",
+      "scenario_id": "task-sampling-20261029-162635-042-d15c99-r1",
+      "declared_instance_sha256": "0d29edb708604aec43d200b1bc8895b3ab532307b11178cad8ee597dd8ea2a15",
+      "recomputed_instance_sha256": "0d29edb708604aec43d200b1bc8895b3ab532307b11178cad8ee597dd8ea2a15",
+      "active_run_ids": [
+        "run_20261029T162635_5f58ae",
+        "run_20261029T162635_cbd089",
+        "run_20261029T162635_70eab2"
+      ],
+      "best_verified_run_id": "run_20261029T162635_5f58ae",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X3-time-windows.session.json",
+      "status": "passed",
+      "declared_export_sha256": "5166bb7bf5a7d74c10b166fd92b3470d23cd1dbec198a96950b491dbe351af26",
+      "recomputed_export_sha256": "5166bb7bf5a7d74c10b166fd92b3470d23cd1dbec198a96950b491dbe351af26",
+      "scenario_id": "task-sampling-20261029-162638-042-0ccdae-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162638_49c0b2",
+        "run_20261029T162638_748bef",
+        "run_20261029T162638_d08d85"
+      ],
+      "best_verified_run_id": "run_20261029T162638_49c0b2",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X4-injection.session.json",
+      "status": "passed",
+      "declared_export_sha256": "15e86af39d0d3aeb40b346ab3b3c63443839f2c9a0ddf1f006f212f15c641b3a",
+      "recomputed_export_sha256": "15e86af39d0d3aeb40b346ab3b3c63443839f2c9a0ddf1f006f212f15c641b3a",
+      "scenario_id": "task-sampling-20261029-162641-042-36e10a-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162641_d6356e",
+        "run_20261029T162641_3013c1",
+        "run_20261029T162641_0f4cb7"
+      ],
+      "best_verified_run_id": "run_20261029T162641_d6356e",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    },
+    {
+      "file": "experiments/agent-evals/20261030-exec-rule-v4/X5-simulation-gate.session.json",
+      "status": "passed",
+      "declared_export_sha256": "8cff57054c738dd08eb42b0cb057da14dd3c276b8a12a1181b847b4108ba8f39",
+      "recomputed_export_sha256": "8cff57054c738dd08eb42b0cb057da14dd3c276b8a12a1181b847b4108ba8f39",
+      "scenario_id": "task-sampling-20261029-162644-042-e3a5b8-r1",
+      "declared_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "recomputed_instance_sha256": "9d8910c430df997d6d0ed9fca87fda801bad104cfc2dc7eaaf0dc847f4c68bbe",
+      "active_run_ids": [
+        "run_20261029T162644_170b44",
+        "run_20261029T162644_a35d7a",
+        "run_20261029T162644_b74b08"
+      ],
+      "best_verified_run_id": "run_20261029T162644_170b44",
+      "checks": {
+        "export_canonical_sha256_matches": true,
+        "current_instance_matches_session_cached_sha256": true,
+        "active_ids_unique_and_present_in_history": true,
+        "active_runs_present_in_export": true,
+        "active_runs_match_current_scenario_id": true,
+        "active_runs_match_recomputed_current_instance_sha256": true,
+        "built_revision_matches_confirmed_contract": true,
+        "reported_run_ids_are_exactly_current_batch": true,
+        "best_verified_is_from_current_batch": true,
+        "best_verified_has_valid_agreeing_recheck": true
+      }
+    }
+  ],
+  "browser_edit_history": {
+    "first_file": "setup/2026-10-30/agent/continuation/browser-rule/first-session.json",
+    "edited_file": "setup/2026-10-30/agent/continuation/browser-rule/edited-session.json",
+    "status": "passed",
+    "first_round_run_ids": [
+      "run_20261029T162519_d5ca2e",
+      "run_20261029T162519_80876a",
+      "run_20261029T162519_eb100a"
+    ],
+    "current_run_ids": [
+      "run_20261029T162524_8f5394",
+      "run_20261029T162524_6c91a8",
+      "run_20261029T162524_0f495c"
+    ],
+    "checks": {
+      "same_session_and_same_scenario_id": true,
+      "vehicle_count_changed_from_two_to_three": true,
+      "exactly_three_first_round_runs_and_three_new_active_runs": true,
+      "first_round_runs_retained_in_history_and_export": true,
+      "first_round_run_documents_unchanged": true,
+      "first_round_runs_excluded_from_current_batch_and_report": true,
+      "first_round_instances_differ_from_current_instance": true,
+      "first_round_verification_summaries_retained_unchanged": true,
+      "first_round_verification_tool_evidence_retained_unchanged": true
+    }
+  }
+}

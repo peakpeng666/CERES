@@ -2,6 +2,7 @@
  * Simulation replay on the task map: planned path vs ground-truth track, the robot body, task arrivals over time,
  * vehicle filter, timeline and an anomaly list that jumps to where (and when) something went wrong.
  */
+import { shownColor } from '../../lab/views/plan/planModel';
 import { useEffect, useMemo, useRef } from 'react';
 import { AlertTriangle, CircleX, Crosshair, Eye, EyeOff, Pause, Play, RotateCcw, X } from 'lucide-react';
 import { fmt, lab, useLabResource } from '../../lab/api';
@@ -40,7 +41,7 @@ export function ReplayOverlay({ view, instance }: { view: View; instance?: Fleet
     <g pointerEvents="none">
       {show.planned && vehicles.map((v) => {
         const path = plan.get(v.name)?.path;
-        return path ? <polyline key={`p-${v.name}`} points={path.map((q) => q.join(',')).join(' ')} fill="none" stroke={v.color} strokeWidth={1.3} strokeDasharray="6 4" vectorEffect="non-scaling-stroke" opacity={0.85} /> : null;
+        return path ? <polyline key={`p-${v.name}`} points={path.map((q) => q.join(',')).join(' ')} fill="none" stroke={shownColor(v.color)} strokeWidth={1.3} strokeDasharray="6 4" vectorEffect="non-scaling-stroke" opacity={0.85} /> : null;
       })}
       {show.actual && vehicles.map((v) => {
         const tr = result.trails[v.name] ?? [];
@@ -49,7 +50,7 @@ export function ReplayOverlay({ view, instance }: { view: View; instance?: Fleet
         const pose = poseAt(tr, t, gapLimit(result));
         const segments = displaySegments(replayIndex(result, v.name), t);
         if (pose && segments.length && (segments.at(-1)?.at(-1)?.[0] ?? t) < t) segments[segments.length - 1].push([t, ...pose]);
-        return segments.map((segment, j) => <polyline key={`a-${v.name}-${j}`} points={segment.map((q) => `${q[1]},${q[2]}`).join(' ')} fill="none" stroke={v.color} strokeWidth={3.2} strokeLinejoin="round" vectorEffect="non-scaling-stroke" opacity={0.5} />);
+        return segments.map((segment, j) => <polyline key={`a-${v.name}-${j}`} points={segment.map((q) => `${q[1]},${q[2]}`).join(' ')} fill="none" stroke={shownColor(v.color)} strokeWidth={3.2} strokeLinejoin="round" vectorEffect="non-scaling-stroke" opacity={0.5} />);
       })}
       {show.tasks && result.tasks.filter((tk) => !hidden.includes(tk.vehicle)).map((tk) => {
         const reached = tk.state === 'reached' && tk.t_sim != null && tk.t_sim <= t;
@@ -71,7 +72,7 @@ export function ReplayOverlay({ view, instance }: { view: View; instance?: Fleet
         const visible = Math.max(L * k, 8) / k / L; // keep the body at least ~8 px long when zoomed out
         return (
           <g key={`b-${v.name}`} transform={`translate(${pose[0]} ${pose[1]}) rotate(${deg}) scale(${Math.max(1, visible)})`}>
-            <rect x={-L / 2} y={-W / 2} width={L} height={W} rx={0.06} fill={v.color} stroke="#fff" strokeWidth={1.4} vectorEffect="non-scaling-stroke" />
+            <rect x={-L / 2} y={-W / 2} width={L} height={W} rx={0.06} fill={shownColor(v.color)} stroke="var(--map-halo)" strokeWidth={1.4} vectorEffect="non-scaling-stroke" />
             <polygon points={`${L / 2},0 ${L / 2 - 0.22},${W / 2 - 0.08} ${L / 2 - 0.22},${-W / 2 + 0.08}`} fill="#fff" opacity={0.9} />
           </g>
         );
@@ -119,7 +120,8 @@ export function ReplayPanel() {
   if (!scenarioId) return <EmptyState icon={Play} title="未打开任务地图" detail="仿真回放显示在任务地图上：先打开一个多车任务地图。" />;
   const r = rp.result, d = rp.derived;
   const traffic = r ? trafficStatus(r) : null;
-  const liveHere = live?.running && live.scenario_id === scenarioId;
+  // A finished session stays open (running) until stopped; only an executing one is still missing from the list.
+  const liveHere = live?.running && ['starting', 'ready', 'running'].includes(live.phase) && live.scenario_id === scenarioId;
   const focusRun = async (runId: string) => {
     const st = useStudio.getState();
     if (!st.runs[runId]) {
@@ -209,7 +211,7 @@ export function ReplayPanel() {
                   const current = metricsAt(r, v.name, rp.t);
                   return (
                     <tr key={v.name} onClick={() => rp.toggleVehicle(v.name)} style={{ opacity: off ? 0.45 : 1 }} title={off ? '点击显示' : '点击隐藏'}>
-                      <td><span className={p.swatch} style={{ background: v.color }} /> {v.label} {v.state === 'failed' && <Badge tone="red">受阻</Badge>}</td>
+                      <td><span className={p.swatch} style={{ background: shownColor(v.color) }} /> {v.label} {v.state === 'failed' && <Badge tone="red">受阻</Badge>}</td>
                       <td className={p.num}>{current.tasks_completed != null ? `${current.tasks_completed} 完成 / ` : ''}{current.tasks_reached}/{v.tasks_total} 到点</td>
                       <td className={p.num} title={current.missing_s ? `缺流 ${current.missing_s.toFixed(2)} s，距离仅含可观测连续片段` : undefined}>{!current.distance_complete && current.distance_m != null ? '≥ ' : ''}{fmt.num(current.distance_m, 0)} / {fmt.num(v.planned_length_m, 0)} m</td>
                       <td className={p.num}>{fmt.sec(current.elapsed_s)} / {fmt.sec(v.planned_duration_s)}</td>

@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="255.11811pt" height="140.314961pt" viewBox="0 0 255.11811 140.314961" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-23T17:51:30.480567</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 140.314961 
+L 255.11811 140.314961 
+L 255.11811 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 97.220156 114.747724 
+L 254.11811 114.747724 
+L 254.11811 1 
+L 97.220156 1 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 97.220156 114.747724 
+L 97.220156 1 
+" clip-path="url(#pa2594eb626)" style="fill: none; stroke: #d9d9d9; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_2">
+      <defs>
+       <path id="m73b802f398" d="M 0 0 
+L 0 2.5 
+" style="stroke: #222222; stroke-width: 0.6"/>
+      </defs>
+      <g>
+       <use xlink:href="#m73b802f398" x="97.220156" y="114.747724" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: middle; fill: #222222" x="97.220156" y="125.843916" transform="rotate(-0 97.220156 125.843916)">0.00</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_3">
+      <path d="M 129.109024 114.747724 
+L 129.109024 1 
+" clip-path="url(#pa2594eb626)" style="fill: none; stroke: #d9d9d9; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#m73b802f398" x="129.109024" y="114.747724" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: middle; fill: #222222" x="129.109024" y="125.843916" transform="rotate(-0 129.109024 125.843916)">0.05</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_5">
+      <path d="M 160.997891 114.747724 
+L 160.997891 1 
+" clip-path="url(#pa2594eb626)" style="fill: none; stroke: #d9d9d9; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#m73b802f398" x="160.997891" y="114.747724" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: middle; fill: #222222" x="160.997891" y="125.843916" transform="rotate(-0 160.997891 125.843916)">0.10</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_7">
+      <path d="M 192.886759 114.747724 
+L 192.886759 1 
+" clip-path="url(#pa2594eb626)" style="fill: none; stroke: #d9d9d9; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#m73b802f398" x="192.886759" y="114.747724" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: middle; fill: #222222" x="192.886759" y="125.843916" transform="rotate(-0 192.886759 125.843916)">0.15</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_9">
+      <path d="M 224.775626 114.747724 
+L 224.775626 1 
+" clip-path="url(#pa2594eb626)" style="fill: none; stroke: #d9d9d9; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m73b802f398" x="224.775626" y="114.747724" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: middle; fill: #222222" x="224.775626" y="125.843916" transform="rotate(-0 224.775626 125.843916)">0.20</text>
+     </g>
+    </g>
+    <g id="text_6">
+     <text style="font-size: 7.5px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: middle; fill: #111111" x="175.669133" y="137.736591" transform="rotate(-0 175.669133 137.736591)">对组合价值 v(S) 的贡献（惩罚化成本比单位）</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_11">
+      <defs>
+       <path id="m5dc2315831" d="M 0 0 
+L -2.5 0 
+" style="stroke: #222222; stroke-width: 0.6"/>
+      </defs>
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="9.552824" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="12.496105" transform="rotate(-0 91.220156 12.496105)">无分解 · 最少作业行数</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="19.217031" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="22.181641" transform="rotate(-0 91.220156 22.181641)">无分解 · 最大覆盖率</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_13">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="28.881239" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_9">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="31.82452" transform="rotate(-0 91.220156 31.82452)">无分解 · 最短作业行总长</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="38.545447" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="41.488728" transform="rotate(-0 91.220156 41.488728)">牛耕式分解 · 最少作业行数</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_15">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="48.209654" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="51.152936" transform="rotate(-0 91.220156 51.152936)">牛耕式分解 · 最短作业行总长</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="57.873862" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="60.838472" transform="rotate(-0 91.220156 60.838472)">牛耕式分解 · 最大覆盖率</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_17">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="67.53807" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="70.481351" transform="rotate(-0 91.220156 70.481351)">梯形分解 · 最少作业行数</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="77.202277" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="80.156496" transform="rotate(-0 91.220156 80.156496)">单区往复路径</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_19">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="86.866485" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_15">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="89.820704" transform="rotate(-0 91.220156 89.820704)">单区蛇形路径</text>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_20">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="96.530693" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_16">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="99.473974" transform="rotate(-0 91.220156 99.473974)">梯形分解 · 最短作业行总长</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_21">
+      <g>
+       <use xlink:href="#m5dc2315831" x="97.220156" y="106.194901" style="fill: #222222; stroke: #222222; stroke-width: 0.6"/>
+      </g>
+     </g>
+     <g id="text_17">
+      <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: end; fill: #222222" x="91.220156" y="109.15951" transform="rotate(-0 91.220156 109.15951)">梯形分解 · 最大覆盖率</text>
+     </g>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 97.220156 9.456182 
+L 246.646779 9.456182 
+L 246.646779 6.170351 
+L 97.220156 6.170351 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 97.220156 19.120389 
+L 221.951352 19.120389 
+L 221.951352 15.834559 
+L 97.220156 15.834559 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 97.220156 28.784597 
+L 215.657798 28.784597 
+L 215.657798 25.498766 
+L 97.220156 25.498766 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 97.220156 38.448805 
+L 189.687967 38.448805 
+L 189.687967 35.162974 
+L 97.220156 35.162974 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 97.220156 48.113012 
+L 160.649131 48.113012 
+L 160.649131 44.827182 
+L 97.220156 44.827182 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 97.220156 57.77722 
+L 154.090609 57.77722 
+L 154.090609 54.491389 
+L 97.220156 54.491389 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 97.220156 67.441428 
+L 118.406726 67.441428 
+L 118.406726 64.155597 
+L 97.220156 64.155597 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_10">
+    <path d="M 97.220156 77.105635 
+L 101.141486 77.105635 
+L 101.141486 73.819805 
+L 97.220156 73.819805 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 97.220156 86.769843 
+L 100.827907 86.769843 
+L 100.827907 83.484012 
+L 97.220156 83.484012 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 97.220156 96.434051 
+L 100.763866 96.434051 
+L 100.763866 93.14822 
+L 97.220156 93.14822 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 97.220156 106.098258 
+L 97.375447 106.098258 
+L 97.375447 102.812428 
+L 97.220156 102.812428 
+z
+" clip-path="url(#pa2594eb626)" style="fill: #0072b2"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 97.220156 12.935296 
+L 117.457642 12.935296 
+L 117.457642 9.649466 
+L 97.220156 9.649466 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_15">
+    <path d="M 97.220156 22.599504 
+L 118.074946 22.599504 
+L 118.074946 19.313674 
+L 97.220156 19.313674 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_16">
+    <path d="M 97.220156 32.263712 
+L 108.020888 32.263712 
+L 108.020888 28.977881 
+L 97.220156 28.977881 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_17">
+    <path d="M 97.220156 41.927919 
+L 102.354357 41.927919 
+L 102.354357 38.642089 
+L 97.220156 38.642089 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_18">
+    <path d="M 97.220156 51.592127 
+L 97.261669 51.592127 
+L 97.261669 48.306297 
+L 97.220156 48.306297 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_19">
+    <path d="M 97.220156 61.256335 
+L 97.220156 61.256335 
+L 97.220156 57.970504 
+L 97.220156 57.970504 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_20">
+    <path d="M 97.220156 70.920543 
+L 97.241018 70.920543 
+L 97.241018 67.634712 
+L 97.220156 67.634712 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_21">
+    <path d="M 97.220156 80.58475 
+L 97.220156 80.58475 
+L 97.220156 77.29892 
+L 97.220156 77.29892 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_22">
+    <path d="M 97.220156 90.248958 
+L 97.220156 90.248958 
+L 97.220156 86.963127 
+L 97.220156 86.963127 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_23">
+    <path d="M 97.220156 99.913166 
+L 97.662245 99.913166 
+L 97.662245 96.627335 
+L 97.220156 96.627335 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_24">
+    <path d="M 97.220156 109.577373 
+L 97.220156 109.577373 
+L 97.220156 106.291543 
+L 97.220156 106.291543 
+z
+" clip-path="url(#pa2594eb626)" style="fill: url(#h008d9a49b0)"/>
+   </g>
+   <g id="patch_25">
+    <path d="M 97.220156 114.747724 
+L 97.220156 1 
+" style="fill: none; stroke: #222222; stroke-width: 0.6; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_26">
+    <path d="M 97.220156 114.747724 
+L 254.11811 114.747724 
+" style="fill: none; stroke: #222222; stroke-width: 0.6; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="legend_1">
+    <g id="patch_27">
+     <path d="M 193.978266 98.921435 
+L 205.178266 98.921435 
+L 205.178266 94.021435 
+L 193.978266 94.021435 
+z
+" style="fill: #0072b2"/>
+    </g>
+    <g id="text_18">
+     <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: start" x="207.978266" y="98.921435" transform="rotate(-0 207.978266 98.921435)">Shapley 贡献</text>
+    </g>
+    <g id="patch_28">
+     <path d="M 193.978266 108.37458 
+L 205.178266 108.37458 
+L 205.178266 103.47458 
+L 193.978266 103.47458 
+z
+" style="fill: url(#h008d9a49b0)"/>
+    </g>
+    <g id="text_19">
+     <text style="font-size: 7px; font-family: 'Liberation Sans', 'Noto Sans CJK SC', 'DejaVu Sans'; text-anchor: start" x="207.978266" y="108.37458" transform="rotate(-0 207.978266 108.37458)">边际贡献</text>
+    </g>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pa2594eb626">
+   <rect x="97.220156" y="1" width="156.897954" height="113.747724"/>
+  </clipPath>
+ </defs>
+ <defs>
+  <pattern id="h008d9a49b0" patternUnits="userSpaceOnUse" x="0" y="0" width="72" height="72">
+   <rect x="0" y="0" width="73" height="73" fill="#e69f00"/>
+   <path d="M -36 36 
+L 36 -36 
+M -32 40 
+L 40 -32 
+M -28 44 
+L 44 -28 
+M -24 48 
+L 48 -24 
+M -20 52 
+L 52 -20 
+M -16 56 
+L 56 -16 
+M -12 60 
+L 60 -12 
+M -8 64 
+L 64 -8 
+M -4 68 
+L 68 -4 
+M 0 72 
+L 72 0 
+M 4 76 
+L 76 4 
+M 8 80 
+L 80 8 
+M 12 84 
+L 84 12 
+M 16 88 
+L 88 16 
+M 20 92 
+L 92 20 
+M 24 96 
+L 96 24 
+M 28 100 
+L 100 28 
+M 32 104 
+L 104 32 
+M 36 108 
+L 108 36 
+" style="fill: #ffffff; stroke: #ffffff; stroke-width: 0.5; stroke-linecap: butt; stroke-linejoin: miter"/>
+  </pattern>
+ </defs>
+</svg>

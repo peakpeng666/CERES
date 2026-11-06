@@ -1,0 +1,16 @@
+{
+  "initial_archive_attempt": {
+    "completed_components": 4,
+    "status": "rejected",
+    "reason": "Relative ROS overlay link would escape the archive namespace; safe_link refused it."
+  },
+  "final_archive": {
+    "status": "verified",
+    "archive_members": 33161,
+    "fix": "Explicit host/opt/ros and host/usr link mappings inside a fresh restore namespace."
+  },
+  "draft_download_attempt": {
+    "status": "rejected",
+    "reason": "Pre-publication draft URLs returned HTTP 404; publication-tag URLs were fetched from the published release and all 14 assets redownloaded."
+  }
+}

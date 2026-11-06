@@ -89,7 +89,7 @@ def execution_manifest() -> dict:
             packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
             packages[name] = None
-    node = shutil.which('node')
+    node = (paths.node_command() or [None])[0]
     node_version = _node_version(node) if node else None
     identity = {'files': files, 'python': sys.version, 'python_executable': str(Path(sys.executable).absolute()),
                 'python_prefix': str(Path(sys.prefix).resolve()),

@@ -75,6 +75,7 @@ setup/2026-10-17/critique/mu2-study/*/
 /setup/2026-10-17/integration-closeout/browser-profile*/
 /setup/2026-10-17/integration-closeout/*-record.json
 /.local-state/
+/.claude/launch.json
 /user-runs/
 # New CLI output; committed protocols and results stay visible in experiments/.
 /experiments/runs/cvrplib-run-registry/
@@ -127,3 +128,22 @@ setup/2026-10-17/critique/mu2-study/*/
 # Local Java compiler output
 /cohort_b/ails/classes/
 /cohort_b/ails/sources.list
+
+# evolve 研究运行：逐任务原始记录与逐任务重验证/倒圆判定以 zip + SHA-256 存入 experiments/results/进化决策
+experiments/runs/evolve-*/records/
+experiments/runs/evolve-*/reverify/*.json
+!experiments/runs/evolve-*/reverify/sensitivity.json
+experiments/runs/evolve-*/fillet/*.json
+!experiments/runs/evolve-*/fillet/summary.json
+experiments/runs/evolve-*/run.stdout
+experiments/runs/evolve-*/fillet.stdout
+experiments/runs/evolve-*/admission.stdout
+experiments/runs/evolve-*/*.done
+experiments/runs/evolve-*/streams/
+
+# Desktop shell: staged backends, downloaded runtimes and installers
+src/desktop/node_modules/
+src/desktop/dist/
+src/desktop/build/backend/
+src/desktop/build/python-cache/
+src/desktop/build/packs/

@@ -21,5 +21,13 @@
   "project_artifacts_folder": "https://drive.google.com/drive/folders/1zs4eHCumbKPNV0ZnI9JWK6JnQHV1569T",
   "asset_review_folder": "https://drive.google.com/drive/folders/1RT2EE4UOE5qrbrSizstQDqfroMRwqKmo",
   "asset_inventory": "docs/assets/inventory.json",
-  "copy_registry": "docs/assets/copies.json"
+  "copy_registry": "docs/assets/copies.json",
+  "runtime_data": {
+    "schema": "urp.runtime-bundle/1",
+    "identity": "dataset.json",
+    "location_environment": "URP_DATA_HOME",
+    "raw_data_policy": "Local/private storage; never automatically uploaded. GitHub keeps source, checks, hashes and recovery receipts.",
+    "transfer_cli": "python -m urp_lab data export|verify|restore|recover",
+    "restore_policy": "Verify all hashes and SQLite metadata; restore only into a new directory; preserve the original runtime."
+  }
 }

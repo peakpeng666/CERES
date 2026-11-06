@@ -60,7 +60,7 @@ def initialize_runtime_db(source: Path, destination: Path) -> bool:
                 snapshot.close()
         finally:
             original.close()
-        with temporary.open('rb') as stream:
+        with temporary.open('r+b') as stream:   # Windows can only flush a handle opened for writing
             os.fsync(stream.fileno())
         try:
             # Link an already-complete file into place. Unlike replace/rename,
