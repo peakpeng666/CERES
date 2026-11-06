@@ -1,24 +1,20 @@
-# GENERATED FIXED-PIN WRAPPER. Rendering does not publish or launch it.
-# Keep this generated file outside the candidate source index.
-name: Reviewed F2C Docker compiler stage (fixed push)
+# Manual-only migration of the reviewed fixed-pin wrapper.
+# Keep outside the frozen source index; do not overwrite with the historical push renderer.
+name: Reviewed F2C Docker compiler stage (manual, fixed pins)
 on:
-  push:
-    branches:
-      - 'fix/agriculture-compatibility-20261022'
-    paths:
-      - '.github/workflows/f2c-docker-compiler.yml'
+  workflow_dispatch:
 permissions:
   contents: read
 concurrency:
-  group: 'urp-f2c-compiler:fix/agriculture-compatibility-20261022:.github/workflows/f2c-docker-compiler.yml'
+  group: 'urp-f2c-compiler:main:.github/workflows/f2c-docker-compiler.yml'
   cancel-in-progress: false
 jobs:
   compiler-build-only:
     if: >-
-      ${{ github.event_name == 'push' &&
+      ${{ github.event_name == 'workflow_dispatch' &&
           github.repository == 'peakpeng666/URP' &&
-          github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' &&
-          github.workflow_ref == 'peakpeng666/URP/.github/workflows/f2c-docker-compiler.yml@refs/heads/fix/agriculture-compatibility-20261022' }}
+          github.ref == 'refs/heads/main' &&
+          github.workflow_ref == 'peakpeng666/URP/.github/workflows/f2c-docker-compiler.yml@refs/heads/main' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
     steps:

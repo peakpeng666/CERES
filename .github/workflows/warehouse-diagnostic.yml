@@ -1,10 +1,6 @@
 # Diagnostic-only evidence. This workflow is not native-suite acceptance or merge authorization.
 name: Warehouse lifecycle-only diagnostic (no route acceptance)
 on:
-  push:
-    branches: [fix/agriculture-compatibility-20261022]
-    paths:
-      - .github/workflows/warehouse-diagnostic.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -15,8 +11,8 @@ jobs:
   warehouse_diagnostic:
     if: >-
       github.repository == 'peakpeng666/URP' &&
-      github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' &&
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
     timeout-minutes: 220
     env:

@@ -1,11 +1,8 @@
-# TEMPLATE ONLY. Root must review and authorize the bounded publication-triggered run.
-# Prospective helper location: deploy/f2c-candidate. No PR or main trigger.
+# Manual-only historical candidate validation from main. No push or PR trigger.
+# Scientific source and reviewed helper index remain pinned; not current-main acceptance.
 name: Fields2Cover Jammy candidate validation
 on:
   workflow_dispatch:
-  push:
-    branches: [fix/agriculture-compatibility-20261022]
-    paths: [.github/workflows/f2c-candidate.yml]
 permissions:
   contents: read
 concurrency:
@@ -13,7 +10,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   measured-candidate:
-    if: github.repository == 'peakpeng666/URP' && github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: github.repository == 'peakpeng666/URP' && github.ref == 'refs/heads/main' && github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
     timeout-minutes: 60
     env:

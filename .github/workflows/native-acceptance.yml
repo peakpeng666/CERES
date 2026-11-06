@@ -1,9 +1,5 @@
 name: Isolated native acceptance
 on:
-  push:
-    branches: [fix/agriculture-compatibility-20261022]
-    paths:
-      - .github/workflows/native-acceptance.yml
   workflow_dispatch:
 permissions:
   contents: read
@@ -14,8 +10,8 @@ jobs:
   maze:
     if: >-
       github.repository == 'peakpeng666/URP' &&
-      github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' &&
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
     timeout-minutes: 125
     env:
@@ -78,8 +74,8 @@ jobs:
     if: >-
       needs.maze.result == 'success' &&
       github.repository == 'peakpeng666/URP' &&
-      github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' &&
-      (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
     timeout-minutes: 220
     env:
