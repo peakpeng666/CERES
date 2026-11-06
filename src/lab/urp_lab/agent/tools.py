@@ -15,10 +15,15 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
-from .. import time_windows
+from .. import physics_stats, time_windows
 from ..paths import gazebo_gap
 from . import contract as tc
 from . import diagnose
+
+
+ROBUSTNESS_RUNS = 16          # the two best plans of a session; 0 leaves the evaluation out
+ROBUSTNESS_INTENSITY = 1.
+ROBUSTNESS_WALL_S = 300
 
 
 class ToolError(Exception):
@@ -578,6 +583,50 @@ def physics_check(ctx: ToolContext, args: dict) -> dict:
     return row
 
 
+def _robustness_row(run: dict, rec: dict) -> dict:
+    s, spec = rec.get('summary') or {}, rec.get('batch') or {}
+    return {'run_id': run['run_id'], 'physics_run_id': rec.get('physics_run_id'), 'algorithm': (run.get('algorithm') or {}).get('name'), 'state': rec.get('state'),
+            'traffic': rec.get('traffic_mode'), 'seed': spec.get('seed'), 'intensity': spec.get('intensity'), 'factors': spec.get('factors'), 'predicted_makespan_s': rec.get('predicted_makespan_s'),
+            **{k: s.get(k) for k in ('requested', 'finished', 'cut_off', 'passed', 'success_rate', 'success_ci95', 'makespan_s', 'min_gap_m', 'failures', 'order_violations', 'scope')},
+            'errors': rec.get('errors') or []}
+
+
+def physics_robustness(ctx: ToolContext, args: dict) -> dict:
+    """Run a verified plan many times under seeded perturbations of the ground, the load, the wheels and the working times.
+    The seed is the session's, so the plans of one session meet the same draws and the difference between them is theirs."""
+    from ..physics import PhysicsError
+    run = _run(ctx, args['run_id'])
+    verdict = (ctx.session.get('verifications') or {}).get(run['run_id'])
+    if not verdict or not verdict.get('valid') or not verdict.get('agrees'):
+        raise ToolError('unverified', '鲁棒性评估前须先用 verify_run 独立复核且通过')
+    traffic = args.get('traffic') or ('coordinated' if len(run.get('routes') or []) > 1 else 'serial')
+    try:
+        rec = ctx.lab.physics.submit_batch(run_id=run['run_id'], traffic=traffic, runs=ROBUSTNESS_RUNS, seed=int(tc.execution(ctx.session['contract'])['seed']),
+                                           intensity=ROBUSTNESS_INTENSITY, wall_limit_s=ROBUSTNESS_WALL_S)
+    except PhysicsError as exc:
+        raise ToolError(exc.code, exc.message) from None
+    rec = ctx.lab.physics.wait(rec['physics_run_id'], ctx.cancel, ROBUSTNESS_WALL_S + 30)
+    if rec.get('state') == 'canceled':
+        raise ToolError('cancelled', '已取消')
+    row = _robustness_row(run, rec)
+    ctx.session.setdefault('robustness', {})[run['run_id']] = {**row, 'samples': rec.get('samples') or []}
+    return row
+
+
+def robustness_evidence(session: dict) -> dict | None:
+    """The evaluated plans, best first, and how they differ draw by draw."""
+    done, current = session.get('robustness') or {}, set(current_run_ids(session))
+    rows = [done[r] for r in session.get('robustness_order') or [] if r in done and r in current]
+    if not rows:
+        return None
+    measured = [r for r in rows if r.get('samples')]
+    difference = None
+    if len(measured) == 2:
+        a, b = measured
+        difference = {'a': a.get('algorithm'), 'b': b.get('algorithm'), **physics_stats.paired(a['samples'], b['samples'])}
+    return {'rows': [{k: v for k, v in r.items() if k != 'samples'} for r in rows], 'difference': difference}
+
+
 def _start_coordinated(ctx: ToolContext, run: dict) -> dict:
     """The same plan with every vehicle moving at once, passing in turn where routes meet. It sits beside the one-at-a-time
     row instead of replacing it, because the Gazebo session still executes one mission at a time."""
@@ -723,6 +772,9 @@ def registry() -> dict[str, Tool]:
               'required': ['fields', 'reason'], 'additionalProperties': False}, propose_task_change, 'session', 'repair'),
         Tool('physics_check', '物理预演', '在 MuJoCo 中用同一路径跟踪器和车辆参数执行已复核的方案，返回实际里程、工期、横向偏差、接触和实测到达是否按时。数秒完成，不启动 ROS，无需批准。',
              RUN_ID, physics_check, 'compute', 'physics', needs_scenario=True),
+        Tool('physics_robustness', '鲁棒性评估', '在 MuJoCo 中把已复核的方案放到随机化的地面摩擦、载荷、轮径和作业时长下多次执行，返回成功率、工期中位数与 90 分位、最小车距分布和失败原因。同一会话的方案面对同一组扰动。这是仿真内的敏感度，不是实车可靠性。无需批准。',
+             {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80}, 'traffic': {'type': 'string', 'enum': ['serial', 'coordinated']}},
+              'required': ['run_id'], 'additionalProperties': False}, physics_robustness, 'compute', 'robustness', needs_scenario=True),
         Tool('start_simulation', '启动田间仿真', '把已通过独立复核的方案送入 Gazebo 田间仿真（需要用户批准）。',
              {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80},
                                                'real_time_factor': {'type': 'number', 'minimum': 0.5, 'maximum': 8}},
@@ -736,7 +788,7 @@ def registry() -> dict[str, Tool]:
 PHASE_TOOLS = {
     'understand': ['update_task_contract', 'ask_user', 'find_real_fields'],
     'execute': ['build_scenario', 'list_algorithms', 'describe_algorithm', 'list_capabilities', 'recommend_algorithms', 'solve', 'run_study', 'verify_run', 'compare_runs',
-                'diagnose_run', 'propose_task_change', 'physics_check', 'start_simulation', 'simulation_status', 'ask_user'],
+                'diagnose_run', 'propose_task_change', 'physics_check', 'physics_robustness', 'start_simulation', 'simulation_status', 'ask_user'],
 }
 
 

@@ -16,7 +16,7 @@ STATES = ('idle', 'running', 'awaiting_user', 'awaiting_confirmation', 'awaiting
           'failed', 'done', 'interrupted')
 ACTIVE = ('running',)
 STEP_TITLES = {'understand': '理解需求', 'confirm': '确认任务合同', 'scenario': '建立任务地图', 'recommend': '推荐算法',
-               'solve': '求解对比', 'study': '重复实验', 'verify': '独立复核', 'physics': '物理预演', 'repair': '诊断与修复', 'simulate': '田间仿真',
+               'solve': '求解对比', 'study': '重复实验', 'verify': '独立复核', 'physics': '物理预演', 'robustness': '鲁棒性评估', 'repair': '诊断与修复', 'simulate': '田间仿真',
                'report': '结果报告'}
 NUMBER = re.compile(r'(?<![\w.])-?\d+(?:\.\d+)?')
 SITE_WORDS = ('猕猴桃园', '葡萄园', '苹果园', '果园', '茶园', '菜地', '麦田', '稻田', '玉米地', '棉田', '大豆田', '油菜田', '温室', '大棚',

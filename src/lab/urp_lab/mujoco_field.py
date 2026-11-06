@@ -5,19 +5,24 @@ follower and the mission queue are the ones the Gazebo session uses, so a differ
 the physics engines. Contact models differ by design: MuJoCo's soft convex contacts against DART's LCP. Only the ideal
 configuration is modelled: declared ground zones, synthetic localization and anisotropic tyres raise ``Unsupported``
 rather than being approximated.
+
+``perturb`` varies that ideal model from a seed: ground friction, each vehicle's load, each wheel's true radius and each
+task's working time. The plan, its gates and the controller stay nominal, because they are what is being tested.
 """
 from __future__ import annotations
 
 import hashlib
 import math
+import random
 import time
-from typing import Callable
+from typing import Callable, Iterable
 
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
 
 from . import lanes
 from .field_energy import account
+from .field_physics import box_inertia
 from .field_tracking import Driver
 from .field_traffic import MissionQueue, PASSAGE_POLICY, PassageQueue
 
@@ -34,6 +39,18 @@ ROW_H = .6
 GROUND_Z = -.01            # fieldworld places its ground plane here
 SPAWN_Z = .02              # and spawns the model here
 
+PERTURBATION = 'urp.physics-perturbation/1'
+FACTORS = ('ground_friction', 'payload', 'wheel_radius', 'service_time')
+MAX_INTENSITY = 2.0
+# The reach of a draw at intensity 1. Every range grows in proportion to the intensity, and intensity 0 is the ideal model.
+# These are assumed ranges for a sensitivity study, not measured field statistics.
+FRICTION_DROP = .6         # the ground lies between this fraction below nominal and nominal
+MIN_FRICTION = .05
+PAYLOAD_KG = 20.           # each vehicle carries between nothing and this much on top of its model
+WHEEL_TOLERANCE = .02      # each wheel's true radius lies this fraction either side of what the controller assumes
+SERVICE_SIGMA = .3         # a task's planned working time varies log-normally with this spread,
+SERVICE_OVERRUN_S = 5.     # and each stop adds an exponential hold-up of this mean: a plan can budget no time at all for a stop
+
 
 class Unsupported(ValueError):
     """The plan asks for physics this adapter does not model."""
@@ -49,6 +66,50 @@ def supports(plan: dict) -> str | None:
     if not {'actuator_mode', 'wheel_contact', 'wheel', 'caster', 'truth_hz'} <= set(physics):
         return f"这条记录的物理模型 {physics.get('schema', '未记录')} 缺少完整参数，无法在 MuJoCo 中复现"
     return None
+
+
+def _stream(seed: int, *key) -> random.Random:
+    """A generator of its own for each drawn value, fixed by the seed and by what the value belongs to. Keying by name makes
+    two plans of one field meet the same ground, vehicles and task times under one seed, so comparing them is a paired
+    comparison; and one seed keeps its direction as the intensity grows, so a sweep follows a single noise path."""
+    return random.Random('/'.join(map(str, (seed, *key))))
+
+
+def perturb(plan: dict, seed: int, intensity: float = 1., factors: Iterable[str] = FACTORS) -> dict:
+    """This plan as it would run on a field and fleet that differ from the model, every value following from ``seed``.
+
+    Ground friction is one value for the field. Load and wheel radii differ per vehicle and working time per task. The result
+    is a plan, so the engine and the checks read the same values, and ``perturbation`` carries them into the record.
+    """
+    active = set(factors)
+    if active - set(FACTORS):
+        raise ValueError(f'未知扰动项 {sorted(active - set(FACTORS))}；可选 {"、".join(FACTORS)}')
+    if not 0 <= intensity <= MAX_INTENSITY:
+        raise ValueError(f'扰动强度必须在 0–{MAX_INTENSITY:g} 之间')
+    level = {f: intensity if f in active else 0. for f in FACTORS}
+    physics = plan['physics']
+    friction = physics['ground_friction']
+    if level['ground_friction']:
+        friction = max(MIN_FRICTION, friction * (1 - FRICTION_DROP * level['ground_friction'] * _stream(seed, 'ground_friction').random()))
+    vehicles, drawn, service = [], {}, {}
+    for v in plan['vehicles']:
+        name, body = v['name'], physics['body']
+        payload = PAYLOAD_KG * level['payload'] * _stream(seed, 'payload', name).random()
+        mass = body['mass_kg'] + payload
+        radii = {side: physics['wheel']['radius_m'] * (1 + WHEEL_TOLERANCE * level['wheel_radius'] * (2 * _stream(seed, 'wheel_radius', name, side).random() - 1))
+                 for side in ('left', 'right')}
+        tasks = []
+        for t in v['tasks']:
+            stream = _stream(seed, 'service_time', t['id'])
+            service[str(t['id'])] = t['service_s'] * math.exp(SERVICE_SIGMA * level['service_time'] * stream.gauss(0, 1)) + SERVICE_OVERRUN_S * level['service_time'] * stream.expovariate(1)
+            tasks.append({**t, 'service_s': service[str(t['id'])]})
+        actual = {'body': {**body, 'mass_kg': mass, 'inertia_kgm2': box_inertia(mass, body['size_m'])}, 'total_mass_kg': physics['total_mass_kg'] + payload,
+                  'wheel_radius_m': radii}
+        vehicles.append({**v, 'tasks': tasks, 'actual': actual})
+        drawn[name] = {'payload_kg': payload, 'wheel_radius_m': radii}
+    return {**plan, 'physics': {**physics, 'ground_friction': friction}, 'vehicles': vehicles,
+            'perturbation': {'schema': PERTURBATION, 'seed': seed, 'intensity': intensity, 'factors': [f for f in FACTORS if f in active],
+                             'ground_friction': friction, 'vehicles': drawn, 'service_s': service}}
 
 
 def _triangles(poly: Polygon) -> list[list[tuple[float, float]]]:
@@ -85,8 +146,10 @@ def _solids(plan: dict) -> tuple[list[str], list[str]]:
 def _vehicle(v: dict, physics: dict) -> tuple[str, str]:
     x, y, yaw = v['start']
     name = v['name']
-    wheel, caster, body = physics['wheel'], physics['caster'], physics['body']
+    actual = v.get('actual') or {}
+    wheel, caster, body = physics['wheel'], physics['caster'], actual.get('body') or physics['body']
     radius, sep = wheel['radius_m'], wheel['separation_m']
+    true_radius = actual.get('wheel_radius_m') or {}
     chassis_z = radius + .1
     mu_wheel = min(physics['wheel_friction'], physics['ground_friction'])
     mu_caster = min(caster['friction'], physics['ground_friction'])
@@ -95,13 +158,14 @@ def _vehicle(v: dict, physics: dict) -> tuple[str, str]:
         ix, iy, iz = part['inertia_kgm2']
         return f'<inertial pos="0 0 0" mass="{part["mass_kg"]}" diaginertia="{ix:.12f} {iy:.12f} {iz:.12f}"/>'
 
-    if physics['wheel_contact'] == 'tyre':
-        shape = f'type="cylinder" size="{radius} {physics["tyre_width_m"] / 2:.4f}" euler="{math.pi / 2:.12f} 0 0"'
-    else:
-        shape = f'type="sphere" size="{radius}"'
-
     def wheel_body(side, wy):
-        return (f'<body name="{name}_{side}" pos="0 {wy} {radius - chassis_z}">{inertial(wheel)}'
+        # A wheel of another size sits at its own axle height, so wheels and casters stay on one plane and the chassis level.
+        r = true_radius.get(side, radius)
+        if physics['wheel_contact'] == 'tyre':
+            shape = f'type="cylinder" size="{r} {physics["tyre_width_m"] / 2:.4f}" euler="{math.pi / 2:.12f} 0 0"'
+        else:
+            shape = f'type="sphere" size="{r}"'
+        return (f'<body name="{name}_{side}" pos="0 {wy} {r - chassis_z}">{inertial(wheel)}'
                 f'<joint name="{name}_{side}" type="hinge" axis="0 1 0"/>'
                 f'<geom {shape} friction="{mu_wheel} 0 0" priority="1" condim="3" contype="1" conaffinity="3"/></body>')
 
@@ -172,6 +236,7 @@ class _Axle:
         self.left, self.right = model.actuator(f'{name}_left').id, model.actuator(f'{name}_right').id
         self.linear = Limiter(-.5, limits['max_speed_mps'], -limits['decel_mps2'], limits['accel_mps2'])
         self.angular = Limiter(-2., 2., -limits['yaw_accel_radps2'], limits['yaw_accel_radps2'])
+        # The nominal radius, always: a wheel that is really larger then drives faster than commanded, as it would in the field.
         self.radius, self.half = physics['wheel']['radius_m'], physics['wheel']['separation_m'] / 2
         self.limited = physics['actuator_mode'] != 'torque_limited'
 
@@ -315,7 +380,7 @@ def _record(plan, drivers, poses, traces, contacts, errors, state, t0, t_end, wa
     for row, d in zip(vehicles, drivers):
         row['speed'] = round(d.speed_now, 3)
     cte = [c for d in drivers for c in d.cte]
-    energy = {d.name: account(poses[d.name], plan['physics'], plan['instance'].get('corridors')) for d in drivers}
+    energy = {d.name: account(poses[d.name], {**plan['physics'], **(plan_of[d.name].get('actual') or {})}, plan['instance'].get('corridors')) for d in drivers}
     done = [d.t_done for d in drivers if d.t_done is not None]
     planned = plan.get('planned') or {}
     tasks = [{'id': t['id'], 'vehicle': d.name, 'state': t['state'], 't_sim': t['t_sim'], 'serviced_at': t.get('serviced_at'),
@@ -333,7 +398,7 @@ def _record(plan, drivers, poses, traces, contacts, errors, state, t0, t_end, wa
             'vehicles': vehicles, 'tasks': tasks, 'trails': {name: [[p[0], p[1], p[2], p[6]] for p in rows] for name, rows in poses.items()}, 'rigid_body_poses': poses,
             'rigid_body_pose_columns': ['t_sim', 'x_m', 'y_m', 'z_m', 'roll_rad', 'pitch_rad', 'yaw_rad'],
             'control_traces': traces, 'control_trace_columns': ['t_sim', 'path_s_m', 'cross_track_m', 'cmd_v_mps', 'cmd_w_radps', 'state'],
-            'contacts': contacts, 'energy': energy, 'physics': plan['physics'],
+            'contacts': contacts, 'energy': energy, 'physics': plan['physics'], 'perturbation': plan.get('perturbation'),
             'traffic': {**{k: v for k, v in (plan.get('traffic') or {}).items() if k in ('policy', 'predicted_makespan_s', 'meetings', 'boxes', 'clearance_m')},
                         'events': queue.events, 'held_s': getattr(queue, 'held_s', None)},
             'model_sha256': hashlib.sha256(mjcf.encode()).hexdigest(), 'servo_kv': SERVO_KV,

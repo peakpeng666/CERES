@@ -138,6 +138,9 @@ def execution(plan: dict, result: dict) -> dict | None:
         rows.append(row(tasks[record['id']], labels.get(record['vehicle'], record['vehicle']), arrival, start, planned.get(record['id'])))
         if start is not None and start < windows[record['id']][0] - EXECUTION_TICK_S:
             early_starts.append(rows[-1])
+    recorded = {entry['task'] for entry in rows}
+    for task_id in windows.keys() - recorded:
+        rows.append(row(tasks[task_id], '未记录车辆', None))
     mode = 'coordinated' if traffic.get('gates') is not None else 'serial'
     scope = '实测到达时刻；时钟从车辆放行开始，与规划同一零点' + ('；全部车辆同时运行' if mode == 'coordinated' else '；整段任务逐车执行，后发车辆包含排队等待')
     out = summary(rows, mode, scope, (plan.get('instance') or {}).get('start_clock'))

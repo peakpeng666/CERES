@@ -133,7 +133,7 @@ export interface Report {
 export interface AgentMessage {
   id: string;
   role: 'user' | 'assistant' | 'event';
-  kind: 'text' | 'notice' | 'error' | 'questions' | 'confirmation' | 'approval' | 'report' | 'simulation' | 'physics';
+  kind: 'text' | 'notice' | 'error' | 'questions' | 'confirmation' | 'approval' | 'report' | 'simulation' | 'physics' | 'robustness';
   text: string;
   utc: string;
   data?: Record<string, unknown>;

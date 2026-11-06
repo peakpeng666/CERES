@@ -5,7 +5,7 @@ import json
 
 from . import contract as tc
 
-VERSION = 'agent-prompts/6'
+VERSION = 'agent-prompts/7'
 
 RULES = """你是农业机器人路径规划工作台中的任务智能体。你通过工具调用地图、算法、验算与仿真服务；只能依据工具的真实返回值陈述结果。
 基本规则：
@@ -63,7 +63,7 @@ def execute(contract: dict, session: dict) -> str:
 建议流程：
 1. 若没有任务地图或合同已变化，先调用 build_scenario；查看 precheck 中的不可行项。
 2. 调用 recommend_algorithms，按推荐的对比集合选取 {execution['compare_count']} 个算法，用 solve 以同一预算（{execution['time_limit_s']} s）与种子（{execution['seed']}）求解。合同有时间窗时只有 pyvrp.balanced 和 ortools.fleet 适用，方案是否按时以独立检查器复算的到达时间为准。
-3. 对每个报告可行的方案调用 verify_run 独立复核；用 compare_runs 比较可比方案；通过复核的方案用 physics_check 做物理预演，它只需数秒且无需批准，多车方案会同时给出逐车执行和并行执行两组工期。
+3. 对每个报告可行的方案调用 verify_run 独立复核；用 compare_runs 比较可比方案；通过复核的方案用 physics_check 做物理预演，它只需数秒且无需批准，多车方案会同时给出逐车执行和并行执行两组工期；通过预演的前两名方案由系统用 physics_robustness 在同一组随机扰动下评估。
 4. 若没有通过复核的方案：调用 diagnose_run。方法不适用或预算不足时，自主换用未试过的算法或提高预算再求解；任务本身不可行时调用 propose_task_change 请用户批准修改（如放宽截止时间、增加车辆）；软件实现错误要如实报告。
 5. {'合同要求仿真执行：选取通过复核和物理预演的最好方案调用 start_simulation（需用户批准）。' if execution['simulate'] else '合同未要求仿真执行，不要启动仿真。'}
 6. 完成后不再调用工具，直接给出简短结论：采用的方案（运行编号、算法）、经复核的里程与工期、时间窗是否满足（未满足时点名任务）、失败与修复经过、未支持的要求。"""
@@ -76,5 +76,6 @@ def report(evidence: dict) -> str:
 任务规模与约束、对比了哪些方法、经独立复核的最好方案（运行编号、里程、工期）、失败方案及其原因类别、仍未支持的要求与下一步。
 有物理预演结果时，交代规划与执行的差距；物理预演是 MuJoCo 中的物理仿真，不是实车结果。best_executable 与 best_verified 不同时，说明规划最优方案未通过预演的原因和可执行的最好方案。
 time_window 不为空时，说明规划复算和实测到达是否全部按时，多车方案以 coordinated（全部车辆同时运行）为准；有任务未按时时，逐一点名任务和晚到时长，不得只给总数。
+有 robustness 时，比较前两名方案在同一组扰动下的成功率、工期中位数与 90 分位、最小车距和失败原因，说明两者的差异；这是假定参数范围内的仿真敏感度，不是实车可靠性。
 合同要求仿真时须交代是否启动、用户拒绝或启动失败；有 simulation_result 时按其结果说明执行情况；有 comparison 时说明两个物理引擎的差距。
 依据：{json.dumps(evidence, ensure_ascii=False)}"""

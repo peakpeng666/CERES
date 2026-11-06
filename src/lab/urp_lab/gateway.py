@@ -517,6 +517,16 @@ def create_app(config: Config | None = None) -> FastAPI:
             raise ApiError(400, 'invalid_request', '需要 run_id 或 session_id')
         return physics_call(lab.physics.submit, run_id=body.get('run_id'), session_id=body.get('session_id'), traffic=body.get('traffic') or 'serial')
 
+    @app.post(f'{api}/physics/batches', status_code=202)
+    def physics_batch(payload: Any = Body(None)):
+        body = body_dict(payload)
+        if not body.get('run_id'):
+            raise ApiError(400, 'invalid_request', '需要 run_id')
+        unknown = set(body) - {'run_id', 'traffic', 'runs', 'seed', 'intensity', 'factors', 'wall_limit_s'}
+        if unknown:
+            raise ApiError(400, 'invalid_request', f'未知字段 {sorted(unknown)}')
+        return physics_call(lab.physics.submit_batch, **body)
+
     @app.get(f'{api}/physics/runs')
     def physics_runs(run_id: str | None = None, limit: int = 100):
         return {'runs': lab.store.list_physics_runs(run_id, max(1, min(limit, 500)))}

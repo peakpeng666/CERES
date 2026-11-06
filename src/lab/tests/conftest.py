@@ -28,6 +28,13 @@ def pytest_runtest_setup(item):
 
 
 @pytest.fixture(autouse=True)
+def no_robustness_batches_unless_asked(monkeypatch):
+    """An agent session would run two batches before every report; the tests of that step switch it back on."""
+    from urp_lab.agent import tools
+    monkeypatch.setattr(tools, 'ROBUSTNESS_RUNS', 0)
+
+
+@pytest.fixture(autouse=True)
 def isolated_evolve_field_cache(request, tmp_path, monkeypatch):
     if not request.node.path.name.startswith('test_evolve_'):
         return

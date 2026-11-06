@@ -169,10 +169,25 @@ export interface TimeWindowRecord {
   total?: number; on_time?: number; all_on_time?: boolean; worst_slack_s?: number | null; late?: TimeWindowRow[]; tasks?: TimeWindowRow[]; early_starts?: number;
 }
 
+export interface Spread { n: number; min: number | null; p10: number | null; median: number | null; p90: number | null; max: number | null }
+
+export interface BatchSummary {
+  requested: number; finished: number; cut_off: number; passed: number; success_rate: number | null; success_ci95: [number, number] | null;
+  makespan_s: Spread; min_gap_m: Spread; held_s: Spread; gate_margin_m: Spread; order_violations: number;
+  failures: { reason: string; label: string; count: number }[]; scope: string;
+}
+
+export interface BatchSample {
+  index: number; seed: number; state: string; valid?: boolean | null; reason?: string | null; makespan_s?: number | null; min_gap_m?: number | null;
+  holds?: number | null; held_s?: number | null; gate_margin_m?: number | null; ground_friction?: number | null; perturbation?: { ground_friction?: number } | null;
+}
+
 export interface PhysicsRun {
   physics_run_id: string; run_id: string | null; session_id: string | null; scenario_id?: string; algorithm?: string;
+  kind?: 'batch'; batch?: { runs: number; seed: number; intensity: number; factors: string[]; wall_limit_s: number; workers: number };
+  summary?: BatchSummary; samples?: BatchSample[]; predicted_makespan_s?: number | null; planned_makespan_s?: number | null;
   engine: string; engine_version?: string; state: string; created_utc: string; finished_utc: string | null;
-  progress?: { sim_time?: number; tasks_done?: number; tasks_total?: number } | null;
+  progress?: { sim_time?: number; tasks_done?: number; tasks_total?: number; runs_done?: number; runs_total?: number } | null;
   errors: string[]; sim_time?: number; wall_s?: number; real_time_factor?: number; servo_kv?: number; model_sha256?: string;
   metrics?: Record<string, number | null>;
   vehicles?: { name: string; label: string; state: string; distance_m: number; tasks_done: number; tasks_total: number; cross_track_max_m: number | null; duration_s: number | null }[];

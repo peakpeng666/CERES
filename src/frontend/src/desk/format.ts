@@ -41,7 +41,7 @@ export const ACTOR: Record<ToolCall['actor'], string> = { llm: '模型', rule: '
 export const TOOL: Record<string, string> = {
   rule_parse: '规则解析', update_task_contract: '更新任务合同', confirm_task_contract: '确认任务合同', ask_user: '向用户澄清', find_real_fields: '检索真实田块',
   build_scenario: '建立任务地图', list_algorithms: '查看算法库', recommend_algorithms: '推荐算法', solve: '求解对比', run_study: '重复实验', verify_run: '独立复核',
-  compare_runs: '方案对比', diagnose_run: '诊断失败', propose_task_change: '提议修改任务', physics_check: '物理预演', start_simulation: '启动田间仿真', simulation_status: '查看仿真状态', takeover: '用户接管',
+  compare_runs: '方案对比', diagnose_run: '诊断失败', propose_task_change: '提议修改任务', physics_check: '物理预演', physics_robustness: '鲁棒性评估', start_simulation: '启动田间仿真', simulation_status: '查看仿真状态', takeover: '用户接管',
 };
 export const toolName = (c: Pick<ToolCall, 'name' | 'label'>) => (!c.label || c.label === c.name ? TOOL[c.name] ?? c.name : c.label);
 

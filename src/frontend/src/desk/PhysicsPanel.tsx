@@ -4,11 +4,12 @@ import type { EngineGap, PhysicsRun } from '../lab/types';
 import { studio } from '../studio/api';
 import { useStudio } from '../studio/store';
 import { arrivalLine, lateLine } from './arrivals';
+import { BatchFacts } from './PhysicsBatch';
 import { n1, n3, timeCN, dateCN } from './format';
 import { Facts, Fold, Kvs, Row, Rows } from './ui';
 import s from './desk.module.css';
 
-const STATE: Record<string, string> = { running: '运行中', succeeded: '完成', failed: '失败', canceled: '已取消' };
+const STATE: Record<string, string> = { running: '运行中', succeeded: '完成', failed: '失败', canceled: '已取消', truncated: '到时限' };
 
 export function GapFacts({ gap }: { gap: EngineGap }) {
   const m = gap.metrics;
@@ -28,6 +29,14 @@ export function PhysicsFacts({ r }: { r: PhysicsRun }) {
     {[...r.errors, ...(r.check?.errors ?? [])].slice(0, 4).map((e) => <p key={e} className={s.docBad}>{e}</p>)}
     {!!r.time_windows?.late?.length && <p className={s.docBad}>晚于截止：{lateLine(r.time_windows)}</p>}
   </>;
+}
+
+function BatchFold({ r, onCancel }: { r: PhysicsRun; onCancel: () => void }) {
+  const sum = r.summary;
+  const line = sum ? `${sum.passed}/${sum.finished} 通过${sum.makespan_s.n ? ` · 中位 ${n1(sum.makespan_s.median)} s · P90 ${n1(sum.makespan_s.p90)} s` : ''}` : `${r.progress?.runs_done ?? 0}/${r.progress?.runs_total ?? '—'} 次`;
+  return (
+    <Fold summary={<span className={s.physRow}><b>{r.algorithm ?? r.run_id}</b><small>鲁棒性 · {r.traffic_mode === 'coordinated' ? '并行' : '逐车'} · {r.state === 'succeeded' ? line : `${STATE[r.state] ?? r.state} · ${line}`}</small></span>}>{() => <BatchFacts r={r} onCancel={onCancel} />}</Fold>
+  );
 }
 
 function RunFold({ r }: { r: PhysicsRun }) {
@@ -55,10 +64,12 @@ export function PhysicsPanel() {
   const gaps = list.filter((r) => r.session_id);
   const plans = list.filter((r) => !r.session_id);
   const sessions = (gazebo.data?.results ?? []).filter((x) => x.state === 'succeeded' && !compared.has(x.session_id)).slice(0, 8);
-  const submit = async (body: { run_id?: string; session_id?: string; traffic?: 'serial' | 'coordinated' }) => {
+  const start = async (call: () => Promise<unknown>) => {
     setBusy(true);
-    try { await lab.physicsSubmit(body); runs.reload(); } catch (e) { notify('error', (e as Error).message); } finally { setBusy(false); }
+    try { await call(); runs.reload(); } catch (e) { notify('error', (e as Error).message); } finally { setBusy(false); }
   };
+  const submit = (body: { run_id?: string; session_id?: string; traffic?: 'serial' | 'coordinated' }) => start(() => lab.physicsSubmit(body));
+  const evaluate = (run_id: string, traffic: 'serial' | 'coordinated') => start(() => lab.physicsBatch({ run_id, traffic }));
   return (
     <div className={s.layer}>
       <h2>物理预演</h2>
@@ -67,6 +78,8 @@ export function PhysicsPanel() {
         <div className={s.nextRow}>
           <button type="button" className={s.btn} disabled={busy || !engine?.available} onClick={() => void submit({ run_id: focus })}>逐车执行 · {plan.algorithm.name}</button>
           {(plan.routes?.length ?? 0) > 1 && <button type="button" className={s.btn} disabled={busy || !engine?.available} onClick={() => void submit({ run_id: focus, traffic: 'coordinated' })}>并行执行</button>}
+          <button type="button" className={s.btn} disabled={busy || !engine?.available} onClick={() => void evaluate(focus, 'serial')}>鲁棒性 · 逐车</button>
+          {(plan.routes?.length ?? 0) > 1 && <button type="button" className={s.btn} disabled={busy || !engine?.available} onClick={() => void evaluate(focus, 'coordinated')}>鲁棒性 · 并行</button>}
         </div>
       )}
       {sessions.length > 0 && <>
@@ -79,7 +92,9 @@ export function PhysicsPanel() {
       </>}
       <h3>方案预演</h3>
       {!plans.length && !runs.loading && <p className={s.dim}>还没有物理运行。</p>}
-      <div className={s.folds}>{plans.slice(0, 30).map((r) => <RunFold key={r.physics_run_id} r={r} />)}</div>
+      <div className={s.folds}>{plans.slice(0, 30).map((r) => (r.kind === 'batch'
+        ? <BatchFold key={r.physics_run_id} r={r} onCancel={() => void lab.physicsCancel(r.physics_run_id).catch((e) => notify('error', (e as Error).message))} />
+        : <RunFold key={r.physics_run_id} r={r} />))}</div>
     </div>
   );
 }

@@ -852,6 +852,7 @@ class AgentRunner:
         self._checkpoint(s, cancel, pause)
         self._guard_verification(s, cancel)
         self._guard_physics(s, cancel, pause)
+        self._guard_robustness(s, cancel, pause)
         return not self._guard_simulation(s)
 
     @staticmethod
@@ -1092,6 +1093,37 @@ class AgentRunner:
         add_message(s, 'assistant', f'{len(done)}/{len(rows)} 个方案通过物理预演。' + _arrival_note(rows), 'physics', {'rows': rows})
         self._save(s)
 
+    def _robustness_choice(self, s: dict) -> tuple[list[str], str]:
+        """The two best plans that ran clean, ranked as the report ranks them, and how they ran. All at once when plans can, since
+        that is what the time goals are about; both plans run the same way, or their working times would not compare."""
+        rows = s.get('physics') or {}
+        together = self._ranked(s, lambda rid: _executed(rows.get(rid, {}).get('coordinated') or {}))
+        if together:
+            return [r['run_id'] for r in together[:2]], 'coordinated'
+        return [r['run_id'] for r in self._ranked(s, lambda rid: _executed({**rows.get(rid, {}), 'coordinated': None}))[:2]], 'serial'
+
+    def _guard_robustness(self, s: dict, cancel, pause):
+        """One clean run says little about slip, load or delay, so the two best plans meet the same random fields before the report."""
+        chosen, traffic = self._robustness_choice(s)
+        if not chosen or tools.ROBUSTNESS_RUNS < 1:
+            return
+        ensure_step(s, 'robustness', before='repair')
+        for rid in [r for r in chosen if r not in (s.get('robustness') or {})]:
+            self._checkpoint(s, cancel, pause)
+            call = {'id': f'guard_robustness_{rid}', 'name': 'physics_robustness', 'arguments': {'run_id': rid, 'traffic': traffic}}
+            rec = self._tool(s, call, 'rule' if s['mode'] == 'rule' else 'system', cancel)
+            if rec['status'] != 'ok':
+                s.setdefault('robustness', {})[rid] = {'run_id': rid, 'state': 'unavailable', 'errors': [rec['error']['message']]}
+        if chosen == s.get('robustness_order'):
+            return
+        s['robustness_order'] = chosen
+        evidence = tools.robustness_evidence(s)
+        rows = evidence['rows']
+        measured = [r for r in rows if r.get('finished')]
+        set_step(s, 'robustness', 'done' if len(measured) == len(rows) else 'failed', f'{len(measured)}/{len(rows)} 个方案完成评估')
+        add_message(s, 'assistant', _robustness_text(evidence) or '鲁棒性评估没有完成。', 'robustness', evidence)
+        self._save(s)
+
     @staticmethod
     def _physics_failed(s: dict, rid: str) -> bool:
         """True only for a plan the engine actually ran and rejected; an unavailable engine says nothing about the plan."""
@@ -1108,6 +1140,10 @@ class AgentRunner:
         return self._best_verified(s, lambda rid: _executed(rows.get(rid, {})))
 
     def _best_verified(self, s: dict, accept=None) -> dict | None:
+        ranked = self._ranked(s, accept)
+        return {k: v for k, v in ranked[0].items() if k != 'rank'} if ranked else None
+
+    def _ranked(self, s: dict, accept=None) -> list[dict]:
         candidates = []
         for rid in tools.current_run_ids(s):
             v = s.get('verifications', {}).get(rid)
@@ -1126,13 +1162,11 @@ class AgentRunner:
                                    'execution_estimate': metrics.get('execution_estimate') or {},
                                    'time_windows': time_windows.compact((run.get('check') or {}).get('time_windows'))})
         if not candidates:
-            return None
-        # Share the exact rule with compare_runs, the other prediction-ranking tool entrypoint.
+            return []
+        # Compare only predictions that share a supported model, as compare_runs does.
         predictions = all(row['unit'] == 's' for row in candidates) and tools.prediction_group_model(candidates) is not None
         key = 'predicted_makespan_s' if predictions else 'objective'
-        best = min(candidates, key=lambda row: row[key])
-        return {**best, 'ranking_basis': key}
-
+        return sorted(({**row, 'rank': row[key], 'ranking_basis': key} for row in candidates), key=lambda row: row['rank'])
 
     # ------------------------------------------------------------ report --
     def _evidence(self, s: dict) -> dict:
@@ -1161,7 +1195,7 @@ class AgentRunner:
                 'simulation_required': tc.execution(c)['simulate'], 'simulator_gap': tools.gazebo_gap(),
                 'simulation_decision': s.get('simulation_decision') if self._simulation_decided(s) else None,
                 'simulation_result': s.get('simulation_result') if (s.get('simulation_result') or {}).get('run_id') in tools.current_run_ids(s) else None,
-                'physics': tools.physics_rows(s),
+                'physics': tools.physics_rows(s), 'robustness': tools.robustness_evidence(s),
                 'precheck': [f['message'] for f in (s.get('precheck') or {}).get('findings', [])]}
 
     def _report(self, s: dict, cancel):
@@ -1268,6 +1302,35 @@ def _manual_change(action: dict, s: dict) -> dict | None:
     return None
 
 
+def _robustness_text(e: dict) -> str:
+    """The evaluated plans side by side in one paragraph; every figure comes from the evidence."""
+    rows = [r for r in e['rows'] if r.get('finished')]
+    if not rows:
+        return ''
+
+    def one(r):
+        m, g = r.get('makespan_s') or {}, r.get('min_gap_m') or {}
+        cut = f"（到时限，完成 {r['finished']}/{r['requested']} 次）" if r.get('cut_off') else ''
+        parts = [f"{r['algorithm']} 通过 {r['passed']}/{r['finished']} 次{cut}"]
+        if m.get('n'):
+            parts.append(f"工期中位数 {m['median']:.1f} s、90 分位 {m['p90']:.1f} s")
+        if g.get('n'):
+            parts.append(f"最小车距中位数 {g['median']:.2f} m、最小 {g['min']:.2f} m")
+        if r.get('failures'):
+            parts.append(f"失败原因：{'、'.join(f['label'] + ' ' + str(f['count']) + ' 次' for f in r['failures'])}")
+        return '，'.join(parts)
+
+    mode = '全部车辆同时运行' if rows[0].get('traffic') == 'coordinated' else '逐车执行'
+    text = f"鲁棒性评估（{mode}，同一组 {rows[0]['requested']} 次随机扰动，强度 {rows[0]['intensity']:g}）：" + '；'.join(one(r) for r in rows) + '。'
+    d = e.get('difference')
+    if d and d['both_passed']:
+        text += (f"逐次配对比较：两方案都通过的 {d['both_passed']} 次中，{d['a']} 更快 {d['a_faster']} 次，{d['b']} 更快 {d['b_faster']} 次，"
+                 f"工期差（前者减后者）中位数 {d['median_delta_s']} s。")
+    if d and (d['only_a_passed'] or d['only_b_passed']):
+        text += f"只有 {d['a']} 通过 {d['only_a_passed']} 次，只有 {d['b']} 通过 {d['only_b_passed']} 次。"
+    return text + '这是假定参数范围内的仿真敏感度，不是实车可靠性。'
+
+
 def _template_report(e: dict) -> str:
     """Deterministic report in the same register as the model-written one; every figure comes from the evidence."""
     c = e['contract']
@@ -1318,6 +1381,8 @@ def _template_report(e: dict) -> str:
             parts.append(f"规划最优的 {planned['algorithm']} 未通过物理预演（{cause}），可执行的最好方案为 {executable['algorithm']}（{executable['run_id']}），规划里程 {executable['total_distance_m']} m。")
         elif planned and not executable:
             parts.append('通过复核的方案都没有通过物理预演，暂无可执行方案。')
+    if e.get('robustness'):
+        parts.append(_robustness_text(e['robustness']))
     sim = e.get('simulation_result')
     if sim:
         m = sim['metrics']

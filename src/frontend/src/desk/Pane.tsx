@@ -7,6 +7,7 @@ import { routeColor } from '../lab/views/plan/planModel';
 import { Spinner } from '../lab/ui';
 import { lab } from '../lab/api';
 import type { PhysicsRun, Solution, TimeWindowRecord, XY } from '../lab/types';
+import { BatchFacts } from './PhysicsBatch';
 import { GapFacts, PhysicsFacts } from './PhysicsPanel';
 import { useStudio } from '../studio/store';
 import { studio } from '../studio/api';
@@ -460,6 +461,15 @@ function Exec({ c, f }: { c: Ctx; f: Extract<Frame, { t: 'exec' }> }) {
 function PhysicsLayer({ c }: { c: Ctx }) {
   const e = c.physics;
   if (!e) return <div className={s.layer}><Spinner /></div>;
+  if (e.kind === 'batch') {
+    return (
+      <div className={s.layer}>
+        <h2>鲁棒性评估</h2>
+        <p className={s.sub}>{e.algorithm ?? ''} · MuJoCo {e.engine_version}。同一方案在随机化的物理参数下多次执行。</p>
+        <BatchFacts r={e} />
+      </div>
+    );
+  }
   return (
     <div className={s.layer}>
       <h2>物理预演</h2>

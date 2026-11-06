@@ -96,6 +96,8 @@ export const lab = {
   packRemove: (id: string) => request<{ id: string }>('POST', `/packs/${encodeURIComponent(id)}/remove`, {}),
   physicsEngines: () => request<{ engines: { id: string; name: string; available: boolean; reason: string | null; version: string | null }[]; gazebo_gap: string | null }>('GET', '/physics/engines'),
   physicsSubmit: (body: { run_id?: string; session_id?: string; traffic?: 'serial' | 'coordinated' }) => request<PhysicsRun>('POST', '/physics/runs', body),
+  physicsBatch: (body: { run_id: string; traffic?: 'serial' | 'coordinated'; runs?: number; seed?: number; intensity?: number; factors?: string[]; wall_limit_s?: number }) => request<PhysicsRun>('POST', '/physics/batches', body),
+  physicsCancel: (id: string) => request<PhysicsRun>('POST', `/physics/runs/${encodeURIComponent(id)}/cancel`, {}),
   physicsRuns: (run_id?: string) => request<{ runs: PhysicsRun[] }>('GET', `/physics/runs${run_id ? `?run_id=${encodeURIComponent(run_id)}` : ''}`),
   physicsRun: (id: string) => request<PhysicsRun>('GET', `/physics/runs/${encodeURIComponent(id)}`),
   recommend: (scenario_id: string, instance?: Instance) =>

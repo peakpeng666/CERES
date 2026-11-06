@@ -92,9 +92,11 @@ def jobs(lab) -> dict:
     rows += _study_rows(lab)
     for r in lab.physics.active():
         p = r.get('progress') or {}
-        total = p.get('tasks_total')
-        rows.append({'id': r['physics_run_id'], 'kind': 'physics', 'label': f"物理预演 · {r.get('algorithm') or r.get('run_id')}", 'state': r['state'],
-                     'progress': p.get('tasks_done', 0) / total if total else None, 'detail': f"仿真时钟 {p['sim_time']} s" if p.get('sim_time') else None,
+        batch = r.get('kind') == 'batch'
+        total = p.get('runs_total' if batch else 'tasks_total')
+        detail = f"{p.get('runs_done', 0)}/{total} 次" if batch else f"仿真时钟 {p['sim_time']} s" if p.get('sim_time') else None
+        rows.append({'id': r['physics_run_id'], 'kind': 'physics', 'label': f"{'鲁棒性评估' if batch else '物理预演'} · {r.get('algorithm') or r.get('run_id')}", 'state': r['state'],
+                     'progress': p.get('runs_done' if batch else 'tasks_done', 0) / total if total else None, 'detail': detail,
                      'started_utc': r.get('created_utc'), 'href': '#/sim'})
     for p in lab.packs.list():
         if p['state'] in ('downloading', 'installing'):

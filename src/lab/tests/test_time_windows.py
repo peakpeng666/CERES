@@ -564,7 +564,7 @@ def test_work_begun_before_the_window_is_counted():
 def test_the_prediction_rides_along_for_a_coordinated_run():
     traffic = {'gates': {}, 'arrivals': {'vehicle_1': [{'task': 1, 'arrive_s': 38.5, 'start_s': 38.5}]}}
     out = time_windows.execution(plan_for([0, 50], traffic), record((1, 'vehicle_1', 40.0, None)))
-    assert out['model'] == 'coordinated' and out['tasks'][0]['planned_arrival_s'] == 38.5
+    assert out['model'] == 'coordinated' and next(item for item in out['tasks'] if item['task'] == 1)['planned_arrival_s'] == 38.5
 
 
 def test_nothing_to_judge_without_windows():
@@ -775,3 +775,11 @@ def test_the_map_composer_applies_a_complete_request_and_reports_an_incomplete_o
     assert open_ended['compose']['generation']['status'] == 'partial' and '时间窗未写入任务' in open_ended['compose']['generation']['shortfalls'][0]
     scoped = compose('60×40米果园，2台车，8个点，A 区九点前完成', 3)
     assert '未进入任务：A 区九点前完成' in scoped['compose']['generation']['shortfalls']
+
+
+@pytest.mark.parametrize('records', [record(), record((1, 'vehicle_1', 10.0, None))])
+def test_absent_task_records_are_not_counted_as_success(records):
+    out = time_windows.execution(plan_for([0, 50]), records)
+    assert out['total'] == 2 and not out['all_on_time']
+    assert len(out['late']) == 2 - len(records['tasks'])
+    assert all(item['arrival_s'] is None for item in out['late'])

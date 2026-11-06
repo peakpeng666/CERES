@@ -624,3 +624,22 @@ button.row:hover .rowT { transform: translateX(2px); }
 
 /* The map: a plan drives out of the depot. */
 .mHead { pointer-events: none; stroke: var(--map-halo); stroke-width: 1.4; vector-effect: non-scaling-stroke; transition: opacity 280ms var(--ease-out); }
+/* Robustness batch: every run on one axis. Dots are real elements, so they stay round and take focus at any pane width. */
+.strip { margin: 0; display: flex; flex-direction: column; gap: 2px; }
+.strip figcaption { font-size: 12px; color: var(--mac-label-3); }
+.stripPlot { position: relative; margin: 0 2px; border-bottom: 1px solid var(--mac-separator-strong); }
+.stripRef { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--mac-separator-strong); }
+.stripRef i { position: absolute; top: 0; font-style: normal; font-size: 11px; line-height: 14px; color: var(--mac-label-3); white-space: nowrap; }
+.stripRef[data-side="left"] i { right: 4px; }
+.stripRef[data-side="right"] i { left: 4px; }
+.stripDot { position: absolute; width: 24px; height: 24px; margin: 0 0 -8px -12px; padding: 0; border: 0; border-radius: 50%; background: none; cursor: default; }
+.stripDot::before { content: ""; position: absolute; left: 8px; top: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--mac-accent); box-shadow: 0 0 0 1.5px var(--mac-bg, Canvas); }
+.stripDot[data-bad]::before { border-radius: 1px; transform: rotate(45deg); background: var(--mac-red); }
+.stripDot[data-on]::before, .stripDot:focus-visible::before { box-shadow: 0 0 0 1.5px var(--mac-bg, Canvas), 0 0 0 3px var(--mac-label-2); }
+.stripDot:focus { outline: none; }
+.stripEnds { display: flex; justify-content: space-between; font-size: 11.5px; color: var(--mac-label-3); font-variant-numeric: tabular-nums; }
+.stripRead { margin: 0; font-size: 12.5px; color: var(--mac-label-2); font-variant-numeric: tabular-nums; min-height: 18px; }
+.stripLegend { display: flex; gap: 14px; margin: 0; font-size: 12px; color: var(--mac-label-3); }
+.stripLegend span { display: inline-flex; align-items: center; gap: 5px; }
+.keyDot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--mac-accent); }
+.keyBad { display: inline-block; width: 8px; height: 8px; border-radius: 1px; transform: rotate(45deg); background: var(--mac-red); }

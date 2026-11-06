@@ -63,7 +63,7 @@ def physical_record(rows: list[dict], physics: list[dict], algorithm_id: str) ->
     """How this algorithm's plans behaved in the physics engine: actual against planned length and worst tracking error."""
     ids = {r['run_id'] for r in rows if r['algorithm_id'] == algorithm_id}
     # One plan may run twice, one at a time and all at once; the plan's own record is the first.
-    mine = [p for p in physics if p.get('run_id') in ids and not p.get('session_id') and p.get('state') not in ('running', 'queued') and p.get('traffic_mode', 'serial') == 'serial']
+    mine = [p for p in physics if p.get('run_id') in ids and not p.get('session_id') and p.get('state') not in ('running', 'queued') and p.get('traffic_mode', 'serial') == 'serial' and p.get('kind') != 'batch']
     if not mine:
         return None
     metrics = [p['metrics'] for p in mine if p.get('state') == 'succeeded' and p.get('metrics')]

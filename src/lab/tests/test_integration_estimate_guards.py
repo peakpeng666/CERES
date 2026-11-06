@@ -24,15 +24,16 @@ def test_estimate_rejects_unmodelled_execution_scope(change):
     assert fc.estimate_scope(inst, [{}])
 
 
-def choose(monkeypatch, predictions, models=None, statuses=None):
+def choose(monkeypatch, predictions, models=None, statuses=None, matching=None):
     runs = {}
     for i, value in enumerate((100, 110)):
         metadata = {'status': (statuses or ['estimated'] * 2)[i], 'model': (models or [fc.ESTIMATE_MODEL] * 2)[i]}
         runs[str(i)] = {'objective': {'value': value, 'unit': 's'}, 'algorithm': {'name': str(i), 'id': str(i)},
                         'metrics': {'makespan_s': value, 'predicted_makespan_s': predictions[i], 'execution_estimate': metadata}}
     monkeypatch.setattr(tools, 'current_run_ids', lambda _: list(runs))
-    monkeypatch.setattr(tools, 'run_matches_current', lambda *_: True)
+    monkeypatch.setattr(tools, 'run_matches_current', lambda _, run: matching is None or run['algorithm']['id'] in matching)
     fake = SimpleNamespace(lab=SimpleNamespace(store=SimpleNamespace(get_run=runs.get)))
+    fake._ranked = lambda session, accept=None: runner.AgentRunner._ranked(fake, session, accept)
     session = {'verifications': {rid: {'valid': True, 'agrees': True} for rid in runs}}
     return runner.AgentRunner._best_verified(fake, session)
 
@@ -93,3 +94,8 @@ def test_compare_tool_never_marks_incomparable_predictions_best(monkeypatch, sec
         assert group['best']['predicted_makespan_s'] == 'b'
     else:
         assert 'predicted_makespan_s' not in group['best']
+
+
+def test_best_plan_excludes_a_run_from_another_task_revision(monkeypatch):
+    best = choose(monkeypatch, [120, 140], matching={'1'})
+    assert best['run_id'] == '1'

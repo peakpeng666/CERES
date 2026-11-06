@@ -97,7 +97,7 @@ class PassageQueue:
             if d.state == 'driving' and blocked:
                 d.state = 'waiting'
                 self.held[d.name] = now
-                self.events.append({'event': 'hold', 'vehicle': d.name, 't_sim': now, 's': d.s, 'after': gates[0]['after']})
+                self.events.append({'event': 'hold', 'vehicle': d.name, 't_sim': now, 's': d.s, 'gate_s': gates[0]['s'], 'after': gates[0]['after']})
             elif d.state == 'waiting' and not blocked:
                 d.state = 'driving'
                 d.last_progress = (d.s, now)

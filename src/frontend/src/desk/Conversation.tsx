@@ -3,7 +3,7 @@ import { useAgent } from '../agent/store';
 import { useStudioSync } from '../agent/AgentChat';
 import { currentRuns } from '../agent/studioSync';
 import { STATE_LABEL, type AgentMessage, type AgentSession, type ContractCard, type Pending, type Report, type ToolCall } from '../agent/api';
-import type { EngineGap, TimeWindowRecord } from '../lab/types';
+import type { EngineGap, Spread, TimeWindowRecord } from '../lab/types';
 import { routeColor } from '../lab/views/plan/planModel';
 import { useFieldSim } from '../studio/ros/live';
 import { useStudio } from '../studio/store';
@@ -240,6 +240,7 @@ function Item({ item, session, lastOf }: { item: TimelineItem; session: AgentSes
   if (msg.kind === 'report') return <ReportDoc msg={msg} session={session} />;
   if (msg.kind === 'simulation') return <SimDoc msg={msg} />;
   if (msg.kind === 'physics') return <PhysicsDoc msg={msg} />;
+  if (msg.kind === 'robustness') return <RobustnessDoc msg={msg} />;
   return <Prose text={msg.text} />;
 }
 
@@ -313,6 +314,35 @@ function PhysicsDoc({ msg }: { msg: AgentMessage }) {
       </table>
       {together && rows.some((r) => r.time_windows?.late?.length) && <p className={s.docNote}>时间窗按全部车辆同时运行判定。逐车执行时后发车辆要排队，{rows.filter((r) => r.time_windows?.late?.length).map((r) => `${r.algorithm ?? r.run_id} 有 ${r.time_windows?.late?.length} 个任务晚于截止`).join('，')}；Gazebo 会话目前是这种方式。</p>}
       {rows.some((r) => (r.metrics.makespan_s ?? 0) > 1.4 * (r.metrics.planned_makespan_s ?? Infinity)) && <p className={s.docNote}>工期含当前交通策略下整段任务依次执行的等待；规划工期是各车并行的恒速估计。</p>}
+    </div>
+  );
+}
+
+interface RobustnessRow { run_id: string; physics_run_id?: string; algorithm?: string; state: string; requested?: number; finished?: number; passed?: number; cut_off?: number; makespan_s?: Spread; min_gap_m?: Spread; failures?: { label: string; count: number }[]; errors: string[] }
+interface RobustnessDifference { a: string; b: string; both_passed: number; a_faster: number; b_faster: number; only_a_passed: number; only_b_passed: number; median_delta_s: number | null }
+
+/** The two best plans side by side under the same random fields. A row opens the distribution. */
+function RobustnessDoc({ msg }: { msg: AgentMessage }) {
+  const { rows, difference: d } = msg.data as unknown as { rows: RobustnessRow[]; difference: RobustnessDifference | null };
+  return (
+    <div className={s.doc}>
+      <header><b>鲁棒性评估</b><span>MuJoCo · 同一组 {rows.find((r) => r.requested)?.requested ?? '—'} 次扰动</span></header>
+      <table className={s.docTable}>
+        <thead><tr><th>方案</th><th>通过</th><th>工期中位</th><th>90 分位</th><th>最小车距</th></tr></thead>
+        <tbody>{rows.map((r) => (
+          <tr key={r.run_id} data-go={r.physics_run_id ? '' : undefined} onClick={() => { if (r.physics_run_id) openFrames([{ t: 'plans' }, { t: 'plan', run: r.run_id }, { t: 'phys', run: r.run_id, id: r.physics_run_id }]); }}>
+            <td>{r.algorithm ?? r.run_id}{!!r.failures?.length && <small>{r.failures.map((f) => `${f.label} ${f.count} 次`).join('、')}</small>}{!r.finished && <small>{r.errors[0] ?? '未完成'}</small>}</td>
+            {r.finished ? <>
+              <td>{r.passed}/{r.finished}{!!r.cut_off && <small>{r.cut_off} 次到时限</small>}</td>
+              <td>{n1(r.makespan_s?.median)} s</td>
+              <td>{n1(r.makespan_s?.p90)} s</td>
+              <td>{n3(r.min_gap_m?.min)} m</td>
+            </> : <td colSpan={4}>—</td>}
+          </tr>
+        ))}</tbody>
+      </table>
+      {d && d.both_passed > 0 && <p className={s.docNote}>逐次配对：{d.a} 更快 {d.a_faster} 次，{d.b} 更快 {d.b_faster} 次，工期差中位数 {n1(d.median_delta_s)} s{d.only_a_passed + d.only_b_passed > 0 ? `；只有一方通过 ${d.only_a_passed + d.only_b_passed} 次` : ''}。</p>}
+      <p className={s.docNote}>假定参数范围内的仿真敏感度，不是实车可靠性。</p>
     </div>
   );
 }
