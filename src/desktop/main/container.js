@@ -13,12 +13,13 @@ const HOST_PORT = 4100;
 const START_TIMEOUT_MS = 5 * 60_000;
 const DOCKER_DOWNLOAD = process.platform === 'win32' ? 'https://docs.docker.com/desktop/setup/install/windows-install/' : 'https://docs.docker.com/engine/install/';
 
-function run(command, args, { timeoutMs = 10_000, env, onLine } = {}) {
+function run(command, args, { timeoutMs = 10_000, env, cwd, onLine } = {}) {
   return new Promise((resolve) => {
     let out = '';
     let child;
     try {
-      child = spawn(command, args, { env: env ?? process.env, windowsHide: true });
+      // `cwd` matters for `python -m urp_lab`: the installed app ships urp_lab beside the runtime, not in site-packages.
+      child = spawn(command, args, { cwd, env: env ?? process.env, windowsHide: true });
     } catch (error) {
       resolve({ code: -1, out: error.message });
       return;

@@ -167,6 +167,47 @@ test('a healthy container with another dataset cannot be presented as this workb
   finally { docker.done(); server.close(); }
 });
 
+test('data transfer runs the bundled Python from the Lab folder, wherever the app was launched', { skip: process.platform === 'win32' }, async () => {
+  const { DataTransfer } = require('../main/data-transfer');
+  // An installed app: urp_lab sits in backend/app/src/lab and is importable only with that folder as the working directory.
+  const resources = fs.mkdtempSync(path.join(os.tmpdir(), 'desktop-resources-'));
+  const lab = path.join(resources, 'backend', 'app', 'src', 'lab');
+  const python = path.join(lab, '.venv', 'bin', 'python');
+  fs.mkdirSync(path.dirname(python), { recursive: true });
+  fs.writeFileSync(python, '#!/bin/sh\nprintf \'{"cwd":"%s","pythonpath":"%s"}\' "$(pwd -P)" "${PYTHONPATH:-}"\n');
+  fs.chmodSync(python, 0o755);
+  const launchedFrom = process.cwd();
+  process.resourcesPath = resources;
+  process.chdir(os.tmpdir());
+  try {
+    const settings = new Settings(path.join(testData, 'transfer-cwd-settings.json'));
+    const result = await new DataTransfer({ ...app, isPackaged: true }, settings).command(['export', '--out', 'x.zip']);
+    assert.equal(result.cwd, fs.realpathSync(lab));
+    assert.equal(result.pythonpath, '');
+  } finally {
+    process.chdir(launchedFrom);
+    delete process.resourcesPath;
+    fs.rmSync(resources, { recursive: true, force: true });
+  }
+});
+
+test('slimming the staged runtime keeps the PROJ database pyproj reads at run time', { skip: process.platform === 'win32' }, () => {
+  const { spawnSync } = require('node:child_process');
+  const site = fs.mkdtempSync(path.join(os.tmpdir(), 'staged-site-'));
+  const kept = path.join(site, 'pyproj', 'proj_dir', 'share', 'proj', 'proj.db');
+  const trimmed = path.join(site, 'otherpkg', 'share', 'doc', 'notes.txt');
+  for (const file of [kept, trimmed]) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, 'x'); }
+  const script = 'import sys; from pathlib import Path; sys.path.insert(0, sys.argv[1]); import stage_backend; stage_backend.slim(Path(sys.argv[2]))';
+  try {
+    const r = spawnSync('python3', ['-I', '-c', script, path.join(__dirname, '..', 'scripts'), site], { encoding: 'utf8' });
+    assert.equal(r.status, 0, r.stderr || String(r.error));
+    assert.ok(fs.existsSync(kept), 'pyproj/proj_dir/share/proj/proj.db must survive slimming');
+    assert.ok(!fs.existsSync(path.join(site, 'otherpkg', 'share')), 'other share directories are still trimmed');
+  } finally {
+    fs.rmSync(site, { recursive: true, force: true });
+  }
+});
+
 test('an unsuccessful restore cannot advance the data setting', async () => {
   const { DataTransfer } = require('../main/data-transfer');
   const settings = new Settings(path.join(testData, 'failed-import-settings.json'));

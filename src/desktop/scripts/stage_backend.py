@@ -33,7 +33,9 @@ TARGETS = {'linux': {'python': f'cpython-{PYTHON}-linux-x86_64-gnu', 'platform':
 TREE = ['src/lab/urp_lab', 'src/lab/models', 'src/lab/pyproject.toml', 'src/lab/uv.lock', 'src/research/src/urp_research', 'src/frontend/core/routing',
         'src/backend/backend', 'src/backend/config', 'tools/runtime_db.py']
 SKIP_DIRS = {'__pycache__', '.pytest_cache', 'tests', 'test', 'testing', 'idlelib', 'tkinter', 'turtledemo', 'ensurepip', 'lib2to3', 'pydoc_data', 'include', 'tcl9.0', 'tk9.0', 'tcl8.6', 'tk8.6', 'itcl4.3.2', 'share', 'pkgconfig'}
-KEEP_DIRS = {'numpy/testing', 'numpy/_core/tests', 'scipy/_lib/_test'}     # imported at run time by the packages themselves
+# Imported or read at run time by the packages themselves. pyproj resolves proj.db from its bundled share/proj, and
+# Transformer.from_crs (GeoJSON import, field projection) fails on machines without a system PROJ when it is trimmed.
+KEEP_DIRS = {'numpy/testing', 'numpy/_core/tests', 'scipy/_lib/_test', 'pyproj/proj_dir/share'}
 SKIP_SUFFIXES = ('.pyi', '.a', '.lib', '.pdb', '.c', '.cc', '.cpp', '.h', '.hpp', '.pxd', '.pyx', '.md', '.rst')
 
 
