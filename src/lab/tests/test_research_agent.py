@@ -330,6 +330,50 @@ def test_openai_compatible_client_request_and_errors():
     assert model_from_env({'URP_LLM_API_KEY': 'k', 'URP_LLM_BASE_URL': 'http://127.0.0.1:11434/v1'})[0] is not None
 
 
+@pytest.mark.parametrize('kind', ['openai', 'anthropic'])
+def test_connected_provider_gets_research_tools_and_tool_history_in_its_own_format(monkeypatch, kind):
+    """A provider chosen in Settings runs research turns through llm.chat, which takes the task agent's internal format."""
+    from urp_lab.agent import llm
+    from urp_lab.agent.research_llm import ConnectedModel
+    sent = []
+
+    def post(url, json=None, headers=None, timeout=None):
+        sent.append(json)
+        body = ({'choices': [{'finish_reason': 'tool_calls', 'message': {'content': '', 'tool_calls': [
+                    {'id': 'r2', 'type': 'function', 'function': {'name': 'get_runs', 'arguments': '{"run_ids": ["run_a"]}'}}]}}],
+                 'usage': {'prompt_tokens': 7, 'completion_tokens': 3}} if kind == 'openai' else
+                {'content': [{'type': 'tool_use', 'id': 'r2', 'name': 'get_runs', 'input': {'run_ids': ['run_a']}}],
+                 'stop_reason': 'tool_use', 'usage': {'input_tokens': 7, 'output_tokens': 3}})
+        return httpx.Response(200, json=body, request=httpx.Request('POST', url))
+
+    monkeypatch.setattr(llm.httpx, 'post', post)
+    history = [{'role': 'system', 'content': '系统'}, {'role': 'user', 'content': '比较两种算法'},
+               {'role': 'assistant', 'content': '', 'tool_calls': [
+                   {'id': 'r1', 'type': 'function', 'function': {'name': 'list_algorithms', 'arguments': '{"problem_class": "coverage"}'}},
+                   {'id': 'r1b', 'type': 'function', 'function': {'name': 'list_runs', 'arguments': '{broken'}}]},
+               {'role': 'tool', 'tool_call_id': 'r1', 'content': '{"algorithms": []}'},
+               {'role': 'tool', 'tool_call_id': 'r1b', 'content': '{"error": "参数不是合法 JSON"}'}]
+    provider = llm.Provider(id='connected', kind=kind, model='m', base_url='https://models.example.test')
+    reply = ConnectedModel(provider).complete(history, [t.schema() for t in TOOLS])
+
+    assert reply.tool_calls == [{'id': 'r2', 'name': 'get_runs', 'arguments': '{"run_ids": ["run_a"]}'}]
+    assert reply.usage['total_tokens'] == 10 and len(sent) == 1
+    body, names = sent[0], [t.name for t in TOOLS]
+    if kind == 'openai':
+        assert [t['function']['name'] for t in body['tools']] == names
+        assert all(t['type'] == 'function' and 'parameters' in t['function'] for t in body['tools'])
+        assert [c['function'] for c in body['messages'][2]['tool_calls']] == [
+            {'name': 'list_algorithms', 'arguments': '{"problem_class": "coverage"}'}, {'name': 'list_runs', 'arguments': '{}'}]
+        assert [m['tool_call_id'] for m in body['messages'][3:]] == ['r1', 'r1b']
+    else:
+        assert [t['name'] for t in body['tools']] == names and all('input_schema' in t for t in body['tools'])
+        assert body['messages'][1]['content'] == [
+            {'type': 'tool_use', 'id': 'r1', 'name': 'list_algorithms', 'input': {'problem_class': 'coverage'}},
+            {'type': 'tool_use', 'id': 'r1b', 'name': 'list_runs', 'input': {}}]
+        assert [b['tool_use_id'] for b in body['messages'][2]['content']] == ['r1', 'r1b']
+    assert history[2]['tool_calls'][0]['function']['arguments'] == '{"problem_class": "coverage"}'   # session record untouched
+
+
 @pytest.mark.parametrize('failed', [False, True])
 def test_cancel_during_model_call_overrides_late_final_or_error(workbench, failed):
     entered, release = threading.Event(), threading.Event()

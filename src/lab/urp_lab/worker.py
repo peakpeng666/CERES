@@ -19,9 +19,12 @@ def limit(seconds: float):
         signal.signal(signal.SIGALRM, expired)
         signal.setitimer(signal.ITIMER_REAL, seconds)
         return lambda: signal.setitimer(signal.ITIMER_REAL, 0)
+    # main() sends sys.stdout to stderr while the solver runs; the gateway reads the terminal state from the real stdout only.
+    out = sys.stdout
 
     def stop():
-        print(json.dumps({'error': 'TimeoutError: 求解计算超过 time_limit_s；工作进程已中止', 'error_kind': 'timeout'}, ensure_ascii=False), flush=True)
+        print(json.dumps({'error': 'TimeoutError: 求解计算超过 time_limit_s；工作进程已中止', 'error_kind': 'timeout'}, ensure_ascii=False),
+              file=out, flush=True)
         os._exit(1)
     timer = threading.Timer(seconds, stop)
     timer.daemon = True

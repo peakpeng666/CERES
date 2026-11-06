@@ -29,7 +29,7 @@ QUESTIONS = {
     'vehicle_count': ('投入几台机器人？', ['1', '2', '3', '4']),
     'field_size_m': ('场地大约多大？可以给出长 × 宽（米）或面积（亩、公顷）。', ['200×120 米', '50 亩', '5 公顷']),
 }
-RUNNER_VERSION = 'agent-runner/5'
+RUNNER_VERSION = 'agent-runner/6'      # 6: an interrupted turn answers every outstanding tool call before it is saved
 MAX_LLM_CALLS = 20
 MAX_TOOL_CALLS = 30
 MAX_UNDERSTAND_CALLS = 4
@@ -57,6 +57,23 @@ class ToolFailure(Exception):
 
 
 FATAL_TOOL_ERRORS = {'source_changed', 'shutting_down', 'tool_exception'}
+
+
+def _close_open_calls(s: dict, status: str, message: str):
+    """Answer the tool calls of the last assistant message that have no result yet.
+
+    Providers reject a history in which a tool call has no result, so a turn that stops mid-way (pause, cancel, a
+    fatal tool error) records why each remaining call did not run before the session is saved and later resumed.
+    """
+    msgs = s['llm_messages']
+    last = next((i for i in range(len(msgs) - 1, -1, -1) if msgs[i]['role'] == 'assistant'), None)
+    if last is None or not msgs[last].get('tool_calls'):
+        return
+    answered = {m.get('tool_call_id') for m in msgs[last + 1:] if m['role'] == 'tool'}
+    for call in msgs[last]['tool_calls']:
+        if call['id'] not in answered:
+            msgs.append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
+                         'content': json.dumps({'status': status, 'message': message}, ensure_ascii=False)})
 
 
 class RunnerError(Exception):
@@ -620,10 +637,12 @@ class AgentRunner:
                 s['state'] = 'done'
                 self._save(s)
         except Paused:
+            _close_open_calls(s, 'interrupted', '会话已暂停，此调用未执行；继续后如仍需要请重新调用')
             s['state'] = 'paused'
             add_message(s, 'event', '已暂停。可修改任务合同或直接继续。', 'notice')
             self._save(s)
         except Cancelled:
+            _close_open_calls(s, 'cancelled', '会话已取消，此调用未执行或已中止')
             s['state'] = 'cancelled'
             for step in s['plan']:
                 if step['status'] == 'running':
@@ -631,6 +650,7 @@ class AgentRunner:
             add_message(s, 'event', '已取消。已有结果与记录保留，可重试或发送新的要求。', 'notice')
             self._save(s)
         except llm.LLMError as exc:
+            _close_open_calls(s, 'interrupted', '本轮因模型调用失败而停止，此调用未执行')
             s['state'] = 'failed'
             s['error'] = {'kind': exc.kind, 'message': str(exc)[:500], 'where': 'model'}
             for step in s['plan']:
@@ -639,6 +659,7 @@ class AgentRunner:
             add_message(s, 'event', f'模型调用失败（{exc.kind}）：{str(exc)[:300]}。可重试，或改用规则流程新建会话。', 'error')
             self._save(s)
         except ToolFailure as exc:
+            _close_open_calls(s, 'interrupted', f"本轮因「{exc.rec.get('label') or exc.rec['name']}」失败而停止：{str(exc)[:200]}")
             s['state'] = 'failed'
             code = exc.rec['error']['code']
             s['error'] = {'kind': 'environment' if code in ('source_changed', 'shutting_down') else 'implementation_error',
@@ -647,12 +668,14 @@ class AgentRunner:
             add_message(s, 'event', f"「{exc.rec.get('label') or exc.rec['name']}」失败：{str(exc)[:300]}。{hint}。", 'error')
             self._save(s)
         except Budget as exc:
+            _close_open_calls(s, 'interrupted', f'本轮按预算停止，此调用未执行：{exc}')
             s['state'] = 'failed'
             s['error'] = {'kind': 'budget', 'message': str(exc), 'where': 'runner'}
             add_message(s, 'event', str(exc), 'error')
             self._save(s)
         except Exception as exc:  # noqa: BLE001 - keep the session recoverable and the defect visible
             log.exception('agent turn failed')
+            _close_open_calls(s, 'interrupted', '本轮因内部错误停止，此调用未执行')
             s['state'] = 'failed'
             s['error'] = {'kind': 'implementation_error', 'message': f'{type(exc).__name__}: {exc}'[:500], 'where': 'runner'}
             add_message(s, 'event', f'智能体内部错误：{type(exc).__name__}: {str(exc)[:300]}', 'error')

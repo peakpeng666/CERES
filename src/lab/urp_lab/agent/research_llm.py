@@ -147,6 +147,29 @@ def model_from_env(env: Mapping[str, str] | None = None) -> tuple[OpenAICompatib
     return model, None
 
 
+def _internal_tools(tools: list[dict]) -> list[dict]:
+    """Research tools are OpenAI definitions ({'type': 'function', 'function': {...}}); llm.chat wraps plain ones itself."""
+    return [t['function'] if t.get('type') == 'function' and isinstance(t.get('function'), dict) else t for t in tools or []]
+
+
+def _internal_messages(messages: list[dict]) -> list[dict]:
+    """The research history keeps tool calls as OpenAI sends them; llm.chat takes {'id', 'name', 'arguments': dict}."""
+    from .llm import _parse_arguments
+
+    out = []
+    for message in messages:
+        if message.get('role') == 'assistant' and message.get('tool_calls'):
+            calls = []
+            for call in message['tool_calls']:
+                fn = call['function'] if isinstance(call.get('function'), dict) else call
+                # Arguments that were not a JSON object already came back to the model as a tool error.
+                arguments, _ = _parse_arguments(fn.get('arguments'))
+                calls.append({'id': call['id'], 'name': fn['name'], 'arguments': arguments})
+            message = {**message, 'tool_calls': calls}
+        out.append(message)
+    return out
+
+
 class ConnectedModel:
     """Research dialogue uses the same selected provider and private key store as task conversations."""
 
@@ -163,7 +186,7 @@ class ConnectedModel:
         from . import llm
 
         try:
-            response = llm.chat(self.provider, messages, tools)
+            response = llm.chat(self.provider, _internal_messages(messages), _internal_tools(tools))
         except llm.LLMError as exc:
             raise ModelError(str(exc)) from None
         calls = [{'id': c['id'], 'name': c['name'],

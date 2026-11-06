@@ -463,3 +463,59 @@ def test_without_gazebo_no_approval_is_requested_and_the_report_says_why(lab, mo
     assert not session['pending'] and not lab.test_sim_starts
     assert session['report']['evidence']['simulator_gap'] == '这台电脑没有 ROS 2 和 Gazebo'
     assert session['report']['evidence']['physics'], 'the physics preview does not depend on Gazebo'
+
+
+class Strict(Scripted):
+    """Rejects a history that leaves a tool call without a result, as OpenAI and Anthropic endpoints do."""
+
+    def __call__(self, provider, messages, specs, **kwargs):
+        for i, message in enumerate(messages):
+            if message['role'] != 'assistant' or not message.get('tool_calls'):
+                continue
+            answered = []
+            for following in messages[i + 1:]:
+                if following['role'] != 'tool':
+                    break
+                answered.append(following['tool_call_id'])
+            missing = [c['id'] for c in message['tool_calls'] if c['id'] not in answered]
+            if missing:
+                raise llm.LLMError(f'HTTP 400：tool calls without results {missing}', 'provider_error', 400)
+        return super().__call__(provider, messages, specs, **kwargs)
+
+
+@pytest.mark.parametrize('action', ['pause', 'cancel'])
+def test_stopping_between_tool_calls_answers_the_rest_so_the_session_can_continue(lab, monkeypatch, action):
+    from urp_lab.agent import runner as runner_module
+    script = Strict([
+        {'calls': [('update_task_contract', {'fields': FIELDS | {'simulate': False}})]},
+        {'content': '需求已写入合同。'},
+        {'calls': [('build_scenario', {}), ('recommend_algorithms', {})]},
+        {'calls': [('solve', {'algorithms': ['panel.savings_fleet']})]},
+        {'content': '规划阶段结束。'},
+    ])
+    runner = AgentRunner(lab, chat=script, providers=PROVIDERS)
+    lab.agent = runner
+    execute = runner_module.tools.execute
+
+    def stop_after_build(registry, ctx, name, args):
+        record = execute(registry, ctx, name, args)
+        if name == 'build_scenario':
+            runner.control(ctx.session['session_id'], action)   # the user presses the button while this call runs
+        return record
+
+    monkeypatch.setattr(runner_module.tools, 'execute', stop_after_build)
+    sid = runner.create({'mode': 'llm', 'auto_confirm': True, 'text': '按测试合同进行规划'})['session_id']
+    session = wait(runner, sid)
+    assert session['state'] == ('paused' if action == 'pause' else 'cancelled'), session.get('error')
+    history = session['llm_messages']
+    turn = max(i for i, m in enumerate(history) if m['role'] == 'assistant' and m.get('tool_calls'))
+    results = {m['tool_call_id']: json.loads(m['content']) for m in history[turn + 1:] if m['role'] == 'tool'}
+    assert set(results) == {c['id'] for c in history[turn]['tool_calls']}
+    assert results['c1']['status'] == ('interrupted' if action == 'pause' else 'cancelled')
+    assert [c['name'] for c in session['tool_calls'] if c['name'] == 'recommend_algorithms'] == []    # never ran
+
+    monkeypatch.setattr(runner_module.tools, 'execute', execute)
+    runner.control(sid, 'resume' if action == 'pause' else 'retry')
+    session = wait(runner, sid)
+    assert session['state'] == 'done', session.get('error')
+    assert not any('tool calls without results' in str(c.get('error')) for c in session['llm_calls'])
