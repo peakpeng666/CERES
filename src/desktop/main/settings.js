@@ -1,5 +1,5 @@
 'use strict';
-// Window size, port and backend choice. Nothing here is a secret.
+// Window size, port, backend choice, and the look the next launch opens with. Nothing here is a secret.
 const fs = require('node:fs');
 const path = require('node:path');
 

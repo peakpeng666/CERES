@@ -3,11 +3,11 @@ import type { AgentSession } from './api';
 
 const mocks = vi.hoisted(() => ({
   providers: vi.fn(), sessions: vi.fn(), session: vi.fn(), create: vi.fn(), message: vi.fn(),
-  control: vi.fn(), editContract: vi.fn(), navigate: vi.fn(), subscribe: vi.fn(),
+  control: vi.fn(), editContract: vi.fn(), navigate: vi.fn(), adoptHash: vi.fn(), subscribe: vi.fn(),
 }));
 vi.mock('./api', () => ({ agentApi: mocks }));
 vi.mock('../lab/api', () => ({ events: { subscribe: mocks.subscribe } }));
-vi.mock('../app/router', () => ({ navigate: mocks.navigate }));
+vi.mock('../app/router', () => ({ navigate: mocks.navigate, adoptHash: mocks.adoptHash }));
 
 import { useAgent } from './store';
 

@@ -1,3 +1,4 @@
+import s from './desk.module.css';
 /** Shell icons: one hand-drawn 16px set, 1.4px stroke, used only by the desk chrome. */
 const PATHS = {
   plus: 'M8 3v10M3 8h10',
@@ -45,12 +46,12 @@ export function Icon({ name, size = 16, className }: { name: IconName; size?: nu
   );
 }
 
-/** The product mark: the character 田 with a depot in one plot. */
+/** The product mark: the character 田 with a depot in one plot. It draws itself once, when the app opens. */
 export function Mark({ size = 20 }: { size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden>
-      <rect x={2} y={2} width={16} height={16} rx={3.5} />
-      <path d="M10 2v16M2 10h16" />
+    <svg className={s.mark} width={size} height={size} viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth={1.5} aria-hidden>
+      <rect x={2} y={2} width={16} height={16} rx={3.5} pathLength={1} />
+      <path d="M10 2v16M2 10h16" pathLength={1} />
       <circle cx={6} cy={14} r={1.7} fill="currentColor" stroke="none" />
     </svg>
   );

@@ -3,9 +3,10 @@ import { decodeStack, encodeStack, type Frame } from './frames';
 import type { PanelId } from '../studio/panelRegistry';
 
 export type Theme = 'system' | 'light' | 'dark';
+export type Motion = 'full' | 'reduced';
 
 const KEY = 'workbench.desk.v1';
-interface Saved { sideOpen?: boolean; paneW?: number; dock?: boolean; theme?: Theme; pinnedPane?: Record<string, boolean> }
+interface Saved { sideOpen?: boolean; paneW?: number; dock?: boolean; theme?: Theme; motion?: Motion; pinnedPane?: Record<string, boolean> }
 
 function load(): Saved {
   try {
@@ -28,6 +29,7 @@ interface DeskState {
   tabs: Record<string, PanelId>;
   dock: boolean;
   theme: Theme;
+  motion: Motion;
   overlay: 'help' | null;
   setSide: (open: boolean) => void;
   setPane: (surface: string, open: boolean) => void;
@@ -39,6 +41,7 @@ interface DeskState {
   setTab: (key: string, id: PanelId) => void;
   setDock: (dock: boolean) => void;
   setTheme: (theme: Theme) => void;
+  setMotion: (motion: Motion) => void;
   setOverlay: (overlay: DeskState['overlay']) => void;
 }
 
@@ -47,7 +50,7 @@ const defaultSide = typeof window === 'undefined' ? true : window.innerWidth > 1
 
 function persist(state: DeskState) {
   try {
-    localStorage.setItem(KEY, JSON.stringify({ sideOpen: state.sideOpen, paneW: state.paneW, dock: state.dock, theme: state.theme, pinnedPane: state.pane } satisfies Saved));
+    localStorage.setItem(KEY, JSON.stringify({ sideOpen: state.sideOpen, paneW: state.paneW, dock: state.dock, theme: state.theme, motion: state.motion, pinnedPane: state.pane } satisfies Saved));
   } catch {
     /* storage full or blocked */
   }
@@ -57,7 +60,15 @@ export function applyTheme(theme: Theme) {
   const root = document.documentElement;
   if (theme === 'system') root.removeAttribute('data-theme');
   else root.setAttribute('data-theme', theme);
+  window.desktop?.setTheme?.(theme);
 }
+
+function applyMotion(motion: Motion) {
+  if (motion === 'reduced') document.documentElement.dataset.motion = 'reduced';
+  else delete document.documentElement.dataset.motion;
+  window.desktop?.setMotion?.(motion);
+}
+if (typeof document !== 'undefined') applyMotion(saved.motion ?? 'full');
 
 export const useDesk = create<DeskState>((set, get) => ({
   sideOpen: saved.sideOpen ?? defaultSide,
@@ -69,6 +80,7 @@ export const useDesk = create<DeskState>((set, get) => ({
   tabs: {},
   dock: saved.dock ?? false,
   theme: saved.theme ?? 'system',
+  motion: saved.motion ?? 'full',
   overlay: null,
   setSide: (sideOpen) => { set({ sideOpen }); persist(get()); },
   setPane: (surface, open) => { set({ pane: { ...get().pane, [surface]: open } }); persist(get()); },
@@ -85,6 +97,7 @@ export const useDesk = create<DeskState>((set, get) => ({
   setTab: (key, id) => set({ tabs: { ...get().tabs, [key]: id } }),
   setDock: (dock) => { set({ dock }); persist(get()); },
   setTheme: (theme) => { set({ theme }); applyTheme(theme); persist(get()); },
+  setMotion: (motion) => { set({ motion }); applyMotion(motion); persist(get()); },
   setOverlay: (overlay) => set({ overlay }),
 }));
 

@@ -11,6 +11,8 @@ export interface SimBackendStatus {
 export interface DesktopBridge {
   info: () => Promise<{ version: string; platform: string; backend: 'native' | 'container'; logs: string; electron: string }>;
   openLogs: () => Promise<void>;
+  setTheme?: (theme: 'system' | 'light' | 'dark') => void;
+  setMotion?: (motion: 'full' | 'reduced') => void;
   update: { state: () => Promise<UpdateState>; check: () => Promise<UpdateState>; install: () => Promise<void>; onChange: (fn: (s: UpdateState) => void) => () => void };
   sim: { status: () => Promise<SimBackendStatus>; enable: () => Promise<unknown>; disable: () => Promise<unknown> };
   data: {

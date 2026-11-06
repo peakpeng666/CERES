@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { findModel, useAgent } from '../agent/store';
 import type { AgentSession } from '../agent/api';
 import { lab } from '../lab/api';
@@ -8,6 +8,7 @@ import { Icon } from './Icon';
 import { openFrames, openRoot, saveFile, sessionExportHref } from './nav';
 import { cx } from './format';
 import { useMenu } from './ui';
+import { FieldHero } from './FieldHero';
 import s from './desk.module.css';
 
 interface Command { name: string; desc: string; when?: (session: AgentSession | null) => boolean; run: () => void }
@@ -186,19 +187,22 @@ const EXAMPLES = [
   '30 亩菜地，两台小车从东北角出发运输，每台载重 20，十二个投放点聚集分布，每个点要在上午九点前送达',
 ];
 
+const GREETING = '今天要安排哪块地？';
+
 export function NewTask() {
   const [seed, setSeed] = useState<{ text: string; token: number } | null>(null);
   const actionError = useAgent((x) => x.actionError);
   const providers = useAgent((x) => x.providers);
   return (
     <div className={s.hello}>
+      <FieldHero />
       <div className={s.helloIn}>
-        <h1>今天要安排哪块地？</h1>
+        <h1 aria-label={GREETING}>{[...GREETING].map((c, i) => <span key={i} aria-hidden style={{ '--i': i } as CSSProperties}>{c}</span>)}</h1>
         {actionError && <p className={s.actionError}>{actionError}</p>}
         <Composer session={null} big seed={seed} />
         {providers && !providers.connected.length && <p className={s.helloHint}><a href="#/system/models">连接一个模型服务商</a>，粘贴 API Key 就能用自然语言下任务。没有连接时走规则流程。</p>}
         <ul className={s.helloList}>
-          {EXAMPLES.map((t) => <li key={t}><button type="button" onClick={() => setSeed({ text: t, token: Date.now() })}>{t}</button></li>)}
+          {EXAMPLES.map((t, i) => <li key={t} style={{ '--i': i } as CSSProperties}><button type="button" onClick={() => setSeed({ text: t, token: Date.now() })}>{t}</button></li>)}
         </ul>
       </div>
     </div>

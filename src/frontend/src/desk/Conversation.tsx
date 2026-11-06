@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useAgent } from '../agent/store';
 import { useStudioSync } from '../agent/AgentChat';
 import { currentRuns } from '../agent/studioSync';
@@ -15,7 +15,7 @@ import { Thumb } from './LayerMap';
 import { ACTOR, FIELD, SOURCE, TOOL, cx, n0, n1, n2, n3, showValue, stateTone, toolName } from './format';
 import { openFrames, openPlan, openRoot, runRecordHref, saveFile, sessionExportHref, sessionLabel, useRun } from './nav';
 import { activitySeconds, activityTitle, approvalVerdict, buildTimeline, planSummary, type TimelineItem } from './timeline';
-import { Fold, TopBar, useMenu } from './ui';
+import { Fold, Fresh, Roll, TopBar, useMenu } from './ui';
 import s from './desk.module.css';
 
 function Inline({ text }: { text: string }) {
@@ -36,7 +36,7 @@ function Inline({ text }: { text: string }) {
   if (i < text.length) nodes.push(text.slice(i));
   return <>{nodes}</>;
 }
-const Prose = ({ text }: { text: string }) => <div className={s.prose}>{text.split(/\n{2,}/).map((p, i) => <p key={i}><Inline text={p.replace(/\n/g, ' ')} /></p>)}</div>;
+const Prose = ({ text }: { text: string }) => <div className={s.prose}>{text.split(/\n{2,}/).map((p, i) => <p key={i} style={{ '--i': i } as CSSProperties}><Inline text={p.replace(/\n/g, ' ')} /></p>)}</div>;
 
 /* --------------------------------------------------------- tool activity */
 function CallDetail({ call }: { call: ToolCall }) {
@@ -201,7 +201,7 @@ function ReportDoc({ msg, session }: { msg: AgentMessage; session: AgentSession 
           <button type="button" className={s.result} data-thumb={(inst && !stale) || undefined} onClick={() => openPlan(best.run_id)}>
             {inst && !stale && <Thumb inst={inst} routes={thumbRoutes} />}
             <span>{best.algorithm}<small>最优 · {best.ranking_basis === 'predicted_makespan_s' ? '按同模型预计工期排序' : '按规划目标排序'} · 独立复核通过 · {best.predicted_makespan_s != null ? `预计实际 ${n1(best.predicted_makespan_s)} s` : `最晚完成 ${n1(best.makespan_s)} s`}{stale ? ' · 历史任务版本' : ''}</small></span>
-            <span className={s.num}>{n1(best.total_distance_m)} m</span>
+            <span className={s.num}><Roll value={best.total_distance_m} format={n1} /> m</span>
             <Icon name="right" size={12} />
           </button>
         )}
@@ -295,10 +295,10 @@ function PhysicsDoc({ msg }: { msg: AgentMessage }) {
           <tr key={r.run_id} data-go={r.physics_run_id ? '' : undefined} onClick={() => { if (r.physics_run_id) openFrames([{ t: 'plans' }, { t: 'plan', run: r.run_id }, { t: 'phys', run: r.run_id, id: r.physics_run_id }]); }}>
             <td>{r.algorithm ?? r.run_id}{!ok(r) && <small>{r.errors[0] ?? '未通过'}</small>}</td>
             {ok(r) ? <>
-              <td>{n1(r.metrics.total_distance_m)} m<small>{drift(r.metrics.total_distance_m, r.metrics.planned_total_distance_m)}</small></td>
-              <td>{n1(r.metrics.makespan_s)} s<small>{drift(r.metrics.makespan_s, r.metrics.planned_makespan_s)}</small></td>
+              <td><Roll value={r.metrics.total_distance_m} format={n1} /> m<small>{drift(r.metrics.total_distance_m, r.metrics.planned_total_distance_m)}</small></td>
+              <td><Roll value={r.metrics.makespan_s} format={n1} /> s<small>{drift(r.metrics.makespan_s, r.metrics.planned_makespan_s)}</small></td>
             </> : <td colSpan={2}>未完成</td>}
-            {together && <td>{r.coordinated?.check_valid ? <>{n1(r.coordinated.makespan_s)} s<small>车距 ≥ {n3(r.coordinated.min_gap_m)} m</small></> : <small>{r.coordinated?.errors[0] ?? '未通过'}</small>}</td>}
+            {together && <td>{r.coordinated?.check_valid ? <><Roll value={r.coordinated.makespan_s} format={n1} /> s<small>车距 ≥ {n3(r.coordinated.min_gap_m)} m</small></> : <small>{r.coordinated?.errors[0] ?? '未通过'}</small>}</td>}
             <td>{ok(r) ? `${n3(r.metrics.cross_track_max_m)} m` : '—'}</td>
           </tr>
         ))}</tbody>
@@ -342,7 +342,7 @@ function Running({ session }: { session: AgentSession }) {
   return (
     <div className={s.running}>
       <span className={s.dots}><i /><i /><i /></span>
-      <span className={s.grow}>{step ? step.title : '思考下一步'}{since !== null ? ` · ${n0(since)} s` : ''}</span>
+      <span className={s.grow}><span className={s.shine}>{step ? step.title : '思考下一步'}</span>{since !== null ? ` · ${n0(since)} s` : ''}</span>
       <button type="button" className={s.go} disabled={busy} onClick={() => void control('pause')}>暂停</button>
       <button type="button" className={s.go} disabled={busy} onClick={() => void control('cancel')}>取消</button>
     </div>
@@ -403,7 +403,7 @@ function PlanStrip({ session }: { session: AgentSession }) {
   const idle = session.state !== 'running' && !session.restoration?.read_only;
   const userMap = studioScenario && studioScenario.problem_class === 'fleet_routing' && (studioScenario as { origin?: string }).origin === 'user' ? studioScenario.id : null;
   return (
-    <Fold className={s.plan} summary={<>
+    <Fold className={s.plan} lead={<i className={s.planBar} style={{ transform: `scaleX(${p.steps.length ? p.done / p.steps.length : 0})` }} />} summary={<>
       <span className={s.sum}>{p.done}/{p.steps.length} · {p.current ? `${p.current.title}${p.waiting ? '，等待你' : ''}` : session.state === 'done' ? '已完成' : STATE_LABEL[session.state]}</span>
       <span className={s.discMeta}>执行计划</span>
     </>}>
@@ -461,6 +461,17 @@ function SessionMenu({ session }: { session: AgentSession }) {
 }
 
 /* ---------------------------------------------------------- conversation */
+/** What arrived after the task was opened. Those items animate in; what was already there does not. */
+function useFresh(id: string | null, keys: string[]) {
+  const seen = useRef({ id: null as string | null, known: new Set<string>(), fresh: new Set<string>() });
+  const st = seen.current;
+  if (st.id !== id) seen.current = { id, known: new Set(keys), fresh: new Set() };
+  for (const k of keys) {
+    if (!seen.current.known.has(k)) { seen.current.known.add(k); seen.current.fresh.add(k); }
+  }
+  return seen.current.fresh;
+}
+
 function useStick(ref: React.RefObject<HTMLDivElement | null>, key: unknown, reset: unknown) {
   const pinned = useRef(true);
   const [away, setAway] = useState(false);
@@ -491,6 +502,7 @@ export function Conversation() {
   const scroll = useRef<HTMLDivElement>(null);
   const timeline = useMemo(() => (session ? buildTimeline(session) : []), [session]);
   const stick = useStick(scroll, `${timeline.length}/${session?.state}`, sessionId);
+  const fresh = useFresh(session?.session_id ?? null, timeline.map((x) => x.key));
   const lastOf = useMemo(() => {
     const map = new Map<string, string>();
     for (const m of session?.messages ?? []) map.set(m.kind, m.id);
@@ -509,8 +521,12 @@ export function Conversation() {
         <SessionTitle session={session} />
       </TopBar>
       <div className={s.scroll} ref={scroll}>
-        <div className={s.col}>
-          {timeline.map((item) => <Item key={item.key} item={item} session={session} lastOf={lastOf} />)}
+        <div className={s.col} key={session.session_id}>
+          {timeline.map((item) => (
+            <div key={item.key} className={s.item} data-enter={fresh.has(item.key) || undefined} data-me={item.kind !== 'activity' && item.msg.role === 'user' ? '' : undefined}>
+              <Fresh.Provider value={fresh.has(item.key)}><Item item={item} session={session} lastOf={lastOf} /></Fresh.Provider>
+            </div>
+          ))}
           {!session.restoration?.read_only && <LiveSim session={session} />}
           {session.state === 'running' && !session.restoration?.read_only && <Running session={session} />}
           <Resumable session={session} />

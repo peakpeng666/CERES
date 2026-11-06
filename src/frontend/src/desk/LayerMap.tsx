@@ -1,4 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react';
+import { motionOff } from '../lib/motion';
 import { routeColor } from '../lab/views/plan/planModel';
 import type { XY } from '../lab/types';
 import type { FleetInstance } from '../studio/types';
@@ -51,6 +52,8 @@ class FieldMap implements MapApi {
   private W = 0;
   private H = 0;
   private raf = 0;
+  private drawing = 0;
+  private settle: (() => void) | null = null;
   private dots: { el: SVGCircleElement; r: number }[] = [];
   private marks: { el: SVGElement; x: number; y: number; a?: number; fixed?: boolean }[] = [];
   private inst: FleetInstance | null = null;
@@ -100,6 +103,7 @@ class FieldMap implements MapApi {
 
   destroy() {
     cancelAnimationFrame(this.raf);
+    this.settle?.();
     this.observer.disconnect();
     this.host.replaceChildren();
   }
@@ -114,6 +118,7 @@ class FieldMap implements MapApi {
 
   scene(key: string, inst: FleetInstance, lanes: XY[][]) {
     if (this.sceneKey === key) return;
+    this.settle?.();
     this.sceneKey = key; this.planKey = null; this.inst = inst; this.routes = [];
     for (const g of [this.gBase, this.gLane, this.gObs, this.gRoute, this.gTrail, this.gTask, this.gMark, this.gSeq, this.gLbl]) g.replaceChildren();
     this.dots = []; this.marks = []; this.plots = {}; this.obs = {};
@@ -139,11 +144,64 @@ class FieldMap implements MapApi {
     this.dims.textContent = `${n0(b[2] - b[0])} × ${n0(b[3] - b[1])} m`;
     const c = this.camFor(null);
     if (c) { this.cam = c; this.apply(); }
+    if (!motionOff()) this.svg.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+  }
+
+  /** A new plan drives out of the depot: each route grows behind a dot, and a task lights up as its vehicle reaches it. */
+  private reveal(routes: MapRoute[]) {
+    this.settle?.();
+    if (motionOff() || !routes.length) return;
+    const unit = () => (this.W ? this.cam.w / this.W : 1);
+    const span = routes.map((r) => cumulative(r.line));
+    const longest = Math.max(...span.map((c) => c[c.length - 1]), 1e-6);
+    const ms = 1500;
+    const plan = routes.map((r, i) => {
+      const c = span[i]; const total = c[c.length - 1];
+      const head = sv('circle', { class: s.mHead, r: 4 * unit(), style: `fill:${routeColor(i)}` });
+      this.gTrail.after(head);
+      return { line: r.line, c, total, delay: i * 130, length: ms * (0.55 + 0.45 * (total / longest)), head, el: this.routes[i] };
+    });
+    routes.forEach((r, i) => {
+      const n = r.services.length;
+      r.services.forEach((sv2, order) => {
+        const at = plan[i].delay + plan[i].length * ((order + 1) / (n + 1));
+        const dot = this.gTask.querySelector(`[data-task="${sv2.task}"]`);
+        dot?.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 240, delay: at, fill: 'backwards', easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+      });
+    });
+    const finish = () => {
+      for (const p of plan) { p.el.setAttribute('points', pts(p.line)); p.head.remove(); }
+      this.settle = null;
+    };
+    this.settle = () => { cancelAnimationFrame(this.drawing); finish(); };
+    const t0 = performance.now();
+    const step = (now: number) => {
+      let live = false;
+      for (const p of plan) {
+        const f = Math.max(0, Math.min(1, (now - t0 - p.delay) / p.length));
+        const e = 1 - (1 - f) ** 3;
+        const s0 = p.total * e;
+        let i = 1;
+        while (i < p.c.length - 1 && p.c[i] < s0) i++;
+        const a = p.line[i - 1], b = p.line[i] ?? a;
+        const u = p.c[i] > p.c[i - 1] ? (s0 - p.c[i - 1]) / (p.c[i] - p.c[i - 1]) : 1;
+        const tip: XY = [a[0] + (b[0] - a[0]) * Math.min(1, u), a[1] + (b[1] - a[1]) * Math.min(1, u)];
+        p.el.setAttribute('points', pts([...p.line.slice(0, i), tip]));
+        p.head.setAttribute('cx', String(tip[0])); p.head.setAttribute('cy', String(-tip[1]));
+        p.head.setAttribute('r', String(unit() * 4));
+        p.head.style.opacity = f >= 1 ? '0' : '1';
+        if (f < 1) live = true;
+      }
+      if (live) this.drawing = requestAnimationFrame(step);
+      else finish();
+    };
+    this.drawing = requestAnimationFrame(step);
   }
 
   draw(o: MapView) {
     const key = o.plan?.key ?? '';
-    if (this.planKey !== key) {
+    const planChanged = this.planKey !== key;
+    if (planChanged) {
       this.planKey = key; this.gRoute.replaceChildren(); this.routes = [];
       (o.plan?.routes ?? []).forEach((r, i) => {
         const line = sv('polyline', { class: s.mRoute, points: pts(r.line), style: `stroke:${routeColor(i)}` });
@@ -159,6 +217,7 @@ class FieldMap implements MapApi {
     this.tasks(o);
     this.gTrail.replaceChildren();
     if (o.trails?.length) {
+      this.settle?.();
       this.gRoute.style.display = 'none';
       for (const t of o.trails) {
         const plan = o.plan?.routes[t.index];
@@ -167,6 +226,7 @@ class FieldMap implements MapApi {
       }
     } else this.gRoute.style.display = '';
     this.apply();
+    if (planChanged && !o.trails?.length) this.reveal(o.plan?.routes ?? []);
   }
 
   private tasks(o: MapView) {

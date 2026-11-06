@@ -171,7 +171,8 @@ try {
   step('命令面板跳到设置');
   await page.goto(`${base}/#/system/general`);
   await page.getByRole('button', { name: '深色' }).click();
-  assert.equal(await page.evaluate(() => document.documentElement.dataset.theme), 'dark');
+  // The new look is applied inside a view transition, one frame after the click.
+  await page.waitForFunction(() => document.documentElement.dataset.theme === 'dark', null, { timeout: 2000 });
   await page.waitForTimeout(300);
   await shot('11-dark-settings');
   await page.getByRole('button', { name: '浅色' }).click();

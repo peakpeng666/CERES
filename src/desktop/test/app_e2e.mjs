@@ -97,7 +97,7 @@ try {
   const port = Number(new URL(base).port);
   const info = await win.evaluate(() => window.desktop.info());
   assert.equal(info.backend, 'native');
-  assert.equal(await win.title(), '农业机器人路径规划工作台');
+  assert.equal(await win.title(), 'Lab');
   await win.screenshot({ path: `${out}/01-first-launch.png` });
   step('第一次打开：内置后端就绪', { seconds: run.seconds, version: info.version, port });
 

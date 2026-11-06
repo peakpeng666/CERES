@@ -3,30 +3,103 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
-<title>农业机器人路径规划工作台</title>
+<title>Lab</title>
+<script>if (window.desktop && window.desktop.calm) document.documentElement.dataset.motion = 'reduced';</script>
 <style>
-  :root { color-scheme: light dark; --bg: #f7f5ef; --ink: #2b2a26; --dim: #76736a; --line: #dcd8cc; --accent: #4a6a3a; }
-  @media (prefers-color-scheme: dark) { :root { --bg: #21201d; --ink: #e8e5dc; --dim: #9b978b; --line: #3a3833; --accent: #9dbb86; } }
-  html, body { height: 100%; margin: 0; background: var(--bg); color: var(--ink); font: 14px/1.6 system-ui, "Noto Sans CJK SC", "Microsoft YaHei", sans-serif; }
-  main { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 0 32px; box-sizing: border-box; text-align: center; }
-  svg { width: 48px; height: 48px; }
-  h1 { margin: 0; font-size: 18px; font-weight: 600; }
-  #status { color: var(--dim); min-height: 22px; max-width: 640px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  #failure { display: none; max-width: 720px; width: 100%; text-align: left; }
-  #failure p { margin: 0 0 8px; }
-  pre { margin: 0; max-height: 240px; overflow: auto; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: 12px/1.5 ui-monospace, monospace; white-space: pre-wrap; color: var(--dim); }
-  .actions { display: flex; gap: 8px; margin-top: 12px; }
-  button { height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--line); background: none; color: inherit; font: inherit; cursor: pointer; }
-  button.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+  /* The same paper and the same field as the app's first page, so opening the window reads as one motion. */
+  :root {
+    color-scheme: light dark;
+    --bg: #fbfaf6; --ink: #25241f; --dim: #7f7b6e; --faint: #d3cfc3; --accent: #4a6a3a; --on-accent: #fbfaf6;
+    --warm: #a8552e; --soft: rgba(74, 106, 58, 0.1); --glow-b: rgba(168, 118, 46, 0.09);
+    --out: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring: linear(0, 0.0089 1.6%, 0.0459 3.7%, 0.1135 6.1%, 0.2067 8.8%, 0.3171 11.6%, 0.4358 14.6%, 0.5541 17.7%, 0.6651 20.9%, 0.7637 24.2%, 0.8468 27.6%, 0.9133 31.1%, 0.9634 34.7%, 0.9987 38.3%, 1.0212 42%, 1.0335 45.8%, 1.0382 49.7%, 1.0375 53.6%, 1.0334 57.6%, 1.0277 61.6%, 1.0214 65.7%, 1.0155 69.8%, 1.0103 74%, 1.0062 78.2%, 1.0031 82.5%, 1.0009 86.8%, 0.9996 91.2%, 0.9988 95.6%, 1);
+    --serif: "Noto Serif CJK SC", "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, Georgia, "Times New Roman", serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #23221e; --ink: #eceae2; --dim: #979386; --faint: #4a4840; --accent: #a9c48b; --on-accent: #23221e; --warm: #e39a70; --soft: rgba(169, 196, 139, 0.09); --glow-b: rgba(227, 154, 112, 0.07); }
+  }
+  html, body { height: 100%; margin: 0; overflow: hidden; -webkit-app-region: drag; background: var(--bg); color: var(--ink); font: 14px/1.6 "IBM Plex Sans", "PingFang SC", "Noto Sans CJK SC", "Noto Sans SC", "Microsoft YaHei", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+  .field { position: fixed; inset: 0; color: var(--accent); pointer-events: none; animation: fade 1100ms var(--out) backwards; -webkit-mask-image: radial-gradient(ellipse 54% 50% at 50% 46%, transparent 34%, #000 92%); mask-image: radial-gradient(ellipse 54% 50% at 50% 46%, transparent 34%, #000 92%); }
+  .field i { position: absolute; left: -20vmax; top: -30vmax; width: 66vmax; height: 66vmax; border-radius: 50%; background: radial-gradient(closest-side, var(--soft), transparent); }
+  .field i + i { left: auto; top: auto; right: -24vmax; bottom: -34vmax; background: radial-gradient(closest-side, var(--glow-b), transparent); }
+  .field svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  #rows path { fill: none; stroke: currentColor; stroke-width: 1; opacity: 0.13; stroke-dasharray: 1; animation: draw 2200ms var(--out) backwards; animation-delay: calc(var(--i) * 42ms + 60ms); }
+  #route { fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; opacity: 0.42; transition: opacity 420ms var(--out), stroke 420ms; }
+  #stops circle { fill: var(--bg); stroke: currentColor; stroke-width: 1.7; opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); transition: opacity 320ms var(--out), transform 520ms var(--spring); }
+  #stops circle.on { opacity: 0.62; transform: none; }
+  #head { fill: currentColor; opacity: 0; transition: opacity 360ms var(--out), fill 420ms; }
+  body[data-state="wait"] #head, body[data-state="ready"] #head { opacity: 0.85; }
+  body[data-state="failed"] #route { stroke: var(--warm); opacity: 0.3; }
+  body[data-state="failed"] #head { fill: var(--warm); opacity: 0.9; }
+
+  main { position: relative; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 32px 6vh; box-sizing: border-box; text-align: center; transition: opacity 280ms var(--out), transform 340ms var(--out); }
+  body[data-state="ready"] main { opacity: 0; transform: scale(0.985) translateY(-5px); }
+  body[data-state="ready"] .field { opacity: 0; transition: opacity 340ms 40ms var(--out); }
+
+  .mark { width: 54px; height: 54px; color: var(--accent); overflow: visible; }
+  .mark rect, .mark path { stroke-dasharray: 1; animation: draw 1200ms var(--out) 80ms backwards; }
+  .mark path { animation-delay: 380ms; }
+  .mark circle { transform-box: fill-box; transform-origin: center; animation: pop 560ms var(--spring) 860ms backwards; }
+  h1 { margin: 16px 0 0; font: 500 34px/1.1 var(--serif); letter-spacing: 0.015em; animation: rise 860ms var(--out) 260ms backwards; }
+  .sub { margin: 7px 0 0; color: var(--dim); font-size: 13px; letter-spacing: 0.1em; animation: rise 860ms var(--out) 360ms backwards; }
+
+  .wait { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 30px; min-height: 66px; width: 100%; animation: rise 860ms var(--out) 500ms backwards; }
+  .line { position: relative; width: 148px; height: 1.5px; overflow: hidden; border-radius: 1px; background: var(--faint); }
+  .line i { position: absolute; inset: 0; width: 40%; border-radius: 1px; background: var(--accent); animation: travel 1.9s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+  #status { color: var(--dim); font-size: 12.5px; min-height: 20px; max-width: min(560px, 80vw); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #hint { color: var(--dim); font-size: 12px; opacity: 0; transform: translateY(4px); transition: opacity 620ms var(--out), transform 620ms var(--out); }
+  #hint.on { opacity: 0.85; transform: none; }
+
+  #failure { display: none; margin-top: 26px; max-width: 640px; width: 100%; text-align: left; animation: rise 620ms var(--out) backwards; }
+  body[data-state="failed"] .wait { display: none; }
+  body[data-state="failed"] #failure { display: block; }
+  #failure p { margin: 0 0 10px; text-align: center; font-weight: 500; }
+  pre { margin: 0; max-height: 34vh; overflow: auto; padding: 11px 13px; border: 1px solid var(--faint); border-radius: 10px; background: color-mix(in srgb, var(--bg) 82%, transparent); font: 12px/1.55 ui-monospace, "JetBrains Mono", "Cascadia Mono", monospace; white-space: pre-wrap; word-break: break-word; color: var(--dim); }
+  .actions { display: flex; justify-content: center; gap: 8px; margin-top: 14px; }
+  button, pre { -webkit-app-region: no-drag; }
+  button { height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--faint); background: none; color: inherit; font: inherit; font-size: 13.5px; cursor: pointer; transition: background 150ms, box-shadow 220ms, transform 340ms var(--spring); }
+  button:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  button:active { transform: scale(0.97); transition-duration: 150ms, 220ms, 90ms; }
+  button:focus-visible { outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 2px; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  button.primary:hover { background: var(--accent); box-shadow: 0 3px 12px color-mix(in srgb, var(--accent) 32%, transparent); }
+
+  @keyframes draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes pop { from { opacity: 0; transform: scale(0.3); } }
+  @keyframes fade { from { opacity: 0; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(9px); } }
+  @keyframes travel { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+
+  :root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
+  :root[data-motion="reduced"] .line i { width: 100%; opacity: 0.5; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
+    .line i { width: 100%; opacity: 0.5; transform: none; }
+  }
 </style>
 </head>
-<body>
+<body data-state="wait">
+<div class="field" aria-hidden="true">
+  <i></i><i></i>
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+    <g id="rows"></g>
+    <path id="route" d="M92 806 C 210 782, 300 770, 420 742 S 702 706, 884 664 S 1214 630, 1318 566 C 1376 526, 1352 470, 1262 470 C 1090 476, 930 498, 760 516 S 420 556, 256 556 C 158 552, 132 480, 214 448 C 372 398, 560 372, 742 338 S 1094 286, 1226 210"/>
+    <g id="stops"></g>
+    <circle id="head" r="6"/>
+  </svg>
+</div>
 <main>
-  <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" stroke="currentColor" stroke-width="1.6"/><path d="M12 3.5v17M3.5 12h17" stroke="currentColor" stroke-width="1.6"/><circle cx="7.6" cy="16.4" r="2" fill="currentColor"/></svg>
-  <h1>农业机器人路径规划工作台</h1>
-  <div id="status">正在启动</div>
-  <div id="failure">
-    <p>后端没有启动成功。</p>
+  <svg class="mark" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.1" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="3.5" pathLength="1"/><path d="M10 2v16M2 10h16" pathLength="1"/><circle cx="6" cy="14" r="1.7" fill="currentColor" stroke="none"/></svg>
+  <h1>Lab</h1>
+  <p class="sub">农业机器人路径规划</p>
+  <div class="wait">
+    <div class="line"><i></i></div>
+    <div id="status" role="status">正在启动</div>
+    <div id="hint">第一次打开要准备运行环境，会久一些</div>
+  </div>
+  <div id="failure" role="alert">
+    <p>后端没有启动成功</p>
     <pre id="detail"></pre>
     <div class="actions">
       <button class="primary" id="retry">重试</button>
@@ -36,22 +109,103 @@
   </div>
 </main>
 <script>
-  const show = (id, on) => { document.getElementById(id).style.display = on ? '' : 'none'; };
-  window.desktop.onBootStatus((text) => { document.getElementById('status').textContent = text; });
-  window.desktop.onBootError(({ message, mode }) => {
-    show('status', false);
-    document.getElementById('failure').style.display = 'block';
-    document.getElementById('detail').textContent = message;
-    document.getElementById('native').hidden = mode !== 'container';
+  const W = 1440, H = 900, ROWS = 16, STOPS = [0.13, 0.27, 0.41, 0.55, 0.68, 0.84, 0.97];
+  const NS = 'http://www.w3.org/2000/svg';
+  const $ = (id) => document.getElementById(id);
+  const route = $('route'), head = $('head');
+  const calm = document.documentElement.dataset.motion === 'reduced' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  for (let i = 0; i < ROWS; i += 1) {
+    const y = -70 + i * (H + 140) / (ROWS - 1), lift = 150 - i * 7;
+    const row = document.createElementNS(NS, 'path');
+    row.setAttribute('d', `M-60 ${y + 120} C ${W * 0.3} ${y - lift}, ${W * 0.62} ${y + lift * 0.9}, ${W + 60} ${y - 80}`);
+    row.setAttribute('pathLength', '1');
+    row.style.setProperty('--i', i);
+    $('rows').append(row);
+  }
+  const total = route.getTotalLength();
+  route.style.strokeDasharray = `${total} ${total}`;
+  const stops = STOPS.map((f) => {
+    const at = route.getPointAtLength(total * f);
+    const dot = document.createElementNS(NS, 'circle');
+    dot.setAttribute('cx', at.x); dot.setAttribute('cy', at.y); dot.setAttribute('r', '4.5');
+    $('stops').append(dot);
+    return dot;
   });
-  document.getElementById('retry').onclick = () => {
-    show('status', true);
-    document.getElementById('failure').style.display = 'none';
-    document.getElementById('status').textContent = '正在启动';
+  const place = (share) => {
+    const at = route.getPointAtLength(total * share);
+    route.style.strokeDashoffset = total * (1 - share);
+    head.setAttribute('cx', at.x); head.setAttribute('cy', at.y);
+    STOPS.forEach((f, i) => stops[i].classList.toggle('on', share >= f));
+  };
+
+  // The vehicle drives while the app starts and slows as it nears the end, so it is never about to arrive for the wrong
+  // reason; the app opens when it does. How far it has got says nothing about how long is left, so no number is shown.
+  let frame = 0, share = 0, started = 0, from = 0, finishing = 0;
+  const step = (now) => {
+    if (finishing) {
+      const p = Math.min(1, (now - finishing) / 300);
+      share = from + (1 - from) * (1 - (1 - p) ** 3);
+      place(share);
+      if (p < 1) frame = requestAnimationFrame(step);
+      return;
+    }
+    share = 0.9 * (1 - Math.exp(-(now - started) / 7000));
+    place(share);
+    frame = requestAnimationFrame(step);
+  };
+  const drive = () => {
+    cancelAnimationFrame(frame);
+    finishing = 0;
+    started = performance.now() + 280;
+    if (calm) { place(0.9); return; }
+    place(0);
+    frame = requestAnimationFrame(step);
+  };
+
+  let slow = 0, lastText = 0;
+  const waiting = () => {
+    clearTimeout(slow);
+    $('hint').classList.remove('on');
+    slow = setTimeout(() => $('hint').classList.add('on'), 8000);
+  };
+  const say = (text) => {
+    const el = $('status');
+    if (el.textContent === text) return;
+    el.textContent = text;
+    const now = performance.now();
+    if (!calm && now - lastText > 320) el.animate([{ opacity: 0, transform: 'translateY(3px)' }, { opacity: 1, transform: 'none' }], { duration: 300, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+    lastText = now;
+  };
+
+  window.desktop.onBootStatus(say);
+  window.desktop.onBootReady(() => {
+    clearTimeout(slow);
+    document.body.dataset.state = 'ready';
+    if (calm) { cancelAnimationFrame(frame); place(1); return; }
+    from = share; finishing = performance.now();
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(step);
+  });
+  window.desktop.onBootError(({ message, mode }) => {
+    clearTimeout(slow);
+    cancelAnimationFrame(frame);
+    document.body.dataset.state = 'failed';
+    $('detail').textContent = message;
+    $('native').hidden = mode !== 'container';
+    $('retry').focus({ preventScroll: true });
+  });
+  $('retry').onclick = () => {
+    document.body.dataset.state = 'wait';
+    say('正在启动');
+    waiting();
+    drive();
     window.desktop.retry();
   };
-  document.getElementById('native').onclick = () => window.desktop.useNative();
-  document.getElementById('logs').onclick = () => window.desktop.openLogs();
+  $('native').onclick = () => window.desktop.useNative();
+  $('logs').onclick = () => window.desktop.openLogs();
+  waiting();
+  drive();
 </script>
 </body>
 </html>

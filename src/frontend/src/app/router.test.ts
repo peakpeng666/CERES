@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildHash, parseHash } from './router';
+import { buildHash, isPageChange, parseHash } from './router';
 
 describe('parseHash', () => {
   it('routes known views and ids', () => {
@@ -40,5 +40,18 @@ describe('parseHash', () => {
 
   it('decodes a valid encoded id', () => {
     expect(parseHash(`#/replay/${encodeURIComponent('a b')}`).id).toBe('a b');
+  });
+});
+
+describe('isPageChange', () => {
+  const change = (a: string, b: string) => isPageChange(parseHash(a), parseHash(b));
+  it('a new view, or going between a new task and a task, is a change of page', () => {
+    expect(change('#/agent', '#/maps')).toBe(true);
+    expect(change('#/agent', '#/agent/agt_1')).toBe(true);
+    expect(change('#/agent/agt_1', '#/agent')).toBe(true);
+  });
+  it('moving within a view is not', () => {
+    expect(change('#/agent/agt_1', '#/agent/agt_2')).toBe(false);
+    expect(change('#/system/models', '#/system/data')).toBe(false);
   });
 });

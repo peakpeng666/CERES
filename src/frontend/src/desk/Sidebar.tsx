@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { Route } from '../app/router';
 import { lab, useGatewayConnected, useLabResource } from '../lab/api';
 import { simPhaseLabel } from '../lab/shell/labels';
@@ -10,7 +10,7 @@ import { useDesk } from './store';
 import { Icon, Mark, type IconName } from './Icon';
 import { STATE_SHORT, dayLabel, stateTone } from './format';
 import { saveFile, sessionExportHref, sessionLabel, useMedia } from './nav';
-import { useMenu } from './ui';
+import { Marker, useMenu } from './ui';
 import s from './desk.module.css';
 
 const BPP_VIEWS: Route['view'][] = ['overview', 'samples', 'replay', 'risk', 'evidence'];
@@ -98,6 +98,8 @@ export function Sidebar({ route }: { route: Route }) {
   const [showArchived, setShowArchived] = useState(false);
   useEffect(() => { void loadSessions(); }, [loadSessions]);
   const onPick = () => { if (narrow) setSide(false); };
+  const places = useRef<HTMLElement>(null);
+  const list = useRef<HTMLDivElement>(null);
   const inChat = route.view === 'agent' || route.view === 'lab';
   const { pinned, groups, archived } = useMemo(() => {
     const live = sessions.filter((x) => !x.archived);
@@ -113,17 +115,19 @@ export function Sidebar({ route }: { route: Route }) {
       <div className={s.sideIn}>
         <div className={s.brand}>
           <Mark />
-          <b>农业机器人路径规划</b>
+          <b>Lab</b>
           <button type="button" className={s.iconBtn} title="收起任务栏 ⌘B" aria-label="收起任务栏" onClick={() => setSide(false)}><Icon name="side" /></button>
         </div>
-        <nav className={s.nav} aria-label="工作区">
+        <nav className={s.nav} ref={places} aria-label="工作区">
+          <Marker host={places} match='[aria-current="page"]' kind="pill" watch={`${route.view}/${sessionId}`} />
           <a className={`${s.navRow} ${s.navNew}`} href="#/agent" aria-current={inChat && !sessionId ? 'page' : undefined} onClick={onPick}><Icon name="plus" /><span>新任务</span><kbd>⌘N</kbd></a>
           <button type="button" className={s.navRow} onClick={() => setPalette(true)}><Icon name="search" /><span>搜索</span><kbd>⌘K</kbd></button>
           {PLACES.map((p) => (
             <a key={p.href} className={s.navRow} href={p.href} aria-current={p.view.includes(route.view) ? 'page' : undefined} onClick={onPick}><Icon name={p.icon} /><span>{p.label}</span></a>
           ))}
         </nav>
-        <div className={s.sess}>
+        <div className={s.sess} ref={list}>
+          <Marker host={list} match='[aria-current="true"]' kind="pill" watch={`${inChat}/${sessionId}/${sessions.length}/${showArchived}`} />
           {pinned.length > 0 && <div><h3>置顶</h3>{pinned.map((x) => <SessionRow key={x.session_id} x={x} current={inChat && sessionId === x.session_id} onPick={onPick} />)}</div>}
           {groups.map(([k, list]) => <div key={k}><h3>{k}</h3>{list.map((x) => <SessionRow key={x.session_id} x={x} current={inChat && sessionId === x.session_id} onPick={onPick} />)}</div>)}
           {!pinned.length && !groups.length && <h3>还没有任务</h3>}

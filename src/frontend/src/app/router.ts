@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react';
+import { pageChange } from '../lib/motion';
 
 /**
  * Hash router. Every view state that matters for "refresh restores where I
@@ -107,13 +108,31 @@ export function buildHash(
 const listeners = new Set<() => void>();
 let current = parseHash(typeof window === 'undefined' ? '' : window.location.hash);
 
+/** Moving to another page, as opposed to changing what the page shows. A new task and a task are different pages. */
+export function isPageChange(a: Route, b: Route): boolean {
+  if (a.view !== b.view) return true;
+  return (a.view === 'agent' || a.view === 'lab') && !a.id !== !b.id;
+}
+
 function emit() {
-  current = parseHash(window.location.hash);
-  for (const l of listeners) l();
+  const next = parseHash(window.location.hash);
+  const commit = () => {
+    current = next;
+    for (const l of listeners) l();
+  };
+  if (isPageChange(current, next)) pageChange(commit);
+  else commit();
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('hashchange', emit);
+}
+
+/** Change the address inside a transition that is already running, in the same commit as the state it belongs to. */
+export function adoptHash(hash: string) {
+  window.history.pushState(window.history.state, '', `${window.location.pathname}${window.location.search}${hash}`);
+  current = parseHash(hash);
+  for (const l of listeners) l();
 }
 
 export function navigate(hash: string, { replace = false }: { replace?: boolean } = {}) {

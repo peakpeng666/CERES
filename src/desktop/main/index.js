@@ -1,5 +1,5 @@
 'use strict';
-const { app, BrowserWindow, Menu, dialog, ipcMain, session, shell } = require('electron');
+const { app, BrowserWindow, Menu, dialog, ipcMain, nativeTheme, session, shell } = require('electron');
 const path = require('node:path');
 const { Backend } = require('./backend');
 const { Container } = require('./container');
@@ -7,8 +7,10 @@ const { Settings } = require('./settings');
 const { Updater } = require('./updater');
 const { DataTransfer } = require('./data-transfer');
 
-const TITLE = '农业机器人路径规划工作台';
+const TITLE = 'Lab';
 const SPLASH = path.join(__dirname, '..', 'splash.html');
+const THEMES = ['system', 'light', 'dark'];
+const HANDOFF_MS = 340;   // the splash finishes its route before the app takes the window
 
 if (!app.requestSingleInstanceLock()) app.quit();
 app.setAppUserModelId('com.peakpeng.agri-route-workbench');
@@ -26,14 +28,25 @@ let quitting = false;
 const send = (channel, value) => { if (win && !win.isDestroyed()) win.webContents.send(channel, value); };
 const status = (text) => send('boot:status', text);
 const atOrigin = (url) => { try { return origin !== null && new URL(url).origin === origin; } catch { return false; } };
+const onSplash = () => Boolean(win && !win.isDestroyed() && win.webContents.getURL().startsWith('file:'));
+// The window's own colour is the page's, so nothing flashes between the splash and the app.
+const backdrop = () => (nativeTheme.shouldUseDarkColors ? '#23221e' : '#fbfaf6');
+// There is no title bar: the page runs to the top of the window, and the system's buttons sit over its 46 px top bar,
+// on whichever side the desktop keeps them. Clear, because that end of the bar is the sidebar on one side and the page on the other.
+const controls = () => ({ color: '#00000000', symbolColor: nativeTheme.shouldUseDarkColors ? '#eceae2' : '#25241f', height: 46 });
 
 function createWindow() {
   const bounds = settings.get('bounds', {});
+  const theme = settings.get('theme', 'system');
+  nativeTheme.themeSource = THEMES.includes(theme) ? theme : 'system';
   win = new BrowserWindow({
     width: bounds.width ?? 1360, height: bounds.height ?? 860, x: bounds.x, y: bounds.y, minWidth: 960, minHeight: 620,
-    title: TITLE, backgroundColor: '#f7f5ef', autoHideMenuBar: true, show: false,
+    title: TITLE, backgroundColor: backdrop(), autoHideMenuBar: true, show: false, titleBarStyle: 'hidden', titleBarOverlay: controls(),
     icon: path.join(__dirname, 'icon.png'),
-    webPreferences: { preload: path.join(__dirname, '..', 'preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false, spellcheck: false },
+    webPreferences: {
+      preload: path.join(__dirname, '..', 'preload.js'), contextIsolation: true, sandbox: true, nodeIntegration: false, spellcheck: false,
+      additionalArguments: settings.get('motion') === 'reduced' ? ['--lab-calm'] : [],
+    },
   });
   win.once('ready-to-show', () => win.show());
   win.on('close', () => settings.set('bounds', win.getNormalBounds()));
@@ -61,8 +74,13 @@ async function boot(hash = '') {
     } else {
       origin = await backend.start(status);
     }
+    if (onSplash()) {
+      send('boot:ready');
+      await new Promise((resolve) => setTimeout(resolve, HANDOFF_MS));
+    }
     await win.loadURL(`${origin}/${hash.startsWith('#/') ? hash : ''}`);
   } catch (error) {
+    if (win && !win.isDestroyed() && !onSplash()) await win.loadFile(SPLASH);
     send('boot:error', { message: String(error.message ?? error), log: backend.logPath, mode });
   }
 }
@@ -86,11 +104,11 @@ async function transferData(action) {
   const date = new Date().toISOString().replace(/[:.]/g, '-');
   let file, destination;
   if (action === 'export') {
-    const picked = await dialog.showSaveDialog(win, { title: '备份工作台数据', defaultPath: `urp-data-${date}.zip`, filters: [{ name: 'URP 数据包', extensions: ['zip'] }] });
+    const picked = await dialog.showSaveDialog(win, { title: '备份工作台数据', defaultPath: `urp-data-${date}.zip`, filters: [{ name: 'Lab 数据包', extensions: ['zip'] }] });
     if (picked.canceled) return { canceled: true };
     file = picked.filePath;
   } else {
-    const picked = await dialog.showOpenDialog(win, { title: '选择工作台数据包', properties: ['openFile'], filters: [{ name: 'URP 数据包', extensions: ['zip'] }] });
+    const picked = await dialog.showOpenDialog(win, { title: '选择工作台数据包', properties: ['openFile'], filters: [{ name: 'Lab 数据包', extensions: ['zip'] }] });
     if (picked.canceled) return { canceled: true };
     file = picked.filePaths[0];
     const folder = await dialog.showOpenDialog(win, { title: '选择恢复位置的上级目录（将在其中新建数据目录）', properties: ['openDirectory', 'createDirectory'] });
@@ -130,6 +148,15 @@ function wire() {
   handle('app:open-logs', () => shell.openPath(path.dirname(backend.logPath)));
   handle('app:retry', () => { void boot(); });
   handle('app:use-native', () => switchBackend('native'));
+  handle('app:theme', (theme) => {
+    if (!THEMES.includes(theme)) throw new Error('未知的外观');
+    nativeTheme.themeSource = theme;
+    if (settings.get('theme', 'system') !== theme) settings.set('theme', theme);
+  });
+  handle('app:motion', (motion) => {
+    const value = motion === 'reduced' ? 'reduced' : 'full';
+    if (settings.get('motion', 'full') !== value) settings.set('motion', value);
+  });
   handle('update:state', () => updater.state);
   handle('update:check', () => updater.check());
   handle('update:install', () => updater.install());
@@ -168,6 +195,11 @@ app.whenReady().then(async () => {
   dataTransfer = new DataTransfer(app, settings);
   updater = new Updater(app, (state) => send('update:state', state));
   session.defaultSession.setPermissionRequestHandler((_wc, permission, done) => done(permission === 'clipboard-sanitized-write'));
+  nativeTheme.on('updated', () => {
+    if (!win || win.isDestroyed()) return;
+    win.setBackgroundColor(backdrop());
+    win.setTitleBarOverlay?.(controls());
+  });
   menu();
   wire();
   await createWindow();

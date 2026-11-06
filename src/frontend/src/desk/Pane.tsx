@@ -21,7 +21,7 @@ import { Icon } from './Icon';
 import { LayerMap, boxOf, cumulative, type Box, type MapApi, type MapPlan, type MapView } from './LayerMap';
 import { ACTOR, FIELD, SOURCE, cx, dateCN, n0, n1, n2, n3, obstacleName, showValue, timeCN, toolName, TOOL } from './format';
 import { openFrames, runRecordHref, saveFile, sessionExportHref, useRunCache } from './nav';
-import { Facts, Kvs, Row, Rows } from './ui';
+import { Facts, Kvs, Marker, Row, Rows } from './ui';
 import s from './desk.module.css';
 
 type Service = { task: number; position: number; stop?: XY };
@@ -638,6 +638,7 @@ export function SessionPane() {
   const [exec, setExec] = useState<SimResult | null>(null);
   const [physics, setPhysics] = useState<PhysicsRun | null>(null);
   const api = useRef<MapApi | null>(null);
+  const strip = useRef<HTMLDivElement>(null);
 
   const matches = !!session?.scenario_id && scenario?.id === session.scenario_id && scenario.problem_class === 'fleet_routing' && !!draft;
   const baseInst = matches ? (draft as unknown as FleetInstance) : null;
@@ -682,7 +683,8 @@ export function SessionPane() {
   const sceneKey = inst ? `${session.scenario_id}:${signature(inst).length}:${inst === baseInst ? 'draft' : topRun}` : '';
   return (
     <div className={s.paneIn}>
-      <div className={s.tabs} role="tablist">
+      <div className={s.tabs} role="tablist" ref={strip}>
+        <Marker host={strip} match='[aria-selected="true"]' kind="line" watch={root} />
         {ROOTS.filter((r) => r.t !== 'map' || session.scenario_id).map((r) => (
           <button key={r.t} type="button" role="tab" className={s.tab} aria-selected={root === r.t}
             onClick={() => (root === r.t ? stack.length > 1 && setStack([stack[0]], 'pop') : openFrames([{ t: r.t } as Frame]))}>{r.label}</button>

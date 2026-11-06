@@ -12,12 +12,16 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-  padding: 8px 12px;
+  min-height: 46px;
+  box-sizing: border-box;
+  padding: 8px calc(12px + var(--controls-r, 0px)) 8px calc(12px + var(--bar-l, 0px));
   background: var(--mac-glass);
   backdrop-filter: var(--mac-blur);
   box-shadow: inset 0 -0.5px 0 var(--mac-separator-strong);
   z-index: 20;
+  -webkit-app-region: drag;
 }
+.toolbar :is(a, button, input, select, label) { -webkit-app-region: no-drag; }
 .workspaceNav {
   display: flex;
   align-items: center;
@@ -179,6 +183,7 @@
   text-align: right;
 }
 .toast {
+  -webkit-app-region: no-drag;
   position: fixed;
   left: 50%;
   bottom: 44px;
@@ -199,6 +204,7 @@
   background: rgba(30, 120, 55, 0.95);
 }
 .paletteBackdrop {
+  -webkit-app-region: no-drag;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.12);

@@ -13,7 +13,11 @@ contextBridge.exposeInMainWorld('desktop', {
   openLogs: () => ipcRenderer.invoke('app:open-logs'),
   retry: () => ipcRenderer.invoke('app:retry'),
   useNative: () => ipcRenderer.invoke('app:use-native'),
+  setTheme: (theme) => ipcRenderer.invoke('app:theme', theme),
+  setMotion: (motion) => ipcRenderer.invoke('app:motion', motion),
+  calm: process.argv.includes('--lab-calm'),
   onBootStatus: listen('boot:status'),
+  onBootReady: listen('boot:ready'),
   onBootError: listen('boot:error'),
   update: {
     state: () => ipcRenderer.invoke('update:state'),

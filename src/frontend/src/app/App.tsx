@@ -74,7 +74,7 @@ export function App() {
   const mainRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    document.title = isBpp ? `${VIEW_TITLES[route.view]} · BPP 历史结果 · 农业机器人路径规划工作台` : '农业机器人路径规划工作台';
+    document.title = isBpp ? `${VIEW_TITLES[route.view]} · BPP 历史结果 · Lab` : 'Lab';
   }, [route.view, isBpp]);
 
   useEffect(() => {

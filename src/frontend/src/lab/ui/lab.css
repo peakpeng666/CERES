@@ -91,6 +91,13 @@
   --mac-blur: none;
   --mac-ease: cubic-bezier(0.22, 0.8, 0.24, 1);
 
+  /* Motion: quick for feedback, slower for arrivals. The spring is for things that settle into place. */
+  --motion-quick: 140ms;
+  --motion-base: 240ms;
+  --motion-slow: 480ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: linear(0, 0.0089 1.6%, 0.0459 3.7%, 0.1135 6.1%, 0.2067 8.8%, 0.3171 11.6%, 0.4358 14.6%, 0.5541 17.7%, 0.6651 20.9%, 0.7637 24.2%, 0.8468 27.6%, 0.9133 31.1%, 0.9634 34.7%, 0.9987 38.3%, 1.0212 42%, 1.0335 45.8%, 1.0382 49.7%, 1.0375 53.6%, 1.0334 57.6%, 1.0277 61.6%, 1.0214 65.7%, 1.0155 69.8%, 1.0103 74%, 1.0062 78.2%, 1.0031 82.5%, 1.0009 86.8%, 0.9996 91.2%, 0.9988 95.6%, 1);
+
   --mac-fs-11: 11px;
   --mac-fs-12: 12px;
   --mac-fs-13: 13px;
@@ -291,4 +298,31 @@
     animation-duration: 0.001ms !important;
     transition-duration: 0.001ms !important;
   }
+}
+
+/* Page changes. Only the stage moves; the sidebar stays put, and the composer travels when both pages have one. */
+::view-transition-old(root), ::view-transition-new(root) { animation: none; mix-blend-mode: normal; }
+::view-transition-group(desk-side) { animation: none; }
+::view-transition-old(desk-side) { display: none; }
+::view-transition-new(desk-side) { animation: none; }
+::view-transition-old(desk-stage) { animation: 150ms var(--ease-out) both page-out; }
+::view-transition-new(desk-stage) { animation: 380ms var(--ease-out) both page-in; }
+/* A click during a change reaches the page underneath, not the snapshot. */
+::view-transition { pointer-events: none; }
+::view-transition-group(desk-composer) { animation-duration: 520ms; animation-timing-function: var(--ease-spring); z-index: 2; }
+::view-transition-old(desk-composer), ::view-transition-new(desk-composer) { animation-duration: 260ms; height: 100%; object-fit: fill; }
+@keyframes page-out { to { opacity: 0; transform: translateY(-3px); } }
+@keyframes page-in { from { opacity: 0; transform: translateY(9px); } }
+
+/* A theme change opens over the whole window: the new look sits above the old one while the clip grows. */
+:root[data-vt="theme"]::view-transition-old(root) { z-index: 0; }
+:root[data-vt="theme"]::view-transition-new(root) { z-index: 1; }
+
+:root[data-motion="reduced"] *, :root[data-motion="reduced"] *::before, :root[data-motion="reduced"] *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  transition-delay: 0ms !important;
+  scroll-behavior: auto !important;
 }

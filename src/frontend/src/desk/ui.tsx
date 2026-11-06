@@ -1,19 +1,75 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
+import { motionOff } from '../lib/motion';
 import { Icon, type IconName } from './Icon';
 import { cx, n1 } from './format';
 import { useDesk } from './store';
 import { useMedia } from './nav';
 import s from './desk.module.css';
 
+/**
+ * The mark behind the current item. It travels from one item to the next, so the eye follows the change.
+ * `watch` is whatever decides which item is current; the host needs `position: relative`.
+ */
+export function Marker({ host, match, kind, watch }: { host: RefObject<HTMLElement | null>; match: string; kind: 'pill' | 'line'; watch: unknown }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const placed = useRef(false);
+  useLayoutEffect(() => {
+    const box = host.current, mark = ref.current;
+    if (!box || !mark) return;
+    const place = (travel: boolean) => {
+      const item = box.querySelector<HTMLElement>(match);
+      if (!item) { mark.style.opacity = '0'; placed.current = false; return; }
+      const a = box.getBoundingClientRect(), b = item.getBoundingClientRect();
+      const x = b.left - a.left + box.scrollLeft, y = b.top - a.top + box.scrollTop;
+      if (travel && placed.current) mark.dataset.travel = '';
+      else delete mark.dataset.travel;
+      if (kind === 'pill') { mark.style.height = `${b.height}px`; mark.style.width = `${b.width}px`; mark.style.transform = `translate(${x}px, ${y}px)`; }
+      else mark.style.transform = `translateX(${x}px) scaleX(${b.width})`;
+      mark.style.opacity = '1';
+      placed.current = true;
+    };
+    place(true);
+    const resized = new ResizeObserver(() => place(false));
+    resized.observe(box);
+    return () => resized.disconnect();
+  }, [host, match, kind, watch]);
+  return <span ref={ref} className={kind === 'pill' ? s.markPill : s.markLine} aria-hidden />;
+}
+
+/** True for what arrived while the person was watching; history that loads with a task stays still. */
+export const Fresh = createContext(false);
+
+/** A figure that counts up to its value the first time it appears. The end state is always the real number. */
+export function Roll({ value, format }: { value: number | null | undefined; format: (v?: number | null) => string }) {
+  const fresh = useContext(Fresh);
+  const ref = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!fresh || !el || typeof value !== 'number' || motionOff()) return;
+    const t0 = performance.now();
+    let frame = 0;
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / 900);
+      el.textContent = format(value * (1 - (1 - p) ** 4));
+      if (p < 1) frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => { cancelAnimationFrame(frame); el.textContent = format(value); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return <span ref={ref}>{format(value)}</span>;
+}
+
 /** The disclosure row: one click opens one layer. The content mounts on first open and stays. */
-export function Fold({ summary, children, className, status, defaultOpen = false }: {
-  summary: ReactNode; children: () => ReactNode; className?: string; status?: string; defaultOpen?: boolean;
+export function Fold({ summary, children, className, status, lead, defaultOpen = false }: {
+  summary: ReactNode; children: () => ReactNode; className?: string; status?: string; lead?: ReactNode; defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
   const [seen, setSeen] = useState(defaultOpen);
   return (
     <div className={className}>
+      {lead}
       <button type="button" className={s.disc} aria-expanded={open} data-st={status} onClick={() => { setOpen(!open); setSeen(true); }}>
         <Icon name="right" size={12} className={s.chev} />
         {summary}
@@ -75,7 +131,7 @@ export function useMenu() {
     setState({ items, x: Math.max(8, Math.min(r.left, innerWidth - 348)), y: up ? innerHeight - r.top + 6 : r.bottom + 6, up });
   };
   const node = state ? createPortal(
-    <div ref={ref} className={s.menu} role="menu" style={{ left: state.x, ...(state.up ? { bottom: state.y } : { top: state.y }) }}>
+    <div ref={ref} className={s.menu} role="menu" data-up={state.up || undefined} style={{ left: state.x, ...(state.up ? { bottom: state.y } : { top: state.y }) }}>
       {state.items.map((it, i) => it.label === '-' ? <div key={i} className={s.menuSep} /> : (
         <button key={i} type="button" role="menuitem" disabled={it.disabled} onClick={() => { setState(null); it.onSelect?.(); }}>
           <span>{it.label}{it.sub ? <small>{it.sub}</small> : null}</span>{it.on ? <Icon name="check" size={13} /> : null}

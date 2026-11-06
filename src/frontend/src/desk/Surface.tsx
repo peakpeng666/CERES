@@ -8,7 +8,7 @@ import { Composer } from './Composer';
 import { useDesk } from './store';
 import { Icon } from './Icon';
 import { sessionLabel, useMedia } from './nav';
-import { TopBar, useMenu } from './ui';
+import { Marker, TopBar, useMenu } from './ui';
 import s from './desk.module.css';
 
 export type SurfaceName = 'plan' | 'assets' | 'experiments' | 'sim' | 'library';
@@ -55,10 +55,12 @@ function Region({ surface, region, tabs, more, tail }: { surface: SurfaceName; r
   const seen = useRef(new Set<PanelId>());
   seen.current.add(current);
   const menu = useMenu();
+  const strip = useRef<HTMLDivElement>(null);
   return (
     <>
       {(tabs.length > 1 || tail || more) && (
-        <div className={s.tabs} role="tablist">
+        <div className={s.tabs} role="tablist" ref={strip}>
+          <Marker host={strip} match='[aria-selected="true"]' kind="line" watch={current} />
           {tabs.length > 1 && tabs.map((t) => <button key={t.id} type="button" role="tab" className={s.tab} aria-selected={t.id === current} onClick={() => setTab(key, t.id)}>{t.label ?? PANELS[t.id].title}</button>)}
           {overflow && <button type="button" role="tab" className={s.tab} aria-selected>{overflow.label ?? PANELS[overflow.id].title}</button>}
           {more && <button type="button" className={s.tab} aria-haspopup="menu" onClick={(e) => menu.open(e.currentTarget, more.map((t) => ({ label: t.label ?? PANELS[t.id].title, on: t.id === current, onSelect: () => setTab(key, t.id) })))}>更多</button>}
@@ -132,10 +134,12 @@ const PAGE_TABS: Record<string, { title: string; tabs: { label: string; href: st
 /** Library pages share one header: a name and the rooms inside it. */
 export function PageHead({ page, route, right, surface }: { page: keyof typeof PAGE_TABS; route: Route; right?: ReactNode; surface?: string }) {
   const def = PAGE_TABS[page];
+  const strip = useRef<HTMLElement>(null);
   return (
     <>
       <TopBar surface={surface} right={right}><h1 className={s.pageTitle}>{def.title}</h1></TopBar>
-      <nav className={s.pageNav} aria-label={def.title}>
+      <nav className={s.pageNav} aria-label={def.title} ref={strip}>
+        <Marker host={strip} match='[aria-current="page"]' kind="line" watch={route.hash} />
         {def.tabs.map((t) => <a key={t.href} href={t.href} aria-current={t.on(route) ? 'page' : undefined}>{t.label}</a>)}
       </nav>
     </>

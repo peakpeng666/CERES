@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { events } from '../lab/api';
-import { navigate } from '../app/router';
+import { adoptHash } from '../app/router';
+import { pageChange } from '../lib/motion';
 import { agentApi, type AgentMode, type AgentSession, type ControlAction, type ModelInfo, type ProvidersInfo, type SessionSummary } from './api';
 
 interface AgentStore {
@@ -141,9 +142,12 @@ export const useAgent = create<AgentStore>((set, get) => {
         if (!current(r)) return false;
         selection++;
         appliedSequence = r.sequence;
-        set({ session, sessionId: session.session_id, sending: false, loadError: null, newMap: null });
-        navigate(`#/agent/${encodeURIComponent(session.session_id)}`);
-        schedulePoll();
+        // One commit for the task and its address, so the composer can travel from the new-task page to the conversation.
+        pageChange(() => {
+          set({ session, sessionId: session.session_id, sending: false, loadError: null, newMap: null });
+          adoptHash(`#/agent/${encodeURIComponent(session.session_id)}`);
+          schedulePoll();
+        });
         return true;
       } catch (e) {
         if (current(r)) set({ sending: false, actionError: message(e) });

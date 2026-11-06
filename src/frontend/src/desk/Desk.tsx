@@ -32,6 +32,7 @@ const WORKSPACE_OF: Partial<Record<ViewName, Workspace>> = {
 };
 const SURFACE_OF: Partial<Record<ViewName, SurfaceName>> = { plan: 'plan', assets: 'assets', experiments: 'experiments', runs: 'experiments', sim: 'sim', library: 'library', archive: 'library' };
 const BPP: ViewName[] = ['overview', 'samples', 'replay', 'risk', 'evidence'];
+const PRODUCT = 'Lab';
 
 function hrefFor(w: Workspace): string {
   const st = useStudio.getState();
@@ -210,22 +211,26 @@ function AgentSurface({ route }: { route: Route }) {
 
   // Tab title carries the session state, so a waiting task is visible from another window.
   useEffect(() => {
-    if (!session) { document.title = '农业机器人路径规划工作台'; return; }
+    if (!session) { document.title = PRODUCT; return; }
     const waiting = ['awaiting_approval', 'awaiting_confirmation', 'awaiting_user'].includes(session.state);
-    document.title = `${waiting ? `（${STATE_LABEL[session.state]}）` : ''}${sessionLabel(session)} · 农业机器人路径规划工作台`;
-    return () => { document.title = '农业机器人路径规划工作台'; };
+    document.title = `${waiting ? `（${STATE_LABEL[session.state]}）` : ''}${sessionLabel(session)} · ${PRODUCT}`;
+    return () => { document.title = PRODUCT; };
   }, [session]);
 
-  if (!sessionId) return <section className={s.main} style={{ flex: 1 }}><NewTaskBar /><NewTask /></section>;
+  if (!sessionId) return <section className={s.main} style={{ flex: 1 }}><NewTaskBar float /><NewTask /></section>;
   return <SurfaceFrame name="agent" pane={<SessionPane />}><Conversation /></SurfaceFrame>;
 }
 
-function NewTaskBar() {
+/** The page's own top bar. With the sidebar open it is empty, and still the place to move the window by. */
+function NewTaskBar({ float }: { float?: boolean }) {
   const sideOpen = useDesk((d) => d.sideOpen);
   const setSide = useDesk((d) => d.setSide);
   const narrow = useMedia('(max-width: 1060px)');
-  if (sideOpen && !narrow) return null;
-  return <header className={s.bar}><button type="button" className={s.iconBtn} aria-label="打开任务栏" onClick={() => setSide(true)}><Icon name="side" /></button></header>;
+  return (
+    <header className={float ? `${s.bar} ${s.barFloat}` : s.bar}>
+      {(!sideOpen || narrow) && <button type="button" className={s.iconBtn} aria-label="打开任务栏" onClick={() => setSide(true)}><Icon name="side" /></button>}
+    </header>
+  );
 }
 
 export function Desk({ route, children }: { route: Route; children?: ReactNode }) {

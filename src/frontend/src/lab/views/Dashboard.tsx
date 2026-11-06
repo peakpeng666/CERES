@@ -601,7 +601,7 @@ export function Dashboard({ embedded = false }: { embedded?: boolean }) {
   if (embedded) return <div className={s.embedded}>{body}</div>;
   return (
     <Page
-      title="农业机器人路径规划工作台"
+      title="Lab"
       subtitle="面向农业机器人的路径规划算法库构建与智能推荐方法研究"
       actions={
         <>

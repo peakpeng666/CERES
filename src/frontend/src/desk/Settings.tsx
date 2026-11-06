@@ -1,8 +1,9 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import type { Route } from '../app/router';
+import { themeReveal } from '../lib/motion';
 import { PanelHost, type PanelId } from '../studio/panelRegistry';
-import { useDesk, type Theme } from './store';
-import { TopBar } from './ui';
+import { useDesk, type Motion, type Theme } from './store';
+import { Marker, TopBar } from './ui';
 import s from './desk.module.css';
 
 const SECTIONS: { id: string; label: string; panel?: PanelId }[] = [
@@ -28,11 +29,17 @@ function General() {
   const setTheme = useDesk((d) => d.setTheme);
   const dock = useDesk((d) => d.dock);
   const setDock = useDesk((d) => d.setDock);
+  const motion = useDesk((d) => d.motion);
+  const setMotion = useDesk((d) => d.setMotion);
   const themes: [Theme, string][] = [['system', '跟随系统'], ['light', '浅色'], ['dark', '深色']];
+  const motions: [Motion, string][] = [['full', '完整'], ['reduced', '减弱']];
   return (
     <div className={s.pageIn}>
       <h2>外观</h2>
-      <div className={s.choice}>{themes.map(([k, label]) => <button key={k} type="button" aria-pressed={theme === k} onClick={() => setTheme(k)}>{label}</button>)}</div>
+      <div className={s.choice}>{themes.map(([k, label]) => <button key={k} type="button" aria-pressed={theme === k} onClick={(e) => themeReveal(() => setTheme(k), e.clientX, e.clientY)}>{label}</button>)}</div>
+      <h2>动效</h2>
+      <div className={s.choice}>{motions.map(([k, label]) => <button key={k} type="button" aria-pressed={motion === k} onClick={() => setMotion(k)}>{label}</button>)}</div>
+      <p className={s.txt} style={{ paddingTop: 8 }}>减弱后界面直接切换，不做过渡。系统设置里关闭动画时也一样。</p>
       <h2>工作区布局</h2>
       <div className={s.choice}>
         <button type="button" aria-pressed={!dock} onClick={() => setDock(false)}>标准布局</button>
@@ -48,14 +55,16 @@ function General() {
 /** Everything about the machine and the harness, in one place, the way a desktop app keeps its settings. */
 export function SettingsPage({ route }: { route: Route }) {
   const section = useMemo(() => SECTIONS.find((x) => x.id === route.id) ?? SECTIONS[0], [route.id]);
+  const nav = useRef<HTMLElement>(null);
   return (
     <div className={s.main} style={{ flex: 1 }}>
       <TopBar><h1 className={s.pageTitle}>设置</h1></TopBar>
       <div className={s.settings}>
-        <nav className={s.settingsNav} aria-label="设置">
+        <nav className={s.settingsNav} aria-label="设置" ref={nav}>
+          <Marker host={nav} match='[aria-current="page"]' kind="pill" watch={section.id} />
           {SECTIONS.map((x) => <a key={x.id} href={`#/system/${x.id}`} aria-current={x.id === section.id ? 'page' : undefined}>{x.label}</a>)}
         </nav>
-        <div className={s.settingsBody}>{section.panel ? <PanelHost id={section.panel} /> : <div className={s.page}><General /></div>}</div>
+        <div className={s.settingsBody} key={section.id}>{section.panel ? <PanelHost id={section.panel} /> : <div className={s.page}><General /></div>}</div>
       </div>
     </div>
   );
