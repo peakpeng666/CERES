@@ -13,14 +13,9 @@ sha="${GITHUB_SHA:?}"
 [[ "$(git rev-parse HEAD)" == "$sha" ]] || { echo 'Checkout and GITHUB_SHA disagree' >&2; exit 2; }
 source_url="${SOURCE:-https://github.com/peakpeng666/URP}"
 
-# Dispatch on redo/another branch publishes only its immutable SHA.
-# It must not silently replace the deploy or latest channel.
+# Publish a commit-shaped lookup tag and export the actual content digest.
+# Channel aliases are promoted only from the verified content digests.
 tags=("$sha")
-if [[ "${GITHUB_REF:-}" == refs/tags/v* ]]; then
-  tags+=("${GITHUB_REF#refs/tags/}" latest)
-elif [[ "${GITHUB_REF:-}" == refs/heads/deploy ]]; then
-  tags+=(deploy)
-fi
 
 args=()
 for tag in "${tags[@]}"; do
@@ -37,7 +32,10 @@ docker build -f "$dockerfile" \
 bash deploy/test-image.sh "${image}:${sha}" "$sha" "$name" \
   "${URP_IMAGE_TEST_OUTPUT:-.local-state/image-${name}}"
 
-for tag in "${tags[@]}"; do
-  docker push "${image}:${tag}"
-done
-
+# The commit-shaped tag can be overwritten. Capture the digest reported by
+# this exact push, not a later resolution of that tag from the registry.
+push_log="$(docker push "${image}:${sha}")"
+printf '%s\n' "$push_log"
+digest="$(printf '%s\n' "$push_log" | sed -nE 's/^.*digest: (sha256:[0-9a-f]{64})( size: [0-9]+)?$/\1/p')"
+[[ "$digest" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo 'Push did not return exactly one valid manifest digest' >&2; exit 1; }
+if [[ -n "${GITHUB_OUTPUT:-}" ]]; then printf 'digest=%s\n' "$digest" >> "$GITHUB_OUTPUT"; fi

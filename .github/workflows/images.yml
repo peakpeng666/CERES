@@ -2,11 +2,19 @@ name: Publish images
 
 on:
   push:
-    branches: [deploy]
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      publish_channels:
+        description: 'Promote verified digests to main or version channels'
+        type: boolean
+        default: false
   workflow_call:
     inputs:
       checks_passed:
+        type: boolean
+        default: false
+      publish_channels:
         type: boolean
         default: false
 
@@ -30,6 +38,8 @@ jobs:
       contents: read
 
   bench:
+    outputs:
+      digest: ${{ steps.publish.outputs.digest }}
     needs: checks
     if: ${{ always() && (needs.checks.result == 'success' || (inputs.checks_passed && needs.checks.result == 'skipped')) }}
     runs-on: ubuntu-22.04
@@ -53,6 +63,7 @@ jobs:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: Build and push urp-bench
+        id: publish
         run: bash deploy/publish-image.sh bench deploy/Dockerfile
       - name: Retain bench image acceptance evidence
         if: always()
@@ -64,6 +75,8 @@ jobs:
           if-no-files-found: warn
 
   sim:
+    outputs:
+      digest: ${{ steps.publish.outputs.digest }}
     needs: checks
     if: ${{ always() && (needs.checks.result == 'success' || (inputs.checks_passed && needs.checks.result == 'skipped')) }}
     runs-on: ubuntu-22.04
@@ -91,6 +104,7 @@ jobs:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
       - name: Build and push urp-sim
+        id: publish
         run: bash deploy/publish-image.sh sim deploy/Dockerfile.simulation
       - name: Retain sim image acceptance evidence
         if: always()
@@ -103,31 +117,44 @@ jobs:
 
   verify-public-pull:
     needs: [bench, sim]
-    if: always() && (needs.bench.result == 'success' || needs.sim.result == 'success')
+    if: always() && needs.bench.result == 'success' && needs.sim.result == 'success'
     runs-on: ubuntu-22.04
     timeout-minutes: 15
     permissions:
       contents: read
+    outputs:
+      bench_digest: ${{ steps.verify.outputs.bench_digest }}
+      sim_digest: ${{ steps.verify.outputs.sim_digest }}
     steps:
-      - name: Verify anonymous pulls without changing package permissions
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          sparse-checkout: deploy
+      - name: Verify anonymous pulls of this run's exact manifests
+        id: verify
         env:
-          BENCH_RESULT: ${{ needs.bench.result }}
-          SIM_RESULT: ${{ needs.sim.result }}
-        run: |
-          set -euo pipefail
-          owner="$(printf '%s' "$GITHUB_REPOSITORY_OWNER" | tr '[:upper:]' '[:lower:]')"
-          export DOCKER_CONFIG="$(mktemp -d)"
-          trap 'rm -rf "$DOCKER_CONFIG"' EXIT
-          for name in bench sim; do
-            result="$BENCH_RESULT"
-            if [[ "$name" == sim ]]; then result="$SIM_RESULT"; fi
-            [[ "$result" == success ]] || continue
-            image="ghcr.io/${owner}/urp-${name}:${GITHUB_SHA}"
-            if ! docker pull "$image"; then
-              echo "::error::Anonymous pull failed for $image. Check registry availability and package visibility manually; this workflow does not change permissions."
-              exit 1
-            fi
-            actual="$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' "$image")"
-            [[ "$actual" == "$GITHUB_SHA" ]] || { echo "::error::Published revision mismatch: $actual"; exit 1; }
-            docker image inspect --format '{{json .RepoDigests}}' "$image" >> "$GITHUB_STEP_SUMMARY"
-          done
+          BENCH_DIGEST: ${{ needs.bench.outputs.digest }}
+          SIM_DIGEST: ${{ needs.sim.outputs.digest }}
+        run: bash deploy/verify-published-images.sh
+
+  promote-channels:
+    needs: [bench, sim, verify-public-pull]
+    if: ${{ always() && needs.bench.result == 'success' && needs.sim.result == 'success' && needs.verify-public-pull.result == 'success' && (inputs.publish_channels || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
+    # Constant across direct and reusable callers, branches, tags, and reruns.
+    concurrency:
+      group: urp-image-channel-promotion
+      cancel-in-progress: false
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+          sparse-checkout: deploy
+      - name: Login to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Promote checked image digests to channels
+        env:
+          BENCH_DIGEST: ${{ needs.verify-public-pull.outputs.bench_digest }}
+          SIM_DIGEST: ${{ needs.verify-public-pull.outputs.sim_digest }}
+        run: bash deploy/promote-images.sh

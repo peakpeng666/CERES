@@ -12,6 +12,8 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 SHA = "a" * 40
+BENCH_DIGEST = "sha256:" + "1" * 64
+SIM_DIGEST = "sha256:" + "2" * 64
 
 
 class PublicationTests(unittest.TestCase):
@@ -28,14 +30,18 @@ class PublicationTests(unittest.TestCase):
             "CALL_LOG": str(self.log),
             "GITHUB_SHA": SHA,
             "GITHUB_REPOSITORY_OWNER": "PeakPeng666",
-            "GITHUB_REF": "refs/heads/deploy",
-            "BUILD_EXIT": "0", "SMOKE_EXIT": "0",
+            "GITHUB_REF": "refs/heads/main",
+            "BUILD_EXIT": "0", "SMOKE_EXIT": "0", "PUSH_DIGEST": BENCH_DIGEST,
+            "GITHUB_OUTPUT": str(self.root / "outputs"),
         }
         self.command("git", "#!/bin/sh\nprintf '%s\\n' \"$GITHUB_SHA\"\n")
         self.command("docker", """#!/usr/bin/env python3
 import json, os, sys
 with open(os.environ['CALL_LOG'], 'a') as out:
     out.write(json.dumps(sys.argv[1:]) + '\\n')
+if sys.argv[1] == 'push':
+    if os.environ.get('PUSH_EXIT'): sys.exit(int(os.environ['PUSH_EXIT']))
+    print(os.environ.get('PUSH_LOG', 'tag: digest: ' + os.environ['PUSH_DIGEST'] + ' size: 1234'))
 sys.exit(int(os.environ['BUILD_EXIT']) if sys.argv[1] == 'build' else 0)
 """)
         (self.root / "deploy/test-image.sh").write_text(
@@ -58,15 +64,14 @@ sys.exit(int(os.environ['BUILD_EXIT']) if sys.argv[1] == 'build' else 0)
         events = [json.loads(x) for x in self.log.read_text().splitlines()] if self.log.exists() else []
         return result, events
 
-    def test_deploy_checks_before_any_push_and_passes_full_revision(self):
+    def test_main_checks_before_any_push_and_passes_full_revision(self):
         result, events = self.run_publish()
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertEqual([e[0] for e in events], ["build", "smoke", "push", "push"])
+        self.assertEqual([e[0] for e in events], ["build", "smoke", "push"])
         self.assertIn("URP_REVISION=" + SHA, events[0])
         self.assertIn("org.opencontainers.image.revision=" + SHA, events[0])
         self.assertEqual(events[2:], [
             ["push", "ghcr.io/peakpeng666/urp-bench:" + SHA],
-            ["push", "ghcr.io/peakpeng666/urp-bench:deploy"],
         ])
 
     def test_smoke_failure_never_pushes(self):
@@ -79,18 +84,18 @@ sys.exit(int(os.environ['BUILD_EXIT']) if sys.argv[1] == 'build' else 0)
         self.assertEqual(result.returncode, 7)
         self.assertEqual([e[0] for e in events], ["build"])
 
-    def test_redo_dispatch_does_not_replace_deploy(self):
-        result, events = self.run_publish(GITHUB_REF="refs/heads/redo")
+    def test_other_branch_dispatch_does_not_replace_main(self):
+        result, events = self.run_publish(GITHUB_REF="refs/heads/feature/test")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual([e for e in events if e[0] == "push"], [
             ["push", "ghcr.io/peakpeng666/urp-bench:" + SHA]
         ])
 
-    def test_release_tag_preserves_version_and_sha(self):
+    def test_release_build_only_publishes_sha_before_joint_promotion(self):
         result, events = self.run_publish(GITHUB_REF="refs/tags/v2.3.4")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual([e[1].rsplit(":", 1)[1] for e in events if e[0] == "push"],
-                         [SHA, "v2.3.4", "latest"])
+                         [SHA])
 
     def test_malformed_revision_fails_before_build(self):
         result, events = self.run_publish(GITHUB_SHA="shortsha")
@@ -102,6 +107,25 @@ sys.exit(int(os.environ['BUILD_EXIT']) if sys.argv[1] == 'build' else 0)
         result, events = self.run_publish()
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual(events, [])
+
+
+    def test_push_digest_is_exported_from_exact_push_response(self):
+        result, events = self.run_publish()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((self.root / 'outputs').read_text(), 'digest=' + BENCH_DIGEST + '\n')
+        self.assertFalse(any(e[:2] == ['image', 'inspect'] for e in events))
+
+    def test_missing_or_ambiguous_push_digest_does_not_export(self):
+        for log in ('no digest returned', 'digest: sha256:' + '1' * 64 + '\ndigest: sha256:' + '2' * 64):
+            with self.subTest(log=log):
+                result, events = self.run_publish(PUSH_LOG=log)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertFalse((self.root / 'outputs').exists())
+
+    def test_failed_push_cannot_export_acceptance_identity(self):
+        result, events = self.run_publish(PUSH_EXIT='8')
+        self.assertEqual(result.returncode, 8)
+        self.assertFalse((self.root / 'outputs').exists())
 
 
 class HealthCheckTests(unittest.TestCase):
@@ -311,6 +335,160 @@ class ComposeContractTests(unittest.TestCase):
                 self.assertIn('${URP_PORT:-4100}:4100', source)
                 self.assertIn('      URP_PORT: "4100"', source)
                 self.assertNotIn('URP_PORT: "${URP_PORT', source)
+
+
+class ChannelPromotionTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.root = Path(self.temp.name)
+        self.bin = self.root / 'bin'
+        self.bin.mkdir()
+        self.log = self.root / 'calls.jsonl'
+        docker = self.bin / 'docker'
+        docker.write_text("""#!/usr/bin/env python3
+import json, os, sys
+from pathlib import Path
+a = sys.argv[1:]
+with open(os.environ['CALL_LOG'], 'a') as f:
+    f.write(json.dumps(a) + '\\n')
+with open(os.environ['CONFIG_LOG'], 'a') as f:
+    f.write(os.environ.get('DOCKER_CONFIG', '') + '\\n')
+if a[0] == 'pull' and 'urp-sim@' in a[-1] and os.environ.get('FAIL_SIM'):
+    sys.exit(7)
+if a[:2] == ['image', 'inspect']:
+    print(('b' * 40) if 'urp-sim@' in a[-1] and os.environ.get('BAD_SIM') else os.environ['GITHUB_SHA'])
+if a[:3] == ['buildx', 'imagetools', 'create']:
+    resolved = a[-1].split('@', 1)[1] if '@' in a[-1] else os.environ.get('MUTATED_SHA_TAG_DIGEST', 'unverified-tag')
+    with open(os.environ['PROMOTED_DIGEST_LOG'], 'a') as f:
+        f.write(resolved + '\\n')
+""")
+        docker.chmod(0o755)
+        git = self.bin / 'git'
+        git.write_text("#!/bin/sh\n[ -z \"$GIT_FAIL\" ] || exit 12\nprintf '%s\\trefs/heads/main\\n' \"$REMOTE_HEAD\"\n")
+        git.chmod(0o755)
+        self.env = {**os.environ, 'PATH': str(self.bin) + os.pathsep + os.environ['PATH'],
+                    'CALL_LOG': str(self.log), 'CONFIG_LOG': str(self.root / 'configs'),
+                    'PROMOTED_DIGEST_LOG': str(self.root / 'promoted-digests'),
+                    'GITHUB_SHA': SHA, 'REMOTE_HEAD': SHA, 'GIT_FAIL': '',
+                    'GITHUB_REPOSITORY_OWNER': 'PeakPeng666', 'GITHUB_REF': 'refs/heads/main',
+                    'BENCH_DIGEST': BENCH_DIGEST, 'SIM_DIGEST': SIM_DIGEST,
+                    'GITHUB_OUTPUT': str(self.root / 'outputs'), 'GITHUB_STEP_SUMMARY': str(self.root / 'summary')}
+
+    def tearDown(self):
+        self.temp.cleanup()
+
+    def run_script(self, script, **env):
+        p = subprocess.run(['bash', str(ROOT / 'deploy' / script)],
+                           env={**self.env, **env}, capture_output=True, text=True)
+        events = [json.loads(x) for x in self.log.read_text().splitlines()] if self.log.exists() else []
+        return p, events
+
+    def run_promotion(self, **env):
+        return self.run_script('promote-images.sh', **env)
+
+    def test_both_digest_sources_checked_before_any_main_alias_changes(self):
+        p, events = self.run_promotion()
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual([x[0] for x in events], ['pull', 'image', 'pull', 'image', 'buildx', 'buildx'])
+        updates = [x for x in events if x[0] == 'buildx']
+        self.assertEqual([x[-2] for x in updates], ['ghcr.io/peakpeng666/urp-bench:main', 'ghcr.io/peakpeng666/urp-sim:main'])
+        self.assertEqual([x[-1] for x in updates], ['ghcr.io/peakpeng666/urp-bench@' + BENCH_DIGEST, 'ghcr.io/peakpeng666/urp-sim@' + SIM_DIGEST])
+        self.assertTrue(all('--prefer-index=false' in x for x in updates))
+
+    def test_second_image_failure_leaves_all_aliases_unchanged(self):
+        p, events = self.run_promotion(FAIL_SIM='1')
+        self.assertEqual(p.returncode, 7)
+        self.assertFalse(any(x[0] == 'buildx' for x in events))
+
+    def test_second_revision_mismatch_leaves_all_aliases_unchanged(self):
+        p, events = self.run_promotion(BAD_SIM='1')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertFalse(any(x[0] == 'buildx' for x in events))
+
+    def test_version_promotes_both_without_reordering_latest(self):
+        p, events = self.run_promotion(GITHUB_REF='refs/tags/v2.3.4')
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual([x[-2].rsplit(':', 1)[1] for x in events if x[0] == 'buildx'], ['v2.3.4', 'v2.3.4'])
+        self.assertNotIn(':latest', json.dumps(events))
+
+    def test_non_main_branch_has_no_channel_side_effects(self):
+        p, events = self.run_promotion(GITHUB_REF='refs/heads/feature/test')
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual(events, [])
+
+    def test_malformed_sha_stops_before_registry_access(self):
+        p, events = self.run_promotion(GITHUB_SHA='abc123')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual(events, [])
+
+    def test_malformed_version_tag_stops_before_registry_access(self):
+        p, events = self.run_promotion(GITHUB_REF='refs/tags/vbad/tag')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual(events, [])
+
+    def test_missing_digest_fails_before_registry_access(self):
+        p, events = self.run_promotion(SIM_DIGEST='')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual(events, [])
+
+    def test_same_sha_tag_rewrite_cannot_change_verified_digest_source(self):
+        # A competing run may reuse the SHA label but cannot redirect @digest.
+        changed = 'sha256:' + 'f' * 64
+        p, events = self.run_promotion(MUTATED_SHA_TAG_DIGEST=changed)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertNotIn(':' + SHA, json.dumps(events))
+        self.assertNotIn(changed, json.dumps(events))
+        self.assertEqual((self.root / 'promoted-digests').read_text().splitlines(), [BENCH_DIGEST, SIM_DIGEST])
+        self.assertEqual([x[-1] for x in events if x[0] == 'buildx'],
+                         ['ghcr.io/peakpeng666/urp-bench@' + BENCH_DIGEST, 'ghcr.io/peakpeng666/urp-sim@' + SIM_DIGEST])
+
+    def test_stale_main_rerun_does_not_change_any_alias(self):
+        p, events = self.run_promotion(REMOTE_HEAD='c' * 40)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn('Skipping stale main', p.stdout)
+        self.assertFalse(any(x[0] == 'buildx' for x in events))
+
+    def test_remote_head_lookup_failure_fails_closed(self):
+        p, events = self.run_promotion(GIT_FAIL='1')
+        self.assertEqual(p.returncode, 12)
+        self.assertFalse(any(x[0] == 'buildx' for x in events))
+
+
+class DigestVerificationTests(unittest.TestCase):
+    setUp = ChannelPromotionTests.setUp
+    tearDown = ChannelPromotionTests.tearDown
+    run_script = ChannelPromotionTests.run_script
+
+    def test_exact_digest_verification_exports_only_after_both_pass(self):
+        p, events = self.run_script('verify-published-images.sh')
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual((self.root / 'outputs').read_text(), 'bench_digest=' + BENCH_DIGEST + '\nsim_digest=' + SIM_DIGEST + '\n')
+        self.assertEqual([x[-1] for x in events if x[0] == 'pull'],
+                         ['ghcr.io/peakpeng666/urp-bench@' + BENCH_DIGEST, 'ghcr.io/peakpeng666/urp-sim@' + SIM_DIGEST])
+
+    def test_second_pull_failure_exports_no_verified_digests(self):
+        p, events = self.run_script('verify-published-images.sh', FAIL_SIM='1')
+        self.assertEqual(p.returncode, 7)
+        self.assertFalse((self.root / 'outputs').exists())
+
+    def test_revision_mismatch_exports_no_verified_digests(self):
+        p, events = self.run_script('verify-published-images.sh', BAD_SIM='1')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertFalse((self.root / 'outputs').exists())
+
+    def test_invalid_digest_fails_before_registry_access(self):
+        p, events = self.run_script('verify-published-images.sh', BENCH_DIGEST='sha256:nope')
+        self.assertNotEqual(p.returncode, 0)
+        self.assertEqual(events, [])
+
+    def test_verification_never_uses_existing_registry_credentials(self):
+        old = str(self.root / 'old-docker-config')
+        p, events = self.run_script('verify-published-images.sh', DOCKER_CONFIG=old)
+        self.assertEqual(p.returncode, 0, p.stderr)
+        configs = (self.root / 'configs').read_text().splitlines()
+        self.assertEqual(len(set(configs)), 1)
+        self.assertNotEqual(configs[0], old)
+        self.assertFalse(Path(configs[0]).exists())
 
 
 if __name__ == "__main__":

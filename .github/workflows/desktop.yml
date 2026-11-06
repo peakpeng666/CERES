@@ -85,6 +85,7 @@ jobs:
     uses: ./.github/workflows/images.yml
     with:
       checks_passed: true
+      publish_channels: ${{ github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') }}
     permissions:
       contents: read
       packages: write
