@@ -9,57 +9,11 @@ import numpy as np
 
 from .. import time_windows
 from .fleet_balanced import STOP_S, drive_seconds
+from .fleet_constraints import _disable_unused_depots, _forbid_unreachable_arcs, _scaled_costs
 from .fleet_common import depot_list, fleet_classes, vehicle_table
 from .fleet_trace import earliest_end_sample as _earliest_end_sample, makespan_callback, makespan_sample as _makespan_sample
 
 LATE_PENALTY = 100_000      # per 0.1 s late: lateness outweighs any distance or span the search could save
-
-
-def _scaled_costs(values, scale, max_arc_cost, reachable=None):
-    """Round finite costs only; zero placeholders must be excluded by the model.
-
-    Bound before the int64 cast (and compare as Python ints at its upper edge).
-    A supplied reachability mask also detects arithmetic overflow on real arcs,
-    rather than silently treating that overflow as a newly missing edge.
-    """
-    values = np.asarray(values, dtype=float)
-    if np.isnan(values).any() or (values < 0).any():
-        raise ValueError('求解器距离/时间须为非负有限值或不可达的正无穷')
-    reachable = np.isfinite(values) if reachable is None else reachable
-    with np.errstate(over='ignore', invalid='ignore'):
-        rounded = np.rint(values[reachable] * scale)
-    if not np.isfinite(rounded).all() or (rounded.size and int(rounded.max()) > max_arc_cost):
-        raise ValueError('求解器距离/时间超出安全整数标度范围')
-    costs = np.zeros(values.shape, dtype=np.int64)
-    costs[reachable] = rounded.astype(np.int64)
-    return costs, reachable
-
-
-def _forbid_unreachable_arcs(routing, manager, reachable):
-    """Forbid absent arcs in NextVar domains, including every start/end copy."""
-    if reachable.all():
-        return
-    nodes = [manager.IndexToNode(i) for i in range(manager.GetNumberOfIndices())]
-    sources = {}
-    for i in range(routing.Size()):  # end indices have no NextVar
-        sources.setdefault(nodes[i], []).append(i)
-    for node, indices in sources.items():
-        blocked = np.flatnonzero(~reachable[node, nodes]).tolist()
-        for i in indices:
-            routing.NextVar(i).RemoveValues(blocked)
-
-
-def _disable_unused_depots(routing, manager, nd, homes):
-    """Original depots without a home vehicle are not service/reload clients.
-
-    RoutingIndexManager otherwise exposes them as mandatory ordinary nodes.
-    Make them optional AND force inactivity: a zero penalty alone still permits
-    gratuitous depot visits. Actual reload copies are modelled separately.
-    """
-    for depot in set(range(nd)) - set(homes):
-        idx = manager.NodeToIndex(depot)
-        routing.AddDisjunction([idx], 0)
-        routing.ActiveVar(idx).SetValue(0)
 
 
 def metaheuristic(engine, inst, D, demand, params, K):
@@ -259,6 +213,12 @@ def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None, 
     sol = routing.SolveWithParameters(p)
     if sol is None:
         return None, None, None, trace
+    trips, owner, reload_at = _makespan_trips(routing, manager, sol, K, nd, n, orig)
+    return trips, owner, reload_at, trace
+
+
+def _makespan_trips(routing, manager, sol, K, nd, n, orig):
+    """Split solved vehicle routes at reload nodes, retaining trip ownership."""
     trips, owner, reload_at = [], [], []
     for v in range(K):
         idx, cur = routing.Start(v), []
@@ -277,5 +237,4 @@ def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None, 
                 cur.append(node)
             else:
                 raise ValueError('求解器返回了未启用的车库访问')
-    return trips, owner, reload_at, trace
-
+    return trips, owner, reload_at

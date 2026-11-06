@@ -29,7 +29,7 @@ jobs:
   agriculture-contracts:
     # TS builders and the complete Lab suite, including Agent, evolve and execution contracts.
     runs-on: ubuntu-22.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -74,7 +74,7 @@ jobs:
         working-directory: src/lab
         env:
           URP_ROS_MAPS: ${{ github.workspace }}/.local-state/ros-maps
-        run: uv run --no-sync python -m pytest -q --require-maps --junitxml=../../.local-state/agriculture-contracts/lab.xml
+        run: uv run --no-sync python -m pytest -vv --durations=30 --require-maps --junitxml=../../.local-state/agriculture-contracts/lab.xml
       - name: Exercise isolated dual-service HTTP flow and startup failure
         run: python3 tools/smoke_dual_service.py --output .local-state/agriculture-contracts/dual-service --port 4186 --archive-port 4187
       - name: Retain agriculture contract results

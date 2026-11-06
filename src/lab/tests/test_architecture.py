@@ -12,10 +12,13 @@ CAPS = {  # module → max lines
     # 2026-10-18: ground-risk edges/detour corners + route ground stats raised this by
     # ~40 lines after extracting resolve_policy/check_route_ground/attach_route_ground.
     'solvers/fleet.py': 860,
+    'solvers/fleet_graph.py': 250,
     'solvers/fleet_curvature.py': 250,
     'solvers/fleet_engines.py': 260,
+    'solvers/fleet_constraints.py': 80,
     'solvers/fleet_common.py': 60,
     'scenarios/validate.py': 480,
+    'scenarios/values.py': 50,
     'fieldworld.py': 560,   # 2026-10-18: torque-actuator plugin block + ground knowledge record
 }
 
