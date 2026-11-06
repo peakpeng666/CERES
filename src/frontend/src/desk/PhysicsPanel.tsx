@@ -3,6 +3,7 @@ import { lab, useLabResource } from '../lab/api';
 import type { EngineGap, PhysicsRun } from '../lab/types';
 import { studio } from '../studio/api';
 import { useStudio } from '../studio/store';
+import { arrivalLine, lateLine } from './arrivals';
 import { n1, n3, timeCN, dateCN } from './format';
 import { Facts, Fold, Kvs, Row, Rows } from './ui';
 import s from './desk.module.css';
@@ -23,8 +24,9 @@ export function PhysicsFacts({ r }: { r: PhysicsRun }) {
   return <>
     <Facts items={[['完成', `${m.tasks_completed ?? '—'}/${m.tasks_total ?? '—'}`], ['实际里程', n1(m.total_distance_m), 'm'], ['规划里程', n1(m.planned_total_distance_m), 'm'], ['实际工期', n1(m.makespan_s), 's'], ['横向偏差最大', n3(m.cross_track_max_m), 'm']]} />
     <Kvs items={[r.traffic_mode === 'coordinated' && ['执行方式', `并行 · 路线相遇 ${r.traffic?.meetings ?? '—'} 处 · 等待 ${r.traffic?.holds ?? 0} 次共 ${n1(r.traffic?.held_s ?? 0)} s`],
-      r.traffic?.min_gap_m != null && ['最小车距', `${n3(r.traffic.min_gap_m)} m`], ['运行核验', r.check?.valid ? '通过' : '未通过'], !!r.wall_s && ['用时', `${n1(r.wall_s)} s · ${n1(r.real_time_factor)}× 实时`], !!r.contacts?.length && ['接触', r.contacts.map((c) => c.between.join(' / ')).join('；')]]} />
+      r.traffic?.min_gap_m != null && ['最小车距', `${n3(r.traffic.min_gap_m)} m`], !!r.time_windows && ['实测到达', arrivalLine(r.time_windows)], ['运行核验', r.check?.valid ? '通过' : '未通过'], !!r.wall_s && ['用时', `${n1(r.wall_s)} s · ${n1(r.real_time_factor)}× 实时`], !!r.contacts?.length && ['接触', r.contacts.map((c) => c.between.join(' / ')).join('；')]]} />
     {[...r.errors, ...(r.check?.errors ?? [])].slice(0, 4).map((e) => <p key={e} className={s.docBad}>{e}</p>)}
+    {!!r.time_windows?.late?.length && <p className={s.docBad}>晚于截止：{lateLine(r.time_windows)}</p>}
   </>;
 }
 

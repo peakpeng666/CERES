@@ -11,6 +11,8 @@ import math
 import re
 from dataclasses import dataclass, field
 
+from .. import time_windows
+
 SCHEMA = 'urp.task-contract/1'
 SOURCES = ('user_text', 'llm', 'user_edit', 'default', 'repair')
 
@@ -29,7 +31,7 @@ OBSTACLE_OPTIONS = {'pond': '池塘', 'building': '建筑', 'greenhouse': '温�
 @dataclass(frozen=True)
 class FieldDef:
     label: str
-    kind: str                      # enum | int | number | size | bool | text | counts
+    kind: str                      # enum | int | number | size | bool | text | counts | clock | time
     unit: str | None = None
     lo: float | None = None
     hi: float | None = None
@@ -58,6 +60,9 @@ FIELDS: dict[str, FieldDef] = {
     'depot_location': FieldDef('车库位置', 'enum', options=DEPOT_OPTIONS, spec='depot'),
     'obstacles': FieldDef('障碍', 'counts', options=OBSTACLE_OPTIONS, spec='obstacles', describe='各类障碍的数量'),
     'objective': FieldDef('优化目标', 'enum', options=OBJECTIVE_OPTIONS, spec='objective'),
+    'start_clock': FieldDef('出发时刻', 'clock', describe='车辆出发的钟点，24 小时制 HH:MM；截止或最早时间写成钟点时必须给出'),
+    'task_deadline': FieldDef('截止时间', 'time', describe='每个任务点最迟到达的时间：钟点写 HH:MM（如 09:00），从出发算起的时长写秒数加 s（如 1800s）'),
+    'task_earliest': FieldDef('最早时间', 'time', describe='每个任务点最早开始作业的时间，写法同截止时间；车辆早到就地等待'),
     'time_limit_s': FieldDef('每个算法的时间预算', 'number', 's', 0.2, 120),
     'seed': FieldDef('随机种子', 'int', None, 0, 2_147_483_647, spec='seed'),
     'compare_count': FieldDef('对比算法数', 'int', '个', 1, 6),
@@ -66,11 +71,13 @@ FIELDS: dict[str, FieldDef] = {
 # Fields that change what is solved; the agent asks rather than defaulting them silently.
 KEY_FIELDS = ('task_count', 'vehicle_count')
 SIZE_FIELDS = ('field_size_m', 'field_area_m2', 'real_field_id')
+TIME_FIELDS = ('start_clock', 'task_deadline', 'task_earliest')
 RULE_KEYS = {'kind': 'task_kind', 'size': 'field_size_m', 'area_m2': 'field_area_m2', 'shape': 'field_shape',
              'plots': 'plot_count', 'tasks': 'task_count', 'distribution': 'task_distribution', 'demand': 'task_demand',
              'vehicles': 'vehicle_count', 'capacity': 'vehicle_capacity', 'speed_mps': 'vehicle_speed_mps',
              'robot_width': 'vehicle_width_m', 'depot': 'depot_location', 'obstacles': 'obstacles',
-             'objective': 'objective', 'seed': 'seed'}
+             'objective': 'objective', 'seed': 'seed', 'start_clock': 'start_clock', 'deadline': 'task_deadline',
+             'earliest': 'task_earliest'}
 EXECUTION_DEFAULTS = {'trip_mode': 'multi', 'travel_mode': 'rows', 'time_limit_s': 2.0, 'seed': 42, 'compare_count': 3,
                       'simulate': False}
 
@@ -94,11 +101,34 @@ def _finite(v) -> float:
     return number
 
 
+def _time_value(spec: FieldDef, value) -> str:
+    """``HH:MM`` for a time of day, ``1800s`` for a time after the departure; a number is read as seconds after it."""
+    from ..compose.nl import clock_value, duration_value
+    if spec.kind == 'time' and not isinstance(value, bool) and isinstance(value, (int, float)):
+        seconds = _finite(value)
+    elif not isinstance(value, str) or not value.strip() or len(value) > 40:
+        raise ValueError(f'{spec.label}须为钟点 HH:MM' + ('或从出发算起的时长' if spec.kind == 'time' else ''))
+    elif spec.kind == 'time' and re.fullmatch(r'\s*\d+(\.\d+)?\s*[sS]\s*', value):
+        seconds = float(value.strip()[:-1])
+    else:
+        clock = clock_value(value)
+        if clock:
+            return clock
+        seconds = duration_value(value) if spec.kind == 'time' else None
+        if seconds is None:
+            raise ValueError(f'无法把 {value!r} 读作{spec.label}')
+    if not 0 < seconds <= 86400:
+        raise ValueError(f'{spec.label}须在出发后 24 小时之内，实际 {seconds:g} s')
+    return f'{seconds:g}s'
+
+
 def normalize(key: str, value):
     """Return the normalized value of one field or raise ValueError with a Chinese reason."""
     spec = FIELDS.get(key)
     if spec is None:
         raise ValueError(f'未知字段 {key}')
+    if spec.kind in ('clock', 'time'):
+        return _time_value(spec, value)
     if spec.kind == 'enum':
         if not isinstance(value, str) or value not in spec.options:
             raise ValueError(f'{spec.label}须为 {", ".join(spec.options)} 之一，实际 {value!r}')
@@ -199,7 +229,7 @@ def apply(contract: dict, values: dict, source: str, evidence: dict | None = Non
     return out, accepted, rejected
 
 
-def add_unsupported(contract: dict, items: list[str]) -> dict:
+def add_unsupported(contract: dict, items: list[str], source: str = 'llm') -> dict:
     out = copy.deepcopy(contract)
     added = []
     for item in items or []:
@@ -209,11 +239,40 @@ def add_unsupported(contract: dict, items: list[str]) -> dict:
             added.append(text)
     if added:
         out['revision'] += 1
-        out['history'].append({'revision': out['revision'], 'source': 'llm', 'note': '记录当前模型不支持的用户要求',
+        out['history'].append({'revision': out['revision'], 'source': source, 'note': '记录当前模型不支持的用户要求',
                                'changes': [], 'unsupported_added': added})
         if out['status'] == 'confirmed':
             out['status'] = 'draft'
     return out
+
+
+def window(contract: dict) -> list | None:
+    """``[earliest_s, latest_s]`` for every task, or None when the request sets no time; only for a contract without time gaps."""
+    return time_windows.resolve(value(contract, 'task_deadline'), value(contract, 'task_earliest'), value(contract, 'start_clock'))
+
+
+def time_gaps(contract: dict) -> list[str]:
+    """What keeps the stated times from forming a window. The departure is asked for and never assumed: a time of day only
+    becomes a constraint measured from it, so any default would decide how tight the task is."""
+    deadline, earliest, start = (value(contract, key) for key in ('task_deadline', 'task_earliest', 'start_clock'))
+    if not start and any(v and not v.endswith('s') for v in (deadline, earliest)):
+        return ['start_clock']
+    if not deadline and not earliest:
+        return []
+    early, late = window(contract)
+    if early < 0 or late is not None and late <= 0:
+        return ['start_clock']
+    return ['task_deadline'] if late is not None and late < early else []
+
+
+def later_deadline(contract: dict, seconds: float) -> str | None:
+    """The deadline, written the way the user wrote it, that allows this many seconds after the departure."""
+    current, start = value(contract, 'task_deadline'), value(contract, 'start_clock')
+    minutes = math.ceil(seconds / 60)
+    if current is None or current.endswith('s'):
+        return f'{minutes * 60}s'
+    total = int(start[:2]) * 60 + int(start[3:]) + minutes
+    return f'{total // 60:02d}:{total % 60:02d}' if total < 24 * 60 else None
 
 
 def missing(contract: dict) -> list[str]:
@@ -221,11 +280,12 @@ def missing(contract: dict) -> list[str]:
     gaps = [key for key in KEY_FIELDS if key not in contract['fields']]
     if not any(key in contract['fields'] for key in SIZE_FIELDS):
         gaps.append('field_size_m')
-    return gaps
+    return gaps + time_gaps(contract)
 
 
 def from_rule_parse(text: str) -> dict:
-    """Rule baseline: the composer's lexicon parser, mapped onto the contract with its matched text spans."""
+    """Rule baseline: the composer's lexicon parser, mapped onto the contract with its matched text spans. Time requests it
+    cannot hold in the shared fields stay in ``unsupported``."""
     from ..compose.nl import parse
     parsed = parse(text)
     contract = empty(parsed['text'])
@@ -241,7 +301,7 @@ def from_rule_parse(text: str) -> dict:
         if target:
             evidence[target] = (evidence.get(target, '') + ' ' + item['text']).strip()
     contract, _, _ = apply(contract, values, 'user_text', evidence, '规则解析')
-    return contract
+    return add_unsupported(contract, parsed['unsupported'], 'user_text')
 
 
 def confirm(contract: dict) -> dict:
@@ -294,6 +354,11 @@ def cards(contract: dict, defaults: list[dict] | None = None) -> list[dict]:
 
 def format_value(key: str, v) -> str:
     spec = FIELDS[key]
+    if spec.kind in ('clock', 'time'):
+        if not v.endswith('s'):
+            return v
+        seconds = float(v[:-1])
+        return f'出发后 {seconds / 60:g} 分钟' if seconds >= 60 else f'出发后 {seconds:g} 秒'
     if spec.kind == 'enum':
         return spec.options.get(v, str(v))
     if spec.kind == 'bool':
@@ -315,7 +380,7 @@ def tool_schema() -> dict:
             p = {'type': 'string', 'enum': list(spec.options)}
         elif spec.kind == 'bool':
             p = {'type': 'boolean'}
-        elif spec.kind == 'text':
+        elif spec.kind in ('text', 'clock', 'time'):
             p = {'type': 'string'}
         elif spec.kind == 'counts':
             p = {'type': 'object', 'properties': {k: {'type': 'integer', 'minimum': 0, 'maximum': 30} for k in spec.options},
@@ -338,7 +403,7 @@ def tool_schema() -> dict:
             'evidence': {'type': 'object', 'additionalProperties': {'type': 'string'},
                          'description': '字段 → 支撑该值的用户原话片段'},
             'unsupported': {'type': 'array', 'items': {'type': 'string'},
-                            'description': '用户提出但上述字段无法表达的要求（如时间窗、异构车型、充电约束），原样列出'},
+                            'description': '用户提出但上述字段无法表达的要求（如按任务分别给出的时间窗、跨日期的时间、异构车型、充电约束），原样列出'},
         },
         'required': ['fields'],
         'additionalProperties': False,

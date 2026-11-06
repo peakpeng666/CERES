@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 import math
+import re
 
 from shapely.geometry import Polygon
 
@@ -15,6 +16,7 @@ CVRP_OBJECTIVES = ('sum_unrounded_euclidean_distance', 'sum_rounded_euclidean_di
 MOTION_MODELS = ('holonomic', 'dubins', 'reeds_shepp')
 MAX_NODES = 5000
 MAX_CVRP_TASKS = 1000
+CLOCK = re.compile(r'(?:[01]\d|2[0-3]):[0-5]\d')
 
 
 def _int(v, what: str, lo: int | None = None) -> int:
@@ -226,6 +228,27 @@ def point_to_point(inst: dict) -> dict:
     return out
 
 
+def _time_window(raw, what: str) -> list | None:
+    """``[earliest_s, latest_s]`` after the mission starts, ``latest_s`` optional; a window that bounds nothing is dropped."""
+    if raw is None:
+        return None
+    if not isinstance(raw, (list, tuple)) or len(raw) != 2:
+        raise ValueError(f'{what} 时间窗应为 [最早秒, 最晚秒]（最晚可为 null）')
+    early = _num(0 if raw[0] is None else raw[0], f'{what} 最早时间')
+    late = None if raw[1] is None else _num(raw[1], f'{what} 截止时间')
+    if early < 0:
+        raise ValueError(f'{what} 最早时间不能为负，实际 {early:g} s')
+    if late is not None and late < early:
+        raise ValueError(f'{what} 截止时间 {late:g} s 早于最早时间 {early:g} s')
+    return None if early == 0 and late is None else [early, late]
+
+
+def _start_clock(raw) -> str:
+    if not isinstance(raw, str) or not CLOCK.fullmatch(raw):
+        raise ValueError(f'start_clock 应为 24 小时制 HH:MM，实际 {raw!r}')
+    return raw
+
+
 def _polygon(points, what: str) -> list[list[float]]:
     pts = [_xy(p, f'{what}[{i}]') for i, p in enumerate(points or [])]
     if len(pts) >= 2 and pts[0] == pts[-1]:
@@ -392,8 +415,10 @@ def fleet_routing(inst: dict) -> dict:
         seen.add(tid)
         xy = _xy(t.get('xy'), f'任务 {tid}')
         placeable(xy, f"任务 {t.get('label') or tid}")
-        tasks.append({**t, 'id': tid, 'xy': xy, 'demand': _int(t.get('demand', 1), f'任务 {tid} 需求', 1),
-                      'label': str(t.get('label') or f'T{tid}'), 'service_s': max(0.0, _num(t.get('service_s', 0), f'任务 {tid} 作业时间'))})
+        window = _time_window(t.get('time_window'), f'任务 {tid}')
+        tasks.append({**{k: v for k, v in t.items() if k != 'time_window'}, 'id': tid, 'xy': xy, 'demand': _int(t.get('demand', 1), f'任务 {tid} 需求', 1),
+                      'label': str(t.get('label') or f'T{tid}'), 'service_s': max(0.0, _num(t.get('service_s', 0), f'任务 {tid} 作业时间')),
+                      **({'time_window': window} if window else {})})
     if not tasks:
         raise ValueError('至少需要一个任务点')
     if len(tasks) > 800:
@@ -430,6 +455,8 @@ def fleet_routing(inst: dict) -> dict:
                          # per-class count / capacity / speed / footprint; absent for legacy homogeneous instances
                          **({'fleet': fleet} if fleet is not None else {})},
                objective=objective, units='m')
+    if inst.get('start_clock') is not None:
+        out['start_clock'] = _start_clock(inst['start_clock'])
     if inst.get('ground') is not None:
         from ..ground_map import normalize_ground
         out['ground'] = normalize_ground(out)
@@ -451,7 +478,11 @@ def validate_instance(problem_class: str, instance: dict) -> dict:
             raise ValueError(f'当前 {problem_class} 适配器尚未实现{label}（{key}）；输入保留，请勿将其作为已生效约束提交')
     tasks = instance.get('tasks') or instance.get('customers') or []
     for task in (tasks if isinstance(tasks, list) else []):
-        if isinstance(task, dict) and (task.get('time_window') or task.get('time_windows')):
-            raise ValueError('当前任务访问模型尚未实现时间窗，不能静默忽略该约束')
+        if not isinstance(task, dict):
+            continue
+        if task.get('time_windows'):
+            raise ValueError('一个任务只支持一个时间窗 time_window；多段时间窗尚未实现，不能静默忽略该约束')
+        if task.get('time_window') and problem_class != 'fleet_routing':
+            raise ValueError(f'当前 {problem_class} 任务访问模型尚未实现时间窗，不能静默忽略该约束')
     return {'turn_routing': turn_routing, 'euclidean_cvrp': euclidean_cvrp, 'coverage': coverage,
             'point_to_point': point_to_point, 'fleet_routing': fleet_routing}[problem_class](instance)

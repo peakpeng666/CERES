@@ -49,6 +49,7 @@ export const FIELD: Record<string, string> = {
   field_size_m: '场地尺寸', field_area_m2: '场地面积', vehicle_count: '车辆数', task_count: '任务点数', vehicle_capacity: '单车容量', obstacles: '障碍', task_kind: '作业类型',
   depot_location: '车库位置', simulate: '规划后进入仿真执行', trip_mode: '趟次', objective: '优化目标', plot_count: '地块数', travel_mode: '通行方式', task_demand: '单点需求',
   task_distribution: '任务分布', vehicle_speed_mps: '车速', time_limit_s: '时间预算', compare_count: '对比算法数', seed: '随机种子', real_field_id: '真实田块',
+  start_clock: '出发时刻', task_deadline: '截止时间', task_earliest: '最早时间',
 };
 const VALUE: Record<string, string> = {
   sampling: '采样', inspection: '巡检', transport: '运输', harvest: '采收', spraying: '喷施', sw: '西南角', se: '东南角', nw: '西北角', ne: '东北角', center: '中部',

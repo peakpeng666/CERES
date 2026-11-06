@@ -5,7 +5,7 @@ from __future__ import annotations
 import math
 import statistics as st
 
-from . import learned, paths
+from . import learned, paths, time_windows
 from .solvers import catalog
 
 
@@ -48,6 +48,9 @@ def _fleet(inst):
              _feature('障碍占地', 'obstacle_ratio', round(100 * obs / area, 2), '%'),
              _feature('聚集度 R', 'clark_evans', None if R is None else round(R, 2), None, '<1 成片聚集，≈1 随机，>1 均匀散开'),
              _feature('目标', 'objective', '均衡完成时间' if inst['objective'] == 'makespan' else '总里程')]
+    windowed = len(time_windows.by_task(inst))
+    if windowed:
+        feats.append(_feature('时间窗', 'time_windows', windowed, '个任务', '只有原生支持时间窗或用时间维度的算法才参与'))
     score = {'pyvrp.fleet': 0.0, 'pyvrp.balanced': 0.0, 'ortools.fleet': 0.0, 'panel.savings_fleet': 0.0, 'panel.sweep': 0.0, 'panel.cluster_first': 0.0}
     why = {k: [] for k in score}
     if inst['objective'] == 'makespan':
@@ -91,6 +94,10 @@ def _fleet(inst):
             why[k].append('构造基线只支持同构车队；异构车队由 PyVRP / OR-Tools 按类别容量、车速与足迹求解')
         why['pyvrp.fleet'].append(f'异构车队（{len(classes)} 类）按各类容量与车速分配任务与趟次')
         why['ortools.fleet'].append('OR-Tools 可为每类车使用不同车速的时间矩阵，均衡最晚完成')
+    if windowed:
+        score['pyvrp.balanced'] += 3
+        why['pyvrp.balanced'].insert(0, '规则建议：时间窗直接进入搜索（tw_early / tw_late），用时按车辆实际行驶估计；到达时间由独立检查器复算')
+        why['ortools.fleet'].insert(0, '时间窗作用在 OR-Tools 时间维度上，用时按车辆实际行驶估计；到达时间由独立检查器复算')
     budget = 2 if n <= 30 else 5 if n <= 120 else 15
     return feats, score, why, {'time_limit_s': budget}
 
@@ -119,6 +126,10 @@ def recommend(scenario, instance, budget_s=None):
         if len(instance['vehicles'].get('fleet') or []) > 1 or len(instance.get('depots') or [instance['depot']]) > 1:
             for aid in ('panel.savings_fleet', 'panel.sweep', 'panel.cluster_first'):
                 blocked[aid] = '构造基线仅支持同构单车库；请使用 PyVRP 或 OR-Tools'
+        if time_windows.present(instance):
+            for a in algs:
+                if a['limits'].get('time_windows') == 'unsupported':
+                    blocked[a['id']] = '不支持时间窗：不跟踪到达时刻，含时间窗的任务会被拒绝；请用 pyvrp.balanced 或 ortools.fleet'
     else:
         feats, score, why = [], {a['id']: 0.0 for a in algs}, {a['id']: [] for a in algs}
         n = len(instance.get('customers', [])) if pc == 'turn_routing' else max(0, len(instance.get('demands', [])) - 1)

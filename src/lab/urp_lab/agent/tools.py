@@ -15,6 +15,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Callable
 
+from .. import time_windows
 from ..paths import gazebo_gap
 from . import contract as tc
 from . import diagnose
@@ -188,12 +189,28 @@ def run_summary(run: dict, pre: dict | None = None, verification: dict | None = 
         'vehicles_used': m.get('vehicles_used'), 'trips': m.get('trips'), 'wall_s': m.get('wall_s'),
         'errors': [str(e) for e in ((run.get('check') or {}).get('errors') or [])][:3] + ([str(run['error'])[:300]] if run.get('error') else []),
         'diagnosis': cause['category'], 'diagnosis_label': diagnose.CATEGORY_LABEL.get(cause['category'], cause['category']),
-        'params': run.get('params'),
+        'params': run.get('params'), 'reason': ((run.get('raw_result') or {}).get('reason') or '')[:300] or None,
+        'time_windows': time_windows.compact((run.get('check') or {}).get('time_windows')),
     }
 
 
 GEOMETRY_FIELDS = {'task_kind', 'field_size_m', 'field_area_m2', 'field_shape', 'real_field_id', 'plot_count', 'task_count',
                    'task_distribution', 'obstacles', 'depot_location', 'vehicle_width_m', 'seed'}
+
+
+def _set_time_windows(inst: dict, contract: dict, built_from: dict):
+    """The contract's window on every task. A map built without one keeps any windows set on it task by task in the editor."""
+    window = tc.window(contract)
+    if not window and not any(built_from.get(k) for k in tc.TIME_FIELDS):
+        return
+    for t in inst['tasks']:
+        t.pop('time_window', None)
+        if window:
+            t['time_window'] = list(window)
+    start = tc.value(contract, 'start_clock')
+    inst.pop('start_clock', None)
+    if window and start:
+        inst['start_clock'] = start
 
 
 # ---------------------------------------------------------------- handlers --
@@ -282,6 +299,7 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
             max(t['demand'] for t in inst['tasks']), math.ceil(sum(t['demand'] for t in inst['tasks']) / veh['count'] * 1.3))
         inst['objective'] = overrides['objective']
         veh['trips'], veh['travel'] = execution['trip_mode'], execution['travel_mode']
+        _set_time_windows(inst, contract, built_from)
         # Imported and asset-built maps carry no generator record of their own.
         provenance = sc.setdefault('provenance', {})
         provenance['agent'] = {'session_id': ctx.session['session_id'], 'contract_revision': contract['revision']}
@@ -303,6 +321,7 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
         sc['id'] += f"-{ctx.session['session_id'][-6:]}-r{contract['revision']}"
         sc['instance']['vehicles']['trips'] = execution['trip_mode']
         sc['instance']['vehicles']['travel'] = execution['travel_mode']
+        _set_time_windows(sc['instance'], contract, built_from)
         sc['provenance']['agent'] = {'session_id': ctx.session['session_id'], 'contract_revision': contract['revision']}
         stored = save_user_scenario(sc, overwrite=False)
         mode = 'replaced' if existing else 'created'
@@ -331,7 +350,7 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
             'units': stored['frame'].get('units'), 'tasks': len(inst['tasks']), 'vehicles': inst['vehicles']['count'],
             'capacity': inst['vehicles']['capacity'], 'trips': inst['vehicles'].get('trips'),
             'travel': inst['vehicles'].get('travel'), 'obstacles': len(inst.get('obstacles') or []),
-            'objective': inst.get('objective'), 'precheck': pre}
+            'objective': inst.get('objective'), 'time_window': tc.window(contract), 'start_clock': inst.get('start_clock'), 'precheck': pre}
 
 
 def list_algorithms(ctx: ToolContext, args: dict) -> dict:
@@ -340,7 +359,7 @@ def list_algorithms(ctx: ToolContext, args: dict) -> dict:
         out.append({'id': a['id'], 'name': a['name'], 'library': a.get('library'), 'family': a.get('family'),
                     'guarantee': a.get('guarantee'), 'available': a.get('available'),
                     'unavailable_reason': a.get('unavailable_reason'), 'summary': a.get('summary', '')[:160],
-                    'params': [p['name'] for p in a.get('params', [])]})
+                    'params': [p['name'] for p in a.get('params', [])], 'time_windows': (a.get('limits') or {}).get('time_windows')})
     return {'algorithms': out}
 
 
@@ -446,7 +465,8 @@ def verify_run(ctx: ToolContext, args: dict) -> dict:
     ctx.session.setdefault('verifications', {})[run['run_id']] = {'valid': bool(result.get('valid') and result.get('agrees')), 'agrees': result.get('agrees'),
                                                                    'category': cause['category']}
     return {'run_id': run['run_id'], 'recheck': result, 'diagnosis': cause['category'],
-            'diagnosis_label': diagnose.CATEGORY_LABEL.get(cause['category']), 'evidence': cause.get('evidence', [])}
+            'diagnosis_label': diagnose.CATEGORY_LABEL.get(cause['category']), 'evidence': cause.get('evidence', []),
+            'time_windows': time_windows.compact(result.get('time_windows'))}
 
 
 def prediction_group_model(rows: list[dict]) -> str | None:
@@ -550,7 +570,8 @@ def physics_check(ctx: ToolContext, args: dict) -> dict:
            'check_valid': (rec.get('check') or {}).get('valid'), 'errors': (rec.get('errors') or [])[:3] + ((rec.get('check') or {}).get('errors') or [])[:3],
            'wall_s': rec.get('wall_s'), 'metrics': {k: round(v, 3) if isinstance(v, float) else v for k, v in (
                (k, metrics.get(k)) for k in ('tasks_total', 'tasks_completed', 'total_distance_m', 'planned_total_distance_m', 'makespan_s', 'planned_makespan_s',
-                                             'cross_track_mean_m', 'cross_track_max_m', 'energy_wh'))}}
+                                             'cross_track_mean_m', 'cross_track_max_m', 'energy_wh'))},
+           **({'time_windows': rec['time_windows']} if rec.get('time_windows') else {})}
     if together:
         row['coordinated'] = _coordinated_row(ctx, together)
     ctx.session.setdefault('physics', {})[run['run_id']] = row
@@ -574,7 +595,8 @@ def _coordinated_row(ctx: ToolContext, started: dict) -> dict:
     metrics = rec.get('metrics') or {}
     return {'physics_run_id': rec.get('physics_run_id'), 'state': rec.get('state'), 'check_valid': (rec.get('check') or {}).get('valid'),
             'errors': (rec.get('errors') or [])[:3] + ((rec.get('check') or {}).get('errors') or [])[:3],
-            'makespan_s': metrics.get('makespan_s'), 'energy_wh': metrics.get('energy_wh'), **(rec.get('traffic') or {})}
+            'makespan_s': metrics.get('makespan_s'), 'energy_wh': metrics.get('energy_wh'), **(rec.get('traffic') or {}),
+            **({'time_windows': rec['time_windows']} if rec.get('time_windows') else {})}
 
 
 def simulation_status(ctx: ToolContext, args: dict) -> dict:
@@ -646,7 +668,8 @@ def registry() -> dict[str, Tool]:
     tools = [
         Tool('update_task_contract', '更新任务合同',
              '把用户原话中的任务要素写入任务合同（单位统一为米、秒、平方米）。只填写本轮读到或被用户改动的字段；'
-             '无法用字段表达的要求放进 unsupported。', tc.tool_schema(), update_task_contract, 'session', 'understand'),
+             '所有任务共用的时间要求写入 task_deadline、task_earliest、start_clock；无法用字段表达的要求放进 unsupported。',
+             tc.tool_schema(), update_task_contract, 'session', 'understand'),
         Tool('ask_user', '向用户澄清',
              '关键信息缺失或有歧义时向用户提问（最多 3 个问题，可给出选项）。调用后等待用户回答。',
              {'type': 'object', 'properties': {
@@ -686,7 +709,7 @@ def registry() -> dict[str, Tool]:
                  'budgets': {'type': 'array', 'minItems': 1, 'maxItems': 4, 'items': {'type': 'number', 'minimum': 0.2, 'maximum': 60}},
                  'seeds': {'type': 'array', 'minItems': 1, 'maxItems': 10, 'items': {'type': 'integer', 'minimum': 0, 'maximum': 2147483647}}},
               'required': ['algorithms'], 'additionalProperties': False}, run_study, 'compute', 'study', needs_scenario=True),
-        Tool('verify_run', '独立复核', '对一个方案重新运行独立检查器：任务恰好服务一次、载重、避障、边界、里程复算及与存档一致性。',
+        Tool('verify_run', '独立复核', '对一个方案重新运行独立检查器：任务恰好服务一次、载重、避障、边界、到达时间、里程复算及与存档一致性。',
              RUN_ID, verify_run, 'compute', 'verify', needs_scenario=True),
         Tool('compare_runs', '方案对比', '在可比方案之间比较里程、工期与耗时，只在同口径的已验证方案中标记最好值。',
              {'type': 'object', 'properties': {'run_ids': {'type': 'array', 'items': {'type': 'string'}, 'maxItems': 24}},
@@ -694,11 +717,11 @@ def registry() -> dict[str, Tool]:
         Tool('diagnose_run', '诊断失败', '区分任务不可行、方法不适用、预算不足与软件实现错误，并给出修复动作。',
              RUN_ID, diagnose_run, 'compute', 'repair', needs_scenario=True),
         Tool('propose_task_change', '提议修改任务',
-             '当任务本身不可行时，提出修改任务合同的方案（如允许多趟、增加车辆、提高容量），等待用户批准。',
+             '当任务本身不可行时，提出修改任务合同的方案（如允许多趟、增加车辆、提高容量、放宽截止时间），等待用户批准。',
              {'type': 'object', 'properties': {'fields': tc.tool_schema()['properties']['fields'],
                                                'reason': {'type': 'string', 'maxLength': 300}},
               'required': ['fields', 'reason'], 'additionalProperties': False}, propose_task_change, 'session', 'repair'),
-        Tool('physics_check', '物理预演', '在 MuJoCo 中用同一路径跟踪器和车辆参数执行已复核的方案，返回实际里程、工期、横向偏差和接触。数秒完成，不启动 ROS，无需批准。',
+        Tool('physics_check', '物理预演', '在 MuJoCo 中用同一路径跟踪器和车辆参数执行已复核的方案，返回实际里程、工期、横向偏差、接触和实测到达是否按时。数秒完成，不启动 ROS，无需批准。',
              RUN_ID, physics_check, 'compute', 'physics', needs_scenario=True),
         Tool('start_simulation', '启动田间仿真', '把已通过独立复核的方案送入 Gazebo 田间仿真（需要用户批准）。',
              {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80},

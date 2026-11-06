@@ -9,6 +9,7 @@ export interface FleetTask {
   label: string;
   plot?: string | null;
   service_s?: number;
+  time_window?: [number, number | null];
 }
 
 export interface FleetObstacle {
@@ -75,6 +76,7 @@ export interface FleetInstance {
   objective: 'total_distance' | 'makespan';
   robot_radius: number;
   units: 'm';
+  start_clock?: string;
   meta?: { task_word?: string; margin_m?: number; road_m?: number };
 }
 

@@ -760,7 +760,7 @@ def create_app(config: Config | None = None) -> FastAPI:
         nl = core('compose.nl')
         parsed = nl.parse(str(body.get('text') or ''))
         spec, defaults = nl.fill_defaults(parsed['spec'])
-        return {'spec': spec, 'found': parsed['found'], 'defaults': defaults, 'cards': core('compose').describe(spec)}
+        return {'spec': spec, 'found': parsed['found'], 'defaults': defaults, 'unsupported': parsed['unsupported'], 'cards': core('compose').describe(spec)}
 
     @app.post(f'{api}/compose', status_code=201)
     def compose(payload: Any = Body(None)):

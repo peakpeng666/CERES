@@ -115,8 +115,14 @@ AUTHORED = [
         _turn('帮我规划一下这块 150×90 米茶园的巡检', {'task_kind': 'inspection', 'field_size_m': [150.0, 90.0]},
               questions=['task_count', 'vehicle_count']),
         _turn('30 个点，两台车', {'task_kind': 'inspection', 'field_size_m': [150.0, 90.0], 'task_count': 30, 'vehicle_count': 2})]),
-    ('A03-time-windows', [_turn('30 亩菜地，两台小车运输，十二个投放点，每个点要在上午九点前送达',
-        {'task_kind': 'transport', 'field_area_m2': 20000.1, 'vehicle_count': 2, 'task_count': 12}, unsupported=True)]),
+    ('A03-time-windows', [
+        _turn('30 亩菜地，两台小车运输，十二个投放点，每个点要在上午九点前送达',
+              {'task_kind': 'transport', 'field_area_m2': 20000.1, 'vehicle_count': 2, 'task_count': 12, 'task_deadline': '09:00'},
+              questions=['start_clock']),
+        _turn('早上七点半', {'task_kind': 'transport', 'field_area_m2': 20000.1, 'vehicle_count': 2, 'task_count': 12,
+                         'task_deadline': '09:00', 'start_clock': '07:30'}),
+        _turn('A 区的点改成八点前，其余不变', {'task_kind': 'transport', 'field_area_m2': 20000.1, 'vehicle_count': 2, 'task_count': 12,
+                                   'task_deadline': '09:00', 'start_clock': '07:30'}, unsupported=True)]),
     ('A04-heterogeneous', [_turn('200×120米果园，一台大车容量20、两台小车容量8，采样40个点',
         {'task_kind': 'sampling', 'field_size_m': [200.0, 120.0], 'task_count': 40, 'vehicle_count': 3}, unsupported=True)]),
     ('A05-edit-vehicles', [

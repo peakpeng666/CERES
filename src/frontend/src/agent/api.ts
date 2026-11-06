@@ -1,3 +1,4 @@
+import type { TimeWindowRecord } from '../lab/types';
 import { call } from '../studio/api';
 
 export type AgentState =
@@ -109,8 +110,11 @@ export interface Evidence {
     trips: number | null;
     wall_s: number | null;
     diagnosis_label: string;
+    reason?: string | null;
+    time_windows?: TimeWindowRecord | null;
   }[];
-  best_verified: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; predicted_makespan_s?: number | null; ranking_basis?: 'objective' | 'predicted_makespan_s'; objective: number; unit: string } | null;
+  time_window?: [number, number | null] | null;
+  best_verified: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; predicted_makespan_s?: number | null; ranking_basis?: 'objective' | 'predicted_makespan_s'; objective: number; unit: string; time_windows?: TimeWindowRecord | null } | null;
   simulator_gap?: string | null;
   best_executable?: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; predicted_makespan_s?: number | null; objective: number; unit: string } | null;
   unsupported: string[];

@@ -116,7 +116,7 @@ export interface Algorithm {
   version: string | null;
   turn_aware: boolean;
   guarantee: 'optimal' | 'optimal_for_relaxation' | 'none' | 'resolution_optimal' | 'asymptotically_optimal' | 'probabilistically_complete';
-  limits: { max_tasks?: number | null };
+  limits: { max_tasks?: number | null; time_windows?: 'native' | 'time_dimension' | 'unsupported'; time_window_note?: string };
   available: boolean;
   unavailable_reason: string | null;
   params: AlgorithmParam[];
@@ -159,6 +159,16 @@ export interface EngineGap {
   scope: string;
 }
 
+/** One task against its time window, in seconds after the vehicles are released. */
+export interface TimeWindowRow {
+  task: number; label: string; vehicle: string; earliest_s: number; latest_s: number | null;
+  arrival_s: number | null; start_s: number | null; slack_s: number | null; on_time: boolean; planned_arrival_s?: number;
+}
+export interface TimeWindowRecord {
+  evaluated?: boolean; reason?: string; model?: 'coordinated' | 'route_only' | 'serial'; scope?: string; start_clock?: string | null;
+  total?: number; on_time?: number; all_on_time?: boolean; worst_slack_s?: number | null; late?: TimeWindowRow[]; tasks?: TimeWindowRow[]; early_starts?: number;
+}
+
 export interface PhysicsRun {
   physics_run_id: string; run_id: string | null; session_id: string | null; scenario_id?: string; algorithm?: string;
   engine: string; engine_version?: string; state: string; created_utc: string; finished_utc: string | null;
@@ -172,6 +182,7 @@ export interface PhysicsRun {
   trails?: Record<string, number[][]>;
   traffic_mode?: 'serial' | 'coordinated';
   traffic?: { policy?: string | null; holds?: number; held_s?: number | null; predicted_makespan_s?: number | null; meetings?: number | null; min_gap_m?: number | null };
+  time_windows?: TimeWindowRecord | null;
 }
 
 export interface Recommendation {
@@ -225,6 +236,7 @@ export interface CheckResult {
   errors: string[];
   computed_cost: number | null;
   details?: unknown;
+  time_windows?: TimeWindowRecord;
 }
 
 export interface MapCheck {

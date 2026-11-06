@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import math
 
+from .. import time_windows
+
 MAX_BUDGET_S = 60.0
 CATEGORY_LABEL = {
     'ok': '已验证可行', 'task_infeasible': '任务本身不可行', 'method_not_applicable': '方法不适用',
@@ -60,6 +62,16 @@ def precheck(instance: dict) -> dict:
     if bad_depots:
         findings.append({'code': 'depot_invalid', 'severity': 'infeasible', 'depots': bad_depots,
                          'message': '车库位于场地外或障碍内'})
+    fastest = max([float(c.get('speed_mps') or 0) for c in veh.get('fleet') or []] + [float(veh.get('speed_mps') or 1.0)])
+    beyond = []
+    for t in instance['tasks']:
+        window = time_windows.of(t)
+        need = min(math.dist(d, t['xy']) for d in depots) / fastest
+        if window and window[1] is not None and need > window[1]:
+            beyond.append(f"{t.get('label', t['id'])}（直线至少 {need:.1f} s，截止 {window[1]:g} s）")
+    if beyond:
+        findings.append({'code': 'deadline_out_of_reach', 'severity': 'infeasible', 'tasks': beyond[:20],
+                         'message': f"{len(beyond)} 个任务点从车库直线赶去也晚于截止：{'、'.join(beyond[:6])}"})
     return {'feasible_by_precheck': not any(f['severity'] == 'infeasible' for f in findings), 'findings': findings,
             'total_demand': total, 'fleet_capacity_per_trip': sum(caps)}
 
@@ -85,6 +97,10 @@ def classify(run: dict, precheck_result: dict | None = None) -> dict:
         return {'category': 'implementation_error', 'evidence': [error or '工作进程异常结束'], 'log': (run.get('process') or {}).get('evidence')}
     if status in ('infeasible', 'no_solution'):
         pre = precheck_result or {}
+        if (run.get('raw_result') or {}).get('time_window_unreachable'):
+            return {'category': 'task_infeasible', 'evidence': [reason], 'code': 'time_window_unreachable'}
+        if (check.get('time_windows') or {}).get('late'):
+            return {'category': 'budget_insufficient', 'evidence': [reason or time_windows.late_text(check['time_windows'])], 'code': 'time_window_missed'}
         if status == 'infeasible' and (not pre.get('feasible_by_precheck', True) or '超过车队' in reason):
             evidence = [reason] + [f['message'] for f in pre.get('findings', [])]
             return {'category': 'task_infeasible', 'evidence': [e for e in evidence if e]}
@@ -125,16 +141,21 @@ def recheck(scenario: dict, run: dict) -> dict:
     ]
     collisions = sum(int(r.get('collisions') or 0) for r in fresh.get('routes') or [])
     items.append({'id': 'collision', 'label': '车体足迹不与障碍相交', 'ok': collisions == 0, 'detail': f'碰撞段 {collisions}'})
+    windows = fresh.get('time_windows')
+    if windows:
+        items.append({'id': 'time_windows', 'label': '到达时间在时间窗内', 'ok': bool(windows.get('all_on_time')), 'detail': time_windows.verdict(windows)})
     return {'performed': True, 'valid': bool(fresh.get('valid')) and served == expected, 'agrees': agrees,
             'computed_cost': fresh.get('computed_cost'), 'items': items, 'errors': fresh.get('errors') or [],
-            'checker': fresh.get('checker')}
+            'checker': fresh.get('checker'), **({'time_windows': windows} if windows else {})}
 
 
 def repairs(category: str, run: dict, precheck_result: dict | None, catalog: list[dict], tried: set[str],
             budget_s: float) -> list[dict]:
     """Ordered repair actions; ``needs_user`` marks changes to the task itself."""
     actions = []
-    applicable = [a for a in catalog if 'fleet_routing' in a.get('problem_classes', []) and a.get('available')]
+    windowed = time_windows.present(run.get('instance') or {})
+    applicable = [a for a in catalog if 'fleet_routing' in a.get('problem_classes', []) and a.get('available')
+                  and not (windowed and (a.get('limits') or {}).get('time_windows') == 'unsupported')]
     untried = [a['id'] for a in applicable if a['id'] not in tried]
     if category == 'budget_insufficient' and budget_s < MAX_BUDGET_S:
         actions.append({'action': 'raise_budget', 'time_limit_s': min(MAX_BUDGET_S, round(budget_s * 3, 1)),
@@ -144,6 +165,11 @@ def repairs(category: str, run: dict, precheck_result: dict | None, catalog: lis
         preferred = [a for a in ('pyvrp.fleet', 'ortools.fleet', 'panel.savings_fleet') if a in untried] or untried
         actions.append({'action': 'switch_method', 'algorithms': preferred[:2], 'needs_user': False,
                         'why': '换用尚未尝试的方法，并以同一独立检查器判定'})
+    missed = [r for r in ((run.get('check') or {}).get('time_windows') or {}).get('late') or [] if r.get('arrival_s') is not None]
+    if missed:      # a slower, less optimised plan cannot be made on time by search alone: these change the task, so they ask first
+        actions.append({'action': 'relax_deadline', 'needs_user': True, 'need_s': max(r['arrival_s'] for r in missed) * 1.1 + 60,
+                        'why': '放宽截止时间，让晚到的任务点赶得上'})
+        actions.append({'action': 'add_vehicles', 'needs_user': True, 'why': '增加车辆，分担晚到的任务点'})
     if category == 'task_infeasible':
         codes = {f['code'] for f in (precheck_result or {}).get('findings', [])}
         if 'single_trip_capacity' in codes or '超过车队' in str((run.get('raw_result') or {}).get('reason', '')):
@@ -151,6 +177,11 @@ def repairs(category: str, run: dict, precheck_result: dict | None, catalog: lis
             actions.append({'action': 'add_vehicles', 'needs_user': True, 'why': '增加车辆以提高单趟总容量'})
         if 'demand_above_capacity' in codes:
             actions.append({'action': 'raise_capacity', 'needs_user': True, 'why': '提高单车容量或拆分超量任务点'})
+        unreachable = (run.get('raw_result') or {}).get('time_window_unreachable') or []
+        if unreachable:
+            need = max(r['need_s'] for r in unreachable)
+            actions.append({'action': 'relax_deadline', 'needs_user': True, 'need_s': need * 1.25 + 60,
+                            'why': f'最远的任务点从车库直达至少 {need:g} s，增加车辆也赶不上，只能放宽截止时间或提高车速'})
         if codes & {'task_inside_obstacle', 'task_outside_field'} or run.get('state') == 'error':
             actions.append({'action': 'edit_map', 'needs_user': True, 'why': '在地图上移动或删除不可达任务点，或改为自由通行'})
     return actions

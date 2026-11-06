@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 def main(plan_path: str, result_path: str) -> int:
-    from . import fieldcheck, mujoco_field
+    from . import fieldcheck, mujoco_field, time_windows
     from .field_traffic import separation
     plan = json.loads(Path(plan_path).read_text(encoding='utf8'))
     try:
@@ -33,6 +33,7 @@ def main(plan_path: str, result_path: str) -> int:
         errors.append('MuJoCo 记录到车辆与实体障碍或其他车辆接触')
     result['check'] = {'valid': not errors, 'errors': errors, 'vehicles': details, 'motion_metrics': motion, 'traffic': traffic,
                        'scope': '实测轨迹线段的圆足迹、完整路径、任务停留与接触；与 Gazebo 记录同一检查'}
+    result['time_windows'] = time_windows.execution(plan, result)
     Path(result_path).write_text(json.dumps(result, ensure_ascii=False, allow_nan=False), encoding='utf8')
     return 0
 

@@ -6,7 +6,7 @@ import type { AgentSession, ToolCall } from '../agent/api';
 import { routeColor } from '../lab/views/plan/planModel';
 import { Spinner } from '../lab/ui';
 import { lab } from '../lab/api';
-import type { PhysicsRun, Solution, XY } from '../lab/types';
+import type { PhysicsRun, Solution, TimeWindowRecord, XY } from '../lab/types';
 import { GapFacts, PhysicsFacts } from './PhysicsPanel';
 import { useStudio } from '../studio/store';
 import { studio } from '../studio/api';
@@ -15,6 +15,7 @@ import { signature } from '../studio/panels/PlanPanels';
 import { PanelHost, PANELS, type PanelId } from '../studio/panelRegistry';
 import type { SimResult } from '../studio/experiment/replay';
 import type { FieldSimSummary, FleetInstance, FleetRoute } from '../studio/types';
+import { arrivalLine, atClock, lateLine, lateOf, windowText } from './arrivals';
 import { ROOTS, encodeStack, type Frame } from './frames';
 import { useDesk } from './store';
 import { Icon } from './Icon';
@@ -107,6 +108,7 @@ function meta(f: Frame, c: Ctx): Meta {
       return { title: label, focus: [xy[0] - half, xy[1] - half, xy[0] + half, xy[1] + half], view: { plan: planOf(r), v: f.v, stop: { xy, label } } };
     }
     case 'checks': return { title: verifyCall(c.session, f.run) ? '独立复核' : '方案检查', view: { plan: planOf(c.run(f.run)) } };
+    case 'arrivals': return { title: '到达时间', view: { plan: planOf(c.run(f.run)) } };
     case 'check': { const it = recheckOf(verifyCall(c.session, f.run))?.items.find((x) => x.id === f.id); return { title: it?.label ?? '检查项', view: { plan: planOf(c.run(f.run)) } }; }
     case 'params': return { title: '求解参数', view: { plan: planOf(c.run(f.run)) } };
     case 'repro': return { title: '可重现信息', view: { plan: planOf(c.run(f.run)) } };
@@ -212,7 +214,7 @@ function Task({ c, id }: { c: Ctx; id: number }) {
   const inst = c.inst!; const t = inst.tasks.find((x) => x.id === id);
   if (!t) return <Empty>这个任务点已不在当前地图中。</Empty>;
   const p = inst.plots.find((x) => x.id === t.plot);
-  return <div className={s.layer}><h2>{t.label}</h2><Kvs items={[['坐标', `(${n2(t.xy[0])}, ${n2(t.xy[1])}) m`], ['所属地块', p ? `${p.name}${p.crop ? ` · ${p.crop}` : ''}` : '—'], ['需求', t.demand], ['停留', `${t.service_s ?? 0} s`]]} /></div>;
+  return <div className={s.layer}><h2>{t.label}</h2><Kvs items={[['坐标', `(${n2(t.xy[0])}, ${n2(t.xy[1])}) m`], ['所属地块', p ? `${p.name}${p.crop ? ` · ${p.crop}` : ''}` : '—'], ['需求', t.demand], !!t.time_window && ['时间窗', `${t.time_window[0] > 0 ? `${atClock(inst.start_clock, t.time_window[0])} – ` : '截止 '}${t.time_window[1] === null ? '不限' : atClock(inst.start_clock, t.time_window[1])}`], ['停留', `${t.service_s ?? 0} s`]]} /></div>;
 }
 
 function PlansRoot({ c, api }: { c: Ctx; api: React.RefObject<MapApi | null> }) {
@@ -233,7 +235,7 @@ function PlansRoot({ c, api }: { c: Ctx; api: React.RefObject<MapApi | null> }) 
         const ok = rc ? rc.valid && rc.agrees : v ? v.valid && v.agrees : r.check?.valid;
         const running = r.state === 'queued' || r.state === 'running';
         return <Row key={r.run_id} title={r.algorithm.name}
-          sub={running ? '求解中' : `${ok ? (rc || v ? '独立复核通过' : '检查通过') : '未通过'} · ${metric(r, 'predicted_makespan_s') != null ? `预计实际 ${n1(metric(r, 'predicted_makespan_s'))} s` : `最晚完成 ${n1(metric(r, 'makespan_s'))} s`}`}
+          sub={running ? '求解中' : `${ok ? (rc || v ? '独立复核通过' : '检查通过') : '未通过'} · ${r.check?.time_windows ? `${arrivalLine(r.check.time_windows)} · ` : ''}${metric(r, 'predicted_makespan_s') != null ? `预计实际 ${n1(metric(r, 'predicted_makespan_s'))} s` : `最晚完成 ${n1(metric(r, 'makespan_s'))} s`}`}
           value={<><span className={s.barCell}><i style={{ width: `${(100 * (metric(r, 'total_distance_m') ?? 0)) / max}%` }} data-best={best?.run_id === r.run_id || undefined} /></span>{n1(metric(r, 'total_distance_m'))} m</>}
           onClick={() => push({ t: 'plan', run: r.run_id })} />;
       })}</Rows>
@@ -274,12 +276,14 @@ function PlanLayer({ c, id, api }: { c: Ctx; id: string; api: React.RefObject<Ma
   const p = r.params as { time_limit_s?: number; seed?: number };
   const current = currentRuns(c.session).includes(id);
   const simulate = () => { void control('simulate', { run_id: id }); openFrames([{ t: 'sim' }, { t: 'panel', id: 'rosview' }]); };
+  const windows = r.check?.time_windows;
   return (
     <div className={s.layer}>
       <h2>{r.algorithm.name}</h2>
       <p className={s.subMono}>{id}</p>
       {r.state === 'done' ? <Facts items={[['总里程', n1(metric(r, 'total_distance_m')), 'm'], ['最晚完成', n1(metric(r, 'makespan_s')), 's'], ...(metric(r, 'predicted_makespan_s') != null ? [['预计实际', n1(metric(r, 'predicted_makespan_s')), 's'] as [string, string, string]] : []), ['车辆', metric(r, 'vehicles_used') ?? '—', '台'], ['趟数', metric(r, 'trips') ?? '—'], ['求解', n2(metric(r, 'wall_s')), 's']]} /> : <p className={s.txt}>状态：{r.state}{r.error ? ` · ${r.error}` : ''}</p>}
       {!current && <p className={s.docWarn}>这是历史任务版本的方案。地图按它当时的冻结输入显示，不代表当前合同。</p>}
+      {!!windows?.late?.length && <p className={s.docBad}>晚于截止：{lateLine(windows)}</p>}
       <h3>车辆</h3>
       <Rows>{routesOf(r).map((x, i) => <Row key={i} lead={<span className={s.sw} style={{ background: routeColor(i) }} />} title={x.vehicle_name} sub={`${x.services.length} 个任务点 · ${x.trips?.length ?? 1} 趟 · 载重 ${x.load ?? '—'}`} value={`${n1(x.cost)} m`}
         onClick={() => push({ t: 'vehicle', run: id, v: i })} onEnter={() => api.current?.hover(i)} onLeave={() => api.current?.hover(null)} />)}</Rows>
@@ -287,6 +291,7 @@ function PlanLayer({ c, id, api }: { c: Ctx; id: string; api: React.RefObject<Ma
       <Rows>
         {sims.map((x) => <Row key={x.session_id} title="实际执行" sub={`Gazebo · ${dateCN(x.finished_utc)}`} value={`${x.metrics.tasks_completed ?? '—'}/${x.metrics.tasks_total ?? '—'}`} onClick={() => push({ t: 'exec', run: id, session: x.session_id })} />)}
         <Row title={rc ? '独立复核' : '方案检查'} value={rc ? `${passed}/${rc.items.length} 项通过` : r.check?.valid ? '通过' : '未通过'} onClick={() => push({ t: 'checks', run: id })} />
+        {windows && <Row title="到达时间" sub="每个任务是否按时" value={arrivalLine(windows)} onClick={() => push({ t: 'arrivals', run: id })} />}
         <Row title="求解参数" value={`${p.time_limit_s ?? '—'} s · 种子 ${p.seed ?? '—'}`} onClick={() => push({ t: 'params', run: id })} />
         <Row title="可重现信息" value={r.algorithm.origin} onClick={() => push({ t: 'repro', run: id })} />
       </Rows>
@@ -325,6 +330,34 @@ function VehicleLayer({ c, f }: { c: Ctx; f: Extract<Frame, { t: 'vehicle' }> })
   );
 }
 
+/** Every task against its window, the late ones first; the order comes from the record. */
+function ArrivalRows({ record }: { record: TimeWindowRecord }) {
+  const start = record.start_clock;
+  return (
+    <Rows>{(record.tasks ?? []).map((x) => (
+      <Row key={x.task} dense lead={<Icon name={x.on_time ? 'check' : 'cross'} className={x.on_time ? s.okMark : s.warnMark} />} title={x.label}
+        sub={`${x.vehicle} · ${windowText(x, start)}${x.planned_arrival_s != null ? ` · 预测 ${atClock(start, x.planned_arrival_s)}` : ''}${x.start_s != null && x.arrival_s != null && x.start_s > x.arrival_s ? ` · 等到 ${atClock(start, x.start_s)} 开始` : ''}`}
+        value={atClock(start, x.arrival_s)} valueSub={x.on_time ? (x.slack_s != null ? `余量 ${n1(x.slack_s)} s` : undefined) : lateOf(x).replace(`${x.label} `, '')} />
+    ))}</Rows>
+  );
+}
+
+function Arrivals({ c, run }: { c: Ctx; run: string }) {
+  const r = c.run(run); const w = r?.check?.time_windows;
+  if (!w) return <Empty>这个方案的任务没有时间窗。</Empty>;
+  return (
+    <div className={s.layer}>
+      <h2>到达时间</h2>
+      {w.evaluated === false ? <p className={s.docBad}>未能计算到达时间：{w.reason}</p> : <>
+        <Facts items={[['按时', `${w.on_time}/${w.total}`], w.worst_slack_s != null && ['最小余量', n1(w.worst_slack_s), 's'], !!w.start_clock && ['出发', w.start_clock]]} />
+        {!!w.late?.length && <p className={s.docBad}>晚于截止：{lateLine(w, 8)}</p>}
+        <ArrivalRows record={w} />
+        {w.scope && <p className={s.txt}>{w.scope}。时间窗约束到达任务点的时刻，早到就地等待。这是规划复算，实测到达见物理预演。</p>}
+      </>}
+    </div>
+  );
+}
+
 function StopLayer({ c, f }: { c: Ctx; f: Extract<Frame, { t: 'stop' }> }) {
   const r = c.run(f.run); const x = r ? routesOf(r)[f.v] : undefined; const inst = c.inst;
   if (!x || !inst) return <Empty>这个任务点不在当前记录中。</Empty>;
@@ -334,11 +367,13 @@ function StopLayer({ c, f }: { c: Ctx; f: Extract<Frame, { t: 'stop' }> }) {
   if (!svc) return <Empty>这个任务点不在这辆车的路线上。</Empty>;
   const at = cumulative(x.polyline)[svc.position]; const sp = inst.vehicles.speed_mps ?? 1;
   const p = inst.plots.find((q) => q.id === t?.plot);
+  const timed = r?.check?.time_windows?.tasks?.find((q) => q.task === f.task);
   return (
     <div className={s.layer}>
       <h2>{t?.label ?? `任务 ${f.task}`}</h2>
       <p className={s.sub}>{x.vehicle_name} 第 {idx + 1} 站</p>
-      <Facts items={[['累计里程', n1(at), 'm'], ['恒速模型到达', n1(at / sp), 's'], ['需求', t?.demand ?? '—']]} />
+      <Facts items={[['累计里程', n1(at), 'm'], ['恒速模型到达', n1(at / sp), 's'], !!timed && ['预计到达', atClock(r?.check?.time_windows?.start_clock, timed.arrival_s)], ['需求', t?.demand ?? '—']]} />
+      {timed && <p className={timed.on_time ? s.txt : s.docBad}>{windowText(timed, r?.check?.time_windows?.start_clock)} · {timed.on_time ? `按时，余量 ${n1(timed.slack_s)} s` : lateOf(timed)}</p>}
       <Kvs items={[['所属地块', p ? `${p.name} · ${p.crop}` : '—'], t && ['任务点', `(${n2(t.xy[0])}, ${n2(t.xy[1])}) m`], ['停车点', svc.stop ? `(${n2(svc.stop[0])}, ${n2(svc.stop[1])}) m` : '该运行未记录'], ['停车偏移', svc.stop && t ? `${n2(Math.hypot(t.xy[0] - svc.stop[0], t.xy[1] - svc.stop[1]))} m` : '该运行未记录'], ['停留', `${t?.service_s ?? 0} s`]]} />
     </div>
   );
@@ -431,6 +466,11 @@ function PhysicsLayer({ c }: { c: Ctx }) {
       <p className={s.sub}>{e.algorithm ?? ''} · MuJoCo {e.engine_version}。虚线为规划路线，实线为物理轨迹。</p>
       {e.comparison && <><h3>与 Gazebo 的差距</h3><GapFacts gap={e.comparison} /></>}
       <PhysicsFacts r={e} />
+      {!!e.time_windows?.tasks?.length && <>
+        <h3>实测到达 · 从车辆放行算起</h3>
+        <ArrivalRows record={e.time_windows} />
+        {e.time_windows.scope && <p className={s.txt}>{e.time_windows.scope}</p>}
+      </>}
       {!!e.vehicles?.length && <>
         <h3>车辆</h3>
         <Rows>{e.vehicles.map((x, i) => <Row key={x.name} dense lead={<span className={s.sw} style={{ background: routeColor(i) }} />} title={x.label} sub={`${x.tasks_done}/${x.tasks_total} 个任务点`} value={`${n1(x.distance_m)} m`} />)}</Rows>
@@ -601,6 +641,7 @@ function Body({ f, c, api }: { f: Frame; c: Ctx; api: React.RefObject<MapApi | n
     case 'vehicle': return <VehicleLayer c={c} f={f} />;
     case 'stop': return <StopLayer c={c} f={f} />;
     case 'checks': return <Checks c={c} run={f.run} />;
+    case 'arrivals': return <Arrivals c={c} run={f.run} />;
     case 'check': return <CheckItem c={c} run={f.run} id={f.id} />;
     case 'params': return <Params c={c} run={f.run} />;
     case 'repro': return <Repro c={c} run={f.run} />;

@@ -7,8 +7,12 @@ import time
 
 import numpy as np
 
+from .. import time_windows
+from .fleet_balanced import STOP_S, drive_seconds
 from .fleet_common import depot_list, fleet_classes, vehicle_table
-from .fleet_trace import makespan_callback, makespan_sample as _makespan_sample
+from .fleet_trace import earliest_end_sample as _earliest_end_sample, makespan_callback, makespan_sample as _makespan_sample
+
+LATE_PENALTY = 100_000      # per 0.1 s late: lateness outweighs any distance or span the search could save
 
 
 def _scaled_costs(values, scale, max_arc_cost, reachable=None):
@@ -152,13 +156,19 @@ def metaheuristic(engine, inst, D, demand, params, K):
     return trips, trip_class, trip_depot, trace
 
 
-def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None):
+def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None, graph=None, margin_s=0.0):
     """OR-Tools on the real fleet: each vehicle may return to the depot to unload (optional reload
     nodes, as in the OR-Tools reload sample), and a global span cost on the time dimension
     minimises the latest finish. Returns trips, the vehicle of each trip and the trace (seconds).
 
     Heterogeneous fleets get per-class travel-time matrices (speed) and per-vehicle capacities;
-    reload nodes unload down to zero for every class."""
+    reload nodes unload down to zero for every class.
+
+    Task windows act on the same time dimension. A vehicle may wait for ``earliest_s`` (slack), and
+    ``latest_s`` is a soft bound with a dominant penalty: the first-solution heuristics cannot pass
+    hard deadlines here, and a plan that still misses one is what the checker needs to name the task.
+    Windows use what the follower really takes between stops, and the span cost only when the goal
+    is the latest finish."""
     from ortools.constraint_solver import pywrapcp, routing_enums_pb2
     classes = fleet_classes(inst)
     table = vehicle_table(inst)
@@ -166,7 +176,10 @@ def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None):
     home_of = [di for _vi, _ci, _cls, di in table]     # round-robin home depot per vehicle (MDVRP starts/ends)
     nd = len(depot_list(inst))
     n = len(inst['tasks'])
-    service = [0.0] * nd + [float(t.get('service_s', 0) or 0) for t in inst['tasks']]
+    windows = [time_windows.of(t) for t in inst['tasks']]
+    windowed = any(windows)
+    stop = STOP_S if windowed and graph is not None else 0.0
+    service = [0.0] * nd + [float(t.get('service_s', 0) or 0) + stop for t in inst['tasks']]
     nu = len(inst.get('unload_points') or [])
     cap_ref = min(caps) if len(classes) > 1 else inst['vehicles']['capacity']
     per_depot = min(n, max(0, math.ceil(sum(demand) / cap_ref))) if multi else 0
@@ -185,7 +198,9 @@ def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None):
     T = {}
     for ci, cls in enumerate(classes):
         with np.errstate(over='ignore', invalid='ignore', divide='ignore'):
-            times = distances / cls['speed_mps'] + serv[:, None]
+            travel = (drive_seconds(graph, len(graph.points), cls['speed_mps'])[np.ix_(orig, orig)]
+                      if windowed and graph is not None else distances / cls['speed_mps'])
+            times = travel + serv[:, None]
         np.fill_diagonal(times, 0)
         T[ci], _ = _scaled_costs(times, 10, arc_limit, reachable)
     load = [0] * nd + list(demand[nd:]) + [-max(caps)] * reloads
@@ -197,10 +212,21 @@ def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None):
            for v in range(K)]
     for v, cb in enumerate(cbs):
         routing.SetArcCostEvaluatorOfVehicle(cb, v)
-    horizon = int(max(m.max() for m in T.values()) * (task_end + reloads + 2))
-    routing.AddDimensionWithVehicleTransits(cbs, 0, horizon, True, 'Time')
+    earliest = max((math.ceil(w[0] * 10) for w in windows if w), default=0)
+    horizon = int(max(m.max() for m in T.values()) * (task_end + reloads + 2)) + earliest
+    routing.AddDimensionWithVehicleTransits(cbs, horizon if earliest else 0, horizon, True, 'Time')
     time_dim = routing.GetDimensionOrDie('Time')
-    time_dim.SetGlobalSpanCostCoefficient(100)
+    time_dim.SetGlobalSpanCostCoefficient(100 if inst.get('objective') == 'makespan' else 0)
+    for i, window in enumerate(windows):
+        if window:
+            idx = manager.NodeToIndex(nd + i)
+            time_dim.CumulVar(idx).SetMin(math.ceil(window[0] * 10))
+            if window[1] is not None:
+                time_dim.SetCumulVarSoftUpperBound(idx, max(0, math.floor((window[1] - margin_s) * 10)), LATE_PENALTY)
+    if earliest:        # waiting leaves times unbound until the finalizer settles them
+        for v in range(K):
+            routing.AddVariableMinimizedByFinalizer(time_dim.CumulVar(routing.Start(v)))
+            routing.AddVariableMinimizedByFinalizer(time_dim.CumulVar(routing.End(v)))
     dem = routing.RegisterUnaryTransitCallback(lambda i: int(load[manager.IndexToNode(i)]))
     routing.AddDimensionWithVehicleCapacity(dem, max(caps), caps, True, 'Capacity')
     cap_dim = routing.GetDimensionOrDie('Capacity')
@@ -222,7 +248,7 @@ def ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=None):
     t0, trace = time.perf_counter(), []
 
     routing.AddAtSolutionCallback(makespan_callback(
-        routing, time_dim, K, t0, trace, trace_diagnostics, sample=_makespan_sample))
+        routing, time_dim, K, t0, trace, trace_diagnostics, sample=_earliest_end_sample if earliest else _makespan_sample))
     p = pywrapcp.DefaultRoutingSearchParameters()
     # PATH_CHEAPEST_ARC cannot complete a first solution when the per-depot reload membership
     # constraints bind (multi-depot with required reloads); insertion heuristics respect them.

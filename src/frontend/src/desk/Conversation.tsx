@@ -3,12 +3,13 @@ import { useAgent } from '../agent/store';
 import { useStudioSync } from '../agent/AgentChat';
 import { currentRuns } from '../agent/studioSync';
 import { STATE_LABEL, type AgentMessage, type AgentSession, type ContractCard, type Pending, type Report, type ToolCall } from '../agent/api';
-import type { EngineGap } from '../lab/types';
+import type { EngineGap, TimeWindowRecord } from '../lab/types';
 import { routeColor } from '../lab/views/plan/planModel';
 import { useFieldSim } from '../studio/ros/live';
 import { useStudio } from '../studio/store';
 import type { FleetInstance } from '../studio/types';
 import { Spinner } from '../lab/ui';
+import { arrivalLine, lateLine } from './arrivals';
 import { Composer } from './Composer';
 import { Icon, type IconName } from './Icon';
 import { Thumb } from './LayerMap';
@@ -108,6 +109,8 @@ function Activity({ calls }: { calls: ToolCall[] }) {
 }
 
 /* -------------------------------------------------------------- documents */
+const TIME_FIELDS = new Set(['start_clock', 'task_deadline', 'task_earliest']);
+
 function ContractDoc({ msg, session, latest }: { msg: AgentMessage; session: AgentSession; latest: boolean }) {
   const control = useAgent((x) => x.control);
   const busy = useAgent((x) => x.sending || x.pendingAction !== null);
@@ -119,7 +122,7 @@ function ContractDoc({ msg, session, latest }: { msg: AgentMessage; session: Age
   return (
     <div className={s.doc} data-need={active || undefined}>
       <header><b>任务合同 · 第 {d.revision} 版</b><span data-tone={active ? 'wait' : undefined}>{active ? '等待确认' : d.revision < session.contract.revision ? '已被新版本替代' : '已确认'}</span></header>
-      <p className={s.line}>{shown.map((c) => (c.key === 'simulate' ? (c.value ? '规划后进入仿真' : '不进入仿真') : c.text)).join(' · ')}</p>
+      <p className={s.line}>{shown.map((c) => (c.key === 'simulate' ? (c.value ? '规划后进入仿真' : '不进入仿真') : TIME_FIELDS.has(c.key) ? `${c.label} ${c.text}` : c.text)).join(' · ')}</p>
       {d.unsupported.length > 0 && <p className={s.docWarn}>未支持，不进入求解：{d.unsupported.join('；')}</p>}
       <footer>
         <span className={s.grow}>{Object.entries(sources).map(([k, v]) => `${v} 项${SOURCE[k as keyof typeof SOURCE] ?? k}`).join('，')}</span>
@@ -200,7 +203,7 @@ function ReportDoc({ msg, session }: { msg: AgentMessage; session: AgentSession 
         {best && (
           <button type="button" className={s.result} data-thumb={(inst && !stale) || undefined} onClick={() => openPlan(best.run_id)}>
             {inst && !stale && <Thumb inst={inst} routes={thumbRoutes} />}
-            <span>{best.algorithm}<small>最优 · {best.ranking_basis === 'predicted_makespan_s' ? '按同模型预计工期排序' : '按规划目标排序'} · 独立复核通过 · {best.predicted_makespan_s != null ? `预计实际 ${n1(best.predicted_makespan_s)} s` : `最晚完成 ${n1(best.makespan_s)} s`}{stale ? ' · 历史任务版本' : ''}</small></span>
+            <span>{best.algorithm}<small>最优 · {best.ranking_basis === 'predicted_makespan_s' ? '按同模型预计工期排序' : '按规划目标排序'} · 独立复核通过 · {best.predicted_makespan_s != null ? `预计实际 ${n1(best.predicted_makespan_s)} s` : `最晚完成 ${n1(best.makespan_s)} s`}{best.time_windows ? ` · ${arrivalLine(best.time_windows)}` : ''}{stale ? ' · 历史任务版本' : ''}</small></span>
             <span className={s.num}><Roll value={best.total_distance_m} format={n1} /> m</span>
             <Icon name="right" size={12} />
           </button>
@@ -212,6 +215,7 @@ function ReportDoc({ msg, session }: { msg: AgentMessage; session: AgentSession 
             <Icon name="right" size={12} />
           </button>
         )}
+        {e.time_window && e.runs.filter((r) => r.status !== 'feasible' && r.reason).map((r) => <p key={r.run_id} className={s.docBad}>{r.algorithm}：{r.reason}</p>)}
         {e.unsupported.length > 0 && <p className={s.docWarn}>未纳入求解：{e.unsupported.join('；')}</p>}
         {report.unverified_numbers.length > 0 && <p className={s.docWarn}>以下数值未在执行依据中找到，请以表格为准：{report.unverified_numbers.join('、')}</p>}
         <footer>
@@ -276,9 +280,9 @@ function LiveSim({ session }: { session: AgentSession }) {
   );
 }
 
-interface SimOutcome { run_id: string; session_id: string; state?: string; phase?: string; check_valid?: boolean | null; errors: string[]; metrics: Record<string, number | null | undefined>; comparison?: EngineGap & { physics_run_id: string } | null }
-interface Coordinated { physics_run_id?: string; state: string; check_valid?: boolean | null; errors: string[]; makespan_s?: number | null; min_gap_m?: number | null; holds?: number }
-interface PhysicsRow { run_id: string; physics_run_id?: string; algorithm?: string; state: string; check_valid?: boolean; errors: string[]; wall_s?: number; metrics: Record<string, number | null | undefined>; coordinated?: Coordinated }
+interface SimOutcome { time_windows?: TimeWindowRecord; run_id: string; session_id: string; state?: string; phase?: string; check_valid?: boolean | null; errors: string[]; metrics: Record<string, number | null | undefined>; comparison?: EngineGap & { physics_run_id: string } | null }
+interface Coordinated { physics_run_id?: string; state: string; check_valid?: boolean | null; errors: string[]; makespan_s?: number | null; min_gap_m?: number | null; holds?: number; time_windows?: TimeWindowRecord }
+interface PhysicsRow { run_id: string; physics_run_id?: string; algorithm?: string; state: string; check_valid?: boolean; errors: string[]; wall_s?: number; metrics: Record<string, number | null | undefined>; coordinated?: Coordinated; time_windows?: TimeWindowRecord }
 
 /** Planned against physically executed, for every verified plan. A row opens the trajectory on the map. */
 function PhysicsDoc({ msg }: { msg: AgentMessage }) {
@@ -286,11 +290,14 @@ function PhysicsDoc({ msg }: { msg: AgentMessage }) {
   const ok = (r: PhysicsRow) => r.state === 'succeeded' && r.check_valid;
   const drift = (a?: number | null, b?: number | null) => (typeof a === 'number' && typeof b === 'number' && b ? `${a >= b ? '+' : ''}${n1(((a - b) / b) * 100)}%` : '');
   const together = rows.some((r) => r.coordinated);
+  // The plan's clock has every vehicle moving at once; one-by-one execution only says what Gazebo would do today.
+  const timed = (r: PhysicsRow) => (r.coordinated?.state === 'succeeded' ? r.coordinated.time_windows : undefined) ?? r.time_windows;
+  const clocked = rows.some((r) => timed(r));
   return (
     <div className={s.doc}>
       <header><b>物理预演</b><span>MuJoCo · {rows.filter(ok).length}/{rows.length} 通过</span></header>
       <table className={s.docTable}>
-        <thead><tr><th>方案</th><th>实际里程</th><th>{together ? '逐车工期' : '实际工期'}</th>{together && <th>并行工期</th>}<th>最大偏差</th></tr></thead>
+        <thead><tr><th>方案</th><th>实际里程</th><th>{together ? '逐车工期' : '实际工期'}</th>{together && <th>并行工期</th>}<th>最大偏差</th>{clocked && <th>实测到达</th>}</tr></thead>
         <tbody>{rows.map((r) => (
           <tr key={r.run_id} data-go={r.physics_run_id ? '' : undefined} onClick={() => { if (r.physics_run_id) openFrames([{ t: 'plans' }, { t: 'plan', run: r.run_id }, { t: 'phys', run: r.run_id, id: r.physics_run_id }]); }}>
             <td>{r.algorithm ?? r.run_id}{!ok(r) && <small>{r.errors[0] ?? '未通过'}</small>}</td>
@@ -300,9 +307,11 @@ function PhysicsDoc({ msg }: { msg: AgentMessage }) {
             </> : <td colSpan={2}>未完成</td>}
             {together && <td>{r.coordinated?.check_valid ? <><Roll value={r.coordinated.makespan_s} format={n1} /> s<small>车距 ≥ {n3(r.coordinated.min_gap_m)} m</small></> : <small>{r.coordinated?.errors[0] ?? '未通过'}</small>}</td>}
             <td>{ok(r) ? `${n3(r.metrics.cross_track_max_m)} m` : '—'}</td>
+            {clocked && <td>{timed(r) ? <>{arrivalLine(timed(r))}{!timed(r)?.all_on_time && <small>{lateLine(timed(r))}</small>}</> : '—'}</td>}
           </tr>
         ))}</tbody>
       </table>
+      {together && rows.some((r) => r.time_windows?.late?.length) && <p className={s.docNote}>时间窗按全部车辆同时运行判定。逐车执行时后发车辆要排队，{rows.filter((r) => r.time_windows?.late?.length).map((r) => `${r.algorithm ?? r.run_id} 有 ${r.time_windows?.late?.length} 个任务晚于截止`).join('，')}；Gazebo 会话目前是这种方式。</p>}
       {rows.some((r) => (r.metrics.makespan_s ?? 0) > 1.4 * (r.metrics.planned_makespan_s ?? Infinity)) && <p className={s.docNote}>工期含当前交通策略下整段任务依次执行的等待；规划工期是各车并行的恒速估计。</p>}
     </div>
   );
@@ -317,6 +326,7 @@ function SimDoc({ msg }: { msg: AgentMessage }) {
     <div className={s.doc}>
       <header><b>田间仿真</b><span>{ok ? `完成 ${m.tasks_completed}/${m.tasks_total}` : '未完成'}{r.check_valid === false ? ' · 运行核验未通过' : ''}</span></header>
       {r.errors.length > 0 && <p className={s.docBad}>{r.errors.join('；')}</p>}
+      {r.time_windows && <p className={r.time_windows.all_on_time ? s.docNote : s.docBad}>Gazebo 逐车执行的实测到达：{arrivalLine(r.time_windows)}{r.time_windows.all_on_time ? '' : `，${lateLine(r.time_windows)}`}</p>}
       {ok && <dl className={s.kv} style={{ fontSize: 13.5 }}>
         <dt>里程</dt><dd>实际 {n1(m.total_distance_m)} m，规划 {n1(m.planned_total_distance_m)} m{gap(m.total_distance_m, m.planned_total_distance_m)}</dd>
         <dt>工期</dt><dd>实际 {n1(m.makespan_s)} s，规划 {n1(m.planned_makespan_s)} s{gap(m.makespan_s, m.planned_makespan_s)}</dd>

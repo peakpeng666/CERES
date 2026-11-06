@@ -16,6 +16,7 @@ import threading
 import time
 from pathlib import Path
 
+from .. import time_windows
 from . import contract as tc
 from . import diagnose, llm, prompts, providers, tools
 from .session import (AgentStore, add_message, add_usage, claims_check, ensure_step, new_session, public,
@@ -28,8 +29,10 @@ QUESTIONS = {
     'task_count': ('需要服务多少个任务点？', ['20', '40', '60']),
     'vehicle_count': ('投入几台机器人？', ['1', '2', '3', '4']),
     'field_size_m': ('场地大约多大？可以给出长 × 宽（米）或面积（亩、公顷）。', ['200×120 米', '50 亩', '5 公顷']),
+    'start_clock': ('车辆几点出发？钟点要从出发时刻算起才能成为时间窗，并且要早于截止时间。', ['06:00', '07:00', '08:00']),
+    'task_deadline': ('截止时间要晚于最早时间，请重新给出截止时间。', []),
 }
-RUNNER_VERSION = 'agent-runner/6'      # 6: an interrupted turn answers every outstanding tool call before it is saved
+RUNNER_VERSION = 'agent-runner/7'      # 7: a time window is judged on the execution the plan's clock describes
 MAX_LLM_CALLS = 20
 MAX_TOOL_CALLS = 30
 MAX_UNDERSTAND_CALLS = 4
@@ -783,9 +786,10 @@ class AgentRunner:
             values = {k: v['value'] for k, v in parsed['fields'].items()}
             evidence = {k: v['evidence'] for k, v in parsed['fields'].items()}
             s['contract'], accepted, rejected = tc.apply(s['contract'], values, 'user_text', evidence, '规则解析')
+            s['contract'] = tc.add_unsupported(s['contract'], parsed['unsupported'], 'user_text')
             self._record(s, {'name': 'rule_parse', 'label': '规则解析', 'arguments': {'text': text[:300]}, 'status': 'ok',
                              'started_utc': utc_now(), 'duration_s': 0,
-                             'result': {'accepted': accepted, 'rejected': rejected}}, 'rule')
+                             'result': {'accepted': accepted, 'rejected': rejected, 'unsupported': parsed['unsupported']}}, 'rule')
         if s['mode'] in ('llm', 'hybrid'):
             for _ in range(MAX_UNDERSTAND_CALLS):
                 self._checkpoint(s, cancel, pause)
@@ -834,6 +838,8 @@ class AgentRunner:
         stripped = re.sub(r'\s+', '', text).rstrip('。.个台辆')
         if len(fields) == 1 and re.fullmatch(r'\d+(\.\d+)?', stripped) and fields[0] in ('task_count', 'vehicle_count'):
             s['contract'], _, _ = tc.apply(s['contract'], {fields[0]: int(float(stripped))}, 'user_text', {fields[0]: text}, '回答澄清问题')
+        elif len(fields) == 1 and fields[0] in tc.TIME_FIELDS:     # "七点" answers the question asked; alone it names no role
+            s['contract'], _, _ = tc.apply(s['contract'], {fields[0]: text}, 'user_text', {fields[0]: text}, '回答澄清问题')
 
     # ----------------------------------------------------------- execute --
     def _execute(self, s, cancel, pause) -> bool:
@@ -1027,6 +1033,9 @@ class AgentRunner:
 
     def _queue_simulation(self, s: dict, args: dict):
         reason = '该操作会启动 Gazebo 物理仿真会话，需要你的批准'
+        one_by_one = ((s.get('physics') or {}).get(args['run_id']) or {}).get('time_windows') or {}
+        if one_by_one.get('late'):
+            reason = f'Gazebo 会话目前逐车执行，物理预演里这样执行时{time_windows.late_text(one_by_one)}晚于截止。{reason}'
         planned = self._best_verified(s)
         if self._physics_failed(s, args['run_id']):
             reason = f"此方案未通过物理预演（{self._physics_cause(s, args['run_id'])}），没有通过预演的方案可选。{reason}"
@@ -1080,24 +1089,23 @@ class AgentRunner:
         s['physics_shown'] = shown
         done = [r for r in rows if r.get('state') == 'succeeded' and r.get('check_valid')]
         set_step(s, 'physics', 'done' if len(done) == len(rows) else 'failed', f'{len(done)}/{len(rows)} 个方案执行通过')
-        add_message(s, 'assistant', f'{len(done)}/{len(rows)} 个方案通过物理预演。', 'physics', {'rows': rows})
+        add_message(s, 'assistant', f'{len(done)}/{len(rows)} 个方案通过物理预演。' + _arrival_note(rows), 'physics', {'rows': rows})
         self._save(s)
 
     @staticmethod
     def _physics_failed(s: dict, rid: str) -> bool:
         """True only for a plan the engine actually ran and rejected; an unavailable engine says nothing about the plan."""
         row = (s.get('physics') or {}).get(rid) or {}
-        return row.get('state') in ('succeeded', 'failed') and not (row.get('state') == 'succeeded' and row.get('check_valid') is True)
+        return row.get('state') in ('succeeded', 'failed') and not _executed(row)
 
     @staticmethod
     def _physics_cause(s: dict, rid: str) -> str:
-        errors = ((s.get('physics') or {}).get(rid) or {}).get('errors') or []
-        return errors[0] if errors else '运行核验未通过'
+        return _execution_fault((s.get('physics') or {}).get(rid) or {})
 
     def _best_executable(self, s: dict) -> dict | None:
-        """The best verified plan that also ran clean in the physics engine."""
+        """The best verified plan that also ran clean in the physics engine, on time if it has time windows."""
         rows = s.get('physics') or {}
-        return self._best_verified(s, lambda rid: rows.get(rid, {}).get('state') == 'succeeded' and rows[rid].get('check_valid') is True)
+        return self._best_verified(s, lambda rid: _executed(rows.get(rid, {})))
 
     def _best_verified(self, s: dict, accept=None) -> dict | None:
         candidates = []
@@ -1115,7 +1123,8 @@ class AgentRunner:
                                    'algorithm_id': run['algorithm']['id'], 'unit': (run.get('objective') or {}).get('unit'),
                                    'total_distance_m': metrics.get('total_distance_m'), 'makespan_s': metrics.get('makespan_s'),
                                    'predicted_makespan_s': metrics.get('predicted_makespan_s'),
-                                   'execution_estimate': metrics.get('execution_estimate') or {}})
+                                   'execution_estimate': metrics.get('execution_estimate') or {},
+                                   'time_windows': time_windows.compact((run.get('check') or {}).get('time_windows'))})
         if not candidates:
             return None
         # Share the exact rule with compare_runs, the other prediction-ranking tool entrypoint.
@@ -1138,13 +1147,14 @@ class AgentRunner:
             row['seed'] = (row.get('params') or {}).get('seed')
             runs.append({k: row[k] for k in ('run_id', 'algorithm', 'state', 'status', 'independent_recheck',
                                               'total_distance_m', 'makespan_s', 'vehicles_used', 'trips', 'wall_s',
-                                              'params', 'time_limit_s', 'seed', 'diagnosis_label')})
+                                              'params', 'time_limit_s', 'seed', 'diagnosis_label', 'reason', 'time_windows')})
         for r in runs:
             for k in ('total_distance_m', 'makespan_s', 'wall_s'):
                 if isinstance(r[k], float):
                     r[k] = round(r[k], 2)
         c = s['contract']
         return {'contract': {tc.FIELDS[k].label: tc.format_value(k, v['value']) for k, v in c['fields'].items()},
+                'time_window': tc.window(c) if not tc.time_gaps(c) else None,
                 'scenario_id': s.get('scenario_id'), 'runs': runs, 'best_verified': _rounded(self._best_verified(s)),
                 'best_executable': _rounded(self._best_executable(s)),
                 'unsupported': c['unsupported'], 'simulation_started': bool(s.get('active_sim_runs', s.get('sim_runs'))),
@@ -1177,6 +1187,37 @@ class AgentRunner:
             if st['status'] == 'pending' and st['kind'] not in ('report',):
                 st['status'] = 'skipped'
         set_step(s, 'report', 'done', '依据已核对' if not flagged else f'{len(flagged)} 个数值未在依据中找到')
+
+
+def _timed(row: dict) -> dict:
+    """The execution a plan's time windows are judged on: all vehicles moving at once when that ran, as the plan's clock
+    assumes. One-by-one execution holds the later vehicles back by design, so it only says what Gazebo would do today."""
+    together = row.get('coordinated') or {}
+    return together if row.get('time_windows') and together.get('state') == 'succeeded' else row
+
+
+def _executed(row: dict) -> bool:
+    timed = _timed(row)
+    windows = timed.get('time_windows')
+    return timed.get('state') == 'succeeded' and timed.get('check_valid') is True and (not windows or bool(windows.get('all_on_time')))
+
+
+def _execution_fault(row: dict) -> str:
+    timed = _timed(row)
+    windows = timed.get('time_windows') or {}
+    if windows and not windows.get('all_on_time') and timed.get('check_valid') is True:
+        return f'实测到达晚于截止：{time_windows.late_text(windows)}'
+    errors = timed.get('errors') or row.get('errors') or []
+    return errors[0] if errors else '运行核验未通过'
+
+
+def _arrival_note(rows: list[dict]) -> str:
+    """Recorded arrivals in a sentence; a plan that ran clean but late is named with its tasks."""
+    timed = [r for r in rows if _timed(r).get('time_windows')]
+    if not timed:
+        return ''
+    late = [f"{r.get('algorithm')}：{time_windows.late_text(_timed(r)['time_windows'])}" for r in timed if not _timed(r)['time_windows'].get('all_on_time')]
+    return f'{len(timed) - len(late)}/{len(timed)} 个方案实测全部按时。' + ('未按时的任务：' + '；'.join(late) + '。' if late else '')
 
 
 def _strip_think(text: str) -> str:
@@ -1219,6 +1260,9 @@ def _manual_change(action: dict, s: dict) -> dict | None:
         total = pre.get('total_demand')
         if cap and total:
             return {'vehicle_count': min(30, max(int(tc.value(s['contract'], 'vehicle_count') or 1) + 1, math.ceil(total / cap)))}
+    if action['action'] == 'relax_deadline':
+        deadline = tc.later_deadline(s['contract'], action['need_s'])
+        return {'task_deadline': deadline} if deadline else None
     if action['action'] == 'raise_capacity':
         return None
     return None
@@ -1243,11 +1287,13 @@ def _template_report(e: dict) -> str:
     if best:
         parts.append(f"经复核的最优方案为 {best['algorithm']}（{best['run_id']}），总里程 {best['total_distance_m']} m，"
                      f"按恒速模型计算的最晚完成时间为 {best['makespan_s']} s" + (f"，计入转向、作业和路线相遇等待后预计 {best['predicted_makespan_s']} s。" if best.get('predicted_makespan_s') else '。'))
+        if best.get('time_windows'):
+            parts.append(f"时间窗按全部车辆同时出发复算：{time_windows.verdict(best['time_windows'])}。")
     else:
         parts.append('目前没有通过独立复核的方案。')
     failed = [r for r in runs if r['independent_recheck'] is not True]
     if failed:
-        parts.append('未通过的方案及原因：' + '；'.join(f"{r['algorithm']}：{r['diagnosis_label']}" for r in failed[:4]) + '。')
+        parts.append('未通过的方案及原因：' + '；'.join(f"{r['algorithm']}：{r['diagnosis_label']}" + (f"（{r['reason']}）" if e.get('time_window') and r.get('reason') else '') for r in failed[:4]) + '。')
     if e['precheck']:
         parts.append('预检查结论：' + '；'.join(e['precheck'][:3]) + '。')
     if e['unsupported']:
@@ -1263,9 +1309,12 @@ def _template_report(e: dict) -> str:
             parts.append('全部车辆同时出发、在路线相遇处依次通行时：' + '；'.join(
                 f"{r['algorithm']} 工期 {r['coordinated']['makespan_s']} s（逐车执行{' ' + str(r['metrics'].get('makespan_s')) + ' s' if r.get('check_valid') else '未通过'}），最小车距 {r['coordinated'].get('min_gap_m')} m"
                 for r in together) + '。')
+        arrivals = [r for r in physics if _timed(r).get('time_windows')]
+        if arrivals:
+            parts.append('实测到达：' + '；'.join(f"{r['algorithm']} {time_windows.verdict(_timed(r)['time_windows'])}" for r in arrivals) + '。')
         planned, executable = e.get('best_verified'), e.get('best_executable')
         if planned and executable and planned['run_id'] != executable['run_id']:
-            cause = next(((r.get('errors') or ['运行核验未通过'])[0] for r in physics if r['run_id'] == planned['run_id']), '运行核验未通过')
+            cause = next((_execution_fault(r) for r in physics if r['run_id'] == planned['run_id']), '运行核验未通过')
             parts.append(f"规划最优的 {planned['algorithm']} 未通过物理预演（{cause}），可执行的最好方案为 {executable['algorithm']}（{executable['run_id']}），规划里程 {executable['total_distance_m']} m。")
         elif planned and not executable:
             parts.append('通过复核的方案都没有通过物理预演，暂无可执行方案。')

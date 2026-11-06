@@ -7,6 +7,7 @@ import json
 import re
 from datetime import datetime, timezone
 
+from .. import time_windows
 from . import generate as gen
 from .nl import KINDS, fill_defaults, parse
 
@@ -35,15 +36,37 @@ def describe(spec: dict) -> list[dict]:
         {'key': 'depot', 'label': '车库', 'value': DEPOT_LABEL[spec['depot']]},
         {'key': 'objective', 'label': '目标', 'value': '最晚完成时间最短（均衡分工）' if spec['objective'] == 'makespan' else '总里程最短'},
         {'key': 'speed_mps', 'label': '车速', 'value': f"{spec['speed_mps']:g} m/s"},
-    ]
+    ] + _time_cards(spec)
 
 
-def generation_report(spec: dict, instance: dict) -> tuple[dict, list[dict]]:
+def _time_cards(spec: dict) -> list[dict]:
+    rows = [(k, label, spec.get(k)) for k, label in (('start_clock', '出发'), ('earliest', '最早'), ('deadline', '截止')) if spec.get(k)]
+    return [{'key': k, 'label': label, 'value': value} for k, label, value in rows]
+
+
+def apply_time_window(instance: dict, spec: dict) -> str | None:
+    """Puts a request's shared window on every task; a time of day with no departure to count from is reported, not guessed."""
+    try:
+        window = time_windows.resolve(spec.get('deadline'), spec.get('earliest'), spec.get('start_clock'))
+    except ValueError as exc:
+        return f'时间窗未写入任务：{exc}'
+    if not window:
+        return None
+    if window[0] < 0 or window[1] is not None and window[1] < max(window[0], 1):
+        return '时间窗未写入任务：截止或最早时间不在出发时刻之后'
+    for t in instance['tasks']:
+        t['time_window'] = list(window)
+    if spec.get('start_clock'):
+        instance['start_clock'] = spec['start_clock']
+    return None
+
+
+def generation_report(spec: dict, instance: dict, notes: list[str] | None = None) -> tuple[dict, list[dict]]:
     """Describe the generated map, retaining unmet requests rather than inventing geometry."""
     requested = {k: spec[k] for k in ('plots', 'tasks', 'obstacles')}
     actual = {'plots': len(instance['plots']), 'tasks': len(instance['tasks']),
               'obstacles': dict(Counter(o['kind'] for o in instance['obstacles']))}
-    shortfalls = []
+    shortfalls = [n for n in notes or [] if n]
     for key, label in (('plots', '地块'), ('tasks', '任务点')):
         if actual[key] < requested[key]:
             shortfalls.append(f'{label}要求 {requested[key]}，实际 {actual[key]}')
@@ -68,7 +91,7 @@ def compose(text: str, seed: int | None = None, overrides: dict | None = None) -
         if seed is None:
             seed = int(hashlib.sha256(parsed['text'].encode()).hexdigest()[:8], 16) % 100000
     instance = gen.generate(spec, seed)
-    generation, cards = generation_report(spec, instance)
+    generation, cards = generation_report(spec, instance, [apply_time_window(instance, spec)] + [f'未进入任务：{u}' for u in parsed['unsupported']])
     stamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
     slug = re.sub(r'[^a-z0-9]+', '-', spec['kind'])[:12]
     sid = f'task-{slug}-{stamp}-{seed % 1000:03d}'
@@ -103,6 +126,7 @@ def from_field(field_id: str, text: str = '', seed: int | None = None, overrides
     seed = seed if seed is not None else int(hashlib.sha256((field_id + parsed['text']).encode()).hexdigest()[:8], 16) % 100000
     sc = compose(parsed['text'] or '真实田块任务', seed, spec)
     inst = gen.generate(spec, seed, outline)
+    notes = [apply_time_window(inst, spec)] + [f'未进入任务：{u}' for u in parsed['unsupported']]
     sc['instance'] = inst
     word = inst['meta']['task_word']
     W, H = spec['size']
@@ -111,7 +135,7 @@ def from_field(field_id: str, text: str = '', seed: int | None = None, overrides
                      f"{len(inst['plots'])} 块地 · {len(inst['obstacles'])} 处障碍")
     sc['provenance']['note'] = f"边界来自 Fields2Benchmark 真实田块 {field_id}，地块、障碍与任务点在田内生成。"
     sc['provenance']['ref'] = 'mier2024fields2benchmark'
-    generation, cards = generation_report(spec, inst)
+    generation, cards = generation_report(spec, inst, notes)
     sc['summary'] += generation_note(generation)
     sc['compose']['cards'] = cards
     sc['compose']['generation'] = generation

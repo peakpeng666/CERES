@@ -9,6 +9,11 @@ def makespan_sample(routing, time_dim, vehicles):
     return max(time_dim.CumulVar(routing.End(v)).Value() for v in range(vehicles)) / 10
 
 
+def earliest_end_sample(routing, time_dim, vehicles):
+    """For a time dimension with waiting. ``Value()`` on an unbound variable aborts the whole process, past any ``except``."""
+    return max(time_dim.CumulVar(routing.End(v)).Min() for v in range(vehicles)) / 10
+
+
 def makespan_callback(routing, time_dim, vehicles, started, trace, diagnostics, *, sample=makespan_sample):
     """Record improving spans and account for unreadable samples without losing the incumbent."""
     diagnostics = diagnostics if diagnostics is not None else {}

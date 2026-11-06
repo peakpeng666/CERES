@@ -67,25 +67,34 @@ GROUND_WEIGHT = {'name': 'ground_risk_weight', 'type': 'number', 'default': 1.0,
                  'label': '地面风险权重（当量米/米）',
                  'description': '每米低附着 μ 缺口折算的当量米成本；risk_adjust 时参与搜索；ignore 时仅作事后同口径评分'}
 FLEET_PARAMS = [dict(TIME, default=5), SEED, GROUND_POLICY, GROUND_WEIGHT]
+TIME_WINDOW_NOTE = {'native': 'PyVRP 原生 tw_early / tw_late，到达时间由独立检查器复算', 'time_dimension': 'OR-Tools 时间维度：等待进松弛，截止为强罚软上界，到达时间由独立检查器复算',
+                    'unsupported': '不支持；含时间窗的任务会被拒绝，不会忽略约束'}
+
+
+def _windows(algorithm_id: str) -> dict:
+    support = fleet.TIME_WINDOW_SUPPORT[algorithm_id]
+    return {'time_windows': support, 'time_window_note': TIME_WINDOW_NOTE[support]}
+
+
 _TABLE += [
     ('pyvrp.fleet', 'PyVRP 固定车队', 'fleet_routing', 'PyVRP', 'metaheuristic', 'none',
      '在绕障最短路距离上用 PyVRP 迭代局部搜索分配任务、安排顺序，车辆数不超过车队规模，目标总里程最短。',
-     ['wouda2024pyvrp', 'vidal2022hgs', 'lozanoperez1979visibility', 'dubins1957curvature', 'leny2007dubins', 'sucan2012ompl'], 'pyvrp', {'params': FLEET_PARAMS}),
+     ['wouda2024pyvrp', 'vidal2022hgs', 'lozanoperez1979visibility', 'dubins1957curvature', 'leny2007dubins', 'sucan2012ompl'], 'pyvrp', {'params': FLEET_PARAMS, 'limits': _windows('pyvrp.fleet')}),
     ('pyvrp.balanced', 'PyVRP 均衡工期', 'fleet_routing', 'PyVRP', 'metaheuristic', 'none',
      '车辆可在路线中途回库装卸，由同一搜索决定各趟归属；用二分收紧班次上限，使最晚完成时间最短，再比里程。',
-     ['wouda2024pyvrp', 'vidal2022hgs', 'lozanoperez1979visibility', 'dubins1957curvature', 'leny2007dubins', 'sucan2012ompl'], 'pyvrp', {'params': FLEET_PARAMS}),
+     ['wouda2024pyvrp', 'vidal2022hgs', 'lozanoperez1979visibility', 'dubins1957curvature', 'leny2007dubins', 'sucan2012ompl'], 'pyvrp', {'params': FLEET_PARAMS, 'limits': _windows('pyvrp.balanced')}),
     ('ortools.fleet', 'OR-Tools 车队调度', 'fleet_routing', 'OR-Tools', 'metaheuristic', 'none',
      'OR-Tools 引导局部搜索；目标为“最晚完成时间最短”时加入跨车跨度代价，使各车工作量更均衡。',
-     ['ortools', 'voudouris1999gls', 'lozanoperez1979visibility', 'dubins1957curvature', 'leny2007dubins', 'sucan2012ompl'], 'ortools', {'params': FLEET_PARAMS}),
+     ['ortools', 'voudouris1999gls', 'lozanoperez1979visibility', 'dubins1957curvature', 'leny2007dubins', 'sucan2012ompl'], 'ortools', {'params': FLEET_PARAMS, 'limits': _windows('ortools.fleet')}),
     ('panel.savings_fleet', '节约算法 + 2-opt', 'fleet_routing', '基线', 'heuristic', 'none',
      'Clarke–Wright 节约算法在绕障距离上合并路线，再逐车 2-opt 改进；确定性、速度快。',
-     ['clarke1964savings', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': [dict(TIME, default=5), GROUND_POLICY, GROUND_WEIGHT]}),
+     ['clarke1964savings', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': [dict(TIME, default=5), GROUND_POLICY, GROUND_WEIGHT], 'limits': _windows('panel.savings_fleet')}),
     ('panel.sweep', '扫描算法', 'fleet_routing', '基线', 'heuristic', 'none',
      '以车库为中心按极角扫过任务点，按容量切分给各车，再逐车 2-opt；适合任务围绕车库分布的场景。',
-     ['gillett1974sweep', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': [dict(TIME, default=5), GROUND_POLICY, GROUND_WEIGHT]}),
+     ['gillett1974sweep', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': [dict(TIME, default=5), GROUND_POLICY, GROUND_WEIGHT], 'limits': _windows('panel.sweep')}),
     ('panel.cluster_first', '先聚类后排程', 'fleet_routing', '基线', 'heuristic', 'none',
      '按车辆数做容量约束 k-means 分区，再分别构造与改进单车回路；不保证最优或路线互不交叉。',
-     ['fisher1981gap', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': FLEET_PARAMS}),
+     ['fisher1981gap', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': FLEET_PARAMS, 'limits': _windows('panel.cluster_first')}),
 ]
 for _aid, (_name, _mode, _refs) in motion.GRID_PLANNERS.items():
     _TABLE.append((_aid, _name, 'point_to_point', '基线', 'graph_search', 'resolution_optimal' if _mode != 'theta' else 'none',

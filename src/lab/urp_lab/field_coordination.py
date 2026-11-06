@@ -19,7 +19,9 @@ import time
 from dataclasses import dataclass, field
 
 import numpy as np
-from scipy import ndimage
+from scipy.sparse import coo_matrix
+from scipy.sparse.csgraph import connected_components
+from scipy.spatial import cKDTree
 
 from .field_traffic import PASSAGE_POLICY as POLICY
 
@@ -92,17 +94,22 @@ def _sample(path: list, step: float) -> tuple[np.ndarray, np.ndarray]:
     return s, np.column_stack([np.interp(s, cum, pts[:, 0]), np.interp(s, cum, pts[:, 1])])
 
 
-def timeline(vehicle: dict, speed: float, yaw_rate: float = 1.6) -> tuple[list[float], list[float]]:
-    """Free-flow time to reach each path vertex and task stop: speed along the path, turns in place, dwell at tasks."""
+def _walk(vehicle: dict, speed: float, yaw_rate: float = 1.6) -> tuple[list[float], list[float], list[dict]]:
+    """Free-flow time at each path vertex, and when each task stop is reached."""
     path = vehicle['path']
     cum = _arc(path).tolist()
-    stops = sorted((float(t.get('path_s', 0)), float(t.get('service_s') or 0)) for t in vehicle.get('tasks') or [])
-    s_out, t_out, now, k = [0.0], [0.0], 0.0, 0
+    tasks = sorted(vehicle.get('tasks') or [], key=lambda t: float(t.get('path_s', 0)))
+    s_out, t_out, stops, now, k = [0.0], [0.0], [], 0.0, 0
     for i in range(1, len(path)):
-        now += (cum[i] - cum[i - 1]) / speed
-        while k < len(stops) and stops[k][0] <= cum[i] + 1e-9:
-            now += stops[k][1]
+        leg = (cum[i] - cum[i - 1]) / speed
+        dwell = 0.0
+        while k < len(tasks) and float(tasks[k].get('path_s', 0)) <= cum[i] + 1e-9:
+            at = float(tasks[k].get('path_s', 0))
+            stops.append({'task': tasks[k].get('id'), 's': at, 'arrive': now + min(leg, max(0.0, at - cum[i - 1]) / speed) + dwell,
+                          'earliest': float(tasks[k].get('earliest_s') or 0), 'latest': tasks[k].get('latest_s')})
+            dwell += float(tasks[k].get('service_s') or 0)
             k += 1
+        now += leg + dwell
         if i + 1 < len(path):
             h1 = math.atan2(path[i][1] - path[i - 1][1], path[i][0] - path[i - 1][0])
             h2 = math.atan2(path[i + 1][1] - path[i][1], path[i + 1][0] - path[i][0])
@@ -111,11 +118,38 @@ def timeline(vehicle: dict, speed: float, yaw_rate: float = 1.6) -> tuple[list[f
                 now += turn / yaw_rate + 1.0
         s_out.append(cum[i])
         t_out.append(now)
-    return s_out, t_out
+    return s_out, t_out, stops
+
+
+def timeline(vehicle: dict, speed: float, yaw_rate: float = 1.6) -> tuple[list[float], list[float]]:
+    """Free-flow time to reach each path vertex and task stop: speed along the path, turns in place, dwell at tasks."""
+    return _walk(vehicle, speed, yaw_rate)[:2]
 
 
 def _eta(line: tuple[list[float], list[float]], s: float) -> float:
     return float(np.interp(s, line[0], line[1]))
+
+
+def _touching(rows: np.ndarray, cols: np.ndarray, width: int) -> list[tuple[np.ndarray, np.ndarray]]:
+    """Near sample pairs grouped by 8-connected contact in the (row, column) grid, in raster order of each group's first cell.
+    Long routes have thousands of samples and meet in few places, so the grid itself is never built."""
+    stride = width + 2                       # a blank column on either side: neighbours cannot wrap to the next row
+    order = np.argsort(rows.astype(np.int64) * stride + cols + 1, kind='stable')
+    rows, cols = rows[order], cols[order]
+    cells = rows.astype(np.int64) * stride + cols + 1
+    count = len(cells)
+    first, second = [], []
+    for offset in (1, stride - 1, stride, stride + 1):       # right, and the three cells of the next row
+        at = np.searchsorted(cells, cells + offset)
+        hit = (at < count) & (cells[np.minimum(at, count - 1)] == cells + offset)
+        first.append(np.flatnonzero(hit))
+        second.append(at[hit])
+    first, second = np.concatenate(first), np.concatenate(second)
+    _, labels = connected_components(coo_matrix((np.ones(len(first), dtype=bool), (first, second)), shape=(count, count)), directed=False)
+    groups = np.argsort(labels, kind='stable')
+    starts = np.flatnonzero(np.r_[True, np.diff(labels[groups]) != 0])
+    members = sorted(np.split(groups, starts[1:]), key=lambda g: int(g[0]))
+    return [(rows[g], cols[g]) for g in members]
 
 
 def meetings(vehicles: list[dict], radius: float) -> tuple[list[Meeting], float]:
@@ -124,25 +158,25 @@ def meetings(vehicles: list[dict], radius: float) -> tuple[list[Meeting], float]
     step = max(SAMPLE_M, longest / MAX_SAMPLES)
     clearance = 2 * radius + CLEARANCE_MARGIN_M + step
     samples = [_sample(v['path'], step) for v in vehicles]
+    trees = [cKDTree(p) for _, p in samples]
     found: list[Meeting] = []
     for a in range(len(vehicles)):
         for b in range(a + 1, len(vehicles)):
             sa, pa = samples[a]
             sb, pb = samples[b]
-            near = np.zeros((len(sa), len(sb)), dtype=bool)
-            for lo in range(0, len(sa), 512):
-                d = pa[lo:lo + 512, None, :] - pb[None, :, :]
-                near[lo:lo + 512] = np.einsum('ijk,ijk->ij', d, d) < clearance * clearance
-            labels, count = ndimage.label(near, structure=np.ones((3, 3), dtype=int))
-            for index, window in enumerate(ndimage.find_objects(labels), 1):
-                rows = np.flatnonzero((labels[window] == index).any(axis=1)) + window[0].start
+            close = trees[a].sparse_distance_matrix(trees[b], clearance, output_type='ndarray')
+            d = pa[close['i']] - pb[close['j']]
+            close = close[np.einsum('ij,ij->i', d, d) < clearance * clearance]
+            if not len(close):
+                continue
+            for rows, cols in _touching(close['i'], close['j'], len(sb)):
                 boxes = []
                 span = max(1, int(round(CHUNK_M / step)))
                 for lo in range(int(rows[0]), int(rows[-1]) + 1, span):
                     hi = min(lo + span, int(rows[-1]) + 1)
-                    cols = np.flatnonzero((labels[lo:hi] == index).any(axis=0))
-                    if cols.size:
-                        boxes.append(Box(a, b, float(sa[lo]), float(sa[hi - 1]), float(sb[cols[0]]), float(sb[cols[-1]])))
+                    chunk = cols[np.searchsorted(rows, lo):np.searchsorted(rows, hi)]
+                    if chunk.size:
+                        boxes.append(Box(a, b, float(sa[lo]), float(sa[hi - 1]), float(sb[chunk.min()]), float(sb[chunk.max()])))
                 if boxes:
                     found.append(Meeting(a, b, boxes))
     return found, clearance
@@ -154,7 +188,9 @@ class Schedule:
     def __init__(self, vehicles: list[dict], found: list[Meeting], stop_m: float, speed: float):
         self.vehicles, self.found, self.stop_m = vehicles, found, stop_m
         self.lengths = [float(_arc(v['path'])[-1]) for v in vehicles]
-        self.lines = [timeline(v, speed) for v in vehicles]
+        walks = [_walk(v, float(v.get('speed_mps') or speed)) for v in vehicles]
+        self.lines = [w[:2] for w in walks]
+        self.stops = [w[2] for w in walks]
         self.events: list[list[tuple[float, int]]] = [[] for _ in vehicles]     # per vehicle: (position, event id)
         self.nodes: list[tuple[int, float]] = []
         self.enter: dict[tuple[int, int], int] = {}
@@ -165,6 +201,11 @@ class Schedule:
                     key = (id(box), v)
                     self.enter[key] = self._node(v, max(0.0, lo - stop_m))
                     self.leave[key] = self._node(v, hi)
+        self.floor: dict[int, float] = {}       # event id → the vehicle cannot pass it earlier: it waits at a task for its earliest time
+        for v, stops in enumerate(self.stops):
+            for stop in stops:
+                if stop['earliest'] > 0:
+                    self.floor[self._node(v, stop['s'])] = stop['earliest'] + _eta(self.lines[v], stop['s']) - stop['arrive']
         for line in self.events:
             line.sort()
         self.chain = []
@@ -204,8 +245,8 @@ class Schedule:
             g.out[x].discard(y)
         return True
 
-    def predict(self) -> tuple[float, float, list[float]]:
-        """Latest finish, summed finish and each vehicle's finish when everyone drives free flow and waits only at gates."""
+    def _times(self) -> list[float]:
+        """When each event happens if everyone drives free flow and waits only at gates and for a task's earliest time."""
         g = self.graph()
         indegree = [0] * len(self.nodes)
         for outs in g.out:
@@ -227,13 +268,19 @@ class Schedule:
             prev = chain_prev.get(node)
             own = _eta(self.lines[v], s) if prev is None else at[prev] + _eta(self.lines[v], s) - _eta(self.lines[v], self.nodes[prev][1])
             blocked = max((at[u] for u in crossing.get(node, ())), default=-math.inf)
-            at[node] = max(own, blocked + RESTART_S)
+            at[node] = max(own, blocked + RESTART_S, self.floor.get(node, -math.inf))
             for nxt in g.out[node]:
                 indegree[nxt] -= 1
                 if indegree[nxt] == 0:
                     ready.append(nxt)
         if done != len(self.nodes):
             raise ValueError('通行次序成环')
+        return at
+
+    def predict(self) -> tuple[float, float, list[float], float]:
+        """Latest finish, summed finish, each vehicle's finish when everyone drives free flow and waits only at gates, and how
+        far past their deadlines the tasks land in total."""
+        at = self._times()
         finish = []
         for v, line in enumerate(self.events):
             total = _eta(self.lines[v], self.lengths[v])
@@ -241,7 +288,35 @@ class Schedule:
                 s, node = line[-1]
                 total = at[node] + total - _eta(self.lines[v], s)
             finish.append(total)
-        return max(finish), sum(finish), finish
+        return max(finish), sum(finish), finish, self._lateness(at)
+
+    def _lateness(self, at: list[float]) -> float:
+        if not any(stop['latest'] is not None for stops in self.stops for stop in stops):
+            return 0.0
+        late = 0.0
+        for stops, rows in zip(self.stops, self.arrivals(at)):
+            late += sum(max(0.0, row['arrive_s'] - stop['latest']) for stop, row in zip(stops, rows) if stop['latest'] is not None)
+        return late
+
+    def arrivals(self, at: list[float] | None = None) -> list[list[dict]]:
+        """Each vehicle's stops under the current order: when it gets there and when work can start, every wait ahead counted."""
+        at = self._times() if at is None else at
+        out = []
+        for v, stops in enumerate(self.stops):
+            line, events, rows, k, ready = self.lines[v], self.events[v], [], 0, 0.0
+            for stop in stops:
+                while k < len(events) and events[k][0] < stop['s'] - 1e-9:
+                    k += 1
+                arrive = stop['arrive']
+                if k:
+                    s, node = events[k - 1]
+                    arrive = at[node] + stop['arrive'] - _eta(line, s)
+                arrive = max(arrive, ready)     # two tasks on one spot are served in turn
+                start = max(arrive, stop['earliest'])
+                rows.append({'task': stop['task'], 'arrive_s': round(arrive, 3), 'start_s': round(start, 3)})
+                ready = start
+            out.append(rows)
+        return out
 
 
 def _choices(m: Meeting, lengths: list[float]) -> tuple[int, ...]:
@@ -300,6 +375,9 @@ def compile_gates(vehicles: list[dict], radius: float, speed: float, decel: floa
                 break
     if stuck:
         return {'feasible': False, 'reason': f'{vehicles[stuck.a]["name"]} 与 {vehicles[stuck.b]["name"]} 的路线找不到无环的通行次序'}
+    def rank(prediction):       # a missed deadline outweighs any time saved; with no deadlines this is the finish alone
+        return prediction[3], prediction[0], prediction[1]
+
     greedy = schedule.predict()
     best = greedy
     improved = True
@@ -315,7 +393,7 @@ def compile_gates(vehicles: list[dict], radius: float, speed: float, decel: floa
                 continue
             m.first = other
             trial = schedule.predict()
-            if trial[:2] < best[:2]:
+            if rank(trial) < rank(best):
                 best, improved = trial, True
             else:
                 m.first = was
@@ -334,6 +412,7 @@ def compile_gates(vehicles: list[dict], radius: float, speed: float, decel: floa
             'gates': {v['name']: [{'s': at, 'after': sorted(after.items())} for at, after in sorted(gates[i].items())] for i, v in enumerate(vehicles)},
             'predicted_makespan_s': round(best[0], 2), 'predicted_finish_s': {v['name']: round(best[2][i], 2) for i, v in enumerate(vehicles)},
             'greedy_makespan_s': round(greedy[0], 2), 'free_flow_s': {v['name']: round(_eta(schedule.lines[i], schedule.lengths[i]), 2) for i, v in enumerate(vehicles)},
+            'arrivals': {v['name']: rows for v, rows in zip(vehicles, schedule.arrivals())},
             'compile_s': round(time.perf_counter() - started, 3)}
 
 
@@ -367,14 +446,55 @@ def estimate(inst: dict, routes: list[dict]) -> dict:
     if reason:
         return {'model': ESTIMATE_MODEL, 'status': 'unsupported', 'reason': reason}
     try:
-        vehicles = [{'name': v.name, 'path': v.path, 'tasks': v.tasks} for v in fieldworld.plan_vehicles(inst, routes)]
+        vehicles = _vehicles(inst, routes)
     except ValueError as exc:
         return {'model': ESTIMATE_MODEL, 'status': 'unavailable', 'reason': str(exc)}
+    if not vehicles:
+        return {'model': ESTIMATE_MODEL, 'status': 'unavailable', 'reason': 'no execution vehicles'}
     result = compile_gates(vehicles, fieldworld.ROBOT_RADIUS, float(inst['vehicles'].get('speed_mps') or 1.0), trials=200)
     if not result['feasible']:
         return {'model': ESTIMATE_MODEL, 'status': 'unavailable', 'reason': result['reason']}
     return {'model': ESTIMATE_MODEL, 'status': 'estimated',
             **{k: result[k] for k in ('predicted_makespan_s', 'meetings', 'free_flow_s', 'compile_s')}}
+
+
+def _vehicles(inst: dict, routes: list[dict], net=None) -> list[dict]:
+    """The drive of each route as executed, from its parking spot and back, with the earliest times the vehicle waits for."""
+    from . import fieldworld
+    windows = {t['id']: t['time_window'] for t in inst['tasks'] if t.get('time_window')}
+    return [{'name': v.name, 'label': v.label, 'path': v.path, 'speed_mps': r.get('speed_mps'),
+             'tasks': [{**t, 'earliest_s': windows[t['id']][0], 'latest_s': windows[t['id']][1]} if t['id'] in windows else t for t in v.tasks]}
+            for v, r in zip(fieldworld.plan_vehicles(inst, routes, net), routes)]
+
+
+def arrivals(inst: dict, routes: list[dict], net=None) -> dict:
+    """When each task is reached with every vehicle moving at once, gate waits included; the checker's evidence for time
+    windows. A plan with no parking layout is timed along its routes alone, and says so."""
+    from . import fieldworld
+    speed = float(inst['vehicles'].get('speed_mps') or 1.0)
+    try:
+        vehicles = _vehicles(inst, routes, net)
+    except ValueError as exc:
+        vehicles = [{'name': str(r.get('vehicle_name')), 'label': str(r.get('vehicle_name')), 'path': r['polyline'], 'speed_mps': r.get('speed_mps'),
+                     'tasks': _route_tasks(inst, r)} for r in routes]
+        stops = Schedule(vehicles, [], 0.0, speed).arrivals()
+        return {'model': 'route_only', 'note': str(exc), 'vehicles': [{'label': v['label'], 'stops': rows} for v, rows in zip(vehicles, stops)]}
+    result = compile_gates(vehicles, fieldworld.ROBOT_RADIUS, speed, trials=200)
+    if not result['feasible']:
+        raise ValueError(f"并行执行没有安全的通行次序（{result['reason']}），到达时间无法保证")
+    return {'model': 'coordinated', 'vehicles': [{'label': v['label'], 'stops': result['arrivals'][v['name']]} for v in vehicles],
+            'estimate': {k: result[k] for k in ('predicted_makespan_s', 'meetings', 'free_flow_s', 'compile_s')}}
+
+
+def _route_tasks(inst: dict, route: dict) -> list[dict]:
+    tasks = {t['id']: t for t in inst['tasks']}
+    lengths = _arc(route['polyline'])
+    out = []
+    for sv in route['services']:
+        t = tasks[sv['task']]
+        out.append({'id': t['id'], 'service_s': float(t.get('service_s') or 0), 'path_s': float(lengths[sv['position']]),
+                    **({'earliest_s': t['time_window'][0], 'latest_s': t['time_window'][1]} if t.get('time_window') else {})})
+    return out
 
 
 def apply(plan: dict) -> dict:

@@ -199,7 +199,8 @@ function Detail({ a, algorithms }: { a: Algorithm; algorithms: Algorithm[] }) {
       <div className={s.folds}>
         <Fold defaultOpen summary={<span>适用条件</span>}>{() => (
           <Kvs items={[['问题', a.problem_label ?? a.problem_classes.join('、')], ['方法', FAMILY[a.family] ?? a.family], ['最优性', GUARANTEE[a.guarantee] ?? a.guarantee],
-            !!a.limits?.max_tasks && ['规模上限', `${a.limits.max_tasks} 个任务`], ['转弯约束', a.turn_aware ? '进入搜索' : '不进入搜索'], !!a.randomness && ['随机性', a.randomness.note]]} />
+            !!a.limits?.max_tasks && ['规模上限', `${a.limits.max_tasks} 个任务`], ['转弯约束', a.turn_aware ? '进入搜索' : '不进入搜索'],
+            !!a.limits?.time_window_note && ['时间窗', a.limits.time_window_note], !!a.randomness && ['随机性', a.randomness.note]]} />
         )}</Fold>
         {a.params.length > 0 && <Fold summary={<span>参数 · {a.params.length}</span>}>{() => (
           <Rows>{a.params.map((p) => <Row key={p.name} dense title={p.label} sub={p.name} value={String(p.default ?? '—')} valueSub={p.min != null || p.max != null ? `${p.min ?? '—'} – ${p.max ?? '—'}` : undefined} />)}</Rows>

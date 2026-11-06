@@ -159,6 +159,10 @@ class Driver:
     def next_task(self):
         return next((t for t in self.tasks if t['state'] == 'pending'), None)
 
+    def opens_at(self, task, t_sim):
+        """A task with an earliest time holds the vehicle at the stop until then; the clock starts when the fleet is released."""
+        return max(t_sim, (self.t_start if self.t_start is not None else t_sim) + float(task.get('earliest_s') or 0))
+
     def step(self, t_sim: float):
         """Returns (v, w) for this control tick."""
         if self.pose is None or self.state in ('done', 'failed', 'waiting'):
@@ -175,7 +179,7 @@ class Driver:
                 if self.speed_now >= .02 or self.angular_speed_now >= .05:
                     self.stationary_since = None
                     self.servicing_task['service_started_at'] = None
-                    self.dwell_until = t_sim + self.servicing_task['service_s']
+                    self.dwell_until = self.opens_at(self.servicing_task, t_sim) + self.servicing_task['service_s']
                     return 0.0, 0.0
                 if self.stationary_since is None:
                     self.stationary_since = t_sim
@@ -185,8 +189,9 @@ class Driver:
                 if t_sim - self.stationary_since < self.stationary_confirmation_s:
                     return 0.0, 0.0
                 if self.servicing_task.get('service_started_at') is None:
-                    self.servicing_task['service_started_at'] = t_sim
-                    self.dwell_until = t_sim + self.servicing_task['service_s']
+                    begin = self.opens_at(self.servicing_task, t_sim)
+                    self.servicing_task['service_started_at'] = begin
+                    self.dwell_until = begin + self.servicing_task['service_s']
             if t_sim < self.dwell_until:
                 return 0.0, 0.0
             self.servicing_task['serviced_at'] = t_sim
@@ -201,8 +206,11 @@ class Driver:
         if task and abs(task['s'] - self.s) <= task['radius'] + 0.05 and math.dist((x, y), task['goal']) <= task['radius']:
             task.update(state='reached', t_sim=t_sim, distance_m=math.dist((x, y), task['goal']))
             self.s = max(self.s, task['s'])
-            if task.get('service_s', 0) > 0:
-                self.state, self.dwell_until = 'servicing', t_sim + task['service_s']
+            begin = self.opens_at(task, t_sim)
+            if begin > t_sim:
+                task['service_started_at'] = begin
+            if task.get('service_s', 0) > 0 or begin > t_sim:
+                self.state, self.dwell_until = 'servicing', begin + task['service_s']
                 self.stationary_since = None
                 self.servicing_task = task
                 return 0.0, 0.0

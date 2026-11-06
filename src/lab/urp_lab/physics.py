@@ -16,7 +16,7 @@ import threading
 import time
 from pathlib import Path
 
-from . import field_coordination, fieldworld, paths, sim2sim
+from . import field_coordination, fieldworld, paths, sim2sim, time_windows
 from .events import utc_now
 from .jobs import new_id
 from .mujoco_field import supports
@@ -59,8 +59,12 @@ def plan_from_run(run: dict, out: Path) -> dict:
         world = fieldworld.build(inst, run['routes'], out, 'physics', 4.0, None, None, inherit_ground=False)
     except (ValueError, TypeError, KeyError, IndexError) as exc:
         raise PhysicsError(422, 'invalid_plan', f'物理执行前重新验算失败：{exc}') from None
+    windows = time_windows.by_task(inst)
     for v, r in zip(world['vehicles'], run['routes']):
         v['planned_length_m'], v['planned_duration_s'] = r.get('cost'), r.get('duration_s')
+        for task in v['tasks']:
+            if task['id'] in windows:
+                task['earliest_s'], task['latest_s'] = windows[task['id']]
     return {**world, 'run_id': run['run_id'], 'scenario_id': run['scenario_id'], 'algorithm': (run.get('algorithm') or {}).get('name'),
             'planned': {'makespan_s': max(r['duration_s'] for r in run['routes']), 'total_distance_m': checked['computed_cost']}}
 
@@ -184,6 +188,7 @@ class PhysicsManager:
             rec.update({k: result.get(k) for k in SUMMARY})
             rec['check'] = {k: (result.get('check') or {}).get(k) for k in ('valid', 'errors', 'scope')}
             rec['traffic'] = _traffic_summary(result)
+            rec['time_windows'] = time_windows.compact(result.get('time_windows'))
             if reference:
                 rec['comparison'] = sim2sim.compare(reference, result)
             rec['finished_utc'] = utc_now()
@@ -213,6 +218,7 @@ class PhysicsManager:
             result = json.loads(path.read_text(encoding='utf8'))
             rec['trails'] = {name: rows[::DISPLAY_STRIDE] + rows[-1:] for name, rows in (result.get('trails') or {}).items()}
             rec['tasks'] = result.get('tasks')
+            rec['time_windows'] = result.get('time_windows')
         return rec
 
     def active(self) -> list[dict]:

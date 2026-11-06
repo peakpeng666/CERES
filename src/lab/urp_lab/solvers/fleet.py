@@ -16,7 +16,7 @@ from collections import Counter, defaultdict
 
 import numpy as np
 
-from .. import lanes
+from .. import lanes, time_windows
 from ..lanes import free_space
 from ..path_geometry import arc_lengths, locate
 from .fleet_common import depot_list, fleet_classes, vehicle_table  # fleet shape helpers (2026-10-17 拆分)
@@ -27,6 +27,12 @@ from .fleet_engines import metaheuristic, ortools_makespan  # PyVRP / OR-Tools e
 
 COLORS = ['#007aff', '#ff6b00', '#34a853', '#a142f4', '#e8336d', '#00a6a6', '#c49000', '#5856d6', '#8e5a2b', '#2f7d32',
           '#d81b60', '#1e88e5']
+# How each fleet algorithm treats task time windows. The catalog shows this, and an unsupported one refuses a windowed task.
+TIME_WINDOW_SUPPORT = {'pyvrp.balanced': 'native', 'ortools.fleet': 'time_dimension', 'pyvrp.fleet': 'unsupported',
+                       'panel.savings_fleet': 'unsupported', 'panel.sweep': 'unsupported', 'panel.cluster_first': 'unsupported'}
+WINDOW_ROUNDS = (.5, .3, .2)    # budget shares: search, then search again with the deadlines moved up by what the checker found
+# Aim this far ahead of a deadline. Recorded arrivals ran up to 3 s behind the time model on 40 tasks in MuJoCo (2026-11-06).
+WINDOW_MARGIN_S = 3.0
 
 
 # ------------------------------------------------------------------- fleet --
@@ -410,13 +416,39 @@ def oriented_clearance(inst, polyline, footprint, obstacles, boundary, crops=())
     return None if best is math.inf else float(best)
 
 
+def check_time_windows(inst, routes, errors, net=None):
+    """Every windowed task's arrival, recomputed from the route geometry with the follower's time model, every vehicle moving
+    at once. No time reported by a solver is read. A plan whose arrivals cannot be computed has not met its windows."""
+    from ..field_coordination import arrivals
+    tasks = {t['id']: t for t in inst['tasks']}
+    try:
+        found = arrivals(inst, routes, net)
+        rows = [time_windows.row(tasks[stop['task']], v['label'], stop['arrive_s'], stop['start_s'])
+                for v in found['vehicles'] for stop in v['stops'] if time_windows.of(tasks[stop['task']])]
+    except (AttributeError, IndexError, KeyError, TypeError, ValueError) as exc:
+        errors.append(f'时间窗未能校验：{exc}')
+        return {'evaluated': False, 'reason': str(exc), 'late': []}
+    seen = {r['task'] for r in rows}
+    rows += [time_windows.row(t, '未分配', None) for t in inst['tasks'] if time_windows.of(t) and t['id'] not in seen]
+    scope = {'coordinated': '规划模型：沿路径匀速行驶，拐角原地转向，任务驻留，从停车位驶出，路线相遇处等待；全部车辆同时出发',
+             'route_only': f"规划模型：只沿路线本身计时，不含停车位驶出和路线相遇等待，因为{found.get('note')}"}[found['model']]
+    record = {**time_windows.summary(rows, found['model'], scope, inst.get('start_clock')), 'execution_estimate': found.get('estimate')}
+    for r in record['late'][:6]:
+        errors.append(f"任务 {r['label']}（{r['vehicle']}）未分配，无法到达" if r['arrival_s'] is None else
+                      f"任务 {r['label']}（{r['vehicle']}）预计 {r['arrival_s']:.1f} s 到达，晚于截止 {r['latest_s']:g} s（晚 {-r['slack_s']:.1f} s）")
+    if len(record['late']) > 6:
+        errors.append(f"另有 {len(record['late']) - 6} 个任务晚于截止时间")
+    return record
+
+
 def check(inst, routes, params=None):
     """Recompute task order, actual depot reloads, capacity, metrics and swept-radius clearance.
 
     Sequence/trip/service metadata are cross-checked against one another and the ordered geometry;
     none of them alone is a witness that a task was served. Invalid candidates remain diagnostics.
     Per-vehicle capacity, speed and footprint come from the route's fleet class (`vehicles.fleet`,
-    synthesised as one class for legacy homogeneous instances).
+    synthesised as one class for legacy homogeneous instances). Task time windows are recomputed
+    from the geometry by `check_time_windows`.
     """
     from shapely.geometry import LineString, Point, Polygon
     errors, details = [], []
@@ -580,8 +612,10 @@ def check(inst, routes, params=None):
         errors.append(f'{len(missing)} 个任务未被分配：{missing[:8]}')
     if dup:
         errors.append(f'任务重复服务：{dup[:8]}')
+    windows = check_time_windows(inst, routes, errors, net) if time_windows.present(inst) else None
     return {'valid': not errors, 'errors': errors, 'computed_cost': total, 'routes': details,
-            'checker': 'urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）',
+            **({'time_windows': windows} if windows else {}),
+            'checker': 'urp_lab.solvers.fleet.check · 顺序/分趟/指标及连续圆足迹独立复算（Shapely）' + ('；到达时间按跟踪器时间模型复算' if windows else ''),
             'source': 'panel_baseline'}
 
 
@@ -596,18 +630,20 @@ def assign_trips(trip_times, K):
     return out
 
 
-def dispatch_algorithm(inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=None, graph=None):
+def dispatch_algorithm(inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=None, graph=None, margin_s=0.0):
     """Run one fleet algorithm; returns (trips, owner, trip_class, trip_depot, trace)."""
     trace, owner, trip_class, trip_depot, reload_at = [], None, None, None, None
     trips = None
+    windowed = time_windows.present(inst)
     if algorithm_id == 'pyvrp.fleet':
         trips, trip_class, trip_depot, trace = metaheuristic('pyvrp', inst, D, demand, params, route_cap)
     elif algorithm_id == 'pyvrp.balanced':
-        trips, owner, reload_at, trace = pyvrp_makespan(inst, D, demand, params, K, multi, graph)
+        trips, owner, reload_at, trace = pyvrp_makespan(inst, D, demand, params, K, multi, graph, margin_s)
         trip_class = [class_of[v] for v in owner] if owner is not None else None
         trip_depot = [vehicle_table(inst)[v][3] for v in owner] if owner is not None else None
-    elif algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan':
-        trips, owner, reload_at, trace = ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=trace_diagnostics)
+    elif algorithm_id == 'ortools.fleet' and (inst.get('objective') == 'makespan' or windowed):
+        trips, owner, reload_at, trace = ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=trace_diagnostics,
+                                                          graph=graph if windowed else None, margin_s=margin_s)
         trip_class = [class_of[v] for v in owner] if owner is not None else None
         trip_depot = [v % len(depot_list(inst)) for v in owner] if owner is not None else None
     elif algorithm_id == 'ortools.fleet':
@@ -629,13 +665,71 @@ def unreachable_tasks(inst, D, nd):
             if not any(np.isfinite(D[d0, i]) for d0 in range(nd))]
 
 
+def beyond_reach(inst, D, nd, classes):
+    """Tasks no vehicle can reach in time even going straight there from the nearest depot at the fleet's top speed. The
+    plan need not be searched for: this proves that the windows, not a solver, are what fails."""
+    fastest = max(c['speed_mps'] for c in classes)
+    rows = []
+    for i, t in enumerate(inst['tasks']):
+        window = time_windows.of(t)
+        if window and window[1] is not None:
+            need = float(min(D[d, nd + i] for d in range(nd))) / fastest
+            if need > window[1] + time_windows.TOLERANCE_S:
+                rows.append({'task': t['id'], 'label': t['label'], 'need_s': round(need, 1), 'latest_s': window[1]})
+    return rows
+
+
+def _worst_late(chk) -> float | None:
+    """How far past its deadline the latest task lands, when lateness is what a plan failed on."""
+    late = ((chk or {}).get('time_windows') or {}).get('late') or []
+    misses = [-r['slack_s'] for r in late if r['slack_s'] is not None]
+    return max(misses) if misses else None
+
+
 def solve(scenario, inst, algorithm_id, params):
+    """Assign, route and check. A task with a time window is judged by the checker's arrival, which also counts what a search
+    matrix cannot: leaving the parking spot, turns between legs, waiting where routes meet. So the search runs in rounds, each
+    moving the deadlines up by what the checker found, and the budget is shared between them."""
+    if not time_windows.present(inst):
+        return _solve(scenario, inst, algorithm_id, params)
+    if TIME_WINDOW_SUPPORT.get(algorithm_id) == 'unsupported':
+        raise ValueError(f'{algorithm_id} 不适用于带时间窗的任务：它不跟踪到达时刻；请用 pyvrp.balanced 或 ortools.fleet')
+    if str(params.get('ground_policy', 'ignore')) == 'risk_adjust':
+        raise ValueError('时间窗不适用于地面风险限速（ground_policy=risk_adjust）：到达时间模型不含分区限速')
+    total, started = float(params.get('time_limit_s', 3)), time.perf_counter()
+    graph = travel_graph(inst)
+    margin, rounds, best, checking = WINDOW_MARGIN_S, [], None, 0.0
+    for share in WINDOW_ROUNDS:
+        left = total - (time.perf_counter() - started) - checking     # a round is not finished until its plan is checked
+        if best is not None and left < .1:
+            break
+        search_s = max(.1, min(left, total * share))
+        begun = time.perf_counter()
+        outcome = _solve(scenario, inst, algorithm_id, {**params, 'time_limit_s': search_s}, graph, margin)
+        checking = max(checking, time.perf_counter() - begun - search_s)
+        status, chk = outcome[4], outcome[1]
+        worst = _worst_late(chk)
+        late = len(((chk or {}).get('time_windows') or {}).get('late') or [])
+        rounds.append({'margin_s': round(margin, 2), 'status': status, 'late_tasks': late, 'worst_late_s': worst})
+        if best is None or status == 'feasible' or worst is not None and late < best[0]:
+            best = late, outcome
+        if status == 'feasible' or worst is None:
+            break
+        margin += worst * 1.1 + 1.0
+    routes, chk, metrics, raw, status, trace = best[1]
+    raw = {**raw, 'time_window_rounds': rounds}
+    if status == 'no_solution' and _worst_late(chk) is not None:
+        raw['reason'] = f"没有找到全部按时的方案：{time_windows.late_text(chk['time_windows'])}"
+    return routes, chk, metrics, raw, status, trace
+
+
+def _solve(scenario, inst, algorithm_id, params, windows_graph=None, margin_s=0.0):
     t0 = time.perf_counter()
     from .. import ground_risk
     ground_policy, risk_weight, ground = ground_risk.resolve_policy(inst, params)
     ground_policy_active = ground_policy == 'risk_adjust'
-    graph = (travel_graph(inst, ground['zones'], risk_weight) if ground_policy_active
-             else travel_graph(inst))
+    graph = windows_graph or (travel_graph(inst, ground['zones'], risk_weight) if ground_policy_active
+                              else travel_graph(inst))
     D = graph.D
     n = len(inst['tasks'])
     depots = depot_list(inst)
@@ -658,6 +752,11 @@ def solve(scenario, inst, algorithm_id, params):
             {'reason': f'总需求 {sum(demand)} 超过车队单趟总容量 {fleet_cap}'
                        + ('（按各类别台数 × 容量合计）' if hetero else f'（{K} × {classes[0]["capacity"]}）')
                        + '；可允许多趟往返或增加车辆/容量'}, 'infeasible', []
+    unreachable_in_time = beyond_reach(inst, D, nd, classes)
+    if unreachable_in_time:
+        named = '、'.join(f"任务 {r['label']} 从车库直达至少 {r['need_s']:g} s，晚于截止 {r['latest_s']:g} s" for r in unreachable_in_time[:6])
+        return [], None, {}, {'reason': named + (f" 等 {len(unreachable_in_time)} 个" if len(unreachable_in_time) > 6 else ''),
+                              'time_window_unreachable': unreachable_in_time}, 'infeasible', []
     if hetero and algorithm_id in ('panel.sweep', 'panel.cluster_first', 'panel.savings_fleet'):
         raise ValueError('构造基线（sweep / cluster_first / savings）只支持同构车队；异构车队请用 pyvrp.fleet 或 ortools.fleet')
     if multi_depot and algorithm_id.startswith('panel.'):
@@ -666,7 +765,7 @@ def solve(scenario, inst, algorithm_id, params):
     route_cap = n if multi else K
     trace_diagnostics = {}
     trips, owner, trip_class, trip_depot, reload_at, trace = dispatch_algorithm(
-        inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=trace_diagnostics, graph=graph)
+        inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=trace_diagnostics, graph=graph, margin_s=margin_s)
     if not trips:
         return [], None, {}, {'reason': '求解器没有返回可行方案', 'trace_diagnostics': trace_diagnostics}, 'no_solution', trace
     reload_at = reload_at if reload_at is not None else [None] * len(trips)
@@ -762,7 +861,7 @@ def solve(scenario, inst, algorithm_id, params):
         return routes
 
     any_curvature = any(float(c.get('min_turn_radius_m') or 0) > 0 for c in classes)
-    attempts = []
+    attempts, chk = [], None
     # analytic realisation first (fast, deterministic); the sampling fallback (OMPL RRT-Connect on
     # DubinsStateSpace) can weave compound manoeuvres through gaps the waypoint scheme cannot.
     ladder = ([('analytic', 0.0), ('analytic', 0.6), ('analytic', 1.2), ('ompl_rrt_connect', None)]
@@ -777,8 +876,9 @@ def solve(scenario, inst, algorithm_id, params):
                          'valid': chk['valid'], 'length_m': round(sum(r['cost'] for r in routes), 3)})
         if chk['valid']:
             break
-    routes = routes or []
-    chk = check(inst, routes, params)
+    if not routes or chk is None:
+        routes = routes or []
+        chk = check(inst, routes, params)
     if not routes:
         return [], chk, {'total_distance_m': 0.0}, {'reason': '候选方案未通过独立检查，不能作为可行方案执行',
                                                     'curvature_realization_attempts': attempts}, 'no_solution', trace
@@ -799,6 +899,9 @@ def solve(scenario, inst, algorithm_id, params):
                                 **({'min_turn_radius_m': r['min_turn_radius_m']} if r.get('min_turn_radius_m') else {}),
                                 'color': r['color'], 'tasks': len(r['sequence']), 'trips': len(r['trips']),
                                 'load': r['load'], 'length_m': r['cost'], 'duration_s': r['duration_s']} for r in routes]}
+    windows = chk.get('time_windows')
+    if windows and windows.get('evaluated'):
+        metrics.update(time_window_tasks=windows['total'], time_window_on_time=windows['on_time'], time_window_worst_slack_s=windows['worst_slack_s'])
     if ground:
         metrics.update(ground_risk_total_cost=sum(r['risk_cost'] for r in routes), ground_policy=ground_policy,
                        ground_risk_weight=risk_weight, search_objective='risk_adjusted_metres' if ground_policy_active else 'geometric_metres')
@@ -810,7 +913,9 @@ def solve(scenario, inst, algorithm_id, params):
     raw = {'trips': trips, 'vehicle_plan': plan, 'distance_model': model, 'travel_network': graph.info or None,
            'curvature_realization_attempts': attempts if len(attempts) > 1 else None,
            'search_scale': 'PyVRP / OR-Tools 用厘米取整距离搜索，结果按米复算', 'planning_s': time.perf_counter() - t0,
-           'trip_assignment': ('OR-Tools 直接为各车安排往返（车库卸载点），时间维度跨度代价最小化最晚完成'
+           'trip_assignment': ('OR-Tools 直接为各车安排往返（车库卸载点），时间窗作用在时间维度上'
+                               if algorithm_id == 'ortools.fleet' and windows
+                               else 'OR-Tools 直接为各车安排往返（车库卸载点），时间维度跨度代价最小化最晚完成'
                                if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
                                else 'PyVRP 在同一搜索里安排回库重载和各趟归属，班次上限二分收紧，用时按跟踪器实际行驶估计' if algorithm_id == 'pyvrp.balanced'
                                else '多趟：先求各趟路线，再按最长处理时间优先分配到各车' if multi else '单趟：每车一条路线')}
@@ -843,9 +948,13 @@ def solve(scenario, inst, algorithm_id, params):
                  'physical_reach_verified': False, 'max_geometric_offset_m': max(getattr(graph, 'offsets', [0]) or [0])},
         'time': {'model': 'distance/speed + requested service time', 'acceleration': False,
                  'turns': False, 'parking': False, 'traffic_conflicts': False,
-                 'scope': 'constant-speed planning proxy, not physically predicted completion time'},
+                 'scope': 'constant-speed planning proxy, not physically predicted completion time',
+                 **({'time_windows': {'bounds': 'arrival at the task, seconds after the vehicles are released', 'early_arrival': 'waits at the task',
+                                      'search': 'tw_early / tw_late on follower drive time' if algorithm_id == 'pyvrp.balanced' else 'time dimension on follower drive time',
+                                      'judged_by': 'checker arrival: follower time model, parking, turns, waits where routes meet, every vehicle moving at once',
+                                      'deadline_margin_s': round(margin_s, 2)}} if windows else {})},
         'optimization': {'reported_objective': inst.get('objective', 'total_distance'),
-                         'search': 'declared ground-risk equivalent metres' if ground_policy_active else 'distance under a bisected shift limit on follower drive time' if algorithm_id == 'pyvrp.balanced' else 'weighted distance and route-span surrogate' if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
+                         'search': 'declared ground-risk equivalent metres' if ground_policy_active else 'distance on follower drive time within task windows' if windows and inst.get('objective') != 'makespan' else 'distance under a bisected shift limit on follower drive time' if algorithm_id == 'pyvrp.balanced' else 'weighted distance and route-span surrogate' if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
                          else 'distance routing then trip allocation',
                          'trip_allocation': 'PyVRP multi-trip routes' if algorithm_id == 'pyvrp.balanced' else 'OR-Tools assignment' if owner is not None else 'LPT heuristic' if multi else 'one trip per vehicle',
                          'optimality_proved': False}}

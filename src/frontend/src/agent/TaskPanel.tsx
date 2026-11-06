@@ -17,7 +17,7 @@ import { useAgent } from './store';
 import s from './agent.module.css';
 
 /** Editable contract fields: kind, options, unit; mirrors urp_lab.agent.contract.FIELDS. */
-export const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool' | 'size'; unit?: string; options?: Record<string, string> }> = {
+export const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool' | 'size' | 'text'; unit?: string; options?: Record<string, string> }> = {
   task_count: { kind: 'int', unit: '个' },
   vehicle_count: { kind: 'int', unit: '台' },
   vehicle_capacity: { kind: 'int', unit: '单位' },
@@ -30,6 +30,9 @@ export const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool'
   travel_mode: { kind: 'enum', options: { rows: '沿行间与地头', free: '自由通行（只避障）' } },
   task_distribution: { kind: 'enum', options: { uniform: '均匀分布', clustered: '成片聚集', rows: '沿作物行' } },
   depot_location: { kind: 'enum', options: { sw: '西南角', se: '东南角', nw: '西北角', ne: '东北角', center: '中部' } },
+  start_clock: { kind: 'text' },
+  task_deadline: { kind: 'text' },
+  task_earliest: { kind: 'text' },
   time_limit_s: { kind: 'number', unit: 's' },
   compare_count: { kind: 'int', unit: '个' },
   seed: { kind: 'int' },
@@ -38,6 +41,7 @@ export const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool'
 export const OPTIONAL_LABEL: Record<string, string> = {
   trip_mode: '趟次', travel_mode: '通行方式', time_limit_s: '每个算法的时间预算', compare_count: '对比算法数', seed: '随机种子',
   simulate: '规划后进入仿真执行', vehicle_capacity: '单车容量', vehicle_speed_mps: '车速', objective: '优化目标', task_demand: '单点需求',
+  start_clock: '出发时刻', task_deadline: '截止时间', task_earliest: '最早时间',
 };
 
 export function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value'>; onDone: () => void }) {

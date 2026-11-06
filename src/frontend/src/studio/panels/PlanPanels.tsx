@@ -26,7 +26,7 @@ import {
 import * as Plot from '@observablehq/plot';
 import { exportUrl, fmt } from '../../lab/api';
 import { Badge, Button, EmptyState, Input, Notice, Segmented, Select, Spinner } from '../../lab/ui';
-import type { Solution } from '../../lab/types';
+import type { Solution, TimeWindowRecord } from '../../lab/types';
 import { FieldEditor } from '../editor/FieldEditor';
 import { OBSTACLE_STYLE, area } from '../editor/geometry';
 import { useLanes } from '../editor/lanes';
@@ -37,6 +37,7 @@ import type { FleetInstance, FleetRoute, FleetScenario, ObstacleKind, PerVehicle
 import { addDepot, depotsOf, fleetClassFor, fleetClasses, fleetSize, planningFingerprint, removeDepot, setDepot } from '../fleet';
 import { playbackDuration } from '../planningPlayback';
 import { planModelSchema, researchAcceptanceIssues, unacceptedPlanReason } from '../execution';
+import { atClock, lateOf, windowText } from '../../desk/arrivals';
 import { MapCanvas } from '../../lab/canvas/MapCanvas';
 import { baseScene, routeColor, shownColor, solutionPaths, violationMarkers } from '../../lab/views/plan/planModel';
 import type { Instance, Scenario } from '../../lab/types';
@@ -805,6 +806,7 @@ const COLUMNS: Record<string, Col[]> = {
     { label: '总里程', get: (r) => metric('total_distance_m')(r), digits: 1, unit: ' m', better: 'min' },
     { label: '最晚完成', get: metric('makespan_s'), digits: 0, unit: ' s', better: 'min' },
     { label: '预计实际工期', get: metric('predicted_makespan_s'), digits: 0, unit: ' s' },
+    { label: '按时任务', get: metric('time_window_on_time'), digits: 0, better: 'max' },
     { label: '车辆', get: metric('vehicles_used'), digits: 0 },
     { label: '趟数', get: metric('trips'), digits: 0 },
     { label: '均衡度', get: metric('balance_cv'), digits: 2, better: 'min' },
@@ -1043,6 +1045,7 @@ export function VerifyPanel() {
     ...(rows ? [{ label: '只走行间通道和地头，不斜穿作物', bad: has(/离开行间/) }] : []),
     { label: '路线经过每个任务的作业位置', bad: has(/作业位置/) },
     { label: '从车库出发并返回', bad: has(/车库/) },
+    ...(check.time_windows ? [{ label: '到达时间在时间窗内', bad: has(/晚于截止|时间窗未能校验|无法到达/) }] : []),
   ] : [{ label: '独立检查器', bad: errors }];
   const explained = new Set(items.flatMap((item) => item.bad));
   const unexplained = errors.filter((error) => !explained.has(error));
@@ -1099,8 +1102,28 @@ export function VerifyPanel() {
         </div>}
         <p className={s.meta}>验算方：{check.checker}。数据来源：{run.algorithm.origin}</p>
         {fleet && <PerVehicleTable run={run} />}
+        {!!check.time_windows?.tasks?.length && <ArrivalTable record={check.time_windows} />}
       </div>
     </div>
+  );
+}
+
+/** Each task against its window, late ones first. Plan-side arrivals from the checker; recorded ones sit with the physics run. */
+function ArrivalTable({ record }: { record: TimeWindowRecord }) {
+  const start = record.start_clock;
+  return (
+    <table className={s.table}>
+      <thead><tr><th>任务</th><th>车辆</th><th>时间窗</th><th className={s.num}>预计到达</th><th className={s.num}>余量</th><th>判定</th></tr></thead>
+      <tbody>
+        {(record.tasks ?? []).map((r) => (
+          <tr key={r.task}>
+            <td>{r.label}</td><td>{r.vehicle}</td><td>{windowText(r, start)}</td>
+            <td className={s.num}>{atClock(start, r.arrival_s)}</td><td className={s.num}>{r.slack_s === null ? '—' : fmt.sec(r.slack_s)}</td>
+            <td>{r.on_time ? '按时' : <Badge tone="red">{lateOf(r).replace(`${r.label} `, '')}</Badge>}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }
 

@@ -14,6 +14,7 @@ export type Frame =
   | { t: 'vehicle'; run: string; v: number }
   | { t: 'stop'; run: string; v: number; task: number }
   | { t: 'checks'; run: string }
+  | { t: 'arrivals'; run: string }
   | { t: 'check'; run: string; id: string }
   | { t: 'params'; run: string }
   | { t: 'repro'; run: string }
@@ -58,7 +59,7 @@ function decodeFrame(raw: string): Frame | null {
       return { t };
     case 'plot': case 'obstacle': case 'tool': return a ? { t, id: a } : null;
     case 'task': { const id = int(a); return id === null ? null : { t, id }; }
-    case 'plan': case 'checks': case 'params': case 'repro': case 'raw': return a ? { t, run: a } : null;
+    case 'plan': case 'checks': case 'arrivals': case 'params': case 'repro': case 'raw': return a ? { t, run: a } : null;
     case 'vehicle': { const v = int(b); return a && v !== null ? { t, run: a, v } : null; }
     case 'stop': { const v = int(b), task = int(c); return a && v !== null && task !== null ? { t, run: a, v, task } : null; }
     case 'check': return a && b ? { t, run: a, id: b } : null;
