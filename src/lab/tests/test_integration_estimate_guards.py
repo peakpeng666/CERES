@@ -1,5 +1,6 @@
 """Cloud integration regressions: prediction scope, comparable ranking and frozen replay labels."""
 from copy import deepcopy
+import json
 from types import SimpleNamespace
 
 import pytest
@@ -53,16 +54,24 @@ def test_same_model_complete_estimates_can_rank_on_prediction(monkeypatch):
     assert best['run_id'] == '1' and best['ranking_basis'] == 'predicted_makespan_s'
 
 
-def test_frozen_coordinated_replay_is_not_labelled_serial(monkeypatch, tmp_path):
-    plan = {'run_id': 'run_1', 'traffic': {'policy': fc.POLICY}}
+@pytest.mark.parametrize('source_traffic,expected_mode', [
+    ({'policy': fc.POLICY}, 'coordinated'), ({}, 'serial'),
+], ids=['coordinated', 'serial'])
+def test_frozen_coordinated_replay_is_not_labelled_serial(monkeypatch, tmp_path, source_traffic, expected_mode):
+    plan = {'run_id': 'run_1', 'traffic': source_traffic}
     emitted = []
-    manager = SimpleNamespace(_dir=lambda _: tmp_path / 'record', _gazebo=lambda _: (deepcopy(plan), {}),
-                              _emit=emitted.append, _run=lambda *_: None)
+    store = SimpleNamespace(list_physics_runs=lambda **_: [], put_physics_run=emitted.append)
+    # Keep the real lifecycle methods; only external inputs and thread execution are faked.
+    manager = physics.PhysicsManager(store, tmp_path)
+    monkeypatch.setattr(manager, '_gazebo', lambda _: (deepcopy(plan), {}))
     monkeypatch.setattr(physics, 'available', lambda: {'available': True})
     monkeypatch.setattr(physics, 'supports', lambda _: None)
     monkeypatch.setattr(physics.threading, 'Thread', lambda **_: SimpleNamespace(start=lambda: None))
-    rec = physics.PhysicsManager.submit(manager, session_id='field_1')
-    assert rec['traffic_mode'] == 'coordinated'
+    rec = manager.submit(session_id='field_1')
+    assert rec['traffic_mode'] == expected_mode
+    assert rec['run_id'] == 'run_1' and rec['session_id'] == 'field_1'
+    assert emitted == [rec]
+    assert json.loads((manager._dir(rec['physics_run_id']) / 'plan.json').read_text()) == plan
 
 
 @pytest.mark.parametrize('second,comparable', [
