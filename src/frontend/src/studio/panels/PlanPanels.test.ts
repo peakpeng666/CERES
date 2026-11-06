@@ -164,3 +164,28 @@ describe('comparison panel explains map-check exclusions', () => {
     expect(html).toContain('已隔离：');
   });
 });
+
+describe('optional execution predictions are displayed without an unsupported best marker', () => {
+  it.each(['same-model', 'other-model', 'missing'])('does not rank prediction cells for %s evidence', (secondModel) => {
+    const instance = { depot: [0, 0], tasks: [], boundary: [[0, 0], [10, 0], [10, 10], [0, 10]],
+      robot_radius: 1, vehicles: { count: 2, capacity: 4, speed_mps: 1 } };
+    const make = (id: string, prediction: number, model: string) => ({
+      run_id: id, scenario_id: 'scene', problem_class: 'fleet_routing', instance, instance_sha256: 'hash',
+      frame: { kind: 'field', units: 'm' }, state: 'done', status: 'feasible',
+      check: { valid: true, errors: [] }, map_check: null, objective: { value: 10, unit: 's' },
+      routes: [{ polyline: [[0, 0], [1, 1]] }], params: {}, algorithm: { id, name: id },
+      raw_result: { model_contract: { schema: 'urp.fleet-model/2' } },
+      metrics: { total_distance_m: 10, makespan_s: 100, predicted_makespan_s: prediction,
+        execution_estimate: model === 'missing' ? null : { status: 'estimated', model } },
+    }) as unknown as Solution;
+    const rows = [make('first', 140, 'same-model'), make('second', 90, secondModel)];
+    useStudio.setState({ scenario: { id: 'scene', problem_class: 'fleet_routing' } as Scenario,
+      draft: instance as unknown as Scenario['instance'], runIds: rows.map((r) => r.run_id),
+      runs: Object.fromEntries(rows.map((r) => [r.run_id, r])), focusRun: rows[0].run_id, algorithms: [] });
+    const markup = renderToStaticMarkup(createElement(ComparePanel));
+    const prediction = markup.match(/<td([^>]*)>90 s<\/td>/);
+    expect(prediction).not.toBeNull();
+    expect(prediction![1]).not.toContain('data-best');
+    expect(markup).toContain('预计工期仅作展示');
+  });
+});

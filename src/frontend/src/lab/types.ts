@@ -170,6 +170,8 @@ export interface PhysicsRun {
   check?: { valid?: boolean; errors?: string[]; scope?: string };
   comparison?: EngineGap;
   trails?: Record<string, number[][]>;
+  traffic_mode?: 'serial' | 'coordinated';
+  traffic?: { policy?: string | null; holds?: number; held_s?: number | null; predicted_makespan_s?: number | null; meetings?: number | null; min_gap_m?: number | null };
 }
 
 export interface Recommendation {

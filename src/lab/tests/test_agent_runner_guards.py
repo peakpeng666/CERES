@@ -406,7 +406,9 @@ def test_a_plan_that_fails_the_physics_engine_is_not_sent_to_gazebo(lab, monkeyp
     assert chosen != failed
 
 
-def test_the_approval_names_why_the_shortest_plan_was_passed_over(lab):
+def test_the_approval_names_why_the_shortest_plan_was_passed_over(lab, monkeypatch):
+    # This is a decision-contract test. Real serial/coordinated execution has separate physics integration coverage.
+    physics_verdicts(monkeypatch, lab, fail_first=False)
     runner0, _, sid0, first = compare_three(lab)
     best = runner0._best_verified(first)['run_id']
     fake = dict(first)
@@ -419,7 +421,9 @@ def test_the_approval_names_why_the_shortest_plan_was_passed_over(lab):
     assert runner0._simulation_refusal({**fake, 'simulation_decision': None}, {'run_id': best})[0] == 'physics_failed'
 
 
-def test_when_no_plan_passes_the_person_still_decides_and_is_told(lab):
+def test_when_no_plan_passes_the_person_still_decides_and_is_told(lab, monkeypatch):
+    # This is a decision-contract test. Real serial/coordinated execution has separate physics integration coverage.
+    physics_verdicts(monkeypatch, lab, fail_first=False)
     runner, _, sid, first = compare_three(lab)
     fake = dict(first)
     fake['physics'] = {rid: {'run_id': rid, 'state': 'failed', 'check_valid': False, 'errors': ['接触']} for rid in first['active_run_ids']}
@@ -429,7 +433,9 @@ def test_when_no_plan_passes_the_person_still_decides_and_is_told(lab):
     assert '没有通过预演的方案可选' in fake['pending']['reason']
 
 
-def test_an_unavailable_engine_says_nothing_about_a_plan(lab):
+def test_an_unavailable_engine_says_nothing_about_a_plan(lab, monkeypatch):
+    # This is a decision-contract test. Real serial/coordinated execution has separate physics integration coverage.
+    physics_verdicts(monkeypatch, lab, fail_first=False)
     runner, _, sid, first = compare_three(lab)
     fake = dict(first)
     fake['physics'] = {rid: {'run_id': rid, 'state': 'unavailable', 'errors': ['环境中没有安装 mujoco'], 'metrics': {}} for rid in first['active_run_ids']}

@@ -5,7 +5,7 @@ import json
 
 from . import contract as tc
 
-VERSION = 'agent-prompts/4'
+VERSION = 'agent-prompts/5'
 
 RULES = """你是农业机器人路径规划工作台中的任务智能体。你通过工具调用地图、算法、验算与仿真服务；只能依据工具的真实返回值陈述结果。
 基本规则：
@@ -62,7 +62,7 @@ def execute(contract: dict, session: dict) -> str:
 建议流程：
 1. 若没有任务地图或合同已变化，先调用 build_scenario；查看 precheck 中的不可行项。
 2. 调用 recommend_algorithms，按推荐的对比集合选取 {execution['compare_count']} 个算法，用 solve 以同一预算（{execution['time_limit_s']} s）与种子（{execution['seed']}）求解。
-3. 对每个报告可行的方案调用 verify_run 独立复核；用 compare_runs 比较可比方案；通过复核的方案用 physics_check 做物理预演，它只需数秒且无需批准。
+3. 对每个报告可行的方案调用 verify_run 独立复核；用 compare_runs 比较可比方案；通过复核的方案用 physics_check 做物理预演，它只需数秒且无需批准，多车方案会同时给出逐车执行和并行执行两组工期。
 4. 若没有通过复核的方案：调用 diagnose_run。方法不适用或预算不足时，自主换用未试过的算法或提高预算再求解；任务本身不可行时调用 propose_task_change 请用户批准修改；软件实现错误要如实报告。
 5. {'合同要求仿真执行：选取通过复核和物理预演的最好方案调用 start_simulation（需用户批准）。' if execution['simulate'] else '合同未要求仿真执行，不要启动仿真。'}
 6. 完成后不再调用工具，直接给出简短结论：采用的方案（运行编号、算法）、经复核的里程与工期、失败与修复经过、未支持的要求。"""

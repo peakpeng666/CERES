@@ -1100,7 +1100,7 @@ class AgentRunner:
         return self._best_verified(s, lambda rid: rows.get(rid, {}).get('state') == 'succeeded' and rows[rid].get('check_valid') is True)
 
     def _best_verified(self, s: dict, accept=None) -> dict | None:
-        best = None
+        candidates = []
         for rid in tools.current_run_ids(s):
             v = s.get('verifications', {}).get(rid)
             if not v or not v.get('valid') or not v.get('agrees') or (accept and not accept(rid)):
@@ -1109,12 +1109,21 @@ class AgentRunner:
             if not run or not tools.run_matches_current(s, run):
                 continue
             value = (run.get('objective') or {}).get('value')
-            if isinstance(value, (int, float)) and (best is None or value < best['objective']):
-                best = {'run_id': rid, 'objective': value, 'algorithm': run['algorithm'].get('name'),
-                        'algorithm_id': run['algorithm']['id'], 'unit': (run.get('objective') or {}).get('unit'),
-                        'total_distance_m': (run.get('metrics') or {}).get('total_distance_m'),
-                        'makespan_s': (run.get('metrics') or {}).get('makespan_s')}
-        return best
+            metrics = run.get('metrics') or {}
+            if isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value):
+                candidates.append({'run_id': rid, 'objective': value, 'algorithm': run['algorithm'].get('name'),
+                                   'algorithm_id': run['algorithm']['id'], 'unit': (run.get('objective') or {}).get('unit'),
+                                   'total_distance_m': metrics.get('total_distance_m'), 'makespan_s': metrics.get('makespan_s'),
+                                   'predicted_makespan_s': metrics.get('predicted_makespan_s'),
+                                   'execution_estimate': metrics.get('execution_estimate') or {}})
+        if not candidates:
+            return None
+        # Share the exact rule with compare_runs, the other prediction-ranking tool entrypoint.
+        predictions = all(row['unit'] == 's' for row in candidates) and tools.prediction_group_model(candidates) is not None
+        key = 'predicted_makespan_s' if predictions else 'objective'
+        best = min(candidates, key=lambda row: row[key])
+        return {**best, 'ranking_basis': key}
+
 
     # ------------------------------------------------------------ report --
     def _evidence(self, s: dict) -> dict:
@@ -1233,7 +1242,7 @@ def _template_report(e: dict) -> str:
     best = e.get('best_verified')
     if best:
         parts.append(f"经复核的最优方案为 {best['algorithm']}（{best['run_id']}），总里程 {best['total_distance_m']} m，"
-                     f"按恒速模型计算的最晚完成时间为 {best['makespan_s']} s。")
+                     f"按恒速模型计算的最晚完成时间为 {best['makespan_s']} s" + (f"，计入转向、作业和路线相遇等待后预计 {best['predicted_makespan_s']} s。" if best.get('predicted_makespan_s') else '。'))
     else:
         parts.append('目前没有通过独立复核的方案。')
     failed = [r for r in runs if r['independent_recheck'] is not True]
@@ -1249,6 +1258,11 @@ def _template_report(e: dict) -> str:
         head = '；'.join(f"{r['algorithm']} 实际里程 {r['metrics'].get('total_distance_m')} m、工期 {r['metrics'].get('makespan_s')} s" if r.get('check_valid')
                         else f"{r['algorithm']} 未通过" for r in physics)
         parts.append(f"物理预演（MuJoCo {physics[0].get('engine_version')}）：{head}。")
+        together = [r for r in physics if (r.get('coordinated') or {}).get('check_valid')]
+        if together:
+            parts.append('全部车辆同时出发、在路线相遇处依次通行时：' + '；'.join(
+                f"{r['algorithm']} 工期 {r['coordinated']['makespan_s']} s（逐车执行{' ' + str(r['metrics'].get('makespan_s')) + ' s' if r.get('check_valid') else '未通过'}），最小车距 {r['coordinated'].get('min_gap_m')} m"
+                for r in together) + '。')
         planned, executable = e.get('best_verified'), e.get('best_executable')
         if planned and executable and planned['run_id'] != executable['run_id']:
             cause = next(((r.get('errors') or ['运行核验未通过'])[0] for r in physics if r['run_id'] == planned['run_id']), '运行核验未通过')

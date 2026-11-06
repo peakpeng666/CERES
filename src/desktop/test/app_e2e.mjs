@@ -56,7 +56,8 @@ const step = (name, extra = {}) => { log.steps.push({ name, ...extra }); console
 
 async function launch() {
   const started = Date.now();
-  const app = await electron.launch({ executablePath: exe, env, timeout: 90_000 });
+  const app = await electron.launch({ executablePath: exe, env, timeout: 90_000,
+    args: process.env.URP_TEST_NO_SANDBOX === '1' ? ['--no-sandbox'] : [] }); // isolated container QA only
   const win = await app.firstWindow({ timeout: 60_000 });
   win.setDefaultTimeout(40_000);
   win.on('pageerror', (e) => log.errors.push(String(e.stack || e).slice(0, 300)));
@@ -144,6 +145,45 @@ try {
   await win.getByText('Docker', { exact: true }).waitFor();
   await win.screenshot({ path: `${out}/03-desktop-settings.png` });
   step('设置页：版本、更新和仿真后端');
+
+  // Substitute only the OS file picker; exercise the real UI -> IPC -> shipped Python -> SQLite data path.
+  const beforeData = await win.evaluate(() => window.desktop.data.info());
+  const backup = join(out, 'desktop-data-backup.zip');
+  const restoreParent = join(out, 'restored');
+  mkdirSync(restoreParent);
+  await app.evaluate(({ dialog }, [backup, parent]) => {
+    globalThis.__urpDialogs = { save: dialog.showSaveDialog, open: dialog.showOpenDialog };
+    dialog.showSaveDialog = async () => ({ canceled: false, filePath: backup });
+    let pick = 0;
+    dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [pick++ === 0 ? backup : parent] });
+  }, [backup, restoreParent]);
+  await win.evaluate(() => { location.hash = '#/system/data'; });
+  await win.getByRole('button', { name: '备份数据', exact: true }).waitFor();
+  await Promise.all([
+    win.waitForEvent('framenavigated', { predicate: (frame) => frame === win.mainFrame() && /^http:/.test(frame.url()), timeout: 120_000 }),
+    win.getByRole('button', { name: '备份数据', exact: true }).click(),
+  ]);
+  const exported = await win.evaluate(() => window.desktop.data.info());
+  assert.equal(exported.lastTransfer?.state, 'verified', JSON.stringify(exported.lastTransfer));
+  assert.ok(statSync(backup).size > 0);
+  await win.getByRole('button', { name: '从备份恢复到新目录', exact: true }).waitFor();
+  await Promise.all([
+    win.waitForEvent('framenavigated', { predicate: (frame) => frame === win.mainFrame() && /^http:/.test(frame.url()), timeout: 120_000 }),
+    win.getByRole('button', { name: '从备份恢复到新目录', exact: true }).click(),
+  ]);
+  const afterData = await win.evaluate(() => window.desktop.data.info());
+  assert.equal(afterData.dataset.dataset_id, beforeData.dataset.dataset_id);
+  assert.notEqual(afterData.root, beforeData.root);
+  assert.ok(afterData.root.startsWith(restoreParent));
+  assert.equal(afterData.lastTransfer.state, 'verified');
+  assert.ok(existsSync(join(beforeData.runtime, 'agent.sqlite3')));
+  assert.deepEqual(await api(win, `/agent/sessions/${id}`), s);
+  await app.evaluate(({ dialog }) => {
+    dialog.showSaveDialog = globalThis.__urpDialogs.save;
+    dialog.showOpenDialog = globalThis.__urpDialogs.open;
+    delete globalThis.__urpDialogs;
+  });
+  step('数据页实际备份、校验、恢复到新目录：任务相同、旧库仍在', { dataset_id: afterData.dataset.dataset_id });
 
   if (packs) {
     await win.evaluate(() => { location.hash = '#/system/data'; });

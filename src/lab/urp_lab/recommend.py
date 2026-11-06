@@ -16,6 +16,7 @@ FLEET_EVIDENCE = {
                       '该历史批次被拒的 3 条与障碍有毫米级擦碰（接口需求第 18 项）；当次 OR-Tools 重试通过，不保证新任务也可求解',
     'makespan': '开发侧审计（真实田块 68 个可解实例，3 s）：最晚完成目标下 OR-Tools 在 65 个实例上最好，'
                 'PyVRP 只优化里程，平均最晚完成长 19%',
+    'balanced': '物理预演实测（36 个合成任务，2 s，并行执行）：比 OR-Tools 工期短 1.4%、里程短 3.1%，24 个任务上最快；OR-Tools 在其余 12 个最快',
 }
 
 
@@ -47,15 +48,20 @@ def _fleet(inst):
              _feature('障碍占地', 'obstacle_ratio', round(100 * obs / area, 2), '%'),
              _feature('聚集度 R', 'clark_evans', None if R is None else round(R, 2), None, '<1 成片聚集，≈1 随机，>1 均匀散开'),
              _feature('目标', 'objective', '均衡完成时间' if inst['objective'] == 'makespan' else '总里程')]
-    score = {'pyvrp.fleet': 0.0, 'ortools.fleet': 0.0, 'panel.savings_fleet': 0.0, 'panel.sweep': 0.0, 'panel.cluster_first': 0.0}
+    score = {'pyvrp.fleet': 0.0, 'pyvrp.balanced': 0.0, 'ortools.fleet': 0.0, 'panel.savings_fleet': 0.0, 'panel.sweep': 0.0, 'panel.cluster_first': 0.0}
     why = {k: [] for k in score}
     if inst['objective'] == 'makespan':
+        score['pyvrp.balanced'] += 3.2
+        why['pyvrp.balanced'].append('规则建议：按车辆实际行驶用时（含转向停车）收紧班次上限，直接压缩最晚完成时间')
+        why['pyvrp.balanced'].append(FLEET_EVIDENCE['balanced'])
         score['ortools.fleet'] += 3
         why['ortools.fleet'].append('规则建议：OR-Tools 使用路线跨度与里程的加权目标；时间为匀速代理，不含转向或交通排队')
         why['ortools.fleet'].append(FLEET_EVIDENCE['makespan'])
         score['pyvrp.fleet'] += 1.5
         why['pyvrp.fleet'].append('以总里程为搜索目标，不直接均衡各车工作量；是否更优需同实例比较')
     else:
+        score['pyvrp.balanced'] += .5
+        why['pyvrp.balanced'].append('面向最晚完成时间；目标是总里程时里程会偏长')
         score['pyvrp.fleet'] += 3
         why['pyvrp.fleet'].append('规则建议：目标是总里程，优先试用 PyVRP 迭代局部搜索；当前场景的收益尚未评估')
         why['pyvrp.fleet'].append(FLEET_EVIDENCE['total_distance'])
@@ -77,7 +83,7 @@ def _fleet(inst):
         for k in why:
             why[k].append('所有算法都在绕障最短路距离上求解，障碍不会被直线穿越')
     if trips > K:
-        for k in ('pyvrp.fleet', 'ortools.fleet'):
+        for k in ('pyvrp.fleet', 'pyvrp.balanced', 'ortools.fleet'):
             why[k].append(f'总量需要至少 {trips} 趟，多趟往返会分配到 {K} 台车上')
     if len(classes) > 1:
         for k in ('panel.savings_fleet', 'panel.sweep', 'panel.cluster_first'):

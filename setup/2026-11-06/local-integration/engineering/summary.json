@@ -1,0 +1,429 @@
+{
+  "schema": "urp-engineering-checks-v1",
+  "generated_utc": "20261106T064545631371Z",
+  "python": "3.12.13 (main, Mar 10 2026, 18:17:25) [Clang 21.1.4 ]",
+  "status": "passed",
+  "gates": [
+    {
+      "name": "backend",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "src/backend",
+      "elapsed_seconds": 13.281,
+      "log": "backend.log",
+      "log_sha256": "8f446f0142ad30df87db4d1fb30f7ac96ee6a97cc697db9b839059e1fe32a48e",
+      "tests_run": 97,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "backend_packages",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "integration_backend.py",
+        "-v"
+      ],
+      "cwd": "src/backend",
+      "elapsed_seconds": 0.345,
+      "log": "backend_packages.log",
+      "log_sha256": "cd5de122ad55ccace4141dcf98190ef184294483eaebe4bb1900c1348630f374",
+      "tests_run": 1,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "backend_route_contracts",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "integration_route_scene.py",
+        "-v"
+      ],
+      "cwd": "src/backend",
+      "elapsed_seconds": 1.038,
+      "log": "backend_route_contracts.log",
+      "log_sha256": "762e719ed7120f5053a515af94e6b843805c20735032ab7c8ea9b017cc15802b",
+      "tests_run": 1,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "research",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "scripts/test.py"
+      ],
+      "cwd": "src/research",
+      "elapsed_seconds": 3.996,
+      "log": "research.log",
+      "log_sha256": "fcb78405bce8f69258503bb279dafe2e9066860ed0134eecda1a096da78e8e24",
+      "tests_run": 114,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "generator",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "-v",
+        "test_runner"
+      ],
+      "cwd": "src/research/generator",
+      "elapsed_seconds": 0.538,
+      "log": "generator.log",
+      "log_sha256": "6b5f4eb43762fcd9b06fe174c37391ffd7dc5fade9bba5079493822ce02c6027",
+      "tests_run": 12,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "supervision",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "cwd": "src/research/execution",
+      "elapsed_seconds": 8.056,
+      "log": "supervision.log",
+      "log_sha256": "205a0dbb16645c37feaba68cc1b6f471caf0fc0faf4f5599eb1d22107284df29",
+      "tests_run": 27,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "baseline_aggregation",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "protocol",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "elapsed_seconds": 0.086,
+      "log": "baseline_aggregation.log",
+      "log_sha256": "8e6316a872dec41fdd503a7fd1a2a2b2da7ee1077cd2afa6c112e5d088c86d6e",
+      "tests_run": 13,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "independent_validator",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "independent",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": ".",
+      "elapsed_seconds": 0.284,
+      "log": "independent_validator.log",
+      "log_sha256": "e532171207a7f79d5ad924f615a70666fbbc7c4998af303d046eba6a7a241b7c",
+      "tests_run": 32,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "public_cli",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tools/tests",
+        "-v"
+      ],
+      "cwd": ".",
+      "elapsed_seconds": 3.192,
+      "log": "public_cli.log",
+      "log_sha256": "42bf17bebcec9b5a864d25c3571097ce2dfde5dcd2caf4e6de9b408fef755718",
+      "tests_run": 77,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "robotics_core",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "urp_route_sim/test",
+        "-v"
+      ],
+      "cwd": "src/robotics",
+      "elapsed_seconds": 0.187,
+      "log": "robotics_core.log",
+      "log_sha256": "5335f6217c75d5ed42af539d8db0e160e8da8fa5659f3217beb1b817fe6b22c0",
+      "tests_run": 56,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_data",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 3.445,
+      "log": "frontend_data.log",
+      "log_sha256": "4857fa2adbff6c767bb6b73d09ead3ef453fdbd394eb2211e24a981b030edc94",
+      "tests_run": 28,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_ui",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "npm",
+        "run",
+        "test:ui"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 1.547,
+      "log": "frontend_ui.log",
+      "log_sha256": "daadac861b4fd1a33a1169e230d34f9c56a4b4a6caf0040e8a0ec60d122f4ded",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "desktop_shell",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "node",
+        "--test",
+        "test/main.test.js"
+      ],
+      "cwd": "src/desktop",
+      "elapsed_seconds": 0.236,
+      "log": "desktop_shell.log",
+      "log_sha256": "102b0ae1af831e3add1594c3ce9bd331562cd1ba981b83f599ea057a3e01950e",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_replay",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "node",
+        "--test",
+        "core/routing/tests/model-result.test.js",
+        "tests/replay-client.test.mjs",
+        "tests/replay-real.test.mjs",
+        "tests/replay.test.mjs"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 1.646,
+      "log": "frontend_replay.log",
+      "log_sha256": "bfde5157f87cb7a6059dde92ea20b1599eaea5ede9e2f9d41e6afefeb61b850c",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "bpp_scientific_readback",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "${SOURCE_WORKSPACE}/.venv/bin/python",
+        "scripts/validate_data.py",
+        "--output",
+        "${SOURCE_WORKSPACE}/Documents/Codex/2026-11-06/task/urp-sync-backup/engineering/bpp_validation.json"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 8.37,
+      "log": "bpp_scientific_readback.log",
+      "log_sha256": "f92b4485ae30c46853794e0f2917b0bf2af2a1c7552d27551327c673f0ddeeb8",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    },
+    {
+      "name": "frontend_build",
+      "status": "passed",
+      "returncode": 0,
+      "command": [
+        "npm",
+        "run",
+        "build"
+      ],
+      "cwd": "src/frontend",
+      "elapsed_seconds": 8.324,
+      "log": "frontend_build.log",
+      "log_sha256": "68b4d7b76169f2d0bdaa03e49c2e1d84748b746bbd3f15a134b95f485f58bda8",
+      "tests_run": null,
+      "cleanup": {
+        "complete": true,
+        "remaining_pids": [],
+        "reaped_descendants": [],
+        "signals": [],
+        "errors": []
+      },
+      "error": null
+    }
+  ],
+  "omitted": [],
+  "scope": "Engineering regressions and frozen BPP readback; no formal baseline re-execution, live LLM, ROS or Gazebo physics."
+}

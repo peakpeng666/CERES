@@ -218,3 +218,13 @@ test('an unsuccessful restore cannot advance the data setting', async () => {
   assert.equal(settings.get('dataRoot'), undefined);
   assert.equal(data.info().dataset.dataset_id, before);
 });
+
+test('a data subprocess starts in its module directory even when the application is launched elsewhere', async () => {
+  const { run } = require('../main/container');
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'urp modules '));
+  try {
+    const result = await run(process.execPath, ['-e', 'process.stdout.write(process.cwd())'], { cwd: dir });
+    assert.equal(result.code, 0);
+    assert.equal(result.out, dir);
+  } finally { fs.rmSync(dir, { recursive: true }); }
+});

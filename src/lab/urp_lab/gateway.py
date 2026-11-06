@@ -515,7 +515,7 @@ def create_app(config: Config | None = None) -> FastAPI:
         body = body_dict(payload)
         if not body.get('run_id') and not body.get('session_id'):
             raise ApiError(400, 'invalid_request', '需要 run_id 或 session_id')
-        return physics_call(lab.physics.submit, run_id=body.get('run_id'), session_id=body.get('session_id'))
+        return physics_call(lab.physics.submit, run_id=body.get('run_id'), session_id=body.get('session_id'), traffic=body.get('traffic') or 'serial')
 
     @app.get(f'{api}/physics/runs')
     def physics_runs(run_id: str | None = None, limit: int = 100):

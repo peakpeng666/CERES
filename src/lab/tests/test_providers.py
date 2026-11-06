@@ -331,3 +331,53 @@ def test_the_whole_exchange_over_http(client, service):
 def test_a_web_page_cannot_write_a_key_into_the_app(client):
     bad = client.post('/lab/api/agent/providers/stand-in/connect', json={'api_key': GOOD}, headers={'Origin': 'https://evil.example'})
     assert bad.status_code == 403
+
+
+class Reply:
+    status_code = 200
+    text = ''
+
+    def __init__(self, data):
+        self.data = data
+
+    def json(self):
+        return self.data
+
+
+def test_anthropic_caches_the_repeated_prompt_and_the_bill_follows(monkeypatch):
+    sent = {}
+
+    def post(url, json, headers, timeout):
+        sent.update(json)
+        return Reply({'content': [{'type': 'text', 'text': '好'}], 'stop_reason': 'end_turn', 'usage': {'input_tokens': 10, 'output_tokens': 20, 'cache_read_input_tokens': 900, 'cache_creation_input_tokens': 100}})
+
+    monkeypatch.setattr(llm.httpx, 'post', post)
+    provider = llm.Provider(id='a', kind='anthropic', model='m', base_url='https://api.anthropic.com', price={'input': 3.0, 'output': 15.0, 'cached': .3, 'cache_write': 3.75, 'currency': 'USD'})
+    tools = [{'name': 'x', 'description': 'x', 'parameters': {}}, {'name': 'y', 'description': 'y', 'parameters': {}}]
+    r = llm.chat(provider, [{'role': 'system', 'content': '规则'}, {'role': 'user', 'content': '你好'}], tools)
+    assert sent['system'][0]['cache_control'] == {'type': 'ephemeral'} and sent['tools'][-1]['cache_control'] and 'cache_control' not in sent['tools'][0]
+    assert r.usage['input_tokens'] == 1010 and r.usage['cached_tokens'] == 900
+    assert r.cost == pytest.approx((10 * 3 + 900 * .3 + 100 * 3.75 + 20 * 15) / 1e6)
+
+
+def test_a_compatible_proxy_never_sees_the_cache_marker(monkeypatch):
+    sent = {}
+
+    def post(url, json, headers, timeout):
+        sent.update(json)
+        return Reply({'content': [], 'usage': {'input_tokens': 5, 'output_tokens': 1}})
+
+    monkeypatch.setattr(llm.httpx, 'post', post)
+    provider = llm.Provider(id='p', kind='anthropic', model='m', base_url='https://proxy.example/anthropic')
+    llm.chat(provider, [{'role': 'system', 'content': '规则'}, {'role': 'user', 'content': '你好'}], [{'name': 'x', 'description': 'x', 'parameters': {}}])
+    assert sent['system'] == '规则' and 'cache_control' not in sent['tools'][0]
+
+
+def test_cached_tokens_of_openai_style_services_are_billed_at_their_own_price(monkeypatch):
+    def post(url, json, headers, timeout):
+        return Reply({'choices': [{'message': {'content': '好'}, 'finish_reason': 'stop'}], 'usage': {'prompt_tokens': 1000, 'completion_tokens': 10, 'prompt_cache_hit_tokens': 800}})
+
+    monkeypatch.setattr(llm.httpx, 'post', post)
+    provider = llm.Provider(id='d', kind='openai', model='m', base_url='https://api.deepseek.com', price={'input': 1.0, 'output': 2.0, 'cached': .1, 'currency': 'USD'})
+    r = llm.chat(provider, [{'role': 'user', 'content': '你好'}])
+    assert r.cost == pytest.approx((200 * 1 + 800 * .1 + 10 * 2) / 1e6)

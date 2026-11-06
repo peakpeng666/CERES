@@ -1,0 +1,25 @@
+--- src/lab/ros/field_sim_session.py
+39c39
+< from urp_lab.field_traffic import MissionQueue, POLICY
+---
+> from urp_lab.field_traffic import MissionQueue, PASSAGE_POLICY, POLICY, PassageQueue
+898c898,899
+<         if self.plan.get('traffic', {}).get('policy') != POLICY:
+---
+>         policy = self.plan.get('traffic', {}).get('policy')
+>         if policy not in (POLICY, PASSAGE_POLICY):
+900,901c901,904
+<         self.traffic = MissionQueue(self.drivers, self.plan['robot_radius_m'], self.clock or 0.0)
+<         self.st['warnings'].append('保守交通预约：整段任务依次执行，结束回独立停车位；等待计入实际用时，非并行避碰算法')
+---
+>         self.traffic = (PassageQueue(self.drivers, self.plan['robot_radius_m'], self.clock or 0.0, self.plan['traffic']['gates']) if policy == PASSAGE_POLICY
+>                         else MissionQueue(self.drivers, self.plan['robot_radius_m'], self.clock or 0.0))
+>         if policy == POLICY:
+>             self.st['warnings'].append('保守交通预约：整段任务依次执行，结束回独立停车位；等待计入实际用时，非并行避碰算法')
+--- src/lab/urp_lab/fieldsim.py
+144a145,149
+>             if body.get('traffic') == 'coordinated':
+>                 from . import field_coordination
+>                 plan = field_coordination.apply(plan)
+>                 if plan['traffic'].get('coordination_refused'):
+>                     raise ServiceError(422, 'no_safe_order', plan['traffic']['coordination_refused'])

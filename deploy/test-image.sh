@@ -105,4 +105,24 @@ for path in sys.argv[1:]:
 PY
 curl --fail --silent --show-error --max-time 10 "$base/" >"$output/index-after-restart.html"
 test -s "$output/index-after-restart.html"
+# A desktop binds files owned by its actual host UID, which need not be the image's urp user (1000).
+# Run the real entrypoint without root; no chown or writable system home may be assumed.
+docker run --rm --user 2001:2001 --tmpfs /data:rw,uid=2001,gid=2001,mode=0700 "$image" \
+  /opt/urp/src/lab/.venv/bin/python -c '
+import os, pathlib, sqlite3
+assert os.getuid() == 2001
+home = pathlib.Path(os.environ["HOME"])
+assert home == pathlib.Path("/data/lab/home")
+(home / "probe").write_text("same owner")
+private = pathlib.Path("/data/lab/private-probe")
+private.write_text("throwaway test credential")
+private.chmod(0o600)
+assert private.read_text() == "throwaway test credential"
+assert private.stat().st_uid == 2001
+with sqlite3.connect("/data/lab/user-probe.sqlite3") as db:
+    db.execute("CREATE TABLE test(value TEXT)")
+    db.execute("INSERT INTO test VALUES (?)", ("retained",))
+assert pathlib.Path("/data/lab/user-probe.sqlite3").stat().st_uid == 2001
+print("PASS: non-default UID, private-file access and persistent SQLite write")
+' >"$output/nondefault-uid.log" 2>&1
 printf 'PASS: %s revision %s (deployment smoke, not a formal experiment)\n' "$kind" "$revision" | tee "$output/summary.txt"

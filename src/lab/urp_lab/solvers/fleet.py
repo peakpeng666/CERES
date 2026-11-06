@@ -22,6 +22,7 @@ from ..path_geometry import arc_lengths, locate
 from .fleet_common import depot_list, fleet_classes, vehicle_table  # fleet shape helpers (2026-10-17 拆分)
 from .fleet_curvature import (  # curvature realisation stack (2026-10-17 拆分)
     _circumradius, dubins_realize, min_curvature_radius, ompl_dubins_fallback, relax_corners)
+from .fleet_balanced import pyvrp_makespan
 from .fleet_engines import metaheuristic, ortools_makespan  # PyVRP / OR-Tools engines (2026-10-17 拆分)
 
 COLORS = ['#007aff', '#ff6b00', '#34a853', '#a142f4', '#e8336d', '#00a6a6', '#c49000', '#5856d6', '#8e5a2b', '#2f7d32',
@@ -595,12 +596,16 @@ def assign_trips(trip_times, K):
     return out
 
 
-def dispatch_algorithm(inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=None):
+def dispatch_algorithm(inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=None, graph=None):
     """Run one fleet algorithm; returns (trips, owner, trip_class, trip_depot, trace)."""
     trace, owner, trip_class, trip_depot, reload_at = [], None, None, None, None
     trips = None
     if algorithm_id == 'pyvrp.fleet':
         trips, trip_class, trip_depot, trace = metaheuristic('pyvrp', inst, D, demand, params, route_cap)
+    elif algorithm_id == 'pyvrp.balanced':
+        trips, owner, reload_at, trace = pyvrp_makespan(inst, D, demand, params, K, multi, graph)
+        trip_class = [class_of[v] for v in owner] if owner is not None else None
+        trip_depot = [vehicle_table(inst)[v][3] for v in owner] if owner is not None else None
     elif algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan':
         trips, owner, reload_at, trace = ortools_makespan(inst, D, demand, params, K, multi, trace_diagnostics=trace_diagnostics)
         trip_class = [class_of[v] for v in owner] if owner is not None else None
@@ -661,7 +666,7 @@ def solve(scenario, inst, algorithm_id, params):
     route_cap = n if multi else K
     trace_diagnostics = {}
     trips, owner, trip_class, trip_depot, reload_at, trace = dispatch_algorithm(
-        inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=trace_diagnostics)
+        inst, algorithm_id, D, demand, params, deadline, route_cap, K, multi, class_of, trace_diagnostics=trace_diagnostics, graph=graph)
     if not trips:
         return [], None, {}, {'reason': '求解器没有返回可行方案', 'trace_diagnostics': trace_diagnostics}, 'no_solution', trace
     reload_at = reload_at if reload_at is not None else [None] * len(trips)
@@ -807,6 +812,7 @@ def solve(scenario, inst, algorithm_id, params):
            'search_scale': 'PyVRP / OR-Tools 用厘米取整距离搜索，结果按米复算', 'planning_s': time.perf_counter() - t0,
            'trip_assignment': ('OR-Tools 直接为各车安排往返（车库卸载点），时间维度跨度代价最小化最晚完成'
                                if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
+                               else 'PyVRP 在同一搜索里安排回库重载和各趟归属，班次上限二分收紧，用时按跟踪器实际行驶估计' if algorithm_id == 'pyvrp.balanced'
                                else '多趟：先求各趟路线，再按最长处理时间优先分配到各车' if multi else '单趟：每车一条路线')}
     if trace_diagnostics:
         raw['trace_diagnostics'] = trace_diagnostics
@@ -839,9 +845,9 @@ def solve(scenario, inst, algorithm_id, params):
                  'turns': False, 'parking': False, 'traffic_conflicts': False,
                  'scope': 'constant-speed planning proxy, not physically predicted completion time'},
         'optimization': {'reported_objective': inst.get('objective', 'total_distance'),
-                         'search': 'declared ground-risk equivalent metres' if ground_policy_active else 'weighted distance and route-span surrogate' if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
+                         'search': 'declared ground-risk equivalent metres' if ground_policy_active else 'distance under a bisected shift limit on follower drive time' if algorithm_id == 'pyvrp.balanced' else 'weighted distance and route-span surrogate' if algorithm_id == 'ortools.fleet' and inst.get('objective') == 'makespan'
                          else 'distance routing then trip allocation',
-                         'trip_allocation': 'OR-Tools assignment' if owner is not None else 'LPT heuristic' if multi else 'one trip per vehicle',
+                         'trip_allocation': 'PyVRP multi-trip routes' if algorithm_id == 'pyvrp.balanced' else 'OR-Tools assignment' if owner is not None else 'LPT heuristic' if multi else 'one trip per vehicle',
                          'optimality_proved': False}}
     if not chk['valid']:
         raw['rejected_routes'] = routes

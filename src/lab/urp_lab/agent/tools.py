@@ -183,7 +183,8 @@ def run_summary(run: dict, pre: dict | None = None, verification: dict | None = 
         'state': run.get('state'), 'status': run.get('status'), 'check_valid': check_valid,
         'independent_recheck': independent_recheck,
         'objective': (run.get('objective') or {}).get('value'), 'objective_unit': (run.get('objective') or {}).get('unit'),
-        'total_distance_m': m.get('total_distance_m'), 'makespan_s': m.get('makespan_s'),
+        'total_distance_m': m.get('total_distance_m'), 'makespan_s': m.get('makespan_s'), 'predicted_makespan_s': m.get('predicted_makespan_s'),
+        'execution_estimate': m.get('execution_estimate'),
         'vehicles_used': m.get('vehicles_used'), 'trips': m.get('trips'), 'wall_s': m.get('wall_s'),
         'errors': [str(e) for e in ((run.get('check') or {}).get('errors') or [])][:3] + ([str(run['error'])[:300]] if run.get('error') else []),
         'diagnosis': cause['category'], 'diagnosis_label': diagnose.CATEGORY_LABEL.get(cause['category'], cause['category']),
@@ -448,6 +449,24 @@ def verify_run(ctx: ToolContext, args: dict) -> dict:
             'diagnosis_label': diagnose.CATEGORY_LABEL.get(cause['category']), 'evidence': cause.get('evidence', [])}
 
 
+def prediction_group_model(rows: list[dict]) -> str | None:
+    """A best prediction exists only when the entire eligible group shares one explicit model."""
+    if not rows:
+        return None
+    models = set()
+    for row in rows:
+        estimate = row.get('execution_estimate')
+        value = row.get('predicted_makespan_s')
+        if not isinstance(estimate, dict) or estimate.get('status') != 'estimated':
+            return None
+        model = estimate.get('model')
+        if (not isinstance(model, str) or not model.strip() or type(value) not in (int, float)
+                or not math.isfinite(value) or value <= 0):
+            return None
+        models.add(model)
+    return next(iter(models)) if len(models) == 1 else None
+
+
 def compare_runs(ctx: ToolContext, args: dict) -> dict:
     from ..planning import comparison_key
     ids = args.get('run_ids') or current_run_ids(ctx.session)
@@ -461,13 +480,17 @@ def compare_runs(ctx: ToolContext, args: dict) -> dict:
                 for r in members]
         valid = [row for row in rows if row['status'] == 'feasible' and row['check_valid']]
         best = {}
+        prediction_model = prediction_group_model(valid) if key != 'unfinished' else None
         if key != 'unfinished' and len(valid) > 1:
-            for metric in ('total_distance_m', 'makespan_s', 'wall_s'):
+            for metric in ('total_distance_m', 'makespan_s', 'predicted_makespan_s', 'wall_s'):
+                if metric == 'predicted_makespan_s' and prediction_model is None:
+                    continue
                 vals = [row[metric] for row in valid if isinstance(row[metric], (int, float))]
                 if vals:
                     best[metric] = min(valid, key=lambda row: row[metric] if isinstance(row[metric], (int, float)) else float('inf'))['run_id']
-        tables.append({'comparison_key': key[:16], 'comparable': key != 'unfinished', 'rows': rows, 'best': best})
-    return {'groups': tables, 'rule': '只在相同输入、目标、单位与约束的已验证方案之间标记最好值'}
+        tables.append({'comparison_key': key[:16], 'comparable': key != 'unfinished', 'rows': rows, 'best': best,
+                       'prediction_comparable': prediction_model is not None, 'prediction_model': prediction_model})
+    return {'groups': tables, 'rule': '只在相同输入、目标、单位与约束的已验证方案之间标记最好值；预测工期还要求整组有效且模型版本相同'}
 
 
 def diagnose_run(ctx: ToolContext, args: dict) -> dict:
@@ -517,6 +540,7 @@ def physics_check(ctx: ToolContext, args: dict) -> dict:
         rec = ctx.lab.physics.submit(run_id=run['run_id'])
     except PhysicsError as exc:
         raise ToolError(exc.code, exc.message) from None
+    together = _start_coordinated(ctx, run) if len(run.get('routes') or []) > 1 else None   # separate processes: the two runs overlap
     rec = ctx.lab.physics.wait(rec['physics_run_id'], ctx.cancel)
     if rec.get('state') == 'canceled':
         raise ToolError('cancelled', '已取消')
@@ -527,8 +551,30 @@ def physics_check(ctx: ToolContext, args: dict) -> dict:
            'wall_s': rec.get('wall_s'), 'metrics': {k: round(v, 3) if isinstance(v, float) else v for k, v in (
                (k, metrics.get(k)) for k in ('tasks_total', 'tasks_completed', 'total_distance_m', 'planned_total_distance_m', 'makespan_s', 'planned_makespan_s',
                                              'cross_track_mean_m', 'cross_track_max_m', 'energy_wh'))}}
+    if together:
+        row['coordinated'] = _coordinated_row(ctx, together)
     ctx.session.setdefault('physics', {})[run['run_id']] = row
     return row
+
+
+def _start_coordinated(ctx: ToolContext, run: dict) -> dict:
+    """The same plan with every vehicle moving at once, passing in turn where routes meet. It sits beside the one-at-a-time
+    row instead of replacing it, because the Gazebo session still executes one mission at a time."""
+    from ..physics import PhysicsError
+    try:
+        return ctx.lab.physics.submit(run_id=run['run_id'], traffic='coordinated')
+    except PhysicsError as exc:
+        return {'state': 'unavailable', 'errors': [exc.message]}
+
+
+def _coordinated_row(ctx: ToolContext, started: dict) -> dict:
+    if 'physics_run_id' not in started:
+        return started
+    rec = ctx.lab.physics.wait(started['physics_run_id'], ctx.cancel)
+    metrics = rec.get('metrics') or {}
+    return {'physics_run_id': rec.get('physics_run_id'), 'state': rec.get('state'), 'check_valid': (rec.get('check') or {}).get('valid'),
+            'errors': (rec.get('errors') or [])[:3] + ((rec.get('check') or {}).get('errors') or [])[:3],
+            'makespan_s': metrics.get('makespan_s'), 'energy_wh': metrics.get('energy_wh'), **(rec.get('traffic') or {})}
 
 
 def simulation_status(ctx: ToolContext, args: dict) -> dict:

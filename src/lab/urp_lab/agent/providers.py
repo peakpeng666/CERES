@@ -73,6 +73,7 @@ def _provider(service: dict, model: dict) -> llm.Provider:
     price = service.get('price')
     if price is None and model.get('input_price') is not None:
         price = {'input': model['input_price'], 'output': model.get('output_price') or 0., 'currency': 'USD'}
+        price.update({key: model[field] for key, field in (('cached', 'cached_price'), ('cache_write', 'cache_write_price')) if model.get(field) is not None})
     return llm.Provider(id=f"{service['id']}/{model['id']}", kind=service['kind'], model=model['id'], base_url=service['base_url'],
                         label=f"{model.get('name') or model['id']} · {service['name']}", credential=service.get('credential') or service['id'],
                         env=tuple(service.get('env') or ()), price=price, options=options, timeout_s=float(service.get('timeout_s') or TIMEOUT_S),

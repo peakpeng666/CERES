@@ -181,7 +181,7 @@ def test_geojson_roundtrip():
 def test_recommendation_for_fleet():
     sc = _scenario(EXAMPLES[1])
     rec = recommend(sc, sc['instance'])
-    assert rec['recommended'] == 'ortools.fleet' and len(rec['compare']) == 3
+    assert rec['recommended'] == 'pyvrp.balanced' and 'ortools.fleet' in rec['compare'] and len(rec['compare']) == 3
     assert any(f['key'] == 'clark_evans' for f in rec['features'])
 
 

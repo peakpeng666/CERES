@@ -1,0 +1,179 @@
+{
+ "session_id": "field_20261105T155101_893908",
+ "run_id": "run_20261105T155044_94bece",
+ "state": "succeeded",
+ "errors": [],
+ "metrics": {
+  "tasks_total": 8,
+  "tasks_reached": 8,
+  "tasks_completed": 8,
+  "vehicles_done": 2,
+  "makespan_s": 176.35,
+  "planned_makespan_s": 135.16101990085062,
+  "total_distance_m": 264.91,
+  "planned_total_distance_m": 256.91119037968565,
+  "cross_track_mean_m": 0.0054,
+  "cross_track_max_m": 0.0907,
+  "energy_wh": 1.364
+ },
+ "vehicles": [
+  {
+   "error": null,
+   "name": "vehicle_1",
+   "label": "① 号车",
+   "color": "#007aff",
+   "state": "done",
+   "pose": [
+    1.371,
+    1.33,
+    -2.436
+   ],
+   "speed": 0.0,
+   "progress": 0.9976,
+   "distance_m": 137.34,
+   "path_length_m": 139.69,
+   "tasks_done": 5,
+   "tasks_total": 5,
+   "cross_track_mean_m": 0.0055,
+   "cross_track_max_m": 0.0907,
+   "duration_s": 169.78,
+   "queue_wait_s": 0.008000000000000007,
+   "parking_xy": [
+    1.15,
+    1.15
+   ],
+   "planned_length_m": 135.16101990085062,
+   "planned_duration_s": 135.16101990085062,
+   "pose_source": "ground_truth",
+   "speed_source": "ground_truth"
+  },
+  {
+   "error": null,
+   "name": "vehicle_2",
+   "label": "② 号车",
+   "color": "#ff6b00",
+   "state": "done",
+   "pose": [
+    1.269,
+    5.683,
+    1.994
+   ],
+   "speed": 0.0,
+   "progress": 0.9974,
+   "distance_m": 127.57,
+   "path_length_m": 128.91,
+   "tasks_done": 3,
+   "tasks_total": 3,
+   "cross_track_mean_m": 0.0053,
+   "cross_track_max_m": 0.0894,
+   "duration_s": 176.35,
+   "queue_wait_s": 0.008000000000000007,
+   "parking_xy": [
+    1.15,
+    5.95
+   ],
+   "planned_length_m": 121.75017047883505,
+   "planned_duration_s": 121.75017047883505,
+   "pose_source": "ground_truth",
+   "speed_source": "ground_truth"
+  }
+ ],
+ "check": {
+  "valid": true,
+  "errors": [],
+  "traffic": {
+   "valid": true,
+   "pairs": [
+    {
+     "vehicles": [
+      "vehicle_1",
+      "vehicle_2"
+     ],
+     "min_center_distance_m": 1.6890718230411692,
+     "min_footprint_gap_m": 0.7125473737824729,
+     "t_sim": 167.5010655265719,
+     "max_sample_gap_s": 0.020000000000010232,
+     "valid": true
+    }
+   ],
+   "method": "同步分段线性插值的整段最小距离；圆足迹；采样间未观测的曲线运动不作证明",
+   "radius_m": 0.48826222462934815,
+   "max_allowed_sample_gap_s": 0.5
+  }
+ },
+ "traffic": {
+  "policy": "coordinated_passage_v1",
+  "clearance_m": 1.727,
+  "meetings": 4,
+  "boxes": 8,
+  "predicted_makespan_s": 174.7,
+  "events": [
+   {
+    "event": "depart",
+    "vehicle": "vehicle_1",
+    "t_sim": 1.092,
+    "wait_s": 0.008000000000000007
+   },
+   {
+    "event": "depart",
+    "vehicle": "vehicle_2",
+    "t_sim": 1.092,
+    "wait_s": 0.008000000000000007
+   },
+   {
+    "event": "hold",
+    "vehicle": "vehicle_2",
+    "t_sim": 1.6640000000000001,
+    "s": 0.18698352297665355,
+    "after": [
+     [
+      "vehicle_1",
+      8.393
+     ]
+    ]
+   },
+   {
+    "event": "release",
+    "vehicle": "vehicle_2",
+    "t_sim": 11.496,
+    "wait_s": 9.832
+   },
+   {
+    "event": "hold",
+    "vehicle": "vehicle_2",
+    "t_sim": 148.056,
+    "s": 123.3174705872814,
+    "after": [
+     [
+      "vehicle_1",
+      137.888
+     ]
+    ]
+   },
+   {
+    "event": "release",
+    "vehicle": "vehicle_2",
+    "t_sim": 169.092,
+    "wait_s": 21.036
+   },
+   {
+    "event": "hold",
+    "vehicle": "vehicle_2",
+    "t_sim": 169.716,
+    "s": 123.8697342549543,
+    "after": [
+     [
+      "vehicle_1",
+      139.087
+     ]
+    ]
+   },
+   {
+    "event": "release",
+    "vehicle": "vehicle_2",
+    "t_sim": 170.444,
+    "wait_s": 0.7279999999999802
+   }
+  ]
+ }
+}

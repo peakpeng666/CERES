@@ -9,6 +9,7 @@ import argparse
 import functools
 import http.server
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -137,6 +138,19 @@ try:
         passed = [r for r in evidence['physics'] if r['state'] == 'succeeded' and r['check_valid']]
         assert passed, evidence['physics']
         step('任务走完：建图、求解、复核、物理预演、报告', best=evidence['best_verified']['algorithm'], physics=f"{len(passed)}/{len(evidence['physics'])}", wall_s=[r['wall_s'] for r in evidence['physics']])
+        together = [r['coordinated'] for r in passed if (r.get('coordinated') or {}).get('check_valid')]
+        assert together, evidence['physics']  # Still requires real coordinated physics, never a mock.
+        best = evidence['best_verified']
+        estimate = best.get('execution_estimate') or {}
+        predicted = best.get('predicted_makespan_s')
+        if estimate.get('status') == 'estimated':
+            assert type(predicted) in (int, float) and math.isfinite(predicted) and predicted > 0, estimate
+            assert isinstance(estimate.get('model'), str) and estimate['model'], estimate
+        else:
+            assert estimate.get('status') in ('unavailable', 'unsupported') and estimate.get('reason'), estimate
+            assert predicted is None, estimate
+        step('并行执行与可选工期预测', predicted=predicted, execution_estimate=estimate,
+             one_by_one=[r['metrics']['makespan_s'] for r in passed], together=[r['makespan_s'] for r in together])
         if args.node:
             scenario = next(x for x in call('GET', '/scenarios')['scenarios'] if x['problem_class'] == 'euclidean_cvrp')
             job = call('POST', '/solve', {'scenario_id': scenario['id'], 'algorithms': [{'id': 'urp.js.savings', 'params': {'time_limit_s': 5}}]})

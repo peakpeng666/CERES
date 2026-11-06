@@ -16,7 +16,7 @@ import threading
 import time
 from pathlib import Path
 
-from . import fieldworld, paths, sim2sim
+from . import field_coordination, fieldworld, paths, sim2sim
 from .events import utc_now
 from .jobs import new_id
 from .mujoco_field import supports
@@ -29,6 +29,7 @@ ACTIVE = ('queued', 'running')
 WALL_LIMIT_S = 600
 DISPLAY_STRIDE = 25
 SUMMARY = ('state', 'engine', 'engine_version', 'sim_time', 'wall_s', 'real_time_factor', 'metrics', 'vehicles', 'contacts', 'errors', 'servo_kv', 'model_sha256')
+TRAFFIC = ('serial', 'coordinated')
 
 
 class PhysicsError(Exception):
@@ -64,6 +65,16 @@ def plan_from_run(run: dict, out: Path) -> dict:
             'planned': {'makespan_s': max(r['duration_s'] for r in run['routes']), 'total_distance_m': checked['computed_cost']}}
 
 
+def _traffic_summary(result: dict) -> dict:
+    """How the vehicles shared the field in this run; the event list stays in the run directory."""
+    t = result.get('traffic') or {}
+    pairs = ((result.get('check') or {}).get('traffic') or {}).get('pairs') or []
+    return {'policy': t.get('policy'), 'holds': sum(e.get('event') == 'hold' for e in t.get('events') or []),
+            'held_s': round(sum((t.get('held_s') or {}).values()), 1) if t.get('held_s') else None,
+            'predicted_makespan_s': t.get('predicted_makespan_s'), 'meetings': t.get('meetings'),
+            'min_gap_m': round(min(p['min_footprint_gap_m'] for p in pairs), 3) if pairs else None}
+
+
 class PhysicsManager:
     def __init__(self, store, runtime: Path, bus=None, fieldsim=None):
         self.store, self.runtime, self.bus, self.fieldsim = store, Path(runtime), bus, fieldsim
@@ -95,28 +106,42 @@ class PhysicsManager:
             raise PhysicsError(404, 'unknown_session', f'没有已结束的田间仿真记录 {session_id}') from None
         return plan, result
 
-    def submit(self, *, run_id: str | None = None, session_id: str | None = None) -> dict:
-        """Start a run from a plan or from a finished Gazebo session; returns at once with the record."""
+    def submit(self, *, run_id: str | None = None, session_id: str | None = None, traffic: str = 'serial') -> dict:
+        """Start a run from a plan or from a finished Gazebo session; returns at once with the record.
+
+        ``traffic`` is how the vehicles share the field: one mission at a time, or all at once through the temporal plan
+        graph. A Gazebo record is replayed the way it was executed, so a comparison stays about the engines.
+        """
         if not available()['available']:
             raise PhysicsError(503, 'engine_unavailable', available()['reason'])
+        if traffic not in TRAFFIC:
+            raise PhysicsError(400, 'invalid_request', f'traffic 只能是 {" 或 ".join(TRAFFIC)}')
+        if session_id and traffic != 'serial':
+            raise PhysicsError(422, 'frozen_traffic', '对比 Gazebo 记录时按原记录的交通方式重放')
         rid = new_id('phys')
         out = self._dir(rid)
         if session_id:
             plan, reference = self._gazebo(session_id)
             run_id = plan.get('run_id')
+            # Frozen replay keeps the source policy as well as its label.
+            traffic = 'coordinated' if (plan.get('traffic') or {}).get('policy') == field_coordination.POLICY else 'serial'
         else:
             run = self.store.get_run(str(run_id or ''))
             if not run:
                 raise PhysicsError(404, 'unknown_run', '没有这个运行记录')
             with tempfile.TemporaryDirectory(prefix='physics-world-') as world:   # meshes and SDF are Gazebo's; only the plan is kept
                 plan, reference = plan_from_run(run, Path(world)), None
+            if traffic == 'coordinated':
+                plan = field_coordination.apply(plan)
+                if plan['traffic'].get('coordination_refused'):
+                    raise PhysicsError(422, 'no_safe_order', plan['traffic']['coordination_refused'])
         reason = supports(plan)
         if reason:
             raise PhysicsError(422, 'unsupported_plan', reason)
         out.mkdir(parents=True, exist_ok=True)
         (out / 'plan.json').write_text(json.dumps(plan, ensure_ascii=False), encoding='utf8')
         rec = {'physics_run_id': rid, 'run_id': run_id, 'session_id': session_id, 'scenario_id': plan.get('scenario_id'), 'algorithm': plan.get('algorithm'),
-               'engine': 'mujoco', 'state': 'running', 'created_utc': utc_now(), 'finished_utc': None, 'progress': None, 'errors': []}
+               'engine': 'mujoco', 'state': 'running', 'created_utc': utc_now(), 'finished_utc': None, 'progress': None, 'errors': [], 'traffic_mode': traffic}
         self._emit(rec)
         threading.Thread(target=self._run, args=(rec, reference), name=f'physics-{rid}', daemon=True).start()
         return rec
@@ -158,6 +183,7 @@ class PhysicsManager:
             result = json.loads((out / 'result.json').read_text(encoding='utf8'))
             rec.update({k: result.get(k) for k in SUMMARY})
             rec['check'] = {k: (result.get('check') or {}).get(k) for k in ('valid', 'errors', 'scope')}
+            rec['traffic'] = _traffic_summary(result)
             if reference:
                 rec['comparison'] = sim2sim.compare(reference, result)
             rec['finished_utc'] = utc_now()

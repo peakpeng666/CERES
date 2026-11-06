@@ -3,10 +3,11 @@ import hashlib
 from pathlib import Path
 from urllib.parse import urlsplit, unquote
 import xml.etree.ElementTree as ET
+from . import paths
 
 ROOT = Path(__file__).resolve().parents[3]
-CACHE = ROOT / 'setup/2026-10-15/cache/ignition-fuel'
-SHARE = Path('/opt/ros/humble/share')
+CACHE = paths.FUEL_CACHE
+SHARE = paths.ROS_SHARE
 
 
 def inspect_world(world):

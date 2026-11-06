@@ -110,9 +110,9 @@ export interface Evidence {
     wall_s: number | null;
     diagnosis_label: string;
   }[];
-  best_verified: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; objective: number; unit: string } | null;
+  best_verified: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; predicted_makespan_s?: number | null; ranking_basis?: 'objective' | 'predicted_makespan_s'; objective: number; unit: string } | null;
   simulator_gap?: string | null;
-  best_executable?: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; objective: number; unit: string } | null;
+  best_executable?: { run_id: string; algorithm: string; algorithm_id: string; total_distance_m: number; makespan_s: number; predicted_makespan_s?: number | null; objective: number; unit: string } | null;
   unsupported: string[];
   simulation_started: boolean;
   precheck: string[];

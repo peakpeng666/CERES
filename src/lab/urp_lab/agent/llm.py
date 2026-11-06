@@ -24,6 +24,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import httpx
 
@@ -58,7 +59,7 @@ class Provider:
     enabled: bool = True
     credential: str | None = None          # credentials.json key, "env:NAME" or "gcloud-adc"
     env: tuple = ()                        # environment variables that also hold this service's key
-    price: dict | None = None              # per million tokens: {'input', 'output', 'currency'}
+    price: dict | None = None              # per million tokens: {'input', 'output', 'cached', 'cache_write', 'currency'}
     options: dict = field(default_factory=dict)
     timeout_s: float = 120.0
     max_retries: int = 2
@@ -273,7 +274,8 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
             calls.append({'id': c.get('id') or f'call_{uuid.uuid4().hex[:10]}', 'name': fn.get('name', ''), 'arguments': args,
                           'parse_error': err})
         u = data.get('usage') or {}
-        usage = {'input_tokens': u.get('prompt_tokens'), 'output_tokens': u.get('completion_tokens')}
+        cached = (u.get('prompt_tokens_details') or {}).get('cached_tokens') or u.get('prompt_cache_hit_tokens') or 0
+        usage = {'input_tokens': u.get('prompt_tokens'), 'output_tokens': u.get('completion_tokens'), 'cached_tokens': cached}
         content = msg.get('content') or ''
         if tools and not calls:
             content, calls = inline_tool_calls(content, {t['name'] for t in tools})
@@ -282,12 +284,16 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
                 'reasoning_chars': len(reasoning), 'model': data.get('model') or p.model}, usage
     system, conv = _anthropic_messages(messages)
     body = {'model': p.model, 'max_tokens': int(opts.get('max_tokens', 4096)), 'messages': conv}
+    # The system prompt and tools repeat on every turn of a session. Anthropic caches them only when asked; OpenAI-style
+    # services do it on their own. Compatible proxies are left alone, since a marker they do not know can be refused.
+    mark = {'cache_control': {'type': 'ephemeral'}} if urlsplit(p.base_url).hostname == 'api.anthropic.com' else {}
     if system:
-        body['system'] = system
+        body['system'] = [{'type': 'text', 'text': system, **mark}] if mark else system
     if 'temperature' in opts:
         body['temperature'] = opts['temperature']
     if tools:
         body['tools'] = [{'name': t['name'], 'description': t['description'], 'input_schema': t['parameters']} for t in tools]
+        body['tools'][-1].update(mark)
         body['tool_choice'] = {'type': 'any' if tool_choice == 'required' else 'auto'}
     headers = {'x-api-key': secret or '', 'anthropic-version': '2023-06-01'}
     r = httpx.post(p.base_url.rstrip('/') + '/v1/messages', json=body, headers=headers, timeout=timeout)
@@ -297,8 +303,10 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
     calls = [{'id': b['id'], 'name': b['name'], 'arguments': b.get('input') or {}, 'parse_error': None}
              for b in data.get('content', []) if b.get('type') == 'tool_use']
     u = data.get('usage') or {}
-    return {'content': text, 'tool_calls': calls, 'finish_reason': data.get('stop_reason') or 'stop', 'reasoning_chars': 0,
-            'model': data.get('model') or p.model}, {'input_tokens': u.get('input_tokens'), 'output_tokens': u.get('output_tokens')}
+    read, written = u.get('cache_read_input_tokens') or 0, u.get('cache_creation_input_tokens') or 0
+    return {'content': text, 'tool_calls': calls, 'finish_reason': data.get('stop_reason') or 'stop', 'reasoning_chars': 0, 'model': data.get('model') or p.model}, {
+        'input_tokens': None if u.get('input_tokens') is None else u['input_tokens'] + read + written, 'output_tokens': u.get('output_tokens'),
+        'cached_tokens': read, 'cache_write_tokens': written}
 
 
 def _raise_for(r: httpx.Response, secret: str | None):
@@ -354,7 +362,10 @@ def chat(provider: Provider, messages: list[dict], tools: list[dict] | None = No
         price = provider.price or {}
         cost = None
         if usage.get('input_tokens') is not None and usage.get('output_tokens') is not None and 'input' in price:
-            cost = round((usage['input_tokens'] * price['input'] + usage['output_tokens'] * price.get('output', 0)) / 1e6, 6)
+            cached, written = usage.get('cached_tokens') or 0, usage.get('cache_write_tokens') or 0
+            plain = usage['input_tokens'] - cached - written
+            cost = round((plain * price['input'] + cached * price.get('cached', price['input']) + written * price.get('cache_write', price['input'])
+                          + usage['output_tokens'] * price.get('output', 0)) / 1e6, 6)
         usage['total_tokens'] = (usage.get('input_tokens') or 0) + (usage.get('output_tokens') or 0)
         return Response(content=msg['content'], tool_calls=msg['tool_calls'], usage=usage,
                         latency_s=time.monotonic() - start, attempts=attempts, finish_reason=msg['finish_reason'],

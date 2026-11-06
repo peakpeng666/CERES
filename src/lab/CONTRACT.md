@@ -422,3 +422,12 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 `python -m urp_lab data` 提供离线 `export|verify|restore|recover`；`urp.runtime-bundle/1` 清单含数据集 ID、来源版本、相对路径、逐文件大小和 SHA256、SQLite schema 指纹及表行数。完整备份保留状态、上下文与原文件；仅 JSON 导出恢复的会话带 `restoration.read_only=true`、缺失项与原件 SHA256，任务消息/控制/合同编辑返回 409 `recovered_read_only`。恢复仅写全新绝对目录，拒绝覆盖、未来 schema、路径和校验错误。操作与目录参数见唯一[使用入口](../../setup/README.md#本地与-github-的保存分工数据与恢复2026-11-06)。
 
 桌面 IPC `data:info|export|restore` 受同源限制，选择备份/恢复位置使用系统文件对话框。导入成功后才更新数据位置；失败保留原配置。`URP_DATA_HOME`、`URP_LAB_RUNTIME`、`URP_API_DB` 对应共享持久根、Lab 库和档案库，桌面 Compose 绑定同一目录并匹配宿主 UID/GID。
+## 13. 并行执行与工期预测（2026-11-06）
+
+- **交通方式**：`POST /lab/api/physics/runs {run_id, traffic}`，`traffic` 为 `serial`（默认，整段任务依次执行）或 `coordinated`（全部车辆同时运行，在路线相遇处依次通行）。记录带 `traffic_mode` 和 `traffic`（`policy`、`meetings`、`holds`、`held_s`、`predicted_makespan_s`、`min_gap_m`）。对比 Gazebo 记录时按原记录重放，传 `coordinated` 返回 422 `frozen_traffic`。找不到无环次序时返回 422 `no_safe_order`，方案仍可逐车执行。
+- **计划字段**：`plan.traffic.policy = coordinated_passage_v1` 时，`plan.traffic.gates` 是 `{车辆: [{s, after: [[另一车, 该车里程], ...]}]}`：车辆的路径进度到 `s` 时，必须等 `after` 里每辆车走过对应里程或已完成才能继续。`urp_lab/field_coordination.py` 在求解侧生成这些门，`field_traffic.PassageQueue` 运行时只读数字，不含几何，ROS 控制器可以直接用。路径本身不变。
+- **预计工期**：只对内置同构差速仿真模型做有界可选估计；显式异构 `vehicles.fleet`、非理想地面和超出已验证范围的车辆参数不套用该预测。`metrics.execution_estimate` 保存模型版本、状态和不能估计的原因；成功时才增加 `predicted_makespan_s`、`route_meetings`。估计超时或失败不使已有求解结果失效。`makespan_s` 仍是恒速估计。只有同一比较集合全部有相同模型、有效预计工期时，时间目标才按预测排序；否则集合整体回退原目标值，`best_verified.ranking_basis` 明确该口径。
+- **`pyvrp.balanced`**：车辆在路线中途回库重载，由同一搜索决定各趟归属，用跟踪器实际行驶用时二分收紧班次上限。
+- **智能体**：`physics_check` 的多车结果增加 `coordinated`，与逐车结果并列。Gazebo 会话目前仍逐车执行，所以送入 Gazebo 的方案以逐车结果为门槛。
+
+本次协调的无环性仅指事件依赖图。持续进展仍以沿路径单调推进、有限延迟、有效定位以及有界跟踪/制动误差为前提；车距保护不是实车安全证明。当前 Gazebo 生产路径仍为串行，历史协调补丁实验不等于生产部署。

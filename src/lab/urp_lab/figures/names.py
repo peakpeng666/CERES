@@ -12,7 +12,7 @@ ALG_EN = {
     'pyvrp.hgs+urp.layered': 'PyVRP (legacy ID) + turn layering', 'ortools.gls+urp.layered': 'OR-Tools GLS + turn layering',
     'pyvrp.ils': 'PyVRP ILS', 'pyvrp.hgs': 'PyVRP (legacy ID)', 'ortools.gls': 'OR-Tools GLS', 'urp.js.savings': 'Clarke–Wright savings',
     'urp.js.nearest_neighbor': 'Nearest neighbour', 'f2c.full': 'Fields2Cover (full)', 'f2c.boustrophedon': 'Fields2Cover boustrophedon',
-    'f2c.snake': 'Fields2Cover snake', 'panel.boustrophedon': 'Boustrophedon (baseline)', 'pyvrp.fleet': 'PyVRP fleet',
+    'f2c.snake': 'Fields2Cover snake', 'panel.boustrophedon': 'Boustrophedon (baseline)', 'pyvrp.fleet': 'PyVRP fleet', 'pyvrp.balanced': 'PyVRP balanced',
     'ortools.fleet': 'OR-Tools fleet', 'panel.savings_fleet': 'Savings + 2-opt', 'panel.sweep': 'Sweep', 'panel.cluster_first': 'Cluster-first',
     'grid.astar': 'A*', 'grid.dijkstra': 'Dijkstra', 'grid.theta_star': 'Theta*', 'ompl.rrt_connect': 'RRT-Connect', 'ompl.rrt_star': 'RRT*',
     'ompl.informed_rrt_star': 'Informed RRT*', 'ompl.bit_star': 'BIT*', 'ompl.prm_star': 'PRM*', 'ompl.fmt': 'FMT*', 'ompl.kpiece': 'KPIECE',

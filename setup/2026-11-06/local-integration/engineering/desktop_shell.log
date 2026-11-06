@@ -1,0 +1,24 @@
+✔ a free port is reused and a taken one is replaced (27.555862ms)
+✔ only a real gateway counts as healthy (7.038833ms)
+✔ the shutdown request carries a JSON body, as the gateway requires (2.365757ms)
+✔ settings survive a restart and a damaged file is not fatal (1.861655ms)
+✔ a machine with Docker and the image reports what it has (12.634451ms)
+✔ a machine without Docker says so instead of failing (3.299583ms)
+✔ starting passes both compose files and the shared configuration, then waits for the gateway (5.544787ms)
+✔ starting creates the shared configuration folder before docker can (4.466172ms)
+✔ a failed start reports what docker said (4.67153ms)
+✔ a packaged app asks for the image of its own version (0.412481ms)
+✔ native and container modes use the same dataset after moving it (0.838255ms)
+✔ a healthy container with another dataset cannot be presented as this workbench (5.303718ms)
+✔ data transfer runs the bundled Python from the Lab folder, wherever the app was launched (2.043815ms)
+✔ slimming the staged runtime keeps the PROJ database pyproj reads at run time (26.086089ms)
+✔ an unsuccessful restore cannot advance the data setting (0.460792ms)
+✔ a data subprocess starts in its module directory even when the application is launched elsewhere (17.303862ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 158.154972

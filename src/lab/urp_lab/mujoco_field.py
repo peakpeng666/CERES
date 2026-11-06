@@ -19,7 +19,7 @@ from shapely.ops import triangulate
 from . import lanes
 from .field_energy import account
 from .field_tracking import Driver
-from .field_traffic import MissionQueue
+from .field_traffic import MissionQueue, PASSAGE_POLICY, PassageQueue
 
 ENGINE = 'mujoco'
 SCHEMA = 'urp.physics-run/1'
@@ -245,7 +245,11 @@ def execute(plan: dict, *, progress: Callable[[dict], None] | None = None, shoul
             truth(steps * dt)
     t0 = steps * dt
     execution_started = True
-    queue = MissionQueue(drivers, plan['robot_radius_m'], t0)
+    traffic = plan.get('traffic') or {}
+    if traffic.get('policy') == PASSAGE_POLICY:
+        queue = PassageQueue(drivers, plan['robot_radius_m'], t0, traffic['gates'])
+    else:
+        queue = MissionQueue(drivers, plan['robot_radius_m'], t0)
     planned = max(sum(v.get('planned_duration_s') or 0 for v in plan['vehicles']), 60)
     deadline = t0 + 2.5 * planned + 120
     last_ctrl = last_report = -1.
@@ -302,10 +306,10 @@ def execute(plan: dict, *, progress: Callable[[dict], None] | None = None, shoul
             errors.append(f'{d.label}: {d.failure}')
     if state != 'canceled':
         state = 'succeeded' if not errors and all(d.state == 'done' for d in drivers) else 'failed'
-    return _record(plan, drivers, poses, traces, contacts, errors, state, t0, steps * dt, time.monotonic() - started, mjcf)
+    return _record(plan, drivers, poses, traces, contacts, errors, state, t0, steps * dt, time.monotonic() - started, mjcf, queue)
 
 
-def _record(plan, drivers, poses, traces, contacts, errors, state, t0, t_end, wall_s, mjcf) -> dict:
+def _record(plan, drivers, poses, traces, contacts, errors, state, t0, t_end, wall_s, mjcf, queue) -> dict:
     plan_of = {v['name']: v for v in plan['vehicles']}
     vehicles = [d.summary(plan_of[d.name]) for d in drivers]
     for row, d in zip(vehicles, drivers):
@@ -330,5 +334,7 @@ def _record(plan, drivers, poses, traces, contacts, errors, state, t0, t_end, wa
             'rigid_body_pose_columns': ['t_sim', 'x_m', 'y_m', 'z_m', 'roll_rad', 'pitch_rad', 'yaw_rad'],
             'control_traces': traces, 'control_trace_columns': ['t_sim', 'path_s_m', 'cross_track_m', 'cmd_v_mps', 'cmd_w_radps', 'state'],
             'contacts': contacts, 'energy': energy, 'physics': plan['physics'],
+            'traffic': {**{k: v for k, v in (plan.get('traffic') or {}).items() if k in ('policy', 'predicted_makespan_s', 'meetings', 'boxes', 'clearance_m')},
+                        'events': queue.events, 'held_s': getattr(queue, 'held_s', None)},
             'model_sha256': hashlib.sha256(mjcf.encode()).hexdigest(), 'servo_kv': SERVO_KV,
             'scope': '与 Gazebo 同一方案、同一路径跟踪器、同一车辆参数；接触模型按引擎各自实现；未经实车标定'}

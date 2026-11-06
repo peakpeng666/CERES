@@ -8,6 +8,7 @@ from __future__ import annotations
 import math
 
 POLICY = 'exclusive_mission_v1'
+PASSAGE_POLICY = 'coordinated_passage_v1'
 PARKING_MARGIN_M = 0.8  # accommodates the follower's 0.35 m final tolerance and observed tracking error
 
 
@@ -49,6 +50,64 @@ class MissionQueue:
             d.last_progress = (d.s, now)
             self.events.append({'event': 'depart', 'vehicle': d.name, 't_sim': now,
                                 'wait_s': now - self.started})
+
+
+class PassageQueue:
+    """All vehicles move at once and stop only at gates, until the vehicles that go first have cleared the place ahead.
+
+    The gate event dependencies from ``field_coordination`` are acyclic. Continued progress additionally assumes
+    monotone path tracking, finite delays and valid bounded-error motion; failures stop the run, not prove safety.
+    This class uses no geometry and can be consumed by the ROS controller.
+    """
+
+    def __init__(self, drivers, radius, started, gates):
+        self.drivers, self.radius, self.started = drivers, radius, started
+        self.by_name = {d.name: d for d in drivers}
+        self.gates = {d.name: [dict(g) for g in gates.get(d.name, [])] for d in drivers}
+        self.events = []
+        self.held = {}
+        self.held_s = {d.name: 0.0 for d in drivers}
+        for d in drivers:
+            d.state = 'waiting'
+            d.t_start = started
+            d.t_depart = None
+
+    def _guard(self):
+        for i, a in enumerate(self.drivers):
+            if a.state == 'failed':
+                raise RuntimeError(f'{a.name} 执行失败，全部停车：{a.failure}')
+            for b in self.drivers[i + 1:]:
+                if a.pose is not None and b.pose is not None:
+                    distance = math.dist(a.pose[:2], b.pose[:2])
+                    if distance < 2 * self.radius + 0.15:
+                        raise RuntimeError(f'车间距离保护：{a.name}/{b.name} 间距 {distance:.3f} m；全部停车')
+
+    def _clear(self, gate):
+        return all(self.by_name[name].state == 'done' or self.by_name[name].s >= s for name, s in gate['after'])
+
+    def step(self, now):
+        self._guard()
+        for d in self.drivers:
+            if d.state == 'done':
+                continue
+            gates = self.gates[d.name]
+            while gates and self._clear(gates[0]):
+                gates.pop(0)
+            blocked = bool(gates) and d.s >= gates[0]['s'] - 1e-9
+            if d.state == 'driving' and blocked:
+                d.state = 'waiting'
+                self.held[d.name] = now
+                self.events.append({'event': 'hold', 'vehicle': d.name, 't_sim': now, 's': d.s, 'after': gates[0]['after']})
+            elif d.state == 'waiting' and not blocked:
+                d.state = 'driving'
+                d.last_progress = (d.s, now)
+                if d.t_depart is None:
+                    d.t_depart = now
+                    self.events.append({'event': 'depart', 'vehicle': d.name, 't_sim': now, 'wait_s': now - self.started})
+                else:
+                    waited = now - self.held.pop(d.name)
+                    self.held_s[d.name] += waited
+                    self.events.append({'event': 'release', 'vehicle': d.name, 't_sim': now, 'wait_s': waited})
 
 
 def separation(trails, radius):

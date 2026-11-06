@@ -804,6 +804,7 @@ const COLUMNS: Record<string, Col[]> = {
   fleet_routing: [
     { label: '总里程', get: (r) => metric('total_distance_m')(r), digits: 1, unit: ' m', better: 'min' },
     { label: '最晚完成', get: metric('makespan_s'), digits: 0, unit: ' s', better: 'min' },
+    { label: '预计实际工期', get: metric('predicted_makespan_s'), digits: 0, unit: ' s' },
     { label: '车辆', get: metric('vehicles_used'), digits: 0 },
     { label: '趟数', get: metric('trips'), digits: 0 },
     { label: '均衡度', get: metric('balance_cv'), digits: 2, better: 'min' },
@@ -862,7 +863,7 @@ export function ComparePanel() {
     <div className={s.compare}>
       {readErrors}
       <div className={s.pad} style={{ paddingBottom: 4 }}>
-        <p className={s.meta}>本批 {rows.length} 次运行 · {rows.filter(verifiedPlan).length} 个已验算可行解。最佳值仅在相同输入、目标、单位和时间预算内标记。</p>
+        <p className={s.meta}>本批 {rows.length} 次运行 · {rows.filter(verifiedPlan).length} 个已验算可行解。最佳值仅在相同输入、目标、单位和时间预算内标记。预计工期仅作展示，不跨预测模型标记最佳。</p>
         {rows.some((r) => r.check?.valid === true && mapCheckIssue(r)) && (
           <div className={s.meta} data-exclusion-summary="map_check" aria-label="地图检查未计入的运行">
             {rows.filter((r) => r.check?.valid === true && mapCheckIssue(r)).map((r) => <MapExclusionNote key={r.run_id} run={r} />)}

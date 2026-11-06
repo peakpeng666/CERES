@@ -1,0 +1,16 @@
+
+> bpp-research-console@1.0.0 test:ui
+> vitest run
+
+
+ RUN  v5.0.3 ${SOURCE_WORKSPACE}/src/frontend
+
+
+ Test Files  58 passed (58)
+      Tests  754 passed (754)
+   Start at  15:46:20
+   Duration  1.24s (transform 58%, import 21%, tests 20%, worker 1%)
+
+  Transform  transforming modules took 8.71s · 58% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns

@@ -233,7 +233,7 @@ function PlansRoot({ c, api }: { c: Ctx; api: React.RefObject<MapApi | null> }) 
         const ok = rc ? rc.valid && rc.agrees : v ? v.valid && v.agrees : r.check?.valid;
         const running = r.state === 'queued' || r.state === 'running';
         return <Row key={r.run_id} title={r.algorithm.name}
-          sub={running ? '求解中' : `${ok ? (rc || v ? '独立复核通过' : '检查通过') : '未通过'} · 最晚完成 ${n1(metric(r, 'makespan_s'))} s`}
+          sub={running ? '求解中' : `${ok ? (rc || v ? '独立复核通过' : '检查通过') : '未通过'} · ${metric(r, 'predicted_makespan_s') != null ? `预计实际 ${n1(metric(r, 'predicted_makespan_s'))} s` : `最晚完成 ${n1(metric(r, 'makespan_s'))} s`}`}
           value={<><span className={s.barCell}><i style={{ width: `${(100 * (metric(r, 'total_distance_m') ?? 0)) / max}%` }} data-best={best?.run_id === r.run_id || undefined} /></span>{n1(metric(r, 'total_distance_m'))} m</>}
           onClick={() => push({ t: 'plan', run: r.run_id })} />;
       })}</Rows>
@@ -278,7 +278,7 @@ function PlanLayer({ c, id, api }: { c: Ctx; id: string; api: React.RefObject<Ma
     <div className={s.layer}>
       <h2>{r.algorithm.name}</h2>
       <p className={s.subMono}>{id}</p>
-      {r.state === 'done' ? <Facts items={[['总里程', n1(metric(r, 'total_distance_m')), 'm'], ['最晚完成', n1(metric(r, 'makespan_s')), 's'], ['车辆', metric(r, 'vehicles_used') ?? '—', '台'], ['趟数', metric(r, 'trips') ?? '—'], ['求解', n2(metric(r, 'wall_s')), 's']]} /> : <p className={s.txt}>状态：{r.state}{r.error ? ` · ${r.error}` : ''}</p>}
+      {r.state === 'done' ? <Facts items={[['总里程', n1(metric(r, 'total_distance_m')), 'm'], ['最晚完成', n1(metric(r, 'makespan_s')), 's'], ...(metric(r, 'predicted_makespan_s') != null ? [['预计实际', n1(metric(r, 'predicted_makespan_s')), 's'] as [string, string, string]] : []), ['车辆', metric(r, 'vehicles_used') ?? '—', '台'], ['趟数', metric(r, 'trips') ?? '—'], ['求解', n2(metric(r, 'wall_s')), 's']]} /> : <p className={s.txt}>状态：{r.state}{r.error ? ` · ${r.error}` : ''}</p>}
       {!current && <p className={s.docWarn}>这是历史任务版本的方案。地图按它当时的冻结输入显示，不代表当前合同。</p>}
       <h3>车辆</h3>
       <Rows>{routesOf(r).map((x, i) => <Row key={i} lead={<span className={s.sw} style={{ background: routeColor(i) }} />} title={x.vehicle_name} sub={`${x.services.length} 个任务点 · ${x.trips?.length ?? 1} 趟 · 载重 ${x.load ?? '—'}`} value={`${n1(x.cost)} m`}

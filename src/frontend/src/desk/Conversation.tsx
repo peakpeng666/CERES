@@ -200,7 +200,7 @@ function ReportDoc({ msg, session }: { msg: AgentMessage; session: AgentSession 
         {best && (
           <button type="button" className={s.result} data-thumb={(inst && !stale) || undefined} onClick={() => openPlan(best.run_id)}>
             {inst && !stale && <Thumb inst={inst} routes={thumbRoutes} />}
-            <span>{best.algorithm}<small>最优 · 独立复核通过 · 最晚完成 {n1(best.makespan_s)} s{stale ? ' · 历史任务版本' : ''}</small></span>
+            <span>{best.algorithm}<small>最优 · {best.ranking_basis === 'predicted_makespan_s' ? '按同模型预计工期排序' : '按规划目标排序'} · 独立复核通过 · {best.predicted_makespan_s != null ? `预计实际 ${n1(best.predicted_makespan_s)} s` : `最晚完成 ${n1(best.makespan_s)} s`}{stale ? ' · 历史任务版本' : ''}</small></span>
             <span className={s.num}>{n1(best.total_distance_m)} m</span>
             <Icon name="right" size={12} />
           </button>
@@ -277,26 +277,29 @@ function LiveSim({ session }: { session: AgentSession }) {
 }
 
 interface SimOutcome { run_id: string; session_id: string; state?: string; phase?: string; check_valid?: boolean | null; errors: string[]; metrics: Record<string, number | null | undefined>; comparison?: EngineGap & { physics_run_id: string } | null }
-interface PhysicsRow { run_id: string; physics_run_id?: string; algorithm?: string; state: string; check_valid?: boolean; errors: string[]; wall_s?: number; metrics: Record<string, number | null | undefined> }
+interface Coordinated { physics_run_id?: string; state: string; check_valid?: boolean | null; errors: string[]; makespan_s?: number | null; min_gap_m?: number | null; holds?: number }
+interface PhysicsRow { run_id: string; physics_run_id?: string; algorithm?: string; state: string; check_valid?: boolean; errors: string[]; wall_s?: number; metrics: Record<string, number | null | undefined>; coordinated?: Coordinated }
 
 /** Planned against physically executed, for every verified plan. A row opens the trajectory on the map. */
 function PhysicsDoc({ msg }: { msg: AgentMessage }) {
   const rows = (msg.data as unknown as { rows: PhysicsRow[] }).rows;
   const ok = (r: PhysicsRow) => r.state === 'succeeded' && r.check_valid;
   const drift = (a?: number | null, b?: number | null) => (typeof a === 'number' && typeof b === 'number' && b ? `${a >= b ? '+' : ''}${n1(((a - b) / b) * 100)}%` : '');
+  const together = rows.some((r) => r.coordinated);
   return (
     <div className={s.doc}>
       <header><b>物理预演</b><span>MuJoCo · {rows.filter(ok).length}/{rows.length} 通过</span></header>
       <table className={s.docTable}>
-        <thead><tr><th>方案</th><th>实际里程</th><th>实际工期</th><th>最大偏差</th></tr></thead>
+        <thead><tr><th>方案</th><th>实际里程</th><th>{together ? '逐车工期' : '实际工期'}</th>{together && <th>并行工期</th>}<th>最大偏差</th></tr></thead>
         <tbody>{rows.map((r) => (
           <tr key={r.run_id} data-go={r.physics_run_id ? '' : undefined} onClick={() => { if (r.physics_run_id) openFrames([{ t: 'plans' }, { t: 'plan', run: r.run_id }, { t: 'phys', run: r.run_id, id: r.physics_run_id }]); }}>
             <td>{r.algorithm ?? r.run_id}{!ok(r) && <small>{r.errors[0] ?? '未通过'}</small>}</td>
             {ok(r) ? <>
               <td>{n1(r.metrics.total_distance_m)} m<small>{drift(r.metrics.total_distance_m, r.metrics.planned_total_distance_m)}</small></td>
               <td>{n1(r.metrics.makespan_s)} s<small>{drift(r.metrics.makespan_s, r.metrics.planned_makespan_s)}</small></td>
-              <td>{n3(r.metrics.cross_track_max_m)} m</td>
-            </> : <td colSpan={3}>未完成</td>}
+            </> : <td colSpan={2}>未完成</td>}
+            {together && <td>{r.coordinated?.check_valid ? <>{n1(r.coordinated.makespan_s)} s<small>车距 ≥ {n3(r.coordinated.min_gap_m)} m</small></> : <small>{r.coordinated?.errors[0] ?? '未通过'}</small>}</td>}
+            <td>{ok(r) ? `${n3(r.metrics.cross_track_max_m)} m` : '—'}</td>
           </tr>
         ))}</tbody>
       </table>

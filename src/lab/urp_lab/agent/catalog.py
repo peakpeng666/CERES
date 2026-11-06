@@ -58,7 +58,8 @@ def _model(m: dict) -> dict | None:
     interleaved = m.get('interleaved')
     return {'id': m['id'], 'name': m.get('name') or m['id'], 'context': limit.get('context'), 'output': limit.get('output'),
             'reasoning': bool(m.get('reasoning')), 'temperature': m.get('temperature', True) is not False, 'released': m.get('release_date'),
-            'input_price': cost.get('input'), 'output_price': cost.get('output'), 'beta': m.get('status') in ('alpha', 'beta') or None,
+            'input_price': cost.get('input'), 'output_price': cost.get('output'), 'cached_price': cost.get('cache_read'), 'cache_write_price': cost.get('cache_write'),
+            'beta': m.get('status') in ('alpha', 'beta') or None,
             'reasoning_field': interleaved.get('field') if isinstance(interleaved, dict) else None}
 
 
