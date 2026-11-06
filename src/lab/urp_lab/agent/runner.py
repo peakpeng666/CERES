@@ -433,7 +433,8 @@ class AgentRunner:
                                             'run_id': call['arguments']['run_id'], 'status': 'attempted',
                                             'outcome': rec['status'], 'error': rec.get('error')}
                 if rec['status'] == 'ok':
-                    s['simulation_watch'] = {'run_id': call['arguments']['run_id'], 'session_id': (rec.get('result') or {}).get('session_id')}
+                    s['simulation_watch'] = {'run_id': call['arguments']['run_id'], 'session_id': (rec.get('result') or {}).get('session_id'),
+                                             'traffic_mode': (rec.get('result') or {}).get('traffic_mode', call['arguments'].get('traffic', 'serial'))}
         return self._start_locked(s)
 
     def _simulate_locked(self, s: dict, payload: dict) -> dict:
@@ -448,14 +449,16 @@ class AgentRunner:
             raise RunnerError(400, 'invalid_run', '只能仿真当前任务地图与合同的方案')
         ensure_step(s, 'simulate')
         ctx = tools.ToolContext(self.lab, s, self._event(self._cancel, s['session_id']), lambda kind, data: self._publish(s, kind, data))
-        rec = self._record(s, tools.execute(self.tools, ctx, 'start_simulation', {'run_id': run_id}), 'user_approved')
+        rec = self._record(s, tools.execute(self.tools, ctx, 'start_simulation',
+                                           {'run_id': run_id, 'traffic': payload.get('traffic', 'serial')}), 'user_approved')
         if rec['status'] != 'ok':
             set_step(s, 'simulate', 'failed', rec['error']['message'])
             add_message(s, 'event', f"仿真未启动：{rec['error']['message']}", 'error')
             self._save(s)
             return self._view(s)
         s['simulation_decision'] = {'contract_revision': s['contract']['revision'], 'run_id': run_id, 'status': 'attempted', 'outcome': 'ok', 'error': None}
-        s['simulation_watch'] = {'run_id': run_id, 'session_id': (rec.get('result') or {}).get('session_id')}
+        s['simulation_watch'] = {'run_id': run_id, 'session_id': (rec.get('result') or {}).get('session_id'),
+                                 'traffic_mode': (rec.get('result') or {}).get('traffic_mode', payload.get('traffic', 'serial'))}
         s['phase'] = 'report'
         add_message(s, 'event', '已按你的操作启动田间仿真。', 'notice')
         return self._start_locked(s)
@@ -470,15 +473,16 @@ class AgentRunner:
         field, saved, state = self.lab.fieldsim, 0.0, {}
         while True:
             if cancel.is_set():
-                try:
-                    field.stop()
-                except Exception:  # noqa: BLE001 - the session is reported cancelled either way; the service keeps its own log
-                    log.exception('stopping the field simulation after cancel failed')
+                self._release_simulation(s, field)
                 raise Cancelled
             if pause.is_set():
                 raise Paused        # the simulation keeps running; resuming comes back here
             state = field.state()
-            if state.get('phase') in ('finished', 'failed', 'stopped', 'idle') or state.get('session_id') not in (None, watch.get('session_id')):
+            if not watch.get('session_id') or state.get('session_id') != watch['session_id']:
+                state = {'phase': 'stopped', 'session_id': watch.get('session_id'),
+                         'errors': ['原仿真会话已不在当前运行位置；只查询该会话的保存结果']}
+                break
+            if state.get('phase') in ('finished', 'failed', 'stopped', 'idle'):
                 break
             if time.monotonic() - saved > 5:
                 done = sum(int(v.get('tasks_done') or 0) for v in state.get('vehicles') or [])
@@ -488,9 +492,13 @@ class AgentRunner:
                 saved = time.monotonic()
             cancel.wait(1.0)
         row = {}
-        for _ in range(20):                       # the session writes its result just after it reports the end, failed ones too
+        for _ in range(20 if watch.get('session_id') else 0):  # completed sessions can save their result just after the final state
             try:
-                row = field.result(watch.get('session_id')) or {}
+                row = field.result(watch['session_id']) or {}
+                if (row.get('session_id') not in (None, watch['session_id'])
+                        or row.get('run_id') not in (None, watch['run_id'])):
+                    row = {}
+                    state = {'phase': 'failed', 'errors': ['保存结果的会话或方案身份与当前监听不一致']}
                 break
             except Exception:  # noqa: BLE001 - a session that died writes no result; the report says so
                 if cancel.wait(.5):
@@ -499,11 +507,29 @@ class AgentRunner:
         metrics = row.get('metrics') or state.get('metrics') or {}
         keep = ('tasks_total', 'tasks_completed', 'total_distance_m', 'planned_total_distance_m', 'makespan_s', 'planned_makespan_s',
                 'cross_track_mean_m', 'cross_track_max_m', 'energy_wh')
-        result = {'run_id': watch['run_id'], 'session_id': watch.get('session_id'), 'phase': state.get('phase'), 'state': row.get('state'),
+        result = {'run_id': watch['run_id'], 'session_id': watch.get('session_id'),
+                  'phase': {'succeeded': 'finished', 'failed': 'failed', 'canceled': 'stopped'}.get(row.get('state'), state.get('phase')),
+                  'state': row.get('state') or 'failed',
                   'check_valid': (row.get('check') or {}).get('valid'), 'metrics': {k: round(metrics[k], 3) if isinstance(metrics.get(k), float) else metrics.get(k) for k in keep},
-                  'errors': (state.get('errors') or [])[:5]}
+                  'traffic_mode': row.get('traffic_mode') or state.get('traffic_mode') or watch.get('traffic_mode', 'serial'),
+                  'time_windows': time_windows.compact(row.get('time_windows')),
+                  'errors': (row.get('errors') or state.get('errors') or [])[:5]}
+        if result['time_windows'] is None and row.get('execution_plan'):
+            result['time_windows'] = time_windows.compact(time_windows.execution(row['execution_plan'], row))
+        windows = result['time_windows'] or {}
+        if windows and (not windows.get('all_on_time') or windows.get('early_starts')):
+            result['check_valid'] = False
+            if not windows.get('all_on_time'):
+                result['errors'].append('任务未按时到达：' + time_windows.late_text(windows))
+            if windows.get('early_starts'):
+                result['errors'].append(f"{windows['early_starts']} 个任务在最早时间之前开始作业")
+            if result['state'] == 'succeeded':
+                result['state'] = 'failed'
         watch['done'] = True
-        ok = result['state'] == 'succeeded'
+        ok = result['state'] == 'succeeded' and result['check_valid'] is True
+        if result['state'] == 'succeeded' and not ok:
+            result['state'] = 'failed'
+            result['errors'].append('实际轨迹缺少通过的独立检查')
         if ok:
             result['comparison'] = self._sim2sim(s, watch['session_id'], cancel)
         s['simulation_result'] = result
@@ -514,12 +540,18 @@ class AgentRunner:
 
     @staticmethod
     def _release_simulation(s: dict, field):
-        """The result and trajectories are saved; an idle Gazebo would only hold the machine and block the next approval."""
+        """Release only the watched session; other sessions may have replaced it while the agent was paused."""
+        session_id = (s.get('simulation_watch') or {}).get('session_id')
+        if not session_id:
+            return
         try:
-            field.stop()
-        except Exception as exc:  # noqa: BLE001 - the run is already recorded; the panel can still close the session
-            log.exception('closing the finished field simulation failed')
-            add_message(s, 'event', f'田间仿真已结束，但会话未能自动关闭：{exc}。可在仿真面板关闭。', 'notice')
+            current = field.state()
+            if current.get('session_id') != session_id or current.get('phase') == 'idle':
+                return
+            field.stop(session_id=session_id)
+        except Exception as exc:  # noqa: BLE001 - preserve the failure while leaving manual control available
+            log.exception('closing the owned field simulation failed')
+            add_message(s, 'event', f'仿真会话未能自动关闭：{exc}。可在仿真面板关闭。', 'notice')
 
     def _sim2sim(self, s: dict, session_id: str, cancel) -> dict | None:
         """The finished Gazebo session's plan, run again in MuJoCo: how far apart the two engines land."""
@@ -530,7 +562,10 @@ class AgentRunner:
             add_message(s, 'event', f'未做引擎对比：{exc.message}', 'notice')
             return None
         rec = self.lab.physics.wait(rec['physics_run_id'], cancel)
-        return {'physics_run_id': rec.get('physics_run_id'), **(rec.get('comparison') or {})} if rec.get('comparison') else None
+        comparison = rec.get('comparison') or {'available': False, 'errors': rec.get('errors') or [f"MuJoCo 重放未产生比较（{rec.get('state')}）"]}
+        if comparison.get('available') is False:
+            add_message(s, 'event', '未得到有效引擎对比：' + '；'.join(comparison.get('errors') or ['记录不可比较']), 'notice')
+        return {'physics_run_id': rec.get('physics_run_id'), **comparison}
 
     def _reject_pending(self, s: dict):
         pending = s.get('pending') or {}
@@ -1026,22 +1061,27 @@ class AgentRunner:
         verdict = (s.get('verifications') or {}).get(args['run_id']) or {}
         if run.get('state') != 'done' or run.get('status') != 'feasible' or not verdict.get('valid') or not verdict.get('agrees'):
             return 'unverified', '仿真批准前须通过独立复核，且复核须与存档判定一致'
-        better = self._best_executable(s)
-        if better and better['run_id'] != args['run_id'] and self._physics_failed(s, args['run_id']):
-            return 'physics_failed', (f"该方案未通过物理预演：{self._physics_cause(s, args['run_id'])}；"
+        traffic = args.get('traffic', 'serial')
+        if traffic not in ('serial', 'coordinated'):
+            return 'invalid_traffic', 'traffic 只能是 serial 或 coordinated'
+        better = self._best_executable(s, traffic)
+        if better and better['run_id'] != args['run_id'] and self._physics_failed(s, args['run_id'], traffic):
+            return 'physics_failed', (f"该方案未通过所选交通方式的物理预演：{self._physics_cause(s, args['run_id'], traffic)}；"
                                       f"通过预演的方案是 {better['algorithm']}（{better['run_id']}）")
         return None
 
     def _queue_simulation(self, s: dict, args: dict):
-        reason = '该操作会启动 Gazebo 物理仿真会话，需要你的批准'
+        traffic = args.get('traffic', 'serial')
+        label = '协调并行' if traffic == 'coordinated' else '逐车串行'
+        reason = f'该操作会启动 Gazebo 物理仿真会话（{label}），需要你的批准'
         one_by_one = ((s.get('physics') or {}).get(args['run_id']) or {}).get('time_windows') or {}
-        if one_by_one.get('late'):
-            reason = f'Gazebo 会话目前逐车执行，物理预演里这样执行时{time_windows.late_text(one_by_one)}晚于截止。{reason}'
+        if args.get('traffic', 'serial') == 'serial' and one_by_one.get('late'):
+            reason = f'本次选择逐车执行，物理预演里这样执行时{time_windows.late_text(one_by_one)}晚于截止。{reason}'
         planned = self._best_verified(s)
-        if self._physics_failed(s, args['run_id']):
-            reason = f"此方案未通过物理预演（{self._physics_cause(s, args['run_id'])}），没有通过预演的方案可选。{reason}"
-        elif planned and planned['run_id'] != args['run_id'] and self._physics_failed(s, planned['run_id']):
-            reason = f"规划最优的 {planned['algorithm']} 未通过物理预演（{self._physics_cause(s, planned['run_id'])}），这里改用通过预演的方案。{reason}"
+        if self._physics_failed(s, args['run_id'], traffic):
+            reason = f"此方案未通过物理预演（{self._physics_cause(s, args['run_id'], traffic)}），没有通过预演的方案可选。{reason}"
+        elif planned and planned['run_id'] != args['run_id'] and self._physics_failed(s, planned['run_id'], traffic):
+            reason = f"规划最优的 {planned['algorithm']} 未通过物理预演（{self._physics_cause(s, planned['run_id'], traffic)}），这里改用通过预演的方案。{reason}"
         s['pending'] = {'type': 'approval', 'kind': 'tool_call', 'label': '启动田间仿真',
                         'call': {'name': 'start_simulation', 'arguments': copy.deepcopy(args)},
                         'contract_revision': s['contract']['revision'], 'reason': reason}
@@ -1050,7 +1090,7 @@ class AgentRunner:
         """A model omission cannot skip the confirmed contract's physical approval gate."""
         if not tc.execution(s['contract'])['simulate'] or self._simulation_decided(s):
             return False
-        best = self._best_executable(s) or self._best_verified(s)
+        best = self._best_executable(s, 'serial') or self._best_verified(s)
         if not best:
             return False
         args = {'run_id': best['run_id'], 'real_time_factor': 4.0}
@@ -1125,19 +1165,19 @@ class AgentRunner:
         self._save(s)
 
     @staticmethod
-    def _physics_failed(s: dict, rid: str) -> bool:
+    def _physics_failed(s: dict, rid: str, traffic: str | None = None) -> bool:
         """True only for a plan the engine actually ran and rejected; an unavailable engine says nothing about the plan."""
         row = (s.get('physics') or {}).get(rid) or {}
-        return row.get('state') in ('succeeded', 'failed') and not _executed(row)
+        return _execution_for(row, traffic).get('state') in ('succeeded', 'failed') and not _executed(row, traffic)
 
     @staticmethod
-    def _physics_cause(s: dict, rid: str) -> str:
-        return _execution_fault((s.get('physics') or {}).get(rid) or {})
+    def _physics_cause(s: dict, rid: str, traffic: str | None = None) -> str:
+        return _execution_fault((s.get('physics') or {}).get(rid) or {}, traffic)
 
-    def _best_executable(self, s: dict) -> dict | None:
+    def _best_executable(self, s: dict, traffic: str | None = None) -> dict | None:
         """The best verified plan that also ran clean in the physics engine, on time if it has time windows."""
         rows = s.get('physics') or {}
-        return self._best_verified(s, lambda rid: _executed(rows.get(rid, {})))
+        return self._best_verified(s, lambda rid: _executed(rows.get(rid, {}), traffic))
 
     def _best_verified(self, s: dict, accept=None) -> dict | None:
         ranked = self._ranked(s, accept)
@@ -1225,20 +1265,30 @@ class AgentRunner:
 
 def _timed(row: dict) -> dict:
     """The execution a plan's time windows are judged on: all vehicles moving at once when that ran, as the plan's clock
-    assumes. One-by-one execution holds the later vehicles back by design, so it only says what Gazebo would do today."""
+    assumes. Serial execution includes queueing; the selected Gazebo traffic mode is recorded separately."""
     together = row.get('coordinated') or {}
     return together if row.get('time_windows') and together.get('state') == 'succeeded' else row
 
 
-def _executed(row: dict) -> bool:
-    timed = _timed(row)
+def _execution_for(row: dict, traffic: str | None = None) -> dict:
+    if traffic == 'serial':
+        return row
+    if traffic == 'coordinated':
+        return row.get('coordinated') or {}
+    return _timed(row)
+
+
+def _executed(row: dict, traffic: str | None = None) -> bool:
+    timed = _execution_for(row, traffic)
     windows = timed.get('time_windows')
-    return timed.get('state') == 'succeeded' and timed.get('check_valid') is True and (not windows or bool(windows.get('all_on_time')))
+    return timed.get('state') == 'succeeded' and timed.get('check_valid') is True and (not windows or bool(windows.get('all_on_time')) and not windows.get('early_starts'))
 
 
-def _execution_fault(row: dict) -> str:
-    timed = _timed(row)
+def _execution_fault(row: dict, traffic: str | None = None) -> str:
+    timed = _execution_for(row, traffic)
     windows = timed.get('time_windows') or {}
+    if windows.get('early_starts'):
+        return f"{windows['early_starts']} 个任务在最早时间之前开始作业"
     if windows and not windows.get('all_on_time') and timed.get('check_valid') is True:
         return f'实测到达晚于截止：{time_windows.late_text(windows)}'
     errors = timed.get('errors') or row.get('errors') or []
@@ -1389,8 +1439,12 @@ def _template_report(e: dict) -> str:
         if sim.get('state') == 'succeeded':
             parts.append(f"田间仿真完成 {m.get('tasks_completed')}/{m.get('tasks_total')} 个任务点，实际里程 {m.get('total_distance_m')} m，"
                          f"规划里程 {m.get('planned_total_distance_m')} m，实际工期 {m.get('makespan_s')} s，最大横向偏差 {m.get('cross_track_max_m')} m。")
+            if sim.get('time_windows'):
+                parts.append('Gazebo 实测到达：' + time_windows.verdict(sim['time_windows']) + '。')
             gap = sim.get('comparison')
-            if gap and gap.get('path_mean_m') is not None:
+            if gap and gap.get('available') is False:
+                parts.append('引擎对比不可用：' + '；'.join(gap.get('errors') or ['记录不可比较']) + '。')
+            elif gap and gap.get('path_mean_m') is not None:
                 parts.append(f"同一方案在 Gazebo 与 MuJoCo 中的轨迹差：平均 {gap['path_mean_m']:.3f} m，最大 {gap['path_max_m']:.3f} m。")
         else:
             parts.append('田间仿真没有完成：' + ('；'.join(sim.get('errors') or []) or str(sim.get('phase'))) + '。')

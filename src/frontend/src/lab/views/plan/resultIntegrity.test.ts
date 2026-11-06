@@ -92,7 +92,13 @@ describe('three-state source identity', () => {
     const { renderToStaticMarkup } = await import('react-dom/server');
     const { IntegrityNotice } = await import('./IntegrityNotice');
     const html = (run: unknown) => renderToStaticMarkup(createElement(IntegrityNotice, { run: run as Solution }));
-    expect(html({ ...base, error: '哈希不符', process: { source_identity_verified: false } })).toContain('已隔离');
+    const quarantined = html({ ...base, error: '哈希不符', process: { source_identity_verified: false, evidence: 'logs/source.json' } });
+    expect(quarantined.split('<details>')[0]).toContain('已隔离');
+    expect(quarantined.split('<details>')[0]).toContain('不能作为有效结果');
+    expect(quarantined).toContain('哈希不符');
+    expect(quarantined).toContain('logs/source.json');
+    expect(quarantined).toContain('<details><summary>原因与恢复步骤</summary>');
+    expect(quarantined).not.toContain('<details open');
     expect(html(base)).toContain('身份未核验');
     expect(html({ ...base, process: { source_identity_verified: true } })).toBe('');
   });

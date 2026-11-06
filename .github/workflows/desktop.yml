@@ -1,7 +1,7 @@
 name: Desktop installers
 
-# A v* tag builds the Linux and Windows installers and publishes them as the repository's latest release, which is where
-# the app looks for updates. workflow_dispatch builds the same artifacts without publishing.
+# A v* tag builds and publishes desktop installers with update metadata. The updater discovers complete desktop tags;
+# unrelated archive releases can safely be the repository's latest release. workflow_dispatch does not publish.
 on:
   push:
     tags: ['v*']
@@ -40,12 +40,15 @@ jobs:
           cache-dependency-path: |
             src/frontend/package-lock.json
             src/desktop/package-lock.json
+            src/frontend/tools/browser/package-lock.json
       - uses: astral-sh/setup-uv@v6
+      - name: Install desktop dependencies
+        run: npm ci --prefix src/desktop --no-audit --no-fund
       - name: Build the interface
         run: |
           npm ci --prefix src/frontend --engine-strict --no-audit --no-fund
           npm run build --prefix src/frontend
-          node --test src/desktop/test/main.test.js
+          npm test --prefix src/desktop
       - name: Stage the backend
         run: uv run --no-project --python 3.12 python src/desktop/scripts/stage_backend.py --target ${{ matrix.target }}
       - name: Check the staged backend on this operating system
@@ -58,8 +61,30 @@ jobs:
           CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
           CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
         run: |
-          npm ci --no-audit --no-fund
           npx electron-builder ${{ matrix.builder }} --publish never
+      - name: Prepare Linux window checks
+        if: matrix.target == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xvfb libgtk-3-0 libnss3 libasound2
+          npm ci --prefix src/frontend/tools/browser --no-audit --no-fund
+      - name: Open the packaged Linux window and exercise IPC and data flows
+        if: matrix.target == 'linux'
+        timeout-minutes: 12
+        env:
+          # Only this isolated hosted-runner smoke disables the Chromium sandbox.
+          URP_TEST_NO_SANDBOX: '1'
+        run: |
+          export PLAYWRIGHT_CORE="$GITHUB_WORKSPACE/src/frontend/tools/browser/node_modules/playwright-core"
+          xvfb-run -a node src/desktop/test/packaged_smoke.mjs --exe "$GITHUB_WORKSPACE/src/desktop/dist/linux-unpacked/agri-route-workbench" --out "$RUNNER_TEMP/desktop-window-smoke"
+      - name: Preserve Linux window check evidence
+        if: always() && matrix.target == 'linux'
+        uses: actions/upload-artifact@v4
+        with:
+          name: window-smoke-linux
+          path: ${{ runner.temp }}/desktop-window-smoke/
+          if-no-files-found: warn
+          retention-days: 14
       - name: Install on this Windows machine and check what landed
         if: matrix.target == 'win'
         shell: pwsh
@@ -101,6 +126,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+          pattern: desktop-*
           merge-multiple: true
       - name: Verify optional data and installer publication metadata
         run: python3 src/desktop/scripts/check_release.py --artifacts artifacts --version "${GITHUB_REF_NAME#v}"

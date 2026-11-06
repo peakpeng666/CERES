@@ -8,6 +8,7 @@ import type {
   FieldPhysics,
   FieldSimState,
   FieldSimSummary,
+  FieldTrafficMode,
   FleetInstance,
   FleetScenario,
   InstanceSpace,
@@ -144,7 +145,7 @@ export const studio = {
   analyzeRuns: (run_ids: string[]) => call<Analysis>('POST', '/analysis', { run_ids }),
   fieldsim: () => call<FieldSimState>('GET', '/fieldsim'),
   fieldsimPhysics: () => call<FieldPhysicsResponse>('GET', '/fieldsim/physics'),
-  startFieldsim: (run_id: string, opts: { gui?: boolean; rviz?: boolean; real_time_factor?: number; physics?: Record<string, unknown>; execution?: { ground_preset?: string; localization_preset?: string; seed?: number; slip_protection?: boolean } } = {}) =>
+  startFieldsim: (run_id: string, opts: { gui?: boolean; rviz?: boolean; real_time_factor?: number; traffic?: FieldTrafficMode; physics?: Record<string, unknown>; execution?: { ground_preset?: string; localization_preset?: string; seed?: number; slip_protection?: boolean } } = {}) =>
     call<FieldSimState>('POST', '/fieldsim', { run_id, ...opts }),
   stopFieldsim: (options: CallOptions = {}) => call<FieldSimState>('POST', '/fieldsim/stop', {}, { timeoutMs: 90_000, ...options }),
   fieldsimWindow: (kind: 'gui' | 'rviz', on: boolean) => call<FieldSimState>('POST', '/fieldsim/window', { kind, on }),

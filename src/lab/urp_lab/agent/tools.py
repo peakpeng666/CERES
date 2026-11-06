@@ -537,7 +537,8 @@ def start_simulation(ctx: ToolContext, args: dict) -> dict:
     gap = gazebo_gap()
     if gap:
         raise ToolError('simulator_unavailable', gap)
-    body = {'run_id': run['run_id'], 'real_time_factor': float(args.get('real_time_factor') or 4.0)}
+    body = {'run_id': run['run_id'], 'real_time_factor': float(args.get('real_time_factor') or 4.0),
+            'traffic': args.get('traffic', 'serial')}
     try:
         state = ctx.lab.fieldsim.start(body)
     except Exception as exc:  # noqa: BLE001 - ServiceError carries a user-facing message
@@ -545,6 +546,7 @@ def start_simulation(ctx: ToolContext, args: dict) -> dict:
     ctx.session.setdefault('sim_runs', []).append(run['run_id'])
     ctx.session.setdefault('active_sim_runs', []).append(run['run_id'])
     return {'phase': state.get('phase'), 'session_id': state.get('session_id'), 'run_id': run['run_id'],
+            'traffic_mode': state.get('traffic_mode', body['traffic']),
             'note': '已启动 Gazebo 田间会话；规划预览、实时仿真与记录回放分别显示'}
 
 
@@ -777,7 +779,8 @@ def registry() -> dict[str, Tool]:
               'required': ['run_id'], 'additionalProperties': False}, physics_robustness, 'compute', 'robustness', needs_scenario=True),
         Tool('start_simulation', '启动田间仿真', '把已通过独立复核的方案送入 Gazebo 田间仿真（需要用户批准）。',
              {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80},
-                                               'real_time_factor': {'type': 'number', 'minimum': 0.5, 'maximum': 8}},
+                                               'real_time_factor': {'type': 'number', 'minimum': 0.5, 'maximum': 8},
+                                               'traffic': {'type': 'string', 'enum': ['serial', 'coordinated']}},
               'required': ['run_id'], 'additionalProperties': False}, start_simulation, 'physical', 'simulate', needs_scenario=True),
         Tool('simulation_status', '查看仿真状态', '读取当前田间仿真会话的阶段与结果。', EMPTY, simulation_status,
              'session', 'simulate'),

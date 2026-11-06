@@ -36,7 +36,8 @@ DEPLOY = ROOT / 'setup/2026-10-15/deployment'
 EXTRAS = DEPLOY / 'runtime/ros-extras/root/opt/ros/humble'
 sys.path[:0] = [str(DEPLOY), str(LAB / 'ros'), str(LAB)]
 from urp_lab.field_tracking import Driver, truth_time  # noqa: E402
-from urp_lab.field_traffic import MissionQueue, POLICY
+from urp_lab.field_traffic import MissionQueue, PASSAGE_POLICY, POLICY, PassageQueue
+from urp_lab import sim2sim, time_windows
 from urp_lab.field_nonideal import (Estimator, LocalizationModel, slip_experiment,
                                    advance_innovation_guard, reset_guard_evidence)  # noqa: E402
 from urp_lab.field_actuation import WheelOdometry, MAX_FEEDBACK_GAP_S
@@ -92,6 +93,28 @@ def ground_collision(name: str) -> bool:
     return name.split('::')[0] in ('ground', 'ground_zones')
 
 
+def _apply_time_windows(plan: dict, result: dict) -> dict:
+    """Judge the recorded fleet clock, including missing tasks and early work, without changing raw observations."""
+    windows = time_windows.execution(plan, result)
+    result['time_windows'] = windows
+    if windows is None:
+        return result
+    check = result.setdefault('check', {})
+    check['time_windows'] = time_windows.compact(windows)
+    errors = []
+    if not windows.get('all_on_time'):
+        errors.append('任务未按时到达：' + time_windows.late_text(windows))
+    if windows.get('early_starts'):
+        errors.append(f"{windows['early_starts']} 个任务在最早时间之前开始作业")
+    if errors:
+        check['valid'] = False
+        check.setdefault('errors', []).extend(errors)
+        result.setdefault('errors', []).extend(errors)
+        if result.get('state') == 'succeeded':
+            result['state'] = 'failed'
+    return result
+
+
 class Processes(OwnedProcesses):
     def __init__(self, env, runtime):
         super().__init__(env, 'fieldsim')
@@ -126,7 +149,7 @@ class Session:
         self.st = dict(session_id=self.plan['session_id'], run_id=self.plan['run_id'], scenario_id=self.plan['scenario_id'],
                        algorithm=self.plan.get('algorithm'), world=self.world, phase='starting', components={}, web={},
                        errors=[], warnings=[], stages=[], sim_time=0.0, real_time_factor=None, vehicles=[], metrics={},
-                       result=None,
+                       result=None, traffic_mode=('coordinated' if self.plan.get('traffic', {}).get('policy') == PASSAGE_POLICY else 'serial'),
                        execution=({'mode': 'nonideal',
                                    'ground': self.plan.get('execution', {}).get('ground', {}).get('preset'),
                                    'ground_label': self.plan.get('execution', {}).get('ground', {}).get('preset_label'),
@@ -895,12 +918,15 @@ Window Geometry:
     def execute(self):
         self.phase('running')
         self.execution_started = True
-        if self.plan.get('traffic', {}).get('policy') != POLICY:
+        policy = self.plan.get('traffic', {}).get('policy')
+        if policy == PASSAGE_POLICY:
+            self.traffic = PassageQueue(self.drivers, self.plan['robot_radius_m'], self.clock or 0.0, self.plan['traffic']['gates'])
+        elif policy == POLICY:
+            self.traffic = MissionQueue(self.drivers, self.plan['robot_radius_m'], self.clock or 0.0)
+            self.st['warnings'].append('保守交通预约：整段任务依次执行，结束回独立停车位；等待计入实际用时，非并行避碰算法')
+        else:
             raise RuntimeError('缺少已验证的车间交通策略，拒绝执行')
-        self.traffic = MissionQueue(self.drivers, self.plan['robot_radius_m'], self.clock or 0.0)
-        self.st['warnings'].append('保守交通预约：整段任务依次执行，结束回独立停车位；等待计入实际用时，非并行避碰算法')
-        planned = max(sum(v.get('planned_duration_s') or 0 for v in self.plan['vehicles']), 60)
-        deadline = (self.clock or 0) + 2.5 * planned + 120
+        deadline = (self.clock or 0) + time_windows.execution_horizon_s(self.plan)
         last_ctrl = last_live = last_trail = -1.0
         terminal_since = None
         while not self.stop.is_set():
@@ -1134,7 +1160,9 @@ Window Geometry:
                       trails={d.name: d.samples for d in self.drivers},
                       errors=list(self.st['errors']), telemetry=copy.deepcopy(self.counts),
                       execution_provenance=self.plan.get('execution_provenance'),
-                      traffic={**self.plan.get('traffic', {}), 'events': self.traffic.events if self.traffic else []},
+                      plan_identity=sim2sim.plan_identity(self.plan), traffic_mode=self.st['traffic_mode'],
+                      traffic={**self.plan.get('traffic', {}), 'events': self.traffic.events if self.traffic else [],
+                               'held_s': getattr(self.traffic, 'held_s', None)},
                       contacts=self.contacts, contact_examples=self.contact_examples,
                       ground_contact_observations=list(self.ground_contact_observations.values()),
                       control_traces=self.control_traces,
@@ -1197,10 +1225,13 @@ Window Geometry:
                 if result['state'] == 'succeeded': result['state'] = 'failed'
                 self.st['errors'].append(f'实际轨迹未通过独立检查：{exc}')
         result['errors'] = list(self.st['errors'])
+        _apply_time_windows(self.plan, result)
+        self.st['errors'] = list(result['errors'])
         self.result = result
         save(self.runtime / 'result.json', result)
         with self.lock:
-            self.st.update(vehicles=vehicles, metrics=metrics, result=str(self.runtime / 'result.json'))
+            self.st.update(vehicles=vehicles, metrics=metrics, result=str(self.runtime / 'result.json'),
+                           time_windows=time_windows.compact(result.get('time_windows')))
         self.phase({'succeeded': 'finished', 'canceled': 'stopped'}.get(result['state'], 'failed'))
         save(self.runtime / 'state.json', self.state())
 

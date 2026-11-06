@@ -149,6 +149,11 @@ export interface DataPack {
 }
 
 export interface EngineGap {
+  available?: boolean;
+  errors?: string[];
+  identity?: Record<string, unknown>;
+  time_alignment?: 'per_vehicle_departure';
+  mission_clock_rmse_m?: number | null;
   run_id: string;
   a: { engine: string; session_id?: string; state?: string };
   b: { engine: string; version?: string; state?: string };

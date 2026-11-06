@@ -58,8 +58,9 @@ def gazebo_gap() -> str | None:
 
     The ROS bridge is compiled and fingerprinted on the machine that runs it, so an installed app has no accepted bridge
     even where ROS exists; Gazebo then comes from the container backend, on Linux as on Windows.
+    Source Electron keeps the checkout's local ROS/bridge preflight and execution path.
     """
-    if os.environ.get('URP_DESKTOP') == '1':
+    if os.environ.get('URP_DESKTOP') == '1' and os.environ.get('URP_DESKTOP_SOURCE') != '1':
         return '安装版的 Gazebo 在容器后端里运行，可以在 设置 → 桌面应用 开启；MuJoCo 物理预演不受影响'
     if Path('/opt/ros/humble/setup.bash').exists():
         return None

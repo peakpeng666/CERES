@@ -16,8 +16,9 @@ from pathlib import Path
 import shapely
 from shapely.geometry import Polygon
 
-from . import fieldworld, lanes, paths
+from . import field_coordination, fieldworld, lanes, paths, time_windows
 from .field_records import contact_metrics
+from .field_traffic import POLICY as SERIAL_POLICY
 from .jobs import new_id
 from .services import ROS_SETUP, ManagedProcess, ServiceError, http_json
 from .scenarios import validate_instance
@@ -29,6 +30,11 @@ FIELD_PORT = 4192
 SCRIPT_REL = 'src/lab/ros/field_sim_session.py'
 OBSTACLE_HEX = {'pond': '#4a8cdc', 'ditch': '#5a8dbd', 'building': '#a9a9ad', 'greenhouse': '#cfe3ea',
                 'rock': '#8a857d', 'tree': '#2f7d3a'}
+
+
+def _traffic_mode(record: dict) -> str | None:
+    return record.get('traffic_mode') or {SERIAL_POLICY: 'serial', field_coordination.POLICY: 'coordinated'}.get(
+        (record.get('traffic') or {}).get('policy'))
 
 
 def _hex(rgba) -> str:
@@ -85,6 +91,9 @@ class FieldSimManager:
 
     # -------------------------------------------------------------- start --
     def start(self, body: dict) -> dict:
+        traffic = body.get('traffic', 'serial')
+        if traffic not in ('serial', 'coordinated'):
+            raise ServiceError(400, 'invalid_traffic', 'traffic 只能是 serial 或 coordinated')
         run = self.store.get_run(str(body.get('run_id') or ''))
         if not run:
             raise ServiceError(404, 'unknown_run', '没有这个运行记录')
@@ -132,9 +141,13 @@ class FieldSimManager:
                                          body.get('physics'), execution, inherit_ground=False)
             except ValueError as exc:
                 raise ServiceError(422, 'world_failed', str(exc)) from None
+            windows = time_windows.by_task(inst)
             for v, r in zip(world['vehicles'], run['routes']):
                 v['planned_length_m'] = r.get('cost')
                 v['planned_duration_s'] = r.get('duration_s')
+                for task in v['tasks']:
+                    if task['id'] in windows:
+                        task['earliest_s'], task['latest_s'] = windows[task['id']]
             layers, outlines = marker_layers(inst)
             plan = {**world, 'session_id': sid, 'run_id': run['run_id'], 'scenario_id': run['scenario_id'],
                     'algorithm': (run.get('algorithm') or {}).get('name'), 'field_layers': layers, 'outlines': outlines,
@@ -142,9 +155,14 @@ class FieldSimManager:
                     'vehicle_asset': vehicle_asset,
                     'planned': {'makespan_s': max(r['duration_s'] for r in run['routes']),
                                 'total_distance_m': checked['computed_cost']}}
+            if traffic == 'coordinated':
+                plan = field_coordination.apply(plan)
+                if plan['traffic'].get('coordination_refused'):
+                    raise ServiceError(422, 'no_safe_order', plan['traffic']['coordination_refused'])
             sources = [paths.REPO / SCRIPT_REL, paths.LAB / 'urp_lab/field_tracking.py',
                        paths.LAB / 'urp_lab/path_geometry.py', paths.LAB / 'urp_lab/fieldcheck.py',
-                       paths.LAB / 'urp_lab/field_traffic.py', paths.LAB / 'urp_lab/assets/bindings.py',
+                       paths.LAB / 'urp_lab/field_traffic.py', paths.LAB / 'urp_lab/field_coordination.py',
+                       paths.LAB / 'urp_lab/time_windows.py', paths.LAB / 'urp_lab/sim2sim.py', paths.LAB / 'urp_lab/assets/bindings.py',
                        paths.LAB / 'urp_lab/field_records.py',
                        paths.LAB / 'urp_lab/field_physics.py',
                        paths.LAB / 'urp_lab/field_actuation.py',
@@ -182,7 +200,7 @@ class FieldSimManager:
                                        self.runtime / 'logs' / f'fieldsim-{sid}.log', env=dict(os.environ))
             self.proc.start()
             self.meta = {'session_id': sid, 'run_id': run['run_id'], 'scenario_id': run['scenario_id'], 'world': world['world'],
-                         'vehicles': len(world['vehicles']), 'real_time_factor': rtf, 'dir': str(out),
+                         'vehicles': len(world['vehicles']), 'real_time_factor': rtf, 'dir': str(out), 'traffic_mode': traffic,
                          'execution': ({'mode': execution['mode'],
                                         'ground': execution['ground']['preset'],
                                         'localization': execution['localization']['preset'],
@@ -237,8 +255,12 @@ class FieldSimManager:
         return self.state()
 
     # -------------------------------------------------------------- stop --
-    def stop(self) -> dict:
+    def stop(self, *, session_id: str | None = None) -> dict:
         with self._lock:
+            # Check ownership under the same lock as start: a paused watcher must
+            # never stop a replacement session between its state read and stop.
+            if session_id is not None and (self.meta or {}).get('session_id') != session_id:
+                return self.state()
             return self._stop()
 
     def _stop(self) -> dict:
@@ -289,7 +311,10 @@ class FieldSimManager:
                 continue
             row = ({k: r.get(k) for k in ('session_id', 'run_id', 'scenario_id', 'algorithm', 'world', 'finished_utc',
                                                'state', 'metrics', 'real_time_factor', 'sim_time', 'travel', 'row_collisions',
-                                               'row_collision_shapes', 'robot_contact_events', 'contact_observation', 'execution')}
+                                               'row_collision_shapes', 'robot_contact_events', 'contact_observation', 'execution', 'traffic_mode')}
+                        | {'traffic_mode': _traffic_mode(r),
+                           'check': {k: (r.get('check') or {}).get(k) for k in ('valid', 'errors')},
+                           'time_windows': time_windows.compact(r.get('time_windows'))}
                         | {'vehicles': [{k: v.get(k) for k in ('name', 'label', 'color', 'state', 'distance_m', 'duration_s',
                                                                 'planned_length_m', 'planned_duration_s', 'tasks_done',
                                                                 'tasks_total', 'cross_track_mean_m', 'cross_track_max_m')}
@@ -304,6 +329,7 @@ class FieldSimManager:
         if '/' in session_id or not path.is_file():
             raise ServiceError(404, 'unknown_result', '没有这次田间仿真的结果')
         result = json.loads(path.read_text())
+        result.setdefault('traffic_mode', _traffic_mode(result))
         try:
             plan = json.loads(path.with_name('plan.json').read_text())
         except (OSError, ValueError):

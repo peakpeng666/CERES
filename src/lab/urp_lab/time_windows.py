@@ -82,6 +82,20 @@ def summary(rows: list[dict], model: str, scope: str, start_clock: str | None = 
             'all_on_time': not late, 'worst_slack_s': min(slack) if slack else None, 'late': late, 'tasks': rows}
 
 
+
+def execution_horizon_s(plan: dict) -> float:
+    """A bounded mission budget that permits declared earliest-time waits.
+
+    Keep the existing travel/service allowance and add at most the last opening
+    time. Per-driver progress watchdogs and process wall-clock budgets remain
+    independent, so waiting for a legal window does not excuse stalled motion.
+    """
+    vehicles = plan.get('vehicles') or []
+    planned = max(sum(v.get('planned_duration_s') or 0 for v in vehicles), 60)
+    openings = [float(task.get('earliest_s') or 0) for v in vehicles for task in v.get('tasks') or []]
+    openings += [window[0] for window in by_task(plan.get('instance') or {}).values()]
+    return 2.5 * planned + 120 + max([0.0, *openings])
+
 def compact(record: dict | None) -> dict | None:
     """The same verdict without the per-task table, for run lists and agent messages."""
     if not record:

@@ -1,6 +1,12 @@
 import { LabApiError } from '../lab/api';
 import type { Solution } from '../lab/types';
-import type { FleetInstance } from './types';
+import type { FieldTrafficMode, FleetInstance } from './types';
+
+export function fieldTrafficLabel(record: { traffic_mode?: FieldTrafficMode | null; traffic?: { policy?: string | null } | null }): string {
+  if (record.traffic_mode === 'coordinated' || record.traffic?.policy === 'coordinated_passage_v1') return '并行协调';
+  if (record.traffic_mode === 'serial' || record.traffic?.policy === 'exclusive_mission_v1') return '逐车串行';
+  return '交通方式未记录';
+}
 
 export function planModelSchema(run: Pick<Solution, 'raw_result'>): string | undefined {
   return run.raw_result?.model_contract?.schema;

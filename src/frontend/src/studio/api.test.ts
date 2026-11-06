@@ -55,6 +55,15 @@ describe('server record download', () => {
 });
 
 describe('API failure boundaries', () => {
+  it('sends the explicitly selected Gazebo traffic policy with the original run', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(json({ phase: 'starting', traffic_mode: 'coordinated' }));
+    vi.stubGlobal('fetch', fetchMock);
+    await studio.startFieldsim('run_original', { traffic: 'coordinated', real_time_factor: 4 });
+    expect(fetchMock).toHaveBeenCalledWith('/lab/api/fieldsim', expect.objectContaining({
+      method: 'POST', body: JSON.stringify({ run_id: 'run_original', traffic: 'coordinated', real_time_factor: 4 }),
+    }));
+  });
+
   it('preserves 422 execution admission errors', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(json({ error: 'heterogeneous_fleet_execution', message: '异构车队不能执行' }, 422)));
     await expect(studio.startFieldsim('run_hetero')).rejects.toMatchObject({ code: 'heterogeneous_fleet_execution', status: 422, message: '异构车队不能执行' });

@@ -267,3 +267,117 @@ def test_actual_trajectory_is_independently_verified(failure):
     elif failure == 'no_telemetry':
         result['trails']['v'] = []
     assert verify(plan, result)['valid'] is (failure is None)
+
+
+@pytest.fixture
+def field_traffic_manager(tmp_path, monkeypatch):
+    """Real plan generation with process and host probes replaced before start."""
+    import threading
+    from urp_lab import fieldsim
+    from urp_lab.assets import bindings
+
+    run = solution()
+    starts = []
+
+    class Process:
+        alive = False
+        returncode = None
+        stop_requested = False
+
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def start(self):
+            self.alive = True
+            starts.append(self)
+
+        def wait(self, timeout):
+            self.alive = False
+            self.returncode = 0
+            return True
+
+    monkeypatch.setattr(fieldsim, 'ManagedProcess', Process)
+    monkeypatch.setattr(fieldsim, 'http_json', lambda *args, **kwargs: (None, None))
+    monkeypatch.setattr(bindings, 'field_vehicle', lambda *args: {'id': 'builtin-field-test'})
+    services = SimpleNamespace(_lock=threading.RLock(), sim_alive=lambda: False)
+    manager = fieldsim.FieldSimManager(SimpleNamespace(get_run=lambda rid: run if rid == run['run_id'] else None),
+                                      services, runtime=tmp_path)
+    yield manager, run, starts
+    manager.shutdown()
+
+
+@pytest.mark.parametrize('traffic', [None, True, 1, [], {}, '', 'parallel'])
+def test_field_traffic_rejects_invalid_modes_before_process_start(field_traffic_manager, traffic):
+    from urp_lab.services import ServiceError
+    manager, run, starts = field_traffic_manager
+    with pytest.raises(ServiceError) as raised:
+        manager.start({'run_id': run['run_id'], 'traffic': traffic})
+    assert (raised.value.status, raised.value.code) == (400, 'invalid_traffic')
+    assert starts == [] and manager.proc is None
+    assert not (manager.runtime / 'fieldsim').exists()
+
+
+@pytest.mark.parametrize('requested, expected', [(None, 'serial'), ('serial', 'serial'), ('coordinated', 'coordinated')])
+def test_field_traffic_start_freezes_requested_mode_and_task_windows(field_traffic_manager, monkeypatch, requested, expected):
+    from pathlib import Path
+    from urp_lab import field_coordination
+    from urp_lab.field_traffic import POLICY
+
+    manager, run, starts = field_traffic_manager
+    run['instance']['tasks'][0]['time_window'] = [20.0, 1000.0]
+    run['instance']['tasks'][1]['time_window'] = [5.0, None]
+    applied = []
+    original = field_coordination.apply
+
+    def apply(plan):
+        applied.append(copy.deepcopy(plan))
+        return original(plan)
+
+    monkeypatch.setattr(field_coordination, 'apply', apply)
+    body = {'run_id': run['run_id'], **({'traffic': requested} if requested is not None else {})}
+    state = manager.start(body)
+    plan = json.loads((Path(manager.meta['dir']) / 'plan.json').read_text())
+    tasks = {task['id']: task for vehicle in plan['vehicles'] for task in vehicle['tasks']}
+    assert [(tasks[i]['earliest_s'], tasks[i]['latest_s']) for i in (1, 2)] == [(20.0, 1000.0), (5.0, None)]
+    assert state['traffic_mode'] == expected
+    assert len(starts) == 1 and len(applied) == (expected == 'coordinated')
+    assert plan['traffic']['policy'] == (field_coordination.POLICY if expected == 'coordinated' else POLICY)
+    if applied:
+        assert [v['path'] for v in applied[0]['vehicles']] == [v['path'] for v in plan['vehicles']]
+        assert all('earliest_s' in t for v in applied[0]['vehicles'] for t in v['tasks'])
+
+
+def test_field_traffic_refused_coordination_never_starts_serial_fallback(field_traffic_manager, monkeypatch):
+    from urp_lab import field_coordination
+    from urp_lab.services import ServiceError
+    manager, run, starts = field_traffic_manager
+    monkeypatch.setattr(field_coordination, 'apply',
+                        lambda plan: {**plan, 'traffic': {**plan['traffic'], 'coordination_refused': 'no acyclic passage order'}})
+    with pytest.raises(ServiceError) as raised:
+        manager.start({'run_id': run['run_id'], 'traffic': 'coordinated'})
+    assert (raised.value.status, raised.value.code) == (422, 'no_safe_order')
+    assert 'no acyclic passage order' in raised.value.message
+    assert starts == [] and manager.proc is None
+
+
+def test_field_traffic_result_and_history_keep_window_verdict(field_traffic_manager):
+    from urp_lab import time_windows
+    manager, run, _ = field_traffic_manager
+    out = manager.runtime / 'fieldsim' / 'field_windows'
+    out.mkdir(parents=True)
+    plan = {'instance': {'tasks': [{'id': 1, 'label': 'T1', 'time_window': [20, 50]}]},
+            'vehicles': [{'name': 'vehicle_1', 'label': '车 1'}], 'traffic': {'gates': {}}}
+    record = {'session_id': 'field_windows', 'run_id': run['run_id'], 'state': 'failed',
+              'traffic_mode': 'coordinated', 'traffic': plan['traffic'], 'vehicles': [],
+              'execution_started_sim_s': 10, 'tasks': [{'id': 1, 'vehicle': 'vehicle_1', 't_sim': 70}],
+              'check': {'valid': False}, 'errors': ['任务超过截止时间']}
+    record['time_windows'] = time_windows.execution(plan, record)
+    (out / 'plan.json').write_text(json.dumps(plan))
+    (out / 'result.json').write_text(json.dumps(record))
+    (out / 'state.json').write_text(json.dumps({**record, 'phase': 'failed'}))
+    manager.meta = {'session_id': record['session_id'], 'dir': str(out)}
+    for actual in (manager.state(), manager.result(record['session_id']), manager.results(run['run_id'])[0]):
+        assert actual['traffic_mode'] == 'coordinated'
+        assert actual['time_windows']['all_on_time'] is False
+        assert actual['time_windows']['late'][0]['task'] == 1
+        assert actual['time_windows']['late'][0]['slack_s'] == -10

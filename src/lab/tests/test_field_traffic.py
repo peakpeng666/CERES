@@ -27,6 +27,23 @@ def test_parking_outside_mission_and_other_parking_approaches(tmp_path):
     assert len(doc.findall('.//sensor[@type="contact"]')) == 5 * len(routes)
 
 
+
+def test_later_parking_approach_clears_previously_parked_robots():
+    # The third approach used to pass 1.6 m from the second parked robot even
+    # though the old one-way candidate-position check passed (required > 1.77 m).
+    from urp_lab.scenarios import validate_instance
+    inst = validate_instance('fleet_routing', {
+        'boundary': [[0, 0], [90, 0], [90, 60], [0, 60]], 'depot': [2.75, 2.75],
+        'tasks': [{'id': i + 1, 'xy': xy} for i, xy in enumerate([[82, 6.6], [64, 13.7], [84, 6.8]])],
+        'vehicles': {'count': 3, 'capacity': 1, 'travel': 'free', 'speed_mps': 1, 'trips': 'single'}})
+    routes, checked, *_ = fleet.solve({}, inst, 'panel.sweep', {})
+    assert checked['valid'] and len(routes) == 3
+    vehicles = fieldworld.plan_vehicles(inst, routes)
+    for moving in vehicles:
+        for parked in vehicles:
+            if moving is not parked:
+                assert LineString(moving.path).distance(Point(parked.start[:2])) >= 2 * fieldworld.ROBOT_RADIUS + PARKING_MARGIN_M
+
 def test_queue_preserves_wait_in_makespan_and_settles_before_release():
     ds = [SimpleNamespace(name=f'v{i}', pose=(i * 4, 0, 0), state='waiting', s=0, failure=None) for i in range(2)]
     q = MissionQueue(ds, .49, 10)

@@ -7,9 +7,11 @@ import type { EngineGap, Spread, TimeWindowRecord } from '../lab/types';
 import { routeColor } from '../lab/views/plan/planModel';
 import { useFieldSim } from '../studio/ros/live';
 import { useStudio } from '../studio/store';
+import { fieldTrafficLabel } from '../studio/execution';
 import type { FleetInstance } from '../studio/types';
 import { Spinner } from '../lab/ui';
 import { arrivalLine, lateLine } from './arrivals';
+import { GapFacts } from './PhysicsPanel';
 import { Composer } from './Composer';
 import { Icon, type IconName } from './Icon';
 import { Thumb } from './LayerMap';
@@ -281,7 +283,7 @@ function LiveSim({ session }: { session: AgentSession }) {
   );
 }
 
-interface SimOutcome { time_windows?: TimeWindowRecord; run_id: string; session_id: string; state?: string; phase?: string; check_valid?: boolean | null; errors: string[]; metrics: Record<string, number | null | undefined>; comparison?: EngineGap & { physics_run_id: string } | null }
+interface SimOutcome { traffic_mode?: 'serial' | 'coordinated'; traffic?: { policy?: string }; time_windows?: TimeWindowRecord; run_id: string; session_id: string; state?: string; phase?: string; check_valid?: boolean | null; errors: string[]; metrics: Record<string, number | null | undefined>; comparison?: EngineGap & { physics_run_id: string } | null }
 interface Coordinated { physics_run_id?: string; state: string; check_valid?: boolean | null; errors: string[]; makespan_s?: number | null; min_gap_m?: number | null; holds?: number; time_windows?: TimeWindowRecord }
 interface PhysicsRow { run_id: string; physics_run_id?: string; algorithm?: string; state: string; check_valid?: boolean; errors: string[]; wall_s?: number; metrics: Record<string, number | null | undefined>; coordinated?: Coordinated; time_windows?: TimeWindowRecord }
 
@@ -291,7 +293,7 @@ function PhysicsDoc({ msg }: { msg: AgentMessage }) {
   const ok = (r: PhysicsRow) => r.state === 'succeeded' && r.check_valid;
   const drift = (a?: number | null, b?: number | null) => (typeof a === 'number' && typeof b === 'number' && b ? `${a >= b ? '+' : ''}${n1(((a - b) / b) * 100)}%` : '');
   const together = rows.some((r) => r.coordinated);
-  // The plan's clock has every vehicle moving at once; one-by-one execution only says what Gazebo would do today.
+  // Show the two traffic policies separately; the actual Gazebo session records its chosen policy.
   const timed = (r: PhysicsRow) => (r.coordinated?.state === 'succeeded' ? r.coordinated.time_windows : undefined) ?? r.time_windows;
   const clocked = rows.some((r) => timed(r));
   return (
@@ -312,7 +314,7 @@ function PhysicsDoc({ msg }: { msg: AgentMessage }) {
           </tr>
         ))}</tbody>
       </table>
-      {together && rows.some((r) => r.time_windows?.late?.length) && <p className={s.docNote}>时间窗按全部车辆同时运行判定。逐车执行时后发车辆要排队，{rows.filter((r) => r.time_windows?.late?.length).map((r) => `${r.algorithm ?? r.run_id} 有 ${r.time_windows?.late?.length} 个任务晚于截止`).join('，')}；Gazebo 会话目前是这种方式。</p>}
+      {together && rows.some((r) => r.time_windows?.late?.length) && <p className={s.docNote}>并行与逐车执行分别判定时间窗。逐车执行时后发车辆要排队，{rows.filter((r) => r.time_windows?.late?.length).map((r) => `${r.algorithm ?? r.run_id} 有 ${r.time_windows?.late?.length} 个任务晚于截止`).join('，')}；Gazebo 结果以会话实际选择的交通方式为准。</p>}
       {rows.some((r) => (r.metrics.makespan_s ?? 0) > 1.4 * (r.metrics.planned_makespan_s ?? Infinity)) && <p className={s.docNote}>工期含当前交通策略下整段任务依次执行的等待；规划工期是各车并行的恒速估计。</p>}
     </div>
   );
@@ -354,18 +356,19 @@ function SimDoc({ msg }: { msg: AgentMessage }) {
   const gap = (a?: number | null, b?: number | null) => (typeof a === 'number' && typeof b === 'number' && b ? ` · ${a >= b ? '+' : ''}${n1(((a - b) / b) * 100)}%` : '');
   return (
     <div className={s.doc}>
-      <header><b>田间仿真</b><span>{ok ? `完成 ${m.tasks_completed}/${m.tasks_total}` : '未完成'}{r.check_valid === false ? ' · 运行核验未通过' : ''}</span></header>
+      <header><b>田间仿真</b><span>{ok ? `完成 ${m.tasks_completed}/${m.tasks_total}` : r.state === 'failed' || r.phase === 'failed' ? '执行失败' : r.state === 'canceled' ? '已取消' : '未完成'}{r.check_valid === false ? ' · 运行核验未通过' : ''}</span></header>
       {r.errors.length > 0 && <p className={s.docBad}>{r.errors.join('；')}</p>}
-      {r.time_windows && <p className={r.time_windows.all_on_time ? s.docNote : s.docBad}>Gazebo 逐车执行的实测到达：{arrivalLine(r.time_windows)}{r.time_windows.all_on_time ? '' : `，${lateLine(r.time_windows)}`}</p>}
+      <p className={s.docNote}>Gazebo · {fieldTrafficLabel(r)}</p>
+      {r.time_windows && <p className={r.time_windows.all_on_time ? s.docNote : s.docBad}>实测到达：{arrivalLine(r.time_windows)}{r.time_windows.all_on_time ? '' : `，${lateLine(r.time_windows)}`}</p>}
       {ok && <dl className={s.kv} style={{ fontSize: 13.5 }}>
         <dt>里程</dt><dd>实际 {n1(m.total_distance_m)} m，规划 {n1(m.planned_total_distance_m)} m{gap(m.total_distance_m, m.planned_total_distance_m)}</dd>
         <dt>工期</dt><dd>实际 {n1(m.makespan_s)} s，规划 {n1(m.planned_makespan_s)} s{gap(m.makespan_s, m.planned_makespan_s)}</dd>
         <dt>横向偏差</dt><dd>平均 {n3(m.cross_track_mean_m)} m，最大 {n3(m.cross_track_max_m)} m</dd>
-        {r.comparison && <><dt>与 MuJoCo</dt><dd>轨迹差平均 {n3(r.comparison.path_mean_m)} m，最大 {n3(r.comparison.path_max_m)} m；同时刻 RMSE {n3(r.comparison.time_rmse_m)} m</dd></>}
       </dl>}
+      {r.comparison && <GapFacts gap={r.comparison} />}
       <footer>
         <span className={s.grow} />
-        {ok && <button type="button" className={s.go} onClick={() => openFrames([{ t: 'plans' }, { t: 'plan', run: r.run_id }, { t: 'exec', run: r.run_id, session: r.session_id }])}>实测轨迹</button>}
+        {ok && <button type="button" className={s.go} onClick={() => openFrames([{ t: 'plans' }, { t: 'plan', run: r.run_id }, { t: 'exec', run: r.run_id, session: r.session_id }])}>仿真轨迹</button>}
         <button type="button" className={s.go} onClick={() => openFrames([{ t: 'sim' }, { t: 'panel', id: 'replay' }])}>回放</button>
       </footer>
     </div>

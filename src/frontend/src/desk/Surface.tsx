@@ -171,7 +171,9 @@ function PlanComposer() {
 
 /** Said once at the top of the simulation surface, so nobody has to press start to find out. */
 function GazeboGap() {
-  const gap = useLabResource('physics-engines', () => lab.physicsEngines()).data?.gazebo_gap;
+  const resource = useLabResource('physics-engines', () => lab.physicsEngines());
+  if (resource.error) return <p className={s.simGap} role="alert">仿真能力读取失败：{resource.error.message} <button type="button" className={s.go} onClick={resource.reload}>重新检测</button></p>;
+  const gap = resource.data?.gazebo_gap;
   if (!gap) return null;
   return <p className={s.simGap}>{gap}{window.desktop && <a href="#/system/desktop">打开设置</a>}</p>;
 }

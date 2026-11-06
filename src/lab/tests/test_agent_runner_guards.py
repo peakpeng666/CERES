@@ -245,7 +245,7 @@ class FakeField:
             raise RuntimeError('没有结果')
         return self._result
 
-    def stop(self):
+    def stop(self, *, session_id=None):
         self.stopped = True
         return {'phase': 'stopped'}
 
@@ -525,3 +525,375 @@ def test_stopping_between_tool_calls_answers_the_rest_so_the_session_can_continu
     session = wait(runner, sid)
     assert session['state'] == 'done', session.get('error')
     assert not any('tool calls without results' in str(c.get('error')) for c in session['llm_calls'])
+
+
+@pytest.fixture
+def traffic_agent(monkeypatch):
+    """Exercise production tool/control/watch methods without starting either engine."""
+    import threading
+    from types import SimpleNamespace
+    from urp_lab.agent import tools
+    from urp_lab.agent.session import new_session
+
+    session = new_session('rule', None)
+    session.update(state='done', scenario_id='scene', run_ids=['run'], active_run_ids=['run'],
+                   verifications={'run': {'valid': True, 'agrees': True}})
+    starts = []
+
+    def start(body):
+        starts.append(body)
+        return {'phase': 'starting', 'session_id': 'field_test', 'traffic_mode': body.get('traffic', 'serial')}
+
+    run = {'run_id': 'run', 'scenario_id': 'scene'}
+    field = SimpleNamespace(start=start)
+    lab = SimpleNamespace(fieldsim=field, store=SimpleNamespace(get_run=lambda rid: run))
+    monkeypatch.setattr(tools, '_run', lambda ctx, rid: run)
+    monkeypatch.setattr(tools, '_scenario', lambda ctx: {})
+    monkeypatch.setattr(tools, 'run_matches_current', lambda s, r: True)
+    runner = SimpleNamespace(lab=lab, tools=tools.registry(), _mutex=threading.RLock(), _cancel={},
+                             _load=lambda sid: session, _require_writable=lambda s: None,
+                             _best_verified=lambda s: {'run_id': 'run'}, _event=lambda events, sid: threading.Event(),
+                             _publish=lambda *args: None, _record=lambda s, rec, actor: rec,
+                             _save=lambda s: None, _view=lambda s: s, _start_locked=lambda s: s,
+                             _sim2sim=lambda *args: None,
+                             _release_simulation=AgentRunner._release_simulation)
+    runner._simulate_locked = lambda s, payload: AgentRunner._simulate_locked(runner, s, payload)
+    return runner, session, starts
+
+
+@pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
+def test_gazebo_traffic_tool_passes_the_requested_mode(traffic_agent, traffic):
+    from urp_lab.agent import tools
+    runner, session, starts = traffic_agent
+    rec = tools.execute(runner.tools, tools.ToolContext(runner.lab, session), 'start_simulation',
+                        {'run_id': 'run', 'traffic': traffic})
+    assert rec['status'] == 'ok', rec
+    assert starts[0]['traffic'] == traffic
+    assert rec['result']['traffic_mode'] == traffic
+
+
+@pytest.mark.parametrize('traffic', [None, True, [], '', 'parallel'])
+def test_gazebo_traffic_tool_rejects_invalid_mode_before_start(traffic_agent, traffic):
+    from urp_lab.agent import tools
+    runner, session, starts = traffic_agent
+    rec = tools.execute(runner.tools, tools.ToolContext(runner.lab, session), 'start_simulation',
+                        {'run_id': 'run', 'traffic': traffic})
+    assert rec['status'] == 'refused' and rec['error']['code'] == 'invalid_arguments'
+    assert starts == []
+
+
+@pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
+def test_gazebo_traffic_user_control_preserves_mode_in_watch(traffic_agent, traffic):
+    runner, session, starts = traffic_agent
+    result = AgentRunner.control(runner, session['session_id'], 'simulate', {'run_id': 'run', 'traffic': traffic})
+    assert starts[0]['traffic'] == traffic
+    assert result['simulation_watch']['traffic_mode'] == traffic
+
+
+@pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
+def test_gazebo_traffic_approval_warns_about_serial_lateness_only(traffic_agent, traffic):
+    runner, session, _ = traffic_agent
+    runner._physics_failed = lambda *args: False
+    session['physics'] = {'run': {'time_windows': {'total': 1, 'on_time': 0,
+                                                'late': [{'label': 'T1', 'vehicle': '车 1', 'arrival_s': 60, 'slack_s': -10}]}}}
+    AgentRunner._queue_simulation(runner, session, {'run_id': 'run', 'traffic': traffic})
+    reason = session['pending']['reason']
+    assert ('晚于截止' in reason) is (traffic == 'serial')
+    assert session['pending']['call']['arguments']['traffic'] == traffic
+
+
+@pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
+def test_gazebo_traffic_watch_retains_result_windows_and_failures(traffic_agent, traffic):
+    import threading
+    from urp_lab import time_windows
+    from urp_lab.agent.session import ensure_step
+    runner, session, _ = traffic_agent
+    plan = {'instance': {'tasks': [{'id': 1, 'label': 'T1', 'time_window': [20, 50]}]},
+            'vehicles': [{'name': 'vehicle_1', 'label': '车 1'}],
+            **({'traffic': {'gates': {}}} if traffic == 'coordinated' else {})}
+    result = {'state': 'failed', 'traffic_mode': traffic, 'traffic': plan.get('traffic', {}),
+              'check': {'valid': False}, 'metrics': {}, 'errors': ['任务 T1 晚于截止时间'],
+              'execution_plan': plan, 'execution_started_sim_s': 10,
+              'tasks': [{'id': 1, 'vehicle': 'vehicle_1', 't_sim': 70}]}
+    result['time_windows'] = time_windows.execution(plan, result)
+    runner.lab.fieldsim = FakeField(['failed'], result)
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_test', 'traffic_mode': traffic}
+    ensure_step(session, 'simulate')
+    AgentRunner._watch_simulation(runner, session, threading.Event(), threading.Event())
+    actual = session['simulation_result']
+    assert actual['traffic_mode'] == traffic and actual['state'] == 'failed' and actual['check_valid'] is False
+    assert actual['time_windows']['all_on_time'] is False and actual['time_windows']['model'] == traffic
+    assert actual['time_windows']['late'][0]['task'] == 1
+    assert '任务 T1 晚于截止时间' in actual['errors']
+    assert session['simulation_watch']['done'] is True
+
+
+def test_gazebo_traffic_defaults_remain_serial_for_tools_and_user_control(traffic_agent):
+    from urp_lab.agent import tools
+    runner, session, starts = traffic_agent
+    rec = tools.execute(runner.tools, tools.ToolContext(runner.lab, session), 'start_simulation', {'run_id': 'run'})
+    assert rec['status'] == 'ok' and starts[-1]['traffic'] == 'serial'
+    assert rec['result']['traffic_mode'] == 'serial'
+    AgentRunner.control(runner, session['session_id'], 'simulate', {'run_id': 'run'})
+    assert starts[-1]['traffic'] == 'serial' and session['simulation_watch']['traffic_mode'] == 'serial'
+
+
+def test_gazebo_traffic_coordinated_preview_does_not_replace_serial_admission():
+    from urp_lab.agent.runner import _executed
+    row = {'state': 'succeeded', 'check_valid': True,
+           'time_windows': {'all_on_time': False, 'early_starts': 0},
+           'coordinated': {'state': 'succeeded', 'check_valid': True,
+                           'time_windows': {'all_on_time': True, 'early_starts': 0}}}
+    assert not _executed(row, 'serial') and _executed(row, 'coordinated')
+    session = {'physics': {'run': row}}
+    assert AgentRunner._physics_failed(session, 'run', 'serial')
+    assert not AgentRunner._physics_failed(session, 'run', 'coordinated')
+
+
+@pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
+def test_gazebo_traffic_early_work_fails_the_selected_preview(traffic):
+    from urp_lab.agent.runner import _executed
+    early = {'state': 'succeeded', 'check_valid': True, 'time_windows': {'all_on_time': True, 'early_starts': 1}}
+    row = {**early, 'coordinated': early}
+    assert not _executed(row, traffic)
+    assert AgentRunner._physics_failed({'physics': {'run': row}}, 'run', traffic)
+
+
+def test_gazebo_traffic_missing_coordinated_preview_is_not_serial_success():
+    from urp_lab.agent.runner import _executed
+    row = {'state': 'succeeded', 'check_valid': True}
+    assert _executed(row, 'serial') and not _executed(row, 'coordinated')
+    assert not AgentRunner._physics_failed({'physics': {'run': row}}, 'run', 'coordinated'), 'an absent run is not a measured failure'
+
+
+@pytest.mark.parametrize('replay, reason', [
+    ({'state': 'failed', 'errors': ['MuJoCo worker exited 7']}, 'MuJoCo worker exited 7'),
+    ({'state': 'failed', 'errors': []}, 'failed'),
+    ({'state': 'succeeded', 'comparison': {'available': False, 'errors': ['车辆记录缺失']}}, '车辆记录缺失'),
+])
+def test_gazebo_traffic_sim2sim_unavailable_keeps_reason_in_result_and_notice(traffic_agent, replay, reason):
+    import threading
+    from types import SimpleNamespace
+    runner, session, _ = traffic_agent
+    runner.lab.physics = SimpleNamespace(submit=lambda **kwargs: {'physics_run_id': 'phys_test'},
+                                        wait=lambda *args: {'physics_run_id': 'phys_test', **replay})
+    result = AgentRunner._sim2sim(runner, session, 'field_test', threading.Event())
+    assert result['available'] is False and result['physics_run_id'] == 'phys_test'
+    assert any(reason in error for error in result['errors'])
+    assert any(message['kind'] == 'notice' and reason in message['text'] for message in session['messages'])
+
+
+def test_gazebo_traffic_template_report_explains_unavailable_comparison():
+    evidence = {'contract': {}, 'runs': [], 'precheck': [], 'unsupported': [],
+                'simulation_result': {'state': 'succeeded', 'metrics': {},
+                                      'comparison': {'available': False, 'errors': ['冻结计划身份不一致']}}}
+    report = _template_report(evidence)
+    assert '引擎对比不可用' in report and '冻结计划身份不一致' in report
+    assert '轨迹差：平均' not in report
+
+
+@pytest.mark.parametrize('check', [None, {'valid': False}])
+def test_gazebo_traffic_watch_requires_passed_actual_check(traffic_agent, check):
+    import threading
+    from urp_lab.agent.session import ensure_step
+    runner, session, _ = traffic_agent
+    result = {'state': 'succeeded', 'check': check, 'metrics': {}, 'errors': []}
+    runner.lab.fieldsim = FakeField(['finished'], result)
+    runner._sim2sim = lambda *args: pytest.fail('a result without a passed check must not enter sim2sim')
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_test', 'traffic_mode': 'serial'}
+    ensure_step(session, 'simulate')
+    AgentRunner._watch_simulation(runner, session, threading.Event(), threading.Event())
+    assert session['simulation_result']['state'] == 'failed'
+    assert any('独立检查' in error for error in session['simulation_result']['errors'])
+
+
+@pytest.mark.parametrize('violation', ['late', 'missing_task', 'early_service'])
+def test_gazebo_traffic_watch_rechecks_legacy_windows_before_claiming_success(traffic_agent, violation):
+    import threading
+    from urp_lab.agent.session import ensure_step
+    runner, session, _ = traffic_agent
+    plan = {'instance': {'tasks': [{'id': 1, 'label': 'T1', 'time_window': [20, 50]}]},
+            'vehicles': [{'name': 'vehicle_1', 'label': '车 1'}], 'traffic': {'gates': {}}}
+    task = {'id': 1, 'vehicle': 'vehicle_1', 't_sim': 30, 'service_started_at': 30}
+    if violation == 'late':
+        task['t_sim'] = task['service_started_at'] = 70
+    elif violation == 'early_service':
+        task['t_sim'] = task['service_started_at'] = 20
+    result = {'state': 'succeeded', 'traffic_mode': 'coordinated', 'check': {'valid': True},
+              'metrics': {}, 'errors': [], 'execution_plan': plan, 'execution_started_sim_s': 10,
+              'tasks': [] if violation == 'missing_task' else [task]}
+    runner.lab.fieldsim = FakeField(['finished'], result)
+    runner._sim2sim = lambda *args: pytest.fail('a failed time window must not enter sim2sim')
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_test', 'traffic_mode': 'coordinated'}
+    ensure_step(session, 'simulate')
+    AgentRunner._watch_simulation(runner, session, threading.Event(), threading.Event())
+    actual = session['simulation_result']
+    assert actual['state'] == 'failed' and actual['check_valid'] is False
+    assert actual['time_windows']['early_starts'] == (violation == 'early_service')
+    assert actual['errors'] and actual['traffic_mode'] == 'coordinated'
+
+
+class SessionOwnedField:
+    """Track the session addressed by reads/stops; replacement is an unrelated live world."""
+    def __init__(self, current, old_result=None):
+        self.current = dict(current)
+        self.old_result = old_result
+        self.reads = []
+        self.stop_requests = []
+        self.stopped = []
+        self.replace_on_stop = False
+
+    def state(self):
+        return dict(self.current)
+
+    def result(self, session_id):
+        self.reads.append(session_id)
+        if self.old_result is None:
+            raise RuntimeError('old session has no saved result')
+        assert session_id == 'field_old'
+        return dict(self.old_result)
+
+    def stop(self, *, session_id=None):
+        self.stop_requests.append(session_id)
+        if self.replace_on_stop:
+            self.current = {'session_id': 'field_new', 'phase': 'running'}
+        if session_id is None or session_id == self.current.get('session_id'):
+            self.stopped.append(self.current.get('session_id'))
+        return self.state()
+
+
+@pytest.mark.parametrize('saved', ['complete', 'sparse', 'missing'])
+def test_session_ownership_resumed_old_watch_never_stops_or_reports_the_replacement(traffic_agent, saved):
+    import threading
+    from types import SimpleNamespace
+    from urp_lab.agent.runner import Paused
+    from urp_lab.agent.session import ensure_step
+
+    runner, session, _ = traffic_agent
+    old = None if saved == 'missing' else {
+        'session_id': 'field_old', 'state': 'succeeded', 'check': {'valid': True}, 'errors': [],
+        'metrics': {'tasks_total': 1, 'tasks_completed': 1, 'total_distance_m': 12.0} if saved == 'complete' else {},
+        'traffic_mode': 'serial'}
+    field = SessionOwnedField({'session_id': 'field_old', 'phase': 'running'}, old)
+    runner.lab.fieldsim = field
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_old', 'traffic_mode': 'serial'}
+    ensure_step(session, 'simulate')
+    pause = threading.Event()
+    pause.set()
+    with pytest.raises(Paused):
+        AgentRunner._watch_simulation(runner, session, threading.Event(), pause)
+    assert field.stop_requests == [] and not session['simulation_watch'].get('done')
+
+    field.current = {'session_id': 'field_new', 'phase': 'running', 'traffic_mode': 'coordinated',
+                     'metrics': {'tasks_total': 999, 'tasks_completed': 999, 'total_distance_m': 9999.0},
+                     'errors': ['FOREIGN_SESSION_ERROR'], 'vehicles': []}
+    pause.clear()
+    immediate = SimpleNamespace(is_set=lambda: False, wait=lambda seconds: False)
+    AgentRunner._watch_simulation(runner, session, immediate, pause)
+    report = session['simulation_result']
+    assert field.stop_requests == [] and field.stopped == []
+    assert field.reads and set(field.reads) == {'field_old'}
+    assert report['session_id'] == 'field_old' and report['traffic_mode'] == 'serial'
+    assert 'FOREIGN_SESSION_ERROR' not in json.dumps(report)
+    assert report['metrics']['total_distance_m'] == (12.0 if saved == 'complete' else None)
+    assert report['metrics']['tasks_completed'] == (1 if saved == 'complete' else None)
+    if saved == 'missing':
+        assert report['state'] == 'failed' and report['errors']
+    else:
+        assert report['state'] == 'succeeded' and report['check_valid'] is True
+    assert session['simulation_watch']['done']
+
+
+@pytest.mark.parametrize('current, should_stop', [
+    ({'session_id': 'field_old', 'phase': 'running'}, True),
+    ({'session_id': 'field_new', 'phase': 'running'}, False),
+    ({'phase': 'running'}, False),
+    ({'phase': 'idle'}, False),
+])
+def test_session_ownership_cancel_stops_only_the_current_owned_session(traffic_agent, current, should_stop):
+    import threading
+    from urp_lab.agent.runner import Cancelled
+    from urp_lab.agent.session import ensure_step
+    runner, session, _ = traffic_agent
+    field = SessionOwnedField(current)
+    runner.lab.fieldsim = field
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_old'}
+    ensure_step(session, 'simulate')
+    cancel = threading.Event()
+    cancel.set()
+    with pytest.raises(Cancelled):
+        AgentRunner._watch_simulation(runner, session, cancel, threading.Event())
+    assert field.stop_requests == (['field_old'] if should_stop else [])
+    assert field.stopped == (['field_old'] if should_stop else [])
+
+
+@pytest.mark.parametrize('watch_id,current', [
+    (None, {'session_id': 'field_new', 'phase': 'running'}),
+    ('field_old', {}),
+    ('field_old', {'phase': 'idle'}),
+    ('field_old', {'session_id': 'field_old', 'phase': 'idle'}),
+])
+def test_session_ownership_release_without_live_identity_never_stops(traffic_agent, watch_id, current):
+    runner, session, _ = traffic_agent
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': watch_id}
+    field = SessionOwnedField(current)
+    AgentRunner._release_simulation(session, field)
+    assert field.stop_requests == [] and field.stopped == []
+
+
+def test_session_ownership_release_sends_expected_identity_to_close_the_race(traffic_agent):
+    _, session, _ = traffic_agent
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_old'}
+    field = SessionOwnedField({'session_id': 'field_old', 'phase': 'finished'})
+    field.replace_on_stop = True
+    AgentRunner._release_simulation(session, field)
+    assert field.stop_requests == ['field_old']
+    assert field.current['session_id'] == 'field_new' and field.stopped == []
+
+
+@pytest.mark.parametrize('requested, should_stop', [('field_old', False), ('field_new', True)])
+def test_session_ownership_manager_checks_identity_inside_lifecycle_lock(requested, should_stop):
+    import threading
+    from types import SimpleNamespace
+    from urp_lab.fieldsim import FieldSimManager
+    calls = []
+
+    def stop():
+        calls.append('stopped')
+        return {'phase': 'stopped', 'session_id': 'field_new'}
+
+    class SwitchOnLock:
+        def __enter__(self):
+            manager.meta = {'session_id': 'field_new'}
+
+        def __exit__(self, *exc):
+            return False
+
+    manager = SimpleNamespace(_lock=SwitchOnLock(), meta={'session_id': 'field_old'}, _stop=stop,
+                              state=lambda: {'phase': 'running', 'session_id': 'field_new'})
+    result = FieldSimManager.stop(manager, session_id=requested)
+    assert calls == (['stopped'] if should_stop else [])
+    assert result['session_id'] == 'field_new'
+    assert result['phase'] == ('stopped' if should_stop else 'running')
+
+
+@pytest.mark.parametrize('identity', [{'session_id': 'field_new', 'run_id': 'run'},
+                                     {'session_id': 'field_old', 'run_id': 'foreign_run'}])
+def test_session_ownership_mismatched_saved_result_cannot_enter_old_report(traffic_agent, identity):
+    import threading
+    from types import SimpleNamespace
+    from urp_lab.agent.session import ensure_step
+    runner, session, _ = traffic_agent
+    foreign = {**identity, 'state': 'succeeded', 'check': {'valid': True},
+               'metrics': {'total_distance_m': 5555.0}, 'errors': ['FOREIGN_RESULT_ERROR']}
+    field = SessionOwnedField({'session_id': 'field_new', 'phase': 'running'}, foreign)
+    runner.lab.fieldsim = field
+    session['simulation_watch'] = {'run_id': 'run', 'session_id': 'field_old', 'traffic_mode': 'serial'}
+    ensure_step(session, 'simulate')
+    immediate = SimpleNamespace(is_set=lambda: False, wait=lambda seconds: False)
+    AgentRunner._watch_simulation(runner, session, immediate, threading.Event())
+    actual = session['simulation_result']
+    assert actual['session_id'] == 'field_old' and actual['run_id'] == 'run'
+    assert actual['state'] == 'failed' and actual['errors']
+    assert actual['metrics']['total_distance_m'] is None
+    assert 'FOREIGN_RESULT_ERROR' not in json.dumps(actual) and field.stopped == []

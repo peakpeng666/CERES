@@ -848,6 +848,7 @@ export function ComparePanel() {
   const anchor = rows.find((r) => r.run_id === st.focusRun) ?? rows[0];
   const group = anchor ? rows.filter((r) => comparable(r, anchor)) : [];
   const partition = partitionRuns(rows);
+  const mapExcluded = rows.filter((r) => r.check?.valid === true && mapCheckIssue(r));
   const valid = group.filter((r) => verifiedPlan(r) && !exclusionReason(r));
   const groups = partition.groups;
   const bests = cols.map((c) => {
@@ -865,15 +866,19 @@ export function ComparePanel() {
     <div className={s.compare}>
       {readErrors}
       <div className={s.pad} style={{ paddingBottom: 4 }}>
-        <p className={s.meta}>本批 {rows.length} 次运行 · {rows.filter(verifiedPlan).length} 个已验算可行解。最佳值仅在相同输入、目标、单位和时间预算内标记。预计工期仅作展示，不跨预测模型标记最佳。</p>
-        {rows.some((r) => r.check?.valid === true && mapCheckIssue(r)) && (
+        <p className={s.meta}>本批 {rows.length} 次运行 · {rows.filter(verifiedPlan).length} 个已验算可行解。</p>
+        {mapExcluded.length > 0 && (
           <div className={s.meta} data-exclusion-summary="map_check" aria-label="地图检查未计入的运行">
-            {rows.filter((r) => r.check?.valid === true && mapCheckIssue(r)).map((r) => <MapExclusionNote key={r.run_id} run={r} />)}
+            {mapExcluded.length} 次运行的地图检查未通过或未完成，未计入可行解。展开下方「未参与比较与排名」查看原因与位置。
           </div>
         )}
-        {anchor?.planning && <p className={s.meta}>{anchor.planning.objective_label} · {anchor.planning.objective_unit} · 输入 {anchor.instance_sha256.slice(0, 12)}</p>}
+        <details className={s.meta}>
+          <summary>比较条件</summary>
+          <p>相同输入、目标、单位和预算内标记最佳；预计工期仅作展示。<a href="https://github.com/peakpeng666/URP/blob/main/setup/README.md#仿真与引擎比较" target="_blank" rel="noreferrer">比较方法</a></p>
+          {anchor?.planning && <p>{anchor.planning.objective_label} · {anchor.planning.objective_unit} · 输入 {anchor.instance_sha256.slice(0, 12)}</p>}
+        </details>
         <HistoryRuns />
-        {groups.length > 1 && <Notice tone="warn">存在 {groups.length} 种比较口径{groups.some((g) => g.identity === 'unknown') ? '（含身份未核验组）' : ''}；当前最佳值只针对选中方案所在组，不跨组排名。</Notice>}
+        {groups.length > 1 && <Notice tone="warn">{groups.length} 种比较口径{groups.some((g) => g.identity === 'unknown') ? '（含身份未核验组）' : ''}，仅标记当前组最佳。切换方案可查看相应组。</Notice>}
       </div>
       <div className={s.tableWrap}>
         <table className={s.table}>
@@ -975,15 +980,15 @@ export function ComparePanel() {
         </table>
         {anchor && <div className={s.pad} data-selected-run={anchor.run_id}><IntegrityNotice run={anchor} /><RunTrace run={anchor} title="选中方案追溯" /></div>}
         {partition.excluded.length > 0 && (
-          <div className={s.pad}>
-            <h3>未参与比较与排名（{partition.excluded.length}）</h3>
+          <details className={s.pad}>
+            <summary>未参与比较与排名（{partition.excluded.length}）</summary>
             <ul className={s.meta} aria-label="未参与比较的运行">
               {partition.excluded.map(({ run, reason }) => (
                 <li key={run.run_id} data-exclusion={reason.code}>{run.algorithm.name} · {run.run_id} · {resultState(run).text} · {reason.text}
                   {reason.map && <MapExclusionNote run={run} label="碰撞明细" />}</li>
               ))}
             </ul>
-          </div>
+          </details>
         )}
         {rows.some((r) => r.error) && <Notice tone="error">{rows.filter((r) => r.error).map((r) => `${r.algorithm.name}：${r.error}`).join('；')}</Notice>}
       </div>

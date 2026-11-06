@@ -174,7 +174,7 @@ Solution（`GET /lab/api/runs/{run_id}`）：
 - 覆盖规划固定 `validation_policy: "urp.coverage-interior90/2"`：至少覆盖 90% 的内缩作业区，作业行须包含于导出路径，检查完整足迹与采样曲率。全流程适配 `raw_result.adapter_contract: "urp.f2c-full/2"` 包含最后 PathState 的实际终点，不对受检/执行几何抽稀；全田块覆盖率与内缩作业区覆盖率分列。旧全流程结果不改写，但不再作为通过结果排序或执行，必须重求解。倒车切换朝向尚未独立适配的尖点拒绝通过；含倒车段的覆盖结果拒绝 TB4 执行。这些采样检查不构成连续 SE(2) 可行性证明。
 - `scenario_snapshot.instance` 固定实际提交输入。编辑后原 BKS 不再适用时，移至 `provenance.reference_invalidated`，不能继续计算原算例差距。目录 `algorithm.randomness` 与运行 `reproducibility.seed_usage` 明确种子是否实际生效；改变被忽略的种子不等于独立随机重复。
 - `trace_contract` 使用 `urp.search-trace/1`。只有明确声明 `reported_objective` 的轨迹可画最终目标收敛曲线；内部量化、方向松弛或加权成本标为 `solver_search_proxy`，不拿它证明最终目标增益。每个样本未经独立检查这一限制保留在记录中。
-- `POST /lab/api/planning/validate {scenario_id, instance}` 返回规范化 instance 与 planning，不保存。现有求解器未实现的时间窗、优先关系、混合线/面任务、动态障碍和能量约束显式拒绝，不能保存后静默忽略。Fleet、覆盖与点到点几何规划必须声明米制；当前点到点需要已知仿真地图。
+- `POST /lab/api/planning/validate {scenario_id, instance}` 返回规范化 instance 与 planning，不保存。多车时间窗由 `pyvrp.balanced` 与 `ortools.fleet` 支持；其他算法/任务类型的时间窗，以及未实现的优先关系、混合线/面任务、动态障碍和能量约束显式拒绝，不能保存后静默忽略。Fleet、覆盖与点到点几何规划必须声明米制；当前点到点需要已知仿真地图。
 - 用户场景 PUT 支持 `base_revision`；保存成功返回递增 `revision`，过期为 409 `scenario_conflict`。前端保留未保存草稿，提供重试与另存副本，不覆盖并发新版本。锁适用于当前单网关进程，旧客户端不传版本的兼容接口不构成跨主机事务保证。
 - 田间结果增加 `replay_contract`（`urp.replay/1`），声明源仿真时钟、真值位置、米/弧度及最大插值间隔 0.25 s。前端不跨缺流插值或累计跨缺口里程；不单调时间戳拒绝单轴重放。回放里程/偏差随选定时刻计算，完整终态证据另列；任务到达与作业停留完成分开。显示抽稀不改原始遥测和实验导出。
 
@@ -294,7 +294,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 | 方法 | 路径 | 说明 |
 |---|---|---|
 | GET | `fieldsim` | 当前田间仿真状态：`phase`（idle / starting / running / finished / failed / stopped）、`running`、`sim_time`、`real_time_factor`、`vehicles[]`（每车状态、位姿、速度、完成度、到达任务数、里程、横向偏差、规划里程 / 用时）、`metrics`（结束后：规划与执行的最晚完成时间、总里程、到达任务数、横向偏差）、`components`、`web`、`errors`、`warnings` |
-| POST | `fieldsim {run_id, real_time_factor?=4, gui?, rviz?, vehicle_asset?:{id,version,sha256}, physics?:{...}, execution?:{ground_preset?, ground_zones?, localization_preset?, seed?, slip_protection?}}` | 用已验算的 `fleet_routing` 运行生成世界；服务端核对绑定车型；与 TurtleBot4 会话互斥；`execution` 为非理想执行配置（见 6.6），省略或全默认即理想参考模式 |
+| POST | `fieldsim {run_id, real_time_factor?=4, traffic?:serial\|coordinated, gui?, rviz?, vehicle_asset?:{id,version,sha256}, physics?:{...}, execution?:{ground_preset?, ground_zones?, localization_preset?, seed?, slip_protection?}}` | 用已验算的 `fleet_routing` 运行生成世界；服务端核对绑定车型；与 TurtleBot4 会话互斥；`execution` 为非理想执行配置（见 6.6），省略或全默认即理想参考模式 |
 | POST | `fieldsim/stop` | 有序关闭（会话写 `session-report.json`，含各组件返回码与残留进程检查） |
 | POST | `fieldsim/window {kind: gui\|rviz, on}` | 打开 / 关闭原生 Gazebo GUI 或 RViz2 窗口 |
 | GET | `fieldsim/results?run_id=`、`fieldsim/results/{session_id}` | 历次执行摘要 / 完整结果（含各车轨迹与任务到达时间） |
@@ -309,11 +309,11 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 - TurtleBot4 会话也同时启动 Foxglove Bridge 与 Gazebo WebSocket 服务（`--no-web` 关闭），话题改名为 `/workbench/planned_path`、`/workbench/actual_path`、`/workbench/tasks`、`/workbench/status_text`，真值 `/ground_truth/poses`，RViz 配置 `src/lab/ros/workbench.rviz`。
 
 ### 6.3 后端验收与故障语义
-- 准入：`state=done`、`status=feasible|optimal`、`check.valid=true` 只是前置条件；启动必须用保存的 instance/routes 重新调用 `fleet.check`。`real_time_factor` 为有限数字 0.5–20，非法值返回 400；未检查/重验失败返回 422。`web:false` 可关闭可选网页桥，默认开启。两类会话共用生命周期互斥锁。
+- 准入：`state=done`、`status=feasible|optimal`、`check.valid=true` 只是前置条件；启动必须用保存的 instance/routes 重新调用 `fleet.check`。`real_time_factor` 为有限数字 0.5–20，`traffic` 只接受 `serial`（默认）或 `coordinated`，非法值返回 400；未检查/重验失败返回 422。`web:false` 可关闭可选网页桥，默认开启。两类会话共用生命周期互斥锁。
 - `fleet.check` 核对 sequence、trips、services 一致且覆盖所有任务；按有序折线查验任务与趟间返库，比较里程/载重/用时，按原始多边形距离复算连续圆足迹。候选未通过时 `status=no_solution, routes=[]`，候选保留在 `raw_result.rejected_routes`。距离是构造出的候选图上的最短路，不保证连续空间全局最短。
 - 当前田间执行模型外接圆半径 `hypot(0.4, 0.28)` m、至多 15 辆，树木碰撞与地图多边形一致，接驳段验证净空。通用规划器的半径/车辆数范围不因此缩小。
 - 控制器的纯 Python 实现在 `urp_lab.field_tracking`；任务携带执行路径弧长 `path_s` 和完成停留的仿真时刻 `serviced_at`。重合位置/重复经过不能提前服务；服务停留期间不启动下一任务、不累积卡住时限。
-- `result.state = succeeded|failed|canceled`。成功必须通过 `urp_lab.fieldcheck` 对实测轨迹的独立检查（圆足迹、双向路径偏差及终点、停留时间）。偏差按 0.1 m 采样并加入 0.05 m 保守误差界；圆足迹检查每条实测线段。缺少数据或检查器失败不能产生 succeeded。取消/异常也保存结果。
+- `result.state = succeeded|failed|canceled`。成功必须通过 `urp_lab.fieldcheck` 对实测轨迹的独立检查（圆足迹、双向路径偏差及终点、停留时间）。偏差按 0.1 m 采样并加入 0.05 m 保守误差界；圆足迹检查每条实测线段。任务带时间窗时，以车队共同放行时刻为零点等待最早作业时间，并用实测记录核对到达截止与提前作业；迟到、提前作业、缺失任务或检查器失败不能产生 succeeded。取消/异常也保存结果。状态与结果给出 `traffic_mode`，结果和摘要给出 `time_windows`，摘要保留 `check.valid/errors`。
 - 时钟进展、每车真值、里程计与接触消息有 3 s 墙钟看门狗；必需进程提前退出即会话故障，不以子进程 rc=0 当成功。`state.json` 保存最终状态，GET fieldsim 在进程退出后补读它并返回真实 `returncode`。非零码不会因用户请求停止而被隐藏。
 - `session-report.json` 的 `execution_state` 为任务结果，`cleanup_status` 为进程回收结果，`status` 为会话整体结果；执行失败或关闭异常返回非零退出码。正常取消可以 rc=0，但结果保持 canceled。
 - 导出额外包含 `planning_solution`、`execution_plan`、`execution_provenance`（执行源码与世界 SHA256、坐标/定位/控制/比较口径）、`session_report`（未关闭时为 null）。田间使用 URP 跟踪器，不使用 Nav2 重规划；参考模式用 Gazebo 真值，非理想定位模式用轮式输入与合成位置观测的估计（见 §7）。actual 含往返停车接驳、转向和排队，planned 从车库算起。
@@ -325,7 +325,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 
 ### 6.5 交通、资产与可追溯记录（2026-10-17）
 
-- `traffic.policy=exclusive_mission_v1`：完整停车位→车库→原规划路线→原停车位依次预约执行；停车位须在所有其他任务及停车接驳走廊之外。`traffic.parking`、每车 `parking_xy`、`queue_wait_s`、预约事件随结果保存。计时从共同任务起点开始；总超时按各车规划时长之和的 2.5 倍加 120 s（基数至少 60 s）。这是保守基线，不承诺并行通行效率。
+- `traffic.policy=exclusive_mission_v1`：完整停车位→车库→原规划路线→原停车位依次预约执行；停车位须在所有其他任务及停车接驳走廊之外。`traffic.parking`、每车 `parking_xy`、`queue_wait_s`、预约事件随结果保存。计时从共同任务起点开始；仿真时间预算按各车规划时长之和的 2.5 倍加 120 s（基数至少 60 s），另加最晚任务最早时间以容纳合法驻留；逐车卡住检测与进程墙钟预算继续独立生效。这是保守基线，不承诺并行通行效率。
 - 所有车体碰撞掩码为 `0xffff`。车身、驱动轮及脚轮接触经 `/model/vehicle_i/contacts`（`ros_gz_interfaces/Contacts`）送入控制进程，缺流超过 3 s 墙钟报错。地面接触保留样例；其他接触记录 `t_sim`、碰撞体、车辆、位置和深度，并停止全部车辆。碰撞状态不能以传感器缺数据的零计数代替。`row_collision_shapes` 是实体作物行几何数量，`row_collisions` 是去重的“仿真时间戳 + 碰撞体对”接触消息数，`robot_contact_events` 同理；不称为独立事故次数。历史 `row_collisions` 几何值在 API 中转为 shapes 并将接触数置 null，原始文件不改写。
 - 独立检查计算共同时间轴上的分段线性轨迹最小车间距离，圆足迹半径同物理模型；最大采样间隔须 ≤0.5 s，首尾时间须一致到 0.2 s。该结论限定在记录及线性插值假设内，不证明未观测曲线运动。
 - `vehicle_asset` 必须与求解时 `instance.fleet.asset` / vehicle 角色引用一致。求解提交保存 `asset_snapshot`；执行解析锁定版本、文件哈希与元数据快照，身份或参数不符返回 409，未适配车型返回 422。仅内置田间差速模型已支持；无资产绑定的历史方案显式记录 `explicit_legacy_builtin`，不静默替代已绑定的导入车型。
@@ -405,13 +405,13 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - 只覆盖理想配置。`execution` 非空、`wheel_lateral_friction` 已设或模型参数不全时，返回 422 `unsupported_plan`，不做近似。
 - 独立进程运行，结果在 `runtime/physics/<id>/`：`plan.json`、`result.json`（50 Hz 真值）。接口返回 2 Hz 轨迹。`check` 复用 `fieldcheck.track_check`，另检车间同步距离与接触。网关重启时运行中的记录标为 `failed`。
 
-`urp.sim2sim/1` 分别回答走到哪和什么时候到：`path_*` 是两条轨迹之间的双向最近距离，不受时间平移影响；`time_rmse_m` 是从各车出发起算同一时刻的位置差；`task_arrival_s` 是到点时刻差。这是两个引擎之间的差距，不是实车误差，也不设通过阈值。
+`urp.sim2sim/1` 的 `available` 区分是否可比；`identity` 保存冻结条件的分组身份，`errors` 给出缺失或不一致原因，不可比时差值为 null。`path_*` 为双向空间轨迹差；`time_rmse_m` 按每车出发对齐（`time_alignment=per_vehicle_departure`），`mission_clock_rmse_m` 按共同任务零点对齐；两者只比较共有时段。`task_arrival_s.available` 单列任务时刻证据。状态、任务窗口和比较结果分别保留。指标定义与模型假设见[仿真与引擎比较](../../setup/README.md#仿真与引擎比较)。
 
 ## 11. 模型服务与桌面应用（2026-11-05）
 
 - **模型**：`/lab/api/agent/providers`（目录、已连接服务、当前模型）、`/providers/{id}/models`、`/providers/{id}/connect {api_key}`、`/providers/{id}/disconnect`、`/providers/custom {name, base_url, api_key, models?}`、`/providers/refresh`、`/model {model}`。模型地址是 `服务商/模型`，会话的 `provider.id` 记这个值，旧会话记录的裸 id 解析到该服务的第一个模型。任何响应都不含 Key，写接口受现有的同源检查保护。设计见 [agent/README](urp_lab/agent/README.md) §4。不再有本地模型接口；历史评测记录保留。
 - **数据包**：`GET /lab/api/packs`、`POST /packs/{id}/install|cancel|remove`，SSE 事件 `pack`。清单 `urp_lab/data/packs.json` 写明 SHA256 和解压大小；下载支持续传，校验通过后解压到新目录再移入 `runtime/packs/<id>-<version>/`，路径越界、符号链接和超出声明大小的包一律拒绝。`/data/*` 优先读构建产物，其次读 `history` 包；`URP_PACKS_BASE_URL` 可替换下载地址。
-- **桌面进程**：`python -m urp_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `URP_DESKTOP=1`、`URP_NODE`（JS 基线使用的运行时）、`URP_MODELS_REFRESH=1`。`URP_DESKTOP=1` 时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；Gazebo 由容器后端提供，容器里没有这个变量。
+- **桌面进程**：`python -m urp_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `URP_DESKTOP=1`、`URP_NODE`（JS 基线使用的运行时）、`URP_MODELS_REFRESH=1`。`URP_DESKTOP=1` 且 `URP_DESKTOP_SOURCE!=1`（安装包）时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；安装包的 Gazebo 由容器后端提供；源码 Electron 由主进程按 `app.isPackaged` 设置 `URP_DESKTOP_SOURCE=1`，可使用本机 ROS，仍执行桥接与物理实现检查。安装包会强制覆盖该变量为 `0`，不继承外部开发标志。
 - **Windows**：`urp_lab/compat.py` 在 Windows 上提供 `signal.SIGKILL` 和基于 `taskkill` 的 `os.killpg`，因此 `services.py` 等进程代码不需要分支。`worker.py` 没有 `SIGALRM` 时用看门狗线程上报同样的超时结果。
 
 
@@ -424,10 +424,10 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 桌面 IPC `data:info|export|restore` 受同源限制，选择备份/恢复位置使用系统文件对话框。导入成功后才更新数据位置；失败保留原配置。`URP_DATA_HOME`、`URP_LAB_RUNTIME`、`URP_API_DB` 对应共享持久根、Lab 库和档案库，桌面 Compose 绑定同一目录并匹配宿主 UID/GID。
 ## 13. 并行执行与工期预测（2026-11-06）
 
-- **交通方式**：`POST /lab/api/physics/runs {run_id, traffic}`，`traffic` 为 `serial`（默认，整段任务依次执行）或 `coordinated`（全部车辆同时运行，在路线相遇处依次通行）。记录带 `traffic_mode` 和 `traffic`（`policy`、`meetings`、`holds`、`held_s`、`predicted_makespan_s`、`min_gap_m`）。对比 Gazebo 记录时按原记录重放，传 `coordinated` 返回 422 `frozen_traffic`。找不到无环次序时返回 422 `no_safe_order`，方案仍可逐车执行。
-- **计划字段**：`plan.traffic.policy = coordinated_passage_v1` 时，`plan.traffic.gates` 是 `{车辆: [{s, after: [[另一车, 该车里程], ...]}]}`：车辆的路径进度到 `s` 时，必须等 `after` 里每辆车走过对应里程或已完成才能继续。`urp_lab/field_coordination.py` 在求解侧生成这些门，`field_traffic.PassageQueue` 运行时只读数字，不含几何，ROS 控制器可以直接用。路径本身不变。
+- **交通方式**：`POST /lab/api/physics/runs {run_id, traffic}` 与 `POST /lab/api/fieldsim {run_id, traffic}`，`traffic` 为 `serial`（默认，整段任务依次执行）或 `coordinated`（全部车辆同时运行，在路线相遇处依次通行）。记录带 `traffic_mode` 和 `traffic`（`policy`、`meetings`、`holds`、`held_s`、`predicted_makespan_s`、`min_gap_m`）。对比 Gazebo 记录时按原记录重放，传 `coordinated` 返回 422 `frozen_traffic`。找不到无环次序时返回 422 `no_safe_order`，方案仍可逐车执行。
+- **计划字段**：`plan.traffic.policy = coordinated_passage_v1` 时，`plan.traffic.gates` 是 `{车辆: [{s, after: [[另一车, 该车里程], ...]}]}`：车辆的路径进度到 `s` 时，必须等 `after` 里每辆车走过对应里程或已完成才能继续。`urp_lab/field_coordination.py` 在求解侧生成这些门，`field_traffic.PassageQueue` 运行时只读数字，不含几何，ROS 控制器按冻结策略选用同一队列。路径本身不变。
 - **预计工期**：只对内置同构差速仿真模型做有界可选估计；显式异构 `vehicles.fleet`、非理想地面和超出已验证范围的车辆参数不套用该预测。`metrics.execution_estimate` 保存模型版本、状态和不能估计的原因；成功时才增加 `predicted_makespan_s`、`route_meetings`。估计超时或失败不使已有求解结果失效。`makespan_s` 仍是恒速估计。只有同一比较集合全部有相同模型、有效预计工期时，时间目标才按预测排序；否则集合整体回退原目标值，`best_verified.ranking_basis` 明确该口径。
 - **`pyvrp.balanced`**：车辆在路线中途回库重载，由同一搜索决定各趟归属，用跟踪器实际行驶用时二分收紧班次上限。
-- **智能体**：`physics_check` 的多车结果增加 `coordinated`，与逐车结果并列。Gazebo 会话目前仍逐车执行，所以送入 Gazebo 的方案以逐车结果为门槛。
+- **智能体**：`physics_check` 的多车结果增加 `coordinated`，与逐车结果并列。`start_simulation` 与手工 `simulate` 支持 `traffic`，默认串行；批准提示和方案选择按所选交通方式查预演，执行记录保存真实交通方式与时间窗核验。
 
-本次协调的无环性仅指事件依赖图。持续进展仍以沿路径单调推进、有限延迟、有效定位以及有界跟踪/制动误差为前提；车距保护不是实车安全证明。当前 Gazebo 生产路径仍为串行，历史协调补丁实验不等于生产部署。
+本次协调的无环性仅指事件依赖图。持续进展仍以沿路径单调推进、有限延迟、有效定位以及有界跟踪/制动误差为前提；车距保护不是实车安全证明。Gazebo 主线已接入两种队列及时间窗核验；源码回归与真实场次验收分别记录，历史协调补丁实验不替代当前提交的验收。

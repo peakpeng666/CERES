@@ -1,9 +1,18 @@
 import { describe, expect, it } from 'vitest';
 import { LabApiError } from '../lab/api';
-import { executionErrorMessage, unacceptedPlanReason } from './execution';
+import { executionErrorMessage, fieldTrafficLabel, unacceptedPlanReason } from './execution';
 import type { FleetInstance } from './types';
 
 describe('execution admission recovery', () => {
+  it('labels actual traffic policy and keeps missing historical evidence unknown', () => {
+    expect(fieldTrafficLabel({ traffic_mode: 'coordinated' })).toBe('并行协调');
+    expect(fieldTrafficLabel({ traffic_mode: 'serial' })).toBe('逐车串行');
+    expect(fieldTrafficLabel({ traffic: { policy: 'coordinated_passage_v1' } })).toBe('并行协调');
+    expect(fieldTrafficLabel({ traffic: { policy: 'exclusive_mission_v1' } })).toBe('逐车串行');
+    expect(fieldTrafficLabel({})).toBe('交通方式未记录');
+    expect(fieldTrafficLabel({ traffic_mode: null })).toBe('交通方式未记录');
+  });
+
   it('keeps 422 codes visible and offers an explicit recovery path', () => {
     for (const code of ['heterogeneous_fleet_execution', 'curvature_constrained_execution', 'unsupported_vehicle_asset']) {
       const message = executionErrorMessage(new LabApiError('后端拒绝', code, 422));

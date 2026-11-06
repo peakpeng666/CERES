@@ -1,4 +1,4 @@
-import type { Route, Scenario, Solution, XY } from '../lab/types';
+import type { Route, Scenario, Solution, TimeWindowRecord, XY } from '../lab/types';
 
 export type ObstacleKind = 'pond' | 'building' | 'greenhouse' | 'tree' | 'ditch' | 'rock' | 'other';
 
@@ -325,6 +325,7 @@ export interface InstanceSpace {
 export type FleetSolution = Solution & { routes: FleetRoute[]; trace?: [number, number][] };
 
 /* ------------------------------------------------------------ field sim -- */
+export type FieldTrafficMode = 'serial' | 'coordinated';
 export interface FieldVehicleState {
   name: string;
   label: string;
@@ -412,6 +413,8 @@ export interface FieldCheck {
   [key: string]: unknown;
 }
 export interface FieldSimState {
+  traffic_mode?: FieldTrafficMode | null;
+  traffic?: FieldTraffic | null;
   phase: 'idle' | 'starting' | 'ready' | 'running' | 'finished' | 'failed' | 'stopped';
   running: boolean;
   session_id?: string;
@@ -434,6 +437,8 @@ export interface FieldSimState {
   execution?: FieldExecutionInfo | null;
 }
 export interface FieldSimSummary {
+  traffic_mode?: FieldTrafficMode | null;
+  time_windows?: TimeWindowRecord | null;
   session_id: string;
   run_id: string;
   scenario_id: string;

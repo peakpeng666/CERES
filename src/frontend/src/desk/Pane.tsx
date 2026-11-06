@@ -119,7 +119,7 @@ function meta(f: Frame, c: Ctx): Meta {
       const names = e ? e.vehicles.map((v) => v.name) : [];
       const pick = f.t === 'execv' ? names.filter((n) => n === f.name) : names;
       const trails = e ? pick.map((n) => ({ line: thin((e.trails[n] ?? []) as unknown as number[][]), index: names.indexOf(n) })) : [];
-      const label = f.t === 'execv' ? e?.vehicles.find((v) => v.name === f.name)?.label ?? '车辆' : '实际执行';
+      const label = f.t === 'execv' ? e?.vehicles.find((v) => v.name === f.name)?.label ?? '车辆' : '仿真执行';
       const focusLine = f.t === 'execv' ? trails[0]?.line : undefined;
       return { title: label, big: f.t === 'exec', focus: focusLine?.length ? boxOf(focusLine) : null, view: { plan: planOf(r), trails } };
     }
@@ -236,7 +236,7 @@ function PlansRoot({ c, api }: { c: Ctx; api: React.RefObject<MapApi | null> }) 
         const ok = rc ? rc.valid && rc.agrees : v ? v.valid && v.agrees : r.check?.valid;
         const running = r.state === 'queued' || r.state === 'running';
         return <Row key={r.run_id} title={r.algorithm.name}
-          sub={running ? '求解中' : `${ok ? (rc || v ? '独立复核通过' : '检查通过') : '未通过'} · ${r.check?.time_windows ? `${arrivalLine(r.check.time_windows)} · ` : ''}${metric(r, 'predicted_makespan_s') != null ? `预计实际 ${n1(metric(r, 'predicted_makespan_s'))} s` : `最晚完成 ${n1(metric(r, 'makespan_s'))} s`}`}
+          sub={running ? '求解中' : `${ok ? (rc || v ? '独立复核通过' : '检查通过') : '未通过'} · ${r.check?.time_windows ? `${arrivalLine(r.check.time_windows)} · ` : ''}${metric(r, 'predicted_makespan_s') != null ? `预计工期 ${n1(metric(r, 'predicted_makespan_s'))} s` : `最晚完成 ${n1(metric(r, 'makespan_s'))} s`}`}
           value={<><span className={s.barCell}><i style={{ width: `${(100 * (metric(r, 'total_distance_m') ?? 0)) / max}%` }} data-best={best?.run_id === r.run_id || undefined} /></span>{n1(metric(r, 'total_distance_m'))} m</>}
           onClick={() => push({ t: 'plan', run: r.run_id })} />;
       })}</Rows>
@@ -282,7 +282,7 @@ function PlanLayer({ c, id, api }: { c: Ctx; id: string; api: React.RefObject<Ma
     <div className={s.layer}>
       <h2>{r.algorithm.name}</h2>
       <p className={s.subMono}>{id}</p>
-      {r.state === 'done' ? <Facts items={[['总里程', n1(metric(r, 'total_distance_m')), 'm'], ['最晚完成', n1(metric(r, 'makespan_s')), 's'], ...(metric(r, 'predicted_makespan_s') != null ? [['预计实际', n1(metric(r, 'predicted_makespan_s')), 's'] as [string, string, string]] : []), ['车辆', metric(r, 'vehicles_used') ?? '—', '台'], ['趟数', metric(r, 'trips') ?? '—'], ['求解', n2(metric(r, 'wall_s')), 's']]} /> : <p className={s.txt}>状态：{r.state}{r.error ? ` · ${r.error}` : ''}</p>}
+      {r.state === 'done' ? <Facts items={[['总里程', n1(metric(r, 'total_distance_m')), 'm'], ['最晚完成', n1(metric(r, 'makespan_s')), 's'], ...(metric(r, 'predicted_makespan_s') != null ? [['预计工期', n1(metric(r, 'predicted_makespan_s')), 's'] as [string, string, string]] : []), ['车辆', metric(r, 'vehicles_used') ?? '—', '台'], ['趟数', metric(r, 'trips') ?? '—'], ['求解', n2(metric(r, 'wall_s')), 's']]} /> : <p className={s.txt}>状态：{r.state}{r.error ? ` · ${r.error}` : ''}</p>}
       {!current && <p className={s.docWarn}>这是历史任务版本的方案。地图按它当时的冻结输入显示，不代表当前合同。</p>}
       {!!windows?.late?.length && <p className={s.docBad}>晚于截止：{lateLine(windows)}</p>}
       <h3>车辆</h3>
@@ -290,7 +290,7 @@ function PlanLayer({ c, id, api }: { c: Ctx; id: string; api: React.RefObject<Ma
         onClick={() => push({ t: 'vehicle', run: id, v: i })} onEnter={() => api.current?.hover(i)} onLeave={() => api.current?.hover(null)} />)}</Rows>
       <h3>依据</h3>
       <Rows>
-        {sims.map((x) => <Row key={x.session_id} title="实际执行" sub={`Gazebo · ${dateCN(x.finished_utc)}`} value={`${x.metrics.tasks_completed ?? '—'}/${x.metrics.tasks_total ?? '—'}`} onClick={() => push({ t: 'exec', run: id, session: x.session_id })} />)}
+        {sims.map((x) => <Row key={x.session_id} title="仿真执行" sub={`Gazebo · ${dateCN(x.finished_utc)}`} value={`${x.metrics.tasks_completed ?? '—'}/${x.metrics.tasks_total ?? '—'}`} onClick={() => push({ t: 'exec', run: id, session: x.session_id })} />)}
         <Row title={rc ? '独立复核' : '方案检查'} value={rc ? `${passed}/${rc.items.length} 项通过` : r.check?.valid ? '通过' : '未通过'} onClick={() => push({ t: 'checks', run: id })} />
         {windows && <Row title="到达时间" sub="每个任务是否按时" value={arrivalLine(windows)} onClick={() => push({ t: 'arrivals', run: id })} />}
         <Row title="求解参数" value={`${p.time_limit_s ?? '—'} s · 种子 ${p.seed ?? '—'}`} onClick={() => push({ t: 'params', run: id })} />
@@ -446,10 +446,10 @@ function Exec({ c, f }: { c: Ctx; f: Extract<Frame, { t: 'exec' }> }) {
   const traffic = (e as unknown as { traffic?: { scope?: string } }).traffic;
   return (
     <div className={s.layer}>
-      <h2>实际执行</h2>
-      <p className={s.sub}>{e.algorithm ?? ''} · Gazebo Fortress。虚线为规划路线，实线为实测轨迹。</p>
-      <Facts items={[['完成', `${m.tasks_completed ?? '—'}/${m.tasks_total ?? '—'}`], ['实际里程', n1(m.total_distance_m), 'm'], ['规划里程', n1(m.planned_total_distance_m), 'm'], ['实际工期', n1(m.makespan_s), 's'], ['横向偏差最大', n3(m.cross_track_max_m), 'm']]} />
-      {traffic?.scope && <p className={s.txt}>{traffic.scope}；规划工期 {n1(m.planned_makespan_s)} s 为恒速估计，实际工期含排队与接驳。</p>}
+      <h2>仿真执行</h2>
+      <p className={s.sub}>{e.algorithm ?? ''} · Gazebo Fortress。虚线为规划路线，实线为 Gazebo 真值轨迹。</p>
+      <Facts items={[['完成', `${m.tasks_completed ?? '—'}/${m.tasks_total ?? '—'}`], ['仿真里程', n1(m.total_distance_m), 'm'], ['规划里程', n1(m.planned_total_distance_m), 'm'], ['仿真工期', n1(m.makespan_s), 's'], ['横向偏差最大', n3(m.cross_track_max_m), 'm']]} />
+      {traffic?.scope && <p className={s.txt}>{traffic.scope}；规划工期 {n1(m.planned_makespan_s)} s 为恒速估计，仿真工期含排队与接驳。</p>}
       <h3>车辆</h3>
       <Rows>{e.vehicles.map((x, i) => <Row key={x.name} lead={<span className={s.sw} style={{ background: routeColor(i) }} />} title={x.label} sub={`${x.tasks_done}/${x.tasks_total} 个任务点`} value={`${n1(x.distance_m)} m`} onClick={() => push({ t: 'execv', run: f.run, session: f.session, name: x.name })} />)}</Rows>
       <h3>运行核验</h3>
@@ -623,7 +623,7 @@ function SimRoot() {
     <div>
       <div className={s.layer} style={{ paddingBottom: 6 }}>
         <Rows>
-          <Row title="ROS 视图" sub="田块、规划路线、实际轨迹、激光与 Nav2 路径" onClick={() => push({ t: 'panel', id: 'rosview' })} />
+          <Row title="ROS 视图" sub="田块、规划路线、仿真轨迹、激光与 Nav2 路径" onClick={() => push({ t: 'panel', id: 'rosview' })} />
           <Row title="Gazebo 场景" sub="正在运行的 Gazebo 世界" onClick={() => push({ t: 'panel', id: 'gazebo' })} />
           <Row title="遥测" sub="速度、路线完成度、横向偏差" onClick={() => push({ t: 'panel', id: 'telemetry' })} />
           <Row title="物理预演" sub="MuJoCo 记录与双引擎对比" onClick={() => push({ t: 'panel', id: 'physics' })} />

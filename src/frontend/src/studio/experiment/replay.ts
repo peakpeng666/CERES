@@ -4,7 +4,7 @@
  * vehicles, stalls, unreached tasks). Everything here is computed from the saved result.json, nothing is simulated.
  */
 import { create } from 'zustand';
-import type { XY } from '../../lab/types';
+import type { TimeWindowRecord, XY } from '../../lab/types';
 import { studio } from '../api';
 import type { FieldPhysics, FieldPhysicsEvidence, FieldSimMetrics, FieldVehicleState } from '../types';
 import { trafficStatus, type TrafficEvidence } from './traffic';
@@ -28,6 +28,8 @@ export interface SimTask {
 }
 export interface SimPlanVehicle { name: string; label: string; color: string; start: [number, number, number]; path: XY[]; planned_length_m: number; planned_duration_s: number }
 export interface SimResult extends TrafficEvidence {
+  traffic_mode?: 'serial' | 'coordinated' | null;
+  time_windows?: TimeWindowRecord | null;
   session_id: string; run_id: string; scenario_id: string; algorithm: string | null; world: string; finished_utc: string;
   sim_time: number | null; real_time_factor: number | null; state: 'succeeded' | 'failed' | 'canceled';
   metrics: FieldSimMetrics; travel?: 'rows' | 'free';

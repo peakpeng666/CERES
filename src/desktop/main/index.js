@@ -22,6 +22,7 @@ let container = null;
 let updater = null;
 let dataTransfer = null;
 let transitioning = false;
+let pendingBackend = null;
 let origin = null;
 let quitting = false;
 
@@ -64,6 +65,14 @@ function createWindow() {
   return win.loadFile(SPLASH);
 }
 
+async function bootFailure(error, mode) {
+  origin = null;
+  if (win && !win.isDestroyed() && !onSplash()) await win.loadFile(SPLASH);
+  const message = String(error.message ?? error);
+  send('boot:error', { message, log: backend.logPath, mode });
+  return { mode, error: message };
+}
+
 /** Start whichever backend is chosen and show it. A failure stays on the splash page with what went wrong. */
 async function boot(hash = '') {
   const mode = settings.get('backend', 'native');
@@ -79,23 +88,28 @@ async function boot(hash = '') {
       await new Promise((resolve) => setTimeout(resolve, HANDOFF_MS));
     }
     await win.loadURL(`${origin}/${hash.startsWith('#/') ? hash : ''}`);
+    return { mode };
   } catch (error) {
-    if (win && !win.isDestroyed() && !onSplash()) await win.loadFile(SPLASH);
-    send('boot:error', { message: String(error.message ?? error), log: backend.logPath, mode });
+    return bootFailure(error, mode);
   }
 }
 
 async function switchBackend(mode) {
   if (transitioning) throw new Error('正在切换或迁移，请稍候');
   transitioning = true;
+  pendingBackend = mode;
   try {
-  origin = null;
-  await win.loadFile(SPLASH);
-  if (mode === 'container') await backend.stop();
-  else await container.stop();
-  settings.set('backend', mode);
-  await boot();
-  return { mode };
+    origin = null;
+    await win.loadFile(SPLASH);
+    // A failed transition can be redirected back to its source. Stop the mode that still owns the data.
+    if (settings.get('backend', 'native') === 'container') await container.stop();
+    else await backend.stop();
+    settings.set('backend', mode);
+    pendingBackend = null;
+    return await boot();
+  } catch (error) {
+    // The React caller has been unloaded. Report here and retry the stop before any new backend can use the data.
+    return bootFailure(error, settings.get('backend', 'native'));
   } finally { transitioning = false; }
 }
 
@@ -146,7 +160,8 @@ function handle(channel, fn) {
 function wire() {
   handle('app:info', () => ({ version: app.getVersion(), platform: process.platform, backend: settings.get('backend', 'native'), logs: path.dirname(backend.logPath), electron: process.versions.electron }));
   handle('app:open-logs', () => shell.openPath(path.dirname(backend.logPath)));
-  handle('app:retry', () => { void boot(); });
+  // A timed-out boot can still own a live process; retries use the same stop-before-start transition.
+  handle('app:retry', () => switchBackend(pendingBackend ?? settings.get('backend', 'native')));
   handle('app:use-native', () => switchBackend('native'));
   handle('app:theme', (theme) => {
     if (!THEMES.includes(theme)) throw new Error('未知的外观');

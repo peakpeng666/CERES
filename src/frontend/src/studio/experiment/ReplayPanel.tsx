@@ -173,8 +173,8 @@ export function ReplayPanel() {
           <>
             <div className={a.kv}>
               <span>方案</span><span>{r.algorithm ?? '—'} <button type="button" className={p.link} style={{ border: 0, background: 'none' }} onClick={() => void focusRun(r.run_id)}>{runs[r.run_id] ? '在地图上对照此方案' : '载入此方案对照'}</button></span>
-              <span>结果</span><span>{r.state === 'succeeded' ? '全部车辆完成' : r.state === 'canceled' ? '执行已取消' : '执行失败'} · 到达 {r.metrics.tasks_reached}/{r.metrics.tasks_total} 个任务点{r.metrics.tasks_completed != null ? ` · 完成停留 ${r.metrics.tasks_completed}` : ''}</span>
-              <span>仿真</span><span>{r.world} · 记录时间跨度 {fmt.sec(d.duration - d.startTime)}{r.real_time_factor ? ` · 实际倍速 ${fmt.num(r.real_time_factor, 1)}×` : ''}{r.travel === 'rows' ? ' · 作物行为实体' : ''}</span>
+              <span>仿真结果</span><span>{r.state === 'succeeded' ? '全部车辆完成' : r.state === 'canceled' ? '仿真已取消' : '仿真失败'} · 到达 {r.metrics.tasks_reached}/{r.metrics.tasks_total} 个任务点{r.metrics.tasks_completed != null ? ` · 完成停留 ${r.metrics.tasks_completed}` : ''}</span>
+              <span>仿真</span><span>{r.world} · 记录时间跨度 {fmt.sec(d.duration - d.startTime)}{r.real_time_factor ? ` · 仿真运行倍速 ${fmt.num(r.real_time_factor, 1)}×` : ''}{r.travel === 'rows' ? ' · 作物行为实体' : ''}</span>
               <span>会话</span><span className={a.mono}>{r.session_id} · 清理 {r.session_report?.cleanup_status ?? '未记录'}</span>
             </div>
             {r.provenance_warning && <Notice tone="warn">{r.provenance_warning}</Notice>}
@@ -197,14 +197,14 @@ export function ReplayPanel() {
               <Button size="sm" variant="plain" icon={RotateCcw} onClick={() => { rp.setPlaying(false); rp.setT(d.startTime); }}>回到开始</Button>
             </div>
             <div className={p.row}>
-              {([['planned', '规划路线'], ['actual', '实际轨迹'], ['body', '车体足迹'], ['tasks', '任务状态'], ['anomalies', '异常']] as const).map(([key, label]) => (
+              {([['planned', '规划路线'], ['actual', '仿真轨迹'], ['body', '车体足迹'], ['tasks', '任务状态'], ['anomalies', '异常']] as const).map(([key, label]) => (
                 <button key={key} type="button" className={a.chip} data-tone={rp.show[key] ? 'blue' : undefined} onClick={() => rp.toggle(key)}>
                   {rp.show[key] ? <Eye size={11} /> : <EyeOff size={11} />}{label}
                 </button>
               ))}
             </div>
             <table className={p.table}>
-              <thead><tr><th>车辆</th><th className={p.num}>任务（截至时刻）</th><th className={p.num}>里程（实际/规划）</th><th className={p.num}>用时（实际/规划）</th><th className={p.num}>横向偏差 均/最大</th></tr></thead>
+              <thead><tr><th>车辆</th><th className={p.num}>任务（截至时刻）</th><th className={p.num}>里程（仿真/规划）</th><th className={p.num}>用时（仿真/规划）</th><th className={p.num}>横向偏差 均/最大</th></tr></thead>
               <tbody>
                 {r.vehicles.map((v) => {
                   const off = rp.hidden.includes(v.name);

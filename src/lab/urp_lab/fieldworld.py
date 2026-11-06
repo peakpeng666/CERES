@@ -270,7 +270,8 @@ def plan_vehicles(inst: dict, routes: list[dict], net: lanes.Network | None = No
             # A waiting or finished robot must be clear of all mission paths and all other
             # parking approaches. Serialize motion, not physics; parked robots remain collidable.
             parking_clear = (all(p.distance(Point(c)) >= clearance for p in missions)
-                             and all(a.distance(Point(c)) >= clearance for a in approaches))
+                             and all(a.distance(Point(c)) >= clearance for a in approaches)
+                             and all(approach.distance(Point(s)) >= clearance for s in spots))
             if free.contains(Point(c)) and reachable and parking_clear:
                 spot, _ = c, spots.append(c)
                 approaches.append(approach)

@@ -17,7 +17,7 @@
     "pack": "electron-builder --dir",
     "dist:linux": "electron-builder --linux --publish never",
     "dist:win": "electron-builder --win --publish never",
-    "test": "node --test test/main.test.js"
+    "test": "node --test test/main.test.js test/backend-switch.test.js test/updater.test.js"
   },
   "dependencies": {
     "electron-updater": "6.8.11"

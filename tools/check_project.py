@@ -234,7 +234,7 @@ def gate_commands(py, output, skip_build=False):
         ('robotics_core', 'src/robotics', [py, '-m', 'unittest', 'discover', '-s', 'urp_route_sim/test', '-v']),
         ('frontend_data', 'src/frontend', [py, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_*.py', '-v']),
         ('frontend_ui', 'src/frontend', ['npm', 'run', 'test:ui']),
-        ('desktop_shell', 'src/desktop', ['node', '--test', 'test/main.test.js']),
+        ('desktop_shell', 'src/desktop', ['npm', 'test']),
         ('frontend_replay', 'src/frontend', ['node', '--test', 'core/routing/tests/model-result.test.js',
                                           'tests/replay-client.test.mjs', 'tests/replay-real.test.mjs', 'tests/replay.test.mjs']),
         ('bpp_scientific_readback', 'src/frontend', [py, 'scripts/validate_data.py', '--output', str(output / 'bpp_validation.json')]),

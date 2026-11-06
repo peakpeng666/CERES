@@ -9,8 +9,9 @@ import { Badge, Button, EmptyState, Input, Notice, Select, Switch } from '../../
 import { studio, urls, type FieldPhysicsResponse } from '../api';
 import { useStudio } from '../store';
 import { refreshFieldSim, setFieldSimActionError, useFieldSim } from '../ros/live';
-import { executionErrorMessage, planModelSchema, unacceptedPlanReason } from '../execution';
-import type { FieldExecutionInfo, FieldSimState, FieldSimSummary, FieldVehicleState, FleetInstance } from '../types';
+import { executionErrorMessage, fieldTrafficLabel, planModelSchema, unacceptedPlanReason } from '../execution';
+import type { FieldExecutionInfo, FieldSimState, FieldSimSummary, FieldTrafficMode, FieldVehicleState, FleetInstance } from '../types';
+import { arrivalLine, lateLine } from '../../desk/arrivals';
 import type { SimResult } from '../experiment/replay';
 import { SessionEvidence } from '../experiment/SessionEvidence';
 import s from './panels.module.css';
@@ -21,7 +22,7 @@ const PHASE: Record<FieldSimState['phase'], { text: string; tone: 'gray' | 'blue
   ready: { text: '就绪', tone: 'blue' },
   running: { text: '执行中', tone: 'blue' },
   finished: { text: '全部完成', tone: 'green' },
-  failed: { text: '未完成', tone: 'red' },
+  failed: { text: '执行失败', tone: 'red' },
   stopped: { text: '已停止', tone: 'gray' },
 };
 const STATE_TEXT: Record<FieldVehicleState['state'], string> = { waiting: '等待', driving: '行驶', servicing: '作业', done: '完成', failed: '受阻' };
@@ -29,7 +30,7 @@ const STATE_TEXT: Record<FieldVehicleState['state'], string> = { waiting: '等�
 const pct = (a?: number | null, b?: number | null) => (a != null && b ? `${a >= b ? '+' : ''}${fmt.num(((a - b) / b) * 100, 1)}%` : '');
 
 /** Starts the field simulation for a fleet run and brings the simulation workspace forward. */
-export async function startFieldSim(runId: string, opts: { gui?: boolean; rviz?: boolean; real_time_factor?: number; physics?: Record<string, unknown>; execution?: { ground_preset?: string; localization_preset?: string; seed?: number; slip_protection?: boolean } } = {}, where: { stay?: boolean } = {}) {
+export async function startFieldSim(runId: string, opts: { gui?: boolean; rviz?: boolean; real_time_factor?: number; traffic?: FieldTrafficMode; physics?: Record<string, unknown>; execution?: { ground_preset?: string; localization_preset?: string; seed?: number; slip_protection?: boolean } } = {}, where: { stay?: boolean } = {}) {
   const st = useStudio.getState();
   setFieldSimActionError(null);
   try {
@@ -71,6 +72,7 @@ export function FieldSimPanel() {
   const [gui, setGui] = useState(false);
   const [rviz, setRviz] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [traffic, setTraffic] = useState<FieldTrafficMode>('serial');
   const [overrides, setOverrides] = useState<Record<string, unknown>>({});
   const [groundPreset, setGroundPreset] = useState('none');
   const [locPreset, setLocPreset] = useState('truth');
@@ -91,7 +93,7 @@ export function FieldSimPanel() {
     const execution = groundPreset !== 'none' || locPreset !== 'truth'
       ? { ground_preset: groundPreset, localization_preset: locPreset, seed, slip_protection: protection }
       : undefined;
-    await startFieldSim(runId, { gui, rviz, real_time_factor: rtf, physics: Object.keys(selected).length ? selected : undefined, execution });
+    await startFieldSim(runId, { gui, rviz, real_time_factor: rtf, traffic, physics: Object.keys(selected).length ? selected : undefined, execution });
     setBusy(false);
   };
   const stop = async () => {
@@ -137,6 +139,14 @@ export function FieldSimPanel() {
           <>
             <h4>执行一个多车方案</h4>
             <div className={s.row}>
+              <label className={s.meta} htmlFor="field-traffic">交通方式</label>
+              <Select id="field-traffic" aria-label="Gazebo 交通方式" value={traffic} disabled={busy} onChange={(e) => setTraffic(e.target.value as FieldTrafficMode)}>
+                <option value="serial">逐车串行</option>
+                <option value="coordinated">并行协调</option>
+              </Select>
+            </div>
+            <p className={s.hint}>{traffic === 'coordinated' ? '各车同时执行原路径，在路线相遇处按协调次序通行；无法建立安全次序时启动会被拒绝。' : '每车完成并回库后放行下一车；实际工期包含排队时间。'} 引擎对比会沿用本会话的交通方式与冻结方案。</p>
+            <div className={s.row}>
               <label className={s.meta}>倍速</label>
               <Select aria-label="仿真倍速" value={String(rtf)} onChange={(e) => setRtf(Number(e.target.value))}>
                 {[1, 2, 4, 6, 10].map((x) => <option key={x} value={x}>{x}×</option>)}
@@ -154,6 +164,7 @@ export function FieldSimPanel() {
               </button>
             )}
             <ul className={s.list}>
+              {recent.error && <li><Notice tone="error">可执行方案读取失败：{recent.error.message}</Notice></li>}
               {fleetRuns.filter((r) => r.run_id !== focused?.run_id).slice(0, 12).map((r) => (
                 <li key={r.run_id}>
                   <button type="button" className={s.item} disabled={busy} onClick={() => void start(r.run_id)}>
@@ -162,7 +173,7 @@ export function FieldSimPanel() {
                   </button>
                 </li>
               ))}
-              {!fleetRuns.length && <li className={s.meta} style={{ padding: 8 }}>先在「任务规划」里求出一个多车方案。</li>}
+              {!fleetRuns.length && !recent.loading && !recent.error && <li className={s.meta} style={{ padding: 8 }}>先在「任务规划」里求出一个多车方案。</li>}
             </ul>
           </>
         )}
@@ -267,6 +278,7 @@ function RunningView({ state, busy, onStop, onWindow }: { state: FieldSimState; 
         <span>场景</span><b>{state.scenario_id ?? '—'}</b>
         <span>仿真时间</span><b className={s.mono}>{fmt.sec(state.sim_time ?? 0)}{state.real_time_factor ? ` · ${fmt.num(state.real_time_factor, 1)}×` : ''}</b>
         <span>执行条件</span><b><ExecutionBadge exec={state.execution ?? null} /></b>
+        <span>交通方式</span><b>{fieldTrafficLabel(state)}</b>
       </div>
       {state.errors.map((e) => <Notice key={e} tone="error">{e}</Notice>)}
       {state.warnings.map((w) => <Notice key={w} tone="info">{w}</Notice>)}
@@ -344,7 +356,9 @@ function ResultsTable({ rows }: { rows: FieldSimSummary[] }) {
         <tbody>
         {rows.slice(0, 12).map((r) => (
           <tr key={r.session_id} title={`${r.scenario_id} · ${r.world}${r.execution?.mode === 'nonideal' ? ` · 非理想种子 ${r.execution.seed}` : ''}`}>
-            <td>{r.algorithm ?? r.run_id}<div className={s.meta}>{fmt.time(r.finished_utc)}{travelText(r.travel)}{r.execution?.mode === 'nonideal' ? ' · 非理想' : ''}</div></td>
+            <td>{r.algorithm ?? r.run_id}<div className={s.meta}>{fmt.time(r.finished_utc)} · {fieldTrafficLabel(r)}{travelText(r.travel)}{r.execution?.mode === 'nonideal' ? ' · 非理想' : ''}</div>
+              {r.time_windows && <div className={r.time_windows.all_on_time ? s.meta : s.bad}>实测到达：{arrivalLine(r.time_windows)}{r.time_windows.all_on_time ? '' : ` · ${lateLine(r.time_windows)}`}</div>}
+            </td>
             <td className={s.num}>{r.state === 'succeeded'
               ? <Badge tone="green">完成 {r.metrics.tasks_reached}/{r.metrics.tasks_total}</Badge>
               : r.state === 'canceled' ? <Badge tone="orange">已取消 {r.metrics.tasks_reached}/{r.metrics.tasks_total}</Badge>

@@ -167,3 +167,7 @@ td[data-best] { font-weight: 700; color: var(--mac-green); }
   background: var(--mac-red-soft); color: var(--mac-red); box-shadow: var(--mac-shadow-pop); z-index: 6; display: flex; align-items: center; gap: 10px; }
 .fleetClass { padding: 8px 10px; border: 0.5px solid var(--mac-separator); border-radius: 10px; background: var(--mac-inset); display: flex; flex-direction: column; gap: 7px; }
 .fleetClass h3 { margin-top: 0; }
+.sessionEvidence { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.sessionEvidence .kv { grid-template-columns: minmax(80px, auto) minmax(0, 1fr); }
+.sessionEvidence .kv b { white-space: normal; overflow-wrap: anywhere; }
+.sessionEvidence details > summary { cursor: pointer; font-size: 12px; }

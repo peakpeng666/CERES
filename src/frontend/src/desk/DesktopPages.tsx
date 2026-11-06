@@ -81,7 +81,7 @@ function LocalData() {
   </>;
 }
 
-const UPDATE: Record<UpdateState['status'], string> = { unavailable: '开发版本不检查更新', idle: '尚未检查', checking: '正在检查', current: '已是最新版本', downloading: '正在下载更新', ready: '更新已下载', error: '检查失败' };
+const UPDATE: Record<UpdateState['status'], string> = { unavailable: '更新不可用', idle: '尚未检查', checking: '正在检查', current: '桌面应用已是最新版本', 'no-release': '尚无桌面更新包', downloading: '正在下载更新', ready: '桌面更新包已下载', error: '检查失败' };
 
 function SimBackend({ current }: { current: 'native' | 'container' }) {
   const [st, setSt] = useState<SimBackendStatus | null>(null);

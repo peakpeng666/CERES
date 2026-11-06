@@ -62,6 +62,14 @@ def error(status: int, code: str, message: str) -> JSONResponse:
     return JSONResponse({'error': code, 'message': message}, status_code=status)
 
 
+class _RequestBodyError(StarletteHTTPException):
+    # FastAPI preserves HTTPException during body parsing; ordinary exceptions
+    # would be rewritten as a generic 400 before reaching the guard.
+    def __init__(self, status: int, code: str, message: str):
+        super().__init__(status_code=status, detail=message)
+        self.code = code
+
+
 @dataclass
 class Config:
     port: int = 4100
@@ -243,12 +251,70 @@ class Guard:
         self.hosts = LOCAL_HOSTS | set(extra_hosts)
 
     async def __call__(self, scope, receive, send):
-        if scope['type'] == 'http':
-            denied = self.check(scope)
-            if denied is not None:
-                await denied(scope, receive, send)
-                return
-        await self.app(scope, receive, send)
+        if scope['type'] != 'http':
+            await self.app(scope, receive, send)
+            return
+        denied = self.check(scope)
+        if denied is not None:
+            await denied(scope, receive, send)
+            return
+        headers = Headers(scope=scope)
+        limit = MAX_UPLOAD if self.is_upload(scope, headers) else MAX_BODY
+        received = 0
+        failure = None
+        response_started = False
+
+        async def limited_receive():
+            nonlocal received, failure
+            if failure is not None:
+                raise failure
+            message = await receive()
+            if message['type'] == 'http.request':
+                received += len(message.get('body', b''))
+                if received > limit:
+                    failure = _RequestBodyError(413, 'payload_too_large', f'请求体超过 {limit // (1024 * 1024)} MiB')
+                elif expected is not None and (received > expected or (not message.get('more_body', False) and received != expected)):
+                    failure = _RequestBodyError(400, 'invalid_content_length', '请求体长度与 Content-Length 不一致')
+                if failure is not None:
+                    raise failure
+            return message
+
+        async def tracked_send(message):
+            nonlocal response_started
+            if message['type'] == 'http.response.start':
+                response_started = True
+            await send(message)
+
+        try:
+            expected = self.content_length(headers, limit)
+            # Count only as the consumer reads: multipart files retain their
+            # streaming/spooled handling instead of being buffered here.
+            await self.app(scope, limited_receive, tracked_send)
+        except _RequestBodyError as exc:
+            if response_started:
+                raise
+            await error(exc.status_code, exc.code, exc.detail)(scope, receive, send)
+
+    @staticmethod
+    def is_upload(scope, headers):
+        ctype = headers.get('content-type', '').split(';')[0].strip().lower()
+        return (scope['method'] == 'POST' and ctype == 'multipart/form-data'
+                and UPLOAD_PATH.match(scope['path']) is not None and headers.get('x-workbench-upload') == '1')
+
+    @staticmethod
+    def content_length(headers, limit):
+        lengths = headers.getlist('content-length')
+        if not lengths:
+            return None
+        length = lengths[0].strip(' \t')
+        if len(lengths) != 1 or 'transfer-encoding' in headers or re.fullmatch(r'[0-9]+', length) is None:
+            raise _RequestBodyError(400, 'invalid_content_length', 'Content-Length 须为唯一的非负整数，且不能与 Transfer-Encoding 同时声明')
+        # Avoid converting an attacker-sized decimal string with int().
+        normalized = length.lstrip('0') or '0'
+        maximum = str(limit)
+        if len(normalized) > len(maximum) or (len(normalized) == len(maximum) and normalized > maximum):
+            raise _RequestBodyError(413, 'payload_too_large', f'请求体超过 {limit // (1024 * 1024)} MiB')
+        return int(normalized)
 
     def check(self, scope):
         headers = Headers(scope=scope)
@@ -272,12 +338,7 @@ class Guard:
             return error(403, 'cross_origin', '拒绝跨源写入请求')
         ctype = headers.get('content-type', '').split(';')[0].strip().lower()
         # Asset file uploads are multipart; a custom header (which cross-site forms cannot send) keeps them CSRF-safe.
-        upload = (method == 'POST' and ctype == 'multipart/form-data' and UPLOAD_PATH.match(scope['path']) is not None
-                  and headers.get('x-workbench-upload') == '1')
-        limit = MAX_UPLOAD if upload else MAX_BODY
-        length = headers.get('content-length')
-        if length and length.isdigit() and int(length) > limit:
-            return error(413, 'payload_too_large', f'请求体超过 {limit // (1024 * 1024)} MiB')
+        upload = self.is_upload(scope, headers)
         if method != 'DELETE' and scope['path'].startswith('/lab/api/'):
             if ctype != 'application/json' and not upload:
                 return error(415, 'unsupported_media_type', 'POST 只接受 application/json')
@@ -313,6 +374,10 @@ def create_app(config: Config | None = None) -> FastAPI:
     @app.exception_handler(ApiError)
     async def _api_error(request, exc: ApiError):
         return error(exc.status, exc.code, exc.message)
+
+    @app.exception_handler(_RequestBodyError)
+    async def _request_body_error(request, exc: _RequestBodyError):
+        return error(exc.status_code, exc.code, exc.detail)
 
     @app.exception_handler(ServiceError)
     async def _service_error(request, exc: ServiceError):
@@ -689,7 +754,8 @@ def create_app(config: Config | None = None) -> FastAPI:
             # The live panel needs the verdict, not megabytes of sampled trajectories.
             # Keep the full endpoint unchanged for replay, download and independent checks.
             keys = ('session_id', 'run_id', 'state', 'check', 'physics', 'physics_audit', 'physics_runtime',
-                    'truth_timing', 'energy', 'session_report', 'execution', 'execution_report', 'ground_contact_observations')
+                    'truth_timing', 'energy', 'session_report', 'execution', 'execution_report', 'ground_contact_observations',
+                    'traffic_mode', 'traffic', 'time_windows')
             result = {key: result.get(key) for key in keys}
         # Already JSON-native evidence. Serialize in this worker, avoiding FastAPI's
         # recursive encoder on the event loop while other clients control the session.

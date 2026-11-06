@@ -82,6 +82,9 @@ function childEnv(app, port, settings) {
     URP_PORT: String(port),
     URP_MODELS_REFRESH: '1',
     URP_DESKTOP: '1',
+    // Source Electron uses this checkout's ROS setup; packaged apps must use their accepted simulation image.
+    // Derive this here so an inherited development flag cannot enable host ROS in an installed app.
+    URP_DESKTOP_SOURCE: app.isPackaged ? '0' : '1',
     URP_APP_VERSION: app.getVersion(),
     // The JS baselines run on this binary, so the installer does not carry a second Node.
     URP_NODE: process.execPath,
@@ -97,6 +100,7 @@ class Backend {
     this.app = app;
     this.settings = settings;
     this.child = null;
+    this.starting = null;
     this.base = null;
     this.logPath = path.join(app.getPath('userData'), 'logs', 'backend.log');
   }
@@ -110,6 +114,16 @@ class Backend {
   }
 
   async start(onStatus = () => {}) {
+    if (this.starting) return this.starting;
+    this.starting = this._start(onStatus);
+    try { return await this.starting; }
+    finally { this.starting = null; }
+  }
+
+  async _start(onStatus) {
+    if (this.child && this.child.exitCode === null && this.child.signalCode == null) {
+      throw new Error('现有后端进程还未退出，不能重复启动；请重试以先停止原进程');
+    }
     prepareDataHome(this.app, this.settings);
     const { python, cwd } = layout(this.app);
     if (!fs.existsSync(python)) throw new Error(`找不到内置 Python：${python}`);
@@ -127,29 +141,45 @@ class Backend {
     const child = this.child;
     const exited = new Promise((resolve) => child.once('exit', (code) => resolve(code ?? -1)));
     child.once('error', (error) => fs.appendFileSync(this.logPath, `无法启动：${error.message}\n`));
-    const deadline = Date.now() + START_TIMEOUT_MS;
-    while (Date.now() < deadline) {
-      if (await healthy(this.base)) return this.base;
-      const code = await Promise.race([exited, new Promise((r) => setTimeout(() => r(null), 300))]);
-      if (code !== null) throw new Error(`后端退出（返回码 ${code}）\n${this.tail()}`);
+    try {
+      const deadline = Date.now() + START_TIMEOUT_MS;
+      while (Date.now() < deadline) {
+        if (await healthy(this.base)) return this.base;
+        const code = await Promise.race([exited, new Promise((r) => setTimeout(() => r(null), 300))]);
+        if (code !== null) throw new Error(`后端退出（返回码 ${code}）\n${this.tail()}`);
+      }
+      throw new Error(`后端 ${START_TIMEOUT_MS / 1000} 秒内没有就绪\n${this.tail()}`);
+    } catch (error) {
+      // A failed launch still owns its child. Retire it before returning to the recovery UI;
+      // stop() retains the handle if termination fails, so retry cannot orphan another process.
+      try { await this.stop(); }
+      catch (stopError) {
+        throw new Error(`${error.message}\n启动失败后的清理未完成：${stopError.message}`, { cause: error });
+      }
+      throw error;
     }
-    throw new Error(`后端 ${START_TIMEOUT_MS / 1000} 秒内没有就绪\n${this.tail()}`);
   }
 
   /** Orderly first, so running solves and simulations close and keep their records; force only after that fails. */
   async stop() {
     const child = this.child;
-    this.child = null;
-    if (!child || child.exitCode !== null) return;
+    if (!child || child.exitCode !== null || child.signalCode != null) {
+      if (this.child === child) this.child = null;
+      return;
+    }
     const gone = new Promise((resolve) => child.once('exit', resolve));
     await request(`${this.base}/lab/api/shutdown`, { method: 'POST', timeoutMs: 3000 });
     child.stdin?.end();
     const clean = await Promise.race([gone.then(() => true), new Promise((r) => setTimeout(() => r(false), STOP_TIMEOUT_MS))]);
-    if (clean) return;
+    if (clean) {
+      if (this.child === child) this.child = null;
+      return;
+    }
     if (process.platform === 'win32') spawn('taskkill', ['/PID', String(child.pid), '/T', '/F'], { windowsHide: true });
     else child.kill('SIGKILL');
     const stopped = await Promise.race([gone.then(() => true), new Promise((r) => setTimeout(() => r(false), 5000))]);
     if (!stopped) throw new Error('后端还未退出，不能切换或迁移数据');
+    if (this.child === child) this.child = null;
   }
 }
 

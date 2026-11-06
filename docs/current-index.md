@@ -4,6 +4,12 @@
 
 **[交付要求](requirements.md)** · **[研究决策图](research-map.md)**
 
+## 2026-11-06 Lab 双引擎一体化
+
+开发在唯一工程 `~/Projects/Lab/code` 的 main 中继续；本机与 GitHub 当前均仅有 main 开发分支。Lab 的原 Dock 入口已完成目录迁移，学术研究位于 `~/Research/URP`。源码 Electron 可运行本机 Gazebo；同一仿真页接入逐车/并行交通、时间窗、MuJoCo 冻结重放和同条件比较。实际两车验收与完整工程结果见[工程报告](../setup/2026-10-30/engineering/REPORT.md)，操作与指标定义见[使用说明](../setup/README.md#仿真与引擎比较)。本轮源码进展不代表旧安装包或容器镜像已更新。
+
+以下各节按历史日期保留，当时的待整合、待迁移或分支数量不能作为当前状态。
+
 ## 2026-11-06 main 接续本机成果
 
 本机冻结成果 `658e810bbe928b17cbf0f03b3db519608e104845` 已通过 `c63a27f5` 合入主线。本轮以 main `42101cc4` 为基线，直接接续既有 Electron 工程的 Lab 界面、任务时间窗与有种子的 MuJoCo 扰动批次；保留当前任务身份、预算和同模型排序保护。功能入口与边界见[使用说明](../setup/README.md)，本轮验证见[工程报告](../setup/2026-10-30/engineering/REPORT.md)。历史[云端接续审阅](../setup/2026-11-06/local-integration/CLOUD-REVIEW.md)保留原日期与范围；源码整合不代表镜像、安装器或真实 Gazebo 验收已完成。

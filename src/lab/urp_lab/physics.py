@@ -25,6 +25,7 @@ from .events import utc_now
 from .jobs import new_id
 from .mujoco_field import FACTORS, MAX_INTENSITY, supports
 from .scenarios import validate_instance
+from .services import ServiceError
 from .solvers.fleet import check as check_fleet
 
 log = logging.getLogger('urp_lab.physics')
@@ -101,14 +102,24 @@ def plan_from_run(run: dict, out: Path) -> dict:
         raise PhysicsError(422, 'not_fleet_plan', '只有已完成的多车任务方案可以进入物理执行')
     if run.get('status') not in ('feasible', 'optimal') or (run.get('check') or {}).get('valid') is not True:
         raise PhysicsError(422, 'unchecked_plan', '方案未通过独立检查，不能进入物理执行')
+    if (run.get('instance') or {}).get('unload_points') and (run.get('raw_result') or {}).get('model_contract', {}).get('schema') != 'urp.fleet-model/2':
+        raise PhysicsError(422, 'obsolete_resupply_model', '补给方案来自旧模型或缺少版本证据，请重新求解并验算；原记录保留')
     try:
         inst = validate_instance('fleet_routing', run['instance'])
         checked = check_fleet(inst, run['routes'], run.get('params') or {})
         if not checked['valid']:
             raise ValueError('；'.join(checked['errors'][:5]))
-        world = fieldworld.build(inst, run['routes'], out, 'physics', 4.0, None, None, inherit_ground=False)
     except (ValueError, TypeError, KeyError, IndexError) as exc:
         raise PhysicsError(422, 'invalid_plan', f'物理执行前重新验算失败：{exc}') from None
+    from .assets.bindings import field_vehicle
+    try:
+        vehicle_asset = field_vehicle(run)
+    except ServiceError as exc:
+        raise PhysicsError(exc.status, exc.code, exc.message) from None
+    try:
+        world = fieldworld.build(inst, run['routes'], out, 'physics', 4.0, None, None, inherit_ground=False)
+    except (ValueError, TypeError, KeyError, IndexError) as exc:
+        raise PhysicsError(422, 'invalid_plan', f'物理执行计划生成失败：{exc}') from None
     windows = time_windows.by_task(inst)
     for v, r in zip(world['vehicles'], run['routes']):
         v['planned_length_m'], v['planned_duration_s'] = r.get('cost'), r.get('duration_s')
@@ -116,6 +127,7 @@ def plan_from_run(run: dict, out: Path) -> dict:
             if task['id'] in windows:
                 task['earliest_s'], task['latest_s'] = windows[task['id']]
     return {**world, 'run_id': run['run_id'], 'scenario_id': run['scenario_id'], 'algorithm': (run.get('algorithm') or {}).get('name'),
+            'planning_check': checked, 'planning_solution': run, 'vehicle_asset': vehicle_asset,
             'planned': {'makespan_s': max(r['duration_s'] for r in run['routes']), 'total_distance_m': checked['computed_cost']}}
 
 
@@ -136,6 +148,8 @@ class PhysicsManager:
         self._procs: dict[str, subprocess.Popen] = {}
         self._canceled: set[str] = set()
         self._batches: dict[str, tuple[threading.Event, threading.Thread]] = {}
+        self._workers: dict[str, threading.Thread] = {}
+        self._closing = False
         for rec in store.list_physics_runs(limit=200):
             if rec.get('state') in ACTIVE:
                 self._finish(rec, 'failed', ['网关重启时运行中断'])
@@ -152,6 +166,45 @@ class PhysicsManager:
         rec.update(state=state, errors=errors, finished_utc=utc_now())
         self._emit(rec)
 
+    def _ensure_open(self):
+        with self._lock:
+            if self._closing:
+                raise PhysicsError(503, 'manager_shutdown', '物理执行服务正在关闭，不能提交新运行')
+
+    def _start_worker(self, rec: dict, target, args: tuple, stop: threading.Event | None = None):
+        rid = rec['physics_run_id']
+        worker = threading.Thread(target=self._worker_entry, args=(rec, target, args), name=f'physics-{rid}', daemon=True)
+        with self._lock:
+            if self._closing:
+                raise PhysicsError(503, 'manager_shutdown', '物理执行服务正在关闭，不能提交新运行')
+            self._workers[rid] = worker
+            if stop is not None:
+                self._batches[rid] = (stop, worker)
+            try:
+                self._emit(rec)
+                worker.start()  # shutdown cannot observe a registered but unstarted thread
+            except Exception as exc:
+                self._workers.pop(rid, None)
+                self._batches.pop(rid, None)
+                self._canceled.discard(rid)
+                self._finish(rec, 'failed', [f'启动物理执行线程失败：{exc}'])
+
+    def _worker_entry(self, rec: dict, target, args: tuple):
+        rid = rec['physics_run_id']
+        try:
+            target(rec, *args)
+        except Exception as exc:
+            log.exception('physics worker %s failed to finalize', rid)
+            with self._lock:
+                batch = self._batches.pop(rid, None)
+                canceled = rid in self._canceled or bool(batch and batch[0].is_set())
+                self._canceled.discard(rid)
+                self._finish(rec, 'canceled' if canceled else 'failed', ['已取消'] if canceled else [f'物理执行未能正常结束：{exc}'])
+        finally:
+            with self._lock:
+                self._workers.pop(rid, None)  # every store write precedes deregistration
+                self._canceled.discard(rid)
+
     def _gazebo(self, session_id: str) -> tuple[dict, dict]:
         base = self.runtime / 'fieldsim' / session_id
         try:
@@ -167,6 +220,7 @@ class PhysicsManager:
         ``traffic`` is how the vehicles share the field: one mission at a time, or all at once through the temporal plan
         graph. A Gazebo record is replayed the way it was executed, so a comparison stays about the engines.
         """
+        self._ensure_open()
         if not available()['available']:
             raise PhysicsError(503, 'engine_unavailable', available()['reason'])
         if traffic not in TRAFFIC:
@@ -189,8 +243,7 @@ class PhysicsManager:
         (out / 'plan.json').write_text(json.dumps(plan, ensure_ascii=False), encoding='utf8')
         rec = {'physics_run_id': rid, 'run_id': run_id, 'session_id': session_id, 'scenario_id': plan.get('scenario_id'), 'algorithm': plan.get('algorithm'),
                'engine': 'mujoco', 'state': 'running', 'created_utc': utc_now(), 'finished_utc': None, 'progress': None, 'errors': [], 'traffic_mode': traffic}
-        self._emit(rec)
-        threading.Thread(target=self._run, args=(rec, reference), name=f'physics-{rid}', daemon=True).start()
+        self._start_worker(rec, self._run, (reference,))
         return rec
 
     def _frozen_plan(self, run_id: str | None, traffic: str) -> dict:
@@ -217,6 +270,7 @@ class PhysicsManager:
         Two plans given the same seed meet the same draws. ``wall_limit_s`` bounds the whole batch: runs still going then
         are stopped and counted as cut off, never as failures of the plan.
         """
+        self._ensure_open()
         if not available()['available']:
             raise PhysicsError(503, 'engine_unavailable', available()['reason'])
         if traffic not in TRAFFIC:
@@ -246,11 +300,7 @@ class PhysicsManager:
                'batch': {'runs': runs, 'seed': seed, 'intensity': float(intensity), 'factors': chosen, 'wall_limit_s': float(wall_limit_s), 'workers': min(runs, len(cpus)), 'cpus': cpus},
                'planned_makespan_s': (plan.get('planned') or {}).get('makespan_s'), 'predicted_makespan_s': traffic_of.get('predicted_makespan_s'), 'meetings': traffic_of.get('meetings')}
         stop = threading.Event()
-        worker = threading.Thread(target=self._run_batch, args=(rec, stop), name=f'physics-{rid}', daemon=True)
-        with self._lock:
-            self._batches[rid] = (stop, worker)
-        self._emit(rec)
-        worker.start()
+        self._start_worker(rec, self._run_batch, (stop,), stop)
         return rec
 
     def _sample_process(self, rec: dict, index: int) -> subprocess.Popen:
@@ -269,17 +319,27 @@ class PhysicsManager:
                 pass          # already gone: its exit code tells the rest
         with self._lock:
             self._procs[f'{rid}/{index}'] = proc
+            batch = self._batches.get(rid)
+            if self._closing or (batch and batch[0].is_set()):
+                self._kill(proc)
         return proc
 
     def _sample_row(self, rec: dict, index: int, code: int) -> dict:
         """A finished run. An exit without a record is a result too: it says the run ended abnormally, not that the plan failed."""
         base = self._dir(rec['physics_run_id']) / 'samples' / f'{index:03d}'
+        worker_result = None
         try:
-            return {'index': index, **json.loads(base.with_suffix('.json').read_text(encoding='utf8'))}
+            worker_result = json.loads(base.with_suffix('.json').read_text(encoding='utf8'))
+            if code == 0:
+                return {'index': index, **worker_result, 'returncode': code}
         except (OSError, ValueError):
-            tail = base.with_suffix('.log').read_text(encoding='utf8', errors='replace').strip().splitlines()[-1:] if base.with_suffix('.log').exists() else []
-            return {'index': index, 'seed': sample_seed(rec['batch']['seed'], index), 'state': 'crashed', 'valid': False, 'reason': 'worker_crash',
-                    'errors': [f'物理执行进程异常退出（退出码 {code}）', *tail]}
+            pass
+        tail = base.with_suffix('.log').read_text(encoding='utf8', errors='replace').strip().splitlines()[-1:] if base.with_suffix('.log').exists() else []
+        # A saved result cannot override an abnormal exit. Keep both pieces of
+        # evidence while excluding the sample from the success statistics.
+        return {'index': index, 'seed': sample_seed(rec['batch']['seed'], index), 'state': 'crashed', 'valid': False, 'reason': 'worker_crash',
+                'returncode': code, 'worker_result': worker_result,
+                'errors': [f'物理执行进程异常退出（退出码 {code}）', *tail]}
 
     def _run_batch(self, rec: dict, stop: threading.Event):
         rid, spec = rec['physics_run_id'], rec['batch']
@@ -288,16 +348,19 @@ class PhysicsManager:
         deadline = started + spec['wall_limit_s']
         try:
             while (waiting or live) and not stop.is_set() and time.monotonic() < deadline:
-                while waiting and len(live) < spec['workers']:
+                while waiting and len(live) < spec['workers'] and not stop.is_set():
                     index = waiting.pop(0)
                     live[index] = self._sample_process(rec, index)
                 for index, proc in list(live.items()):
-                    if proc.poll() is None:
-                        continue
-                    del live[index]
                     with self._lock:
+                        if stop.is_set():
+                            break  # cancellation kills are cut off, never worker failures
+                        code = proc.poll()
+                        if code is None:
+                            continue
+                        del live[index]
                         self._procs.pop(f'{rid}/{index}', None)
-                    rows[index] = self._sample_row(rec, index, proc.returncode)
+                    rows[index] = self._sample_row(rec, index, code)
                     rec['progress'] = {'runs_done': len(rows), 'runs_total': spec['runs']}
                     self._emit(rec)
                 stop.wait(.05)
@@ -310,7 +373,7 @@ class PhysicsManager:
     def _close_batch(self, rec: dict, rows: dict, live: dict, stop: threading.Event, failure: str | None, wall_s: float | None = None):
         rid, spec = rec['physics_run_id'], rec['batch']
         for index, proc in live.items():
-            proc.kill()
+            self._kill(proc)
             proc.wait()
             with self._lock:
                 self._procs.pop(f'{rid}/{index}', None)
@@ -322,25 +385,41 @@ class PhysicsManager:
         rec['wall_s'] = round(wall_s, 2) if wall_s is not None else None
         with self._lock:
             self._batches.pop(rid, None)
-        if failure:
-            self._finish(rec, 'failed', [failure])
-        elif stop.is_set():
-            self._finish(rec, 'canceled', ['已取消'])
-        elif unfinished:
-            self._finish(rec, 'truncated', [f"到达总时长上限 {spec['wall_limit_s']:g} s，完成 {rec['summary']['finished']}/{spec['runs']} 次"])
-        else:
-            self._finish(rec, 'succeeded', [])
+            if failure:
+                self._finish(rec, 'failed', [failure])
+            elif stop.is_set():
+                self._finish(rec, 'canceled', ['已取消'])
+            elif unfinished:
+                self._finish(rec, 'truncated', [f"到达总时长上限 {spec['wall_limit_s']:g} s，完成 {rec['summary']['finished']}/{spec['runs']} 次"])
+            else:
+                self._finish(rec, 'succeeded', [])
+
+    @staticmethod
+    def _kill(proc):
+        try:
+            proc.kill()
+        except ProcessLookupError:
+            pass  # it exited between cancellation and the signal
 
     def _run(self, rec: dict, reference: dict | None):
         rid = rec['physics_run_id']
         out = self._dir(rid)
-        proc = subprocess.Popen([sys.executable, '-m', 'urp_lab.physics_worker', str(out / 'plan.json'), str(out / 'result.json')],
-                                cwd=paths.LAB, stdout=subprocess.PIPE, stderr=(out / 'stderr.log').open('wb'), text=True)
-        with self._lock:
-            self._procs[rid] = proc
-        killer = threading.Timer(WALL_LIMIT_S, proc.kill)
-        killer.start()
+        proc = killer = None
+        state, errors = 'failed', []
         try:
+            with self._lock:
+                canceled = self._closing or rid in self._canceled
+            if canceled:
+                return  # finally records the cancellation without starting a process
+            with (out / 'stderr.log').open('wb') as err:
+                proc = subprocess.Popen([sys.executable, '-m', 'urp_lab.physics_worker', str(out / 'plan.json'), str(out / 'result.json')],
+                                        cwd=paths.LAB, stdout=subprocess.PIPE, stderr=err, text=True)
+            with self._lock:
+                self._procs[rid] = proc
+                if self._closing or rid in self._canceled:
+                    self._kill(proc)  # cancellation may have arrived while Popen was starting
+            killer = threading.Timer(WALL_LIMIT_S, self._kill, args=(proc,))
+            killer.start()
             for line in proc.stdout:
                 try:
                     note = json.loads(line)
@@ -352,44 +431,61 @@ class PhysicsManager:
                     rec['progress'] = note
                     self._emit(rec)
             code = proc.wait()
+            if code != 0 or not (out / 'result.json').exists():
+                tail = (out / 'stderr.log').read_text(encoding='utf8', errors='replace').strip().splitlines()[-1:]
+                errors = rec.get('errors') or tail or [f'物理执行进程退出码 {code}']
+            else:
+                result = json.loads((out / 'result.json').read_text(encoding='utf8'))
+                rec.update({k: result.get(k) for k in SUMMARY if k != 'state'})
+                state, errors = result['state'], result.get('errors') or []
+                if state in ACTIVE or state not in ('succeeded', 'failed', 'canceled'):
+                    raise ValueError(f'无效的物理执行终态：{state}')
+                rec['check'] = {k: (result.get('check') or {}).get(k) for k in ('valid', 'errors', 'scope')}
+                rec['traffic'] = _traffic_summary(result)
+                rec['time_windows'] = time_windows.compact(result.get('time_windows'))
+                if reference:
+                    rec['comparison'] = sim2sim.compare(reference, result)
+        except Exception as exc:
+            log.exception('physics run %s failed', rid)
+            state, errors = 'failed', [f'物理执行失败：{exc}']
         finally:
-            killer.cancel()
+            if killer is not None:
+                killer.cancel()
+            if proc is not None:
+                try:
+                    if proc.poll() is None:
+                        self._kill(proc)
+                    proc.wait(timeout=5)
+                except (OSError, subprocess.TimeoutExpired) as exc:
+                    state, errors = 'failed', [f'结束物理执行进程失败：{exc}']
+                finally:
+                    if proc.stdout is not None:
+                        try:
+                            proc.stdout.close()
+                        except OSError as exc:
+                            state, errors = 'failed', [f'关闭物理执行输出失败：{exc}']
+            # Finish and cancel share the lock: a late request cannot leave a stale
+            # cancellation marker or overwrite a terminal record.
             with self._lock:
                 self._procs.pop(rid, None)
-        if rid in self._canceled:
-            self._canceled.discard(rid)
-            self._finish(rec, 'canceled', ['已取消'])
-            return
-        if code != 0 or not (out / 'result.json').exists():
-            tail = (out / 'stderr.log').read_text(encoding='utf8', errors='replace').strip().splitlines()[-1:]
-            self._finish(rec, 'failed', rec.get('errors') or tail or [f'物理执行进程退出码 {code}'])
-            return
-        try:
-            result = json.loads((out / 'result.json').read_text(encoding='utf8'))
-            rec.update({k: result.get(k) for k in SUMMARY})
-            rec['check'] = {k: (result.get('check') or {}).get(k) for k in ('valid', 'errors', 'scope')}
-            rec['traffic'] = _traffic_summary(result)
-            rec['time_windows'] = time_windows.compact(result.get('time_windows'))
-            if reference:
-                rec['comparison'] = sim2sim.compare(reference, result)
-            rec['finished_utc'] = utc_now()
-            self._emit(rec)
-        except (OSError, ValueError, KeyError, TypeError) as exc:
-            log.exception('reading physics result %s failed', rid)
-            self._finish(rec, 'failed', [f'读取物理执行结果失败：{exc}'])
+                if self._closing or rid in self._canceled:
+                    state, errors = 'canceled', ['已取消']
+                self._canceled.discard(rid)
+                self._finish(rec, state, errors)
 
     def cancel(self, rid: str) -> dict | None:
-        rec = self.store.get_physics_run(rid)
-        if not rec:
-            return None
         with self._lock:
+            rec = self.store.get_physics_run(rid)
+            if not rec or rec.get('state') not in ACTIVE:
+                return rec
             proc, batch = self._procs.get(rid), self._batches.get(rid)
-        if batch:
-            batch[0].set()
-        if proc:
-            self._canceled.add(rid)
-            proc.kill()
-        return rec
+            if batch:
+                batch[0].set()
+            else:
+                self._canceled.add(rid)  # also covers the interval before process registration
+                if proc:
+                    self._kill(proc)
+            return rec
 
     def get(self, rid: str) -> dict | None:
         """The record with its trails at 2 Hz for display; the 50 Hz truth stays in the run directory."""
@@ -424,11 +520,18 @@ class PhysicsManager:
 
     def shutdown(self):
         with self._lock:
+            self._closing = True
+            workers = list(self._workers.values())
+            for rid in self._workers:
+                batch = self._batches.get(rid)
+                if batch:
+                    batch[0].set()
+                else:
+                    self._canceled.add(rid)
             procs = list(self._procs.values())
-            batches = list(self._batches.values())
-        for stop, _ in batches:
-            stop.set()
         for proc in procs:
-            proc.kill()
-        for _, worker in batches:
-            worker.join(5)        # a batch closes its own record, and the store is about to close
+            self._kill(proc)
+        # Workers can finish, register a process that was still in Popen, and
+        # persist their terminal state without needing a lock held by shutdown.
+        for worker in workers:
+            worker.join()

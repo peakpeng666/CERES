@@ -20,10 +20,11 @@ extraResources:
     to: compose/docker-compose.sim.yml
   - from: ../../deploy/docker-compose.desktop.yml
     to: compose/docker-compose.desktop.yml
-# Releases are published under the repository's latest release, which every desktop release claims.
+# Runtime discovery selects a complete desktop release and pins its tag before every check.
+# Keep the baked-in fallback on this build's tag; archive releases may own GitHub's latest pointer.
 publish:
   provider: generic
-  url: https://github.com/peakpeng666/URP/releases/latest/download
+  url: https://github.com/peakpeng666/URP/releases/download/v${version}/
 linux:
   target: [AppImage, deb]
   category: Science

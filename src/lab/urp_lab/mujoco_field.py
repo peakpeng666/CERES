@@ -20,10 +20,11 @@ from typing import Callable, Iterable
 from shapely.geometry import Polygon
 from shapely.ops import triangulate
 
-from . import lanes
+from . import lanes, time_windows
 from .field_energy import account
 from .field_physics import box_inertia
 from .field_tracking import Driver
+from .sim2sim import plan_identity
 from .field_traffic import MissionQueue, PASSAGE_POLICY, PassageQueue
 
 ENGINE = 'mujoco'
@@ -315,8 +316,7 @@ def execute(plan: dict, *, progress: Callable[[dict], None] | None = None, shoul
         queue = PassageQueue(drivers, plan['robot_radius_m'], t0, traffic['gates'])
     else:
         queue = MissionQueue(drivers, plan['robot_radius_m'], t0)
-    planned = max(sum(v.get('planned_duration_s') or 0 for v in plan['vehicles']), 60)
-    deadline = t0 + 2.5 * planned + 120
+    deadline = t0 + time_windows.execution_horizon_s(plan)
     last_ctrl = last_report = -1.
     terminal_since = None
     commands = {d.name: (0., 0.) for d in drivers}
@@ -393,6 +393,7 @@ def _record(plan, drivers, poses, traces, contacts, errors, state, t0, t_end, wa
                'energy_wh': round(sum((e or {}).get('energy_wh', 0) for e in energy.values()), 3)}
     return {'schema': SCHEMA, 'engine': ENGINE, 'engine_version': _mujoco().__version__, 'state': state, 'errors': errors,
             'run_id': plan.get('run_id'), 'session_id': plan.get('session_id'), 'scenario_id': plan.get('scenario_id'),
+            'plan_identity': plan_identity(plan),
             'algorithm': plan.get('algorithm'), 'world': plan.get('world'), 'sim_time': round(t_end, 3), 'wall_s': round(wall_s, 3),
             'real_time_factor': round(t_end / wall_s, 1) if wall_s else None, 'execution_started_sim_s': t0, 'metrics': metrics,
             'vehicles': vehicles, 'tasks': tasks, 'trails': {name: [[p[0], p[1], p[2], p[6]] for p in rows] for name, rows in poses.items()}, 'rigid_body_poses': poses,

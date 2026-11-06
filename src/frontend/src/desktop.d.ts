@@ -1,5 +1,5 @@
 /** What the desktop shell exposes to the page. Absent in a plain browser. */
-export interface UpdateState { status: 'unavailable' | 'idle' | 'checking' | 'current' | 'downloading' | 'ready' | 'error'; version: string | null; percent: number | null; detail: string | null }
+export interface UpdateState { status: 'unavailable' | 'idle' | 'checking' | 'current' | 'no-release' | 'downloading' | 'ready' | 'error'; version: string | null; percent: number | null; detail: string | null }
 export interface SimBackendStatus {
   platform: string; image: string; download: string;
   docker: { ready: boolean; version: string | null; detail: string | null };
