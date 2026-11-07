@@ -106,6 +106,14 @@ def set_number(label, value):
     })(""" + json.dumps([label, value]) + ')')
 
 
+def settled(scenario):
+    runs = until(lambda: api('/runs?scenario_id=' + scenario + '&limit=10')['runs'], lambda r: len(r) >= 3 and all(x['state'] not in ('queued', 'running') for x in r), 60)
+    click('方案', role='tab')
+    until(lambda: js("document.body.innerText.includes('个可行')"), bool, 20)
+    time.sleep(1)
+    return runs
+
+
 def preview_lines():
     return js("document.querySelectorAll('[aria-label=\\u7530\\u5757\\u9884\\u89c8] line').length")
 
@@ -124,9 +132,7 @@ try:
     shot('design-boom')
     click('生成并求解')
     until(lambda: js('location.hash'), lambda h: h.startswith('#/plan/field-'), 20)
-    click('方案', role='tab')
-    until(lambda: js("document.body.innerText.includes('比顺序往复')"), bool, 40)
-    time.sleep(1)
+    settled(js('location.hash').split('/')[-1])
     shot('plan-boom')
     summary['planning_rig_has_gazebo'] = js("[...document.querySelectorAll('button')].some(x=>x.textContent.trim()==='Gazebo')")
     assert not summary['planning_rig_has_gazebo']
@@ -142,9 +148,7 @@ try:
     click('生成并求解')
     until(lambda: js('location.hash'), lambda h: h.startswith('#/plan/field-'), 20)
     scenario_id = js('location.hash').split('/')[-1]
-    click('方案', role='tab')
-    until(lambda: js("document.body.innerText.includes('比顺序往复')"), bool, 40)
-    runs = api('/runs?scenario_id=' + scenario_id + '&limit=10')['runs']
+    runs = settled(scenario_id)
     done = [r for r in runs if r['state'] == 'done' and (r.get('check') or {}).get('valid')]
     assert len(done) >= 3, [(r['algorithm']['id'], r['state'], r['status']) for r in runs]
     summary['plans'] = {r['algorithm']['id']: {k: r['metrics'].get(k) for k in ('nonworking_distance_m', 'makespan_s', 'field_efficiency', 'refills', 'coverage_fraction')} for r in done}
@@ -155,7 +159,7 @@ try:
     time.sleep(.5)
     shot('verify-robot')
     for traffic in ('serial', 'coordinated'):
-        api('/fieldsim', {'run_id': rid, 'real_time_factor': 10, 'traffic': traffic, 'gui': False, 'rviz': False})
+        api('/fieldsim', {'run_id': rid, 'real_time_factor': 4, 'traffic': traffic, 'gui': False, 'rviz': False})
         state = until(lambda: api('/fieldsim'), lambda x: bool(x.get('session_id')) and x['running'] and x.get('run_id') == rid, 20)
         owned_session = state['session_id']
         js("location.hash='#/sim'")

@@ -56,7 +56,7 @@ def assess(env: dict, crop: dict | None, operation: dict, platform: dict, implem
         fits = rig['clearance_width_m'] + .3 <= alley
         out.append(_c('alley', 'pass' if fits else 'block', '通道宽度', f"净通道 {alley:.2f} m，机组宽 {rig['clearance_width_m']:.2f} m（两侧共留 0.3 m）。",
                       None if fits else '换窄型平台或更宽行距'))
-    if crop and crop.get('stand') == 'row' and spacing and operation.get('crop_protected') and rig['track_m'] > 0:
+    if env['structure'] != 'alley' and crop and crop.get('stand') == 'row' and spacing and operation.get('crop_protected') and rig['track_m'] > 0:
         # wheels must run between crop rows: track a multiple of the row spacing
         k = rig['track_m'] / spacing
         drift = abs(k - round(k)) * spacing

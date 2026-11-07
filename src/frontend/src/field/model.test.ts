@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { BASE, basisOf, fmt, hours, implementFits, lineOperations, platformsFor, reconcile } from './model';
 import { cell } from './Coverage';
+import { planVerdict } from './PlanSide';
 import type { Catalog, Environment, Implement, Mission, Platform } from './types';
 
 const sourced = (v: number, s = 'a') => ({ v, s });
@@ -69,6 +70,17 @@ describe('coverage matrix', () => {
     expect(cell(catalog, 'open_field', 'spray')).toBe('native');
     expect(cell(catalog, 'barn', 'spray')).toBe('none');
     expect(cell(catalog, 'bare', 'spray')).toBe('none');
+  });
+});
+
+describe('plan verdict', () => {
+  it('states the saving, a loss, and the case where order does not matter', () => {
+    expect(planVerdict(false, .29, .29)).toBe('非作业里程比顺序往复少 29%');
+    expect(planVerdict(false, -.08, .1)).toBe('非作业里程比顺序往复多 8%');
+    expect(planVerdict(false, 0, 0)).toBe('与顺序往复相同');
+    expect(planVerdict(true, null, 0)).toBe('排行序没有收益，顺序往复已是最好');
+    expect(planVerdict(true, null, .2)).toBe('最好的方案可少 20% 非作业里程');
+    expect(planVerdict(true, null, null)).toBeNull();
   });
 });
 

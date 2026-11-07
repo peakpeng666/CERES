@@ -154,6 +154,11 @@ def test_operation_must_belong_to_the_environment():
         assert set(env['line_operations']) <= {o['id'] for o in cat.load()['operations'] if o['family'] == 'line'}
 
 
+def test_track_check_applies_to_straddled_rows_not_orchard_alleys():
+    assert 'track' not in checks_of(ORCHARD)
+    assert checks_of(dict(BOOM, crop='corn'))['track']['level'] in ('pass', 'warn')
+
+
 def test_power_block_names_the_figures():
     c = checks_of(dict(environment='open_field', crop=None, operation='tillage', platform='jd_5075gn', implement='moldboard_plow',
                        field={'shape': 'rect', 'width_m': 200, 'height_m': 100}, overrides={'work_width_m': 3.0}))['power']

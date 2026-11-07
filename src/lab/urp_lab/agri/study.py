@@ -189,6 +189,56 @@ def _cluster_ci(pairs, seed=20261107, draws=2000):
     return [round(float(np.quantile(values, .025)), 4), round(float(np.quantile(values, .975)), 4)]
 
 
+SWEEP_RADII = (.75, 1.5, 2.25, 3.0, 4.5, 6.0, 9.0)
+
+
+def sweep_one(spec: dict) -> list[dict]:
+    """One rig, one field, one turning radius. Headland follows the radius, so room to turn is not the variable."""
+    base = RIGS['R3_tillage']
+    m = {**base, 'field': spec['geometry'], 'angle_deg': 0., 'objective': 'nonworking', 'fleet': 1, 'overrides': {'min_turn_radius_m': spec['radius']}}
+    inst = missions.compile_mission(m)['instance']
+    out = []
+    for algorithm, seed in [('agri.sequential', None), ('agri.skip', None), ('ortools.field', None)] + [('agri.split_anneal', s) for s in SEEDS]:
+        routes, chk, metrics, raw, status, _ = solver.solve({}, inst, algorithm, {'time_limit_s': BUDGET_S, 'seed': seed or 0})
+        out.append({'field': spec['field'], 'radius_m': spec['radius'], 'turn_ratio': round(2 * spec['radius'] / inst['pitch_m'], 3), 'lines': len(inst['lines']), 'algorithm': algorithm, 'seed': seed,
+                    'status': status, 'valid': bool(chk.get('valid')), 'errors': chk.get('errors', [])[:2], 'nonworking_distance_m': metrics.get('nonworking_distance_m'),
+                    'makespan_s': metrics.get('makespan_s'), 'turn_counts': metrics.get('turn_counts')})
+    return out
+
+
+def sweep(out: Path, workers: int):
+    """Exploratory, added after r1: isolates the turning radius, which the factorial confounds with the rig."""
+    out.mkdir(parents=True, exist_ok=True)
+    width, height = _generated_size(RIGS['R3_tillage'], 40)
+    specs = [{'field': shape, 'geometry': {'shape': shape, 'width_m': width, 'height_m': height}, 'radius': r} for shape in SHAPES for r in SWEEP_RADII]
+    with (out / 'turn-radius-sweep.jsonl').open('w', encoding='utf-8') as sink, Pool(workers, initializer=_pin, initargs=(None,)) as pool:
+        for rows in pool.imap_unordered(sweep_one, specs):
+            for row in rows:
+                sink.write(json.dumps(row, ensure_ascii=False) + '\n')
+    rows = [json.loads(x) for x in (out / 'turn-radius-sweep.jsonl').read_text(encoding='utf-8').splitlines()]
+    table = []
+    for r in SWEEP_RADII:
+        pick = [x for x in rows if x['radius_m'] == r]
+        gains, skips, ortools, time_gain = [], [], [], []
+        for shape in SHAPES:
+            one = [x for x in pick if x['field'] == shape and x['status'] == 'feasible' and x['valid']]
+            base = next((x for x in one if x['algorithm'] == 'agri.sequential'), None)
+            sa = [x for x in one if x['algorithm'] == 'agri.split_anneal']
+            if not base or not sa:
+                continue
+            gains.append(1 - _median([x['nonworking_distance_m'] for x in sa]) / base['nonworking_distance_m'])
+            time_gain.append(1 - _median([x['makespan_s'] for x in sa]) / base['makespan_s'])
+            for name, sink2 in (('agri.skip', skips), ('ortools.field', ortools)):
+                other = next((x for x in one if x['algorithm'] == name), None)
+                if other:
+                    sink2.append(1 - other['nonworking_distance_m'] / base['nonworking_distance_m'])
+        table.append({'radius_m': r, 'turn_ratio': pick[0]['turn_ratio'], 'fields': len(gains), 'anneal_gain': round(_median(gains), 4) if gains else None, 'anneal_time_gain': round(_median(time_gain), 4) if time_gain else None,
+                      'skip_gain': round(_median(skips), 4) if skips else None, 'ortools_gain': round(_median(ortools), 4) if ortools else None,
+                      'feasible_runs': sum(x['status'] == 'feasible' and x['valid'] for x in pick), 'runs': len(pick)})
+    (out / 'turn-radius-sweep-summary.json').write_text(json.dumps(table, ensure_ascii=False, indent=1), encoding='utf-8')
+    return table
+
+
 def analyse(out: Path):
     from scipy.stats import wilcoxon
     rows = [json.loads(x) for x in (out / 'records.jsonl').read_text(encoding='utf-8').splitlines()]
@@ -262,6 +312,26 @@ def analyse(out: Path):
         exact.append(row)
     gap = {a: {'n': len([e for e in exact if e[a] is not None]), 'median_gap': _median([e[a] for e in exact if e[a] is not None]), 'worst_gap': max([e[a] for e in exact if e[a] is not None], default=None),
                'negative': sum(1 for e in exact if e[a] is not None and e[a] < -1e-6)} for a in algos}
+    def paired(metric, a='agri.split_anneal', b='agri.sequential', higher=False):
+        pairs = []
+        for k, r in meta.items():
+            va = [x[metric] for x in by[k].get(a, []) if x['status'] == 'feasible' and x['valid'] and x.get(metric) is not None]
+            vb = [x[metric] for x in by[k].get(b, []) if x['status'] == 'feasible' and x['valid'] and x.get(metric) is not None]
+            if va and vb and len(va) == len(by[k][a]) and _median(vb):
+                pairs.append((f"{r['rig']}|{r['field']}", (_median(va) - _median(vb)) / _median(vb) * (1 if higher else -1)))
+        return {'n': len(pairs), 'median_gain': round(_median([p[1] for p in pairs]), 4) if pairs else None, 'ci95_by_geometry': _cluster_ci(pairs)}
+
+    effects = {'makespan_s': paired('makespan_s'), 'field_efficiency_relative': paired('field_efficiency', higher=True), 'trafficked_fraction_relative': paired('trafficked_fraction')}
+    skip_by_ratio = defaultdict(list)
+    for t in table:
+        if t['agri.skip'] is not None and t['agri.sequential']:
+            skip_by_ratio[ratio_bin(t)].append(1 - t['agri.skip'] / t['agri.sequential'])
+    skip_rows = [{'level': k, 'n': len(v), 'median_gain': round(_median(v), 4)} for k, v in sorted(skip_by_ratio.items())]
+    efficiency = defaultdict(list)
+    for r in runs:
+        if r['algorithm'] == 'agri.sequential' and r['status'] == 'feasible' and r['valid'] and r.get('field_efficiency') is not None:
+            efficiency[r['rig']].append(r['field_efficiency'])
+    efficiency_rows = [{'rig': k, 'n': len(v), 'median': round(_median(v), 3), 'min': min(v), 'max': max(v)} for k, v in sorted(efficiency.items())]
     reasons = defaultdict(int)
     for r in excluded:
         reasons[r['reason'].split('：')[0]] += 1
@@ -270,14 +340,14 @@ def analyse(out: Path):
         if not (r['status'] == 'feasible' and r['valid']):
             fail[(r['algorithm'], (r['errors'] or ['?'])[0][:40])] += 1
     summary = {'instances': len(meta), 'excluded': len(excluded), 'exclusion_reasons': dict(reasons), 'feasibility': feas, 'gain_vs_sequential': gains, 'moderators': moderators,
-               'pairwise': comps, 'exact_gap': gap, 'failures': [{'algorithm': k[0], 'error': k[1], 'count': v} for k, v in sorted(fail.items(), key=lambda kv: -kv[1])]}
+               'pairwise': comps, 'exact_gap': gap, 'effects_vs_sequential': effects, 'skip_gain_by_turn_ratio': skip_rows, 'sequential_field_efficiency': efficiency_rows, 'failures': [{'algorithm': k[0], 'error': k[1], 'count': v} for k, v in sorted(fail.items(), key=lambda kv: -kv[1])]}
     (out / 'summary.json').write_text(json.dumps(summary, ensure_ascii=False, indent=1), encoding='utf-8')
     return summary
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('cmd', choices=('run', 'analyse', 'plan'))
+    ap.add_argument('cmd', choices=('run', 'analyse', 'plan', 'sweep'))
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--workers', type=int, default=16)
     args = ap.parse_args()
@@ -286,6 +356,8 @@ def main():
         print(len(items))
     elif args.cmd == 'run':
         run(args.out, args.workers)
+    elif args.cmd == 'sweep':
+        print(json.dumps(sweep(args.out, args.workers), ensure_ascii=False, indent=1))
     else:
         print(json.dumps(analyse(args.out), ensure_ascii=False, indent=1)[:4000])
 

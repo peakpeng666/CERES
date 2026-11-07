@@ -99,6 +99,8 @@ export function Sidebar({ route }: { route: Route }) {
   const [showArchived, setShowArchived] = useState(false);
   useEffect(() => { void loadSessions(); }, [loadSessions]);
   const onPick = () => { if (narrow) setSide(false); };
+  // In a narrow window the sidebar covers the page; it opens on request instead of hiding the work.
+  useEffect(() => { if (narrow) setSide(false); }, [narrow, setSide]);
   const places = useRef<HTMLElement>(null);
   const list = useRef<HTMLDivElement>(null);
   const inChat = route.view === 'agent' || route.view === 'lab';

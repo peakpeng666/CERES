@@ -1,0 +1,40 @@
+{
+ "schema": "urp.field-ops-study/1",
+ "protocol": "experiments/protocols/FIELD_OPS_STUDY_20261107.md",
+ "catalog_version": "c763479346a9",
+ "git_commit": "104cd0083eaedfb8ebd076003b08fdc86bd85dd4",
+ "git_dirty": false,
+ "python": "3.12.13",
+ "host": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+ "budget_s": 3.0,
+ "seeds": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "rigs": [
+  "R1_boom",
+  "R2_trailed",
+  "R3_tillage",
+  "R4_combine",
+  "R5_orchard",
+  "R6_robot"
+ ],
+ "fills": [
+  1,
+  2,
+  4,
+  8
+ ],
+ "headland_scale": [
+  1.0,
+  0.7
+ ],
+ "planned_instances": 516,
+ "started_utc": "2026-11-07T07:21:27Z",
+ "cpus": "8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23",
+ "workers": 16,
+ "finished_utc": "2026-11-07T07:29:22Z"
+}

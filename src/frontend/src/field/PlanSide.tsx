@@ -27,6 +27,17 @@ const PARTS: { key: string; label: string; color: string }[] = [
   { key: 'transfer', label: '转场', color: 'var(--mac-label-4)' }, { key: 'service', label: '补给', color: '#a58a2f' },
 ];
 
+/** One line on what the choice of row order is worth here. Equal is a finding too: the field is not worth optimising. */
+export function planVerdict(isBaseline: boolean, saved: number | null, bestSaved: number | null): string | null {
+  if (isBaseline) {
+    if (bestSaved == null) return null;
+    return bestSaved < .005 ? '排行序没有收益，顺序往复已是最好' : `最好的方案可少 ${(bestSaved * 100).toFixed(0)}% 非作业里程`;
+  }
+  if (saved == null) return null;
+  if (Math.abs(saved) < .005) return '与顺序往复相同';
+  return saved > 0 ? `非作业里程比顺序往复少 ${(saved * 100).toFixed(0)}%` : `非作业里程比顺序往复多 ${(-saved * 100).toFixed(0)}%`;
+}
+
 /** Where the machine's time goes in the selected plan, and what the plan saves against driving the rows in order. */
 export function FieldPlanSummary({ runs, focus }: { runs: Solution[]; focus?: Solution }) {
   if (!focus || focus.state !== 'done' || !focus.routes.length) return null;
@@ -36,11 +47,13 @@ export function FieldPlanSummary({ runs, focus }: { runs: Solution[]; focus?: So
   const base = runs.find((r) => r.algorithm.id === 'agri.sequential');
   const mine = metric(focus);
   const saved = base && mine != null && metric(base) ? 1 - mine / (metric(base) as number) : null;
+  const best = Math.min(...runs.map((r) => metric(r) ?? Infinity));
+  const verdict = planVerdict(focus.algorithm.id === 'agri.sequential', saved, base && metric(base) ? 1 - best / (metric(base) as number) : null);
   return (
     <div className={s.fieldSummary}>
       <header>
         <b>{focus.algorithm.name}</b>
-        {saved != null && focus.algorithm.id !== 'agri.sequential' && <span>{saved >= 0 ? `非作业里程比顺序往复少 ${(saved * 100).toFixed(0)}%` : `非作业里程比顺序往复多 ${(-saved * 100).toFixed(0)}%`}</span>}
+        {verdict && <span>{verdict}</span>}
       </header>
       <div className={s.fieldBar} role="img" aria-label="机组时间构成">
         {PARTS.map((x) => part[x.key] > 0 && <i key={x.key} style={{ flexGrow: part[x.key], background: x.color }} />)}

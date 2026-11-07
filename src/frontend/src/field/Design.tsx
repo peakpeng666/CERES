@@ -12,6 +12,17 @@ import s from './field.module.css';
 
 const ALGORITHMS = ['agri.sequential', 'agri.skip', 'agri.split_anneal', 'ortools.field'];
 
+function scenarioOpen(id: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const ready = (st: ReturnType<typeof useStudio.getState>) => st.scenario?.id === id && !!st.draft;
+    if (ready(useStudio.getState())) { resolve(); return; }
+    const timer = setTimeout(() => { stop(); reject(new Error('场景已保存，但打开超时；请在地图里打开它')); }, 15000);
+    const stop = useStudio.subscribe((st) => {
+      if (ready(st)) { clearTimeout(timer); stop(); resolve(); }
+    });
+  });
+}
+
 function Section({ n, title, aside, children }: { n: number; title: string; aside?: ReactNode; children: ReactNode }) {
   return (
     <section className={s.section}>
@@ -146,11 +157,12 @@ export function Design() {
     setCreating(true); setCreateError(null);
     try {
       const sc = await createMission(mission);
-      navigate(`#/plan/${encodeURIComponent(sc.id)}`);
-      const st = useStudio.getState();
-      await st.open(sc.id);
       const { algorithms: available } = await lab.algorithms();
       const ids = ALGORITHMS.filter((id) => available.some((a) => a.id === id && a.available));
+      navigate(`#/plan/${encodeURIComponent(sc.id)}`);
+      // The route opens the scenario; solving before that finishes would be dropped as belonging to an older load.
+      await scenarioOpen(sc.id);
+      const st = useStudio.getState();
       st.setChosen(ids);
       await st.solve(ids);
     } catch (e) {
@@ -296,11 +308,12 @@ export function Design() {
           {preview?.rig && <div className={s.legend}><span data-k="line">作业行</span><span data-k="head">地头 {fmt(preview.headland_m, 1)} m</span><span data-k="station">补给站</span></div>}
         </div>
         {error && <p className={s.errorLine}>{error}</p>}
-        {preview?.estimate && <Summary preview={preview} mission={mission} />}
-        {preview && <Checks checks={preview.checks} />}
+        {!error && preview?.estimate && <Summary preview={preview} mission={mission} />}
+        {!error && preview && <Checks checks={preview.checks} />}
+        {error && <span className={s.fill} />}
         <div className={s.go}>
           {createError && <p className={s.errorLine}>{createError}</p>}
-          {firstBlock && <p className={s.blockLine}>{firstBlock.title}：{firstBlock.fix ?? firstBlock.detail}</p>}
+          {!error && firstBlock && <p className={s.blockLine}>{firstBlock.title}：{firstBlock.fix ?? firstBlock.detail}</p>}
           <button type="button" className={s.primary} disabled={blocked || creating} onClick={() => void create()}>{creating ? '正在生成…' : '生成并求解'}</button>
         </div>
       </aside>

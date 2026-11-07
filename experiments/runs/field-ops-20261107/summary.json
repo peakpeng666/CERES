@@ -1,0 +1,555 @@
+{
+ "instances": 389,
+ "excluded": 127,
+ "exclusion_reasons": {
+  "地头宽度": 97,
+  "单行需求": 30
+ },
+ "feasibility": {
+  "agri.sequential": {
+   "runs": 389,
+   "feasible": 325,
+   "rate": 0.8355
+  },
+  "agri.skip": {
+   "runs": 389,
+   "feasible": 342,
+   "rate": 0.8792
+  },
+  "ortools.field": {
+   "runs": 389,
+   "feasible": 368,
+   "rate": 0.946
+  },
+  "agri.split_anneal": {
+   "runs": 1945,
+   "feasible": 1850,
+   "rate": 0.9512
+  },
+  "agri.exact": {
+   "runs": 41,
+   "feasible": 35,
+   "rate": 0.8537
+  }
+ },
+ "gain_vs_sequential": {
+  "agri.skip": {
+   "n": 317,
+   "median_gain": -0.0824,
+   "ci95_by_geometry": [
+    -0.1019,
+    -0.0457
+   ],
+   "share_below_2pct": 0.8076
+  },
+  "ortools.field": {
+   "n": 325,
+   "median_gain": 0.1117,
+   "ci95_by_geometry": [
+    0.0414,
+    0.1763
+   ],
+   "share_below_2pct": 0.3723
+  },
+  "agri.split_anneal": {
+   "n": 325,
+   "median_gain": 0.1199,
+   "ci95_by_geometry": [
+    0.0658,
+    0.1799
+   ],
+   "share_below_2pct": 0.3385
+  }
+ },
+ "moderators": [
+  {
+   "by": "掉头比 2r/w",
+   "rows": [
+    {
+     "level": "0 (原地转向)",
+     "n": 32,
+     "median_gain": 0.0,
+     "ci95_by_geometry": [
+      0.0,
+      0.0169
+     ]
+    },
+    {
+     "level": "1–2",
+     "n": 36,
+     "median_gain": 0.3741,
+     "ci95_by_geometry": [
+      0.3054,
+      0.4523
+     ]
+    },
+    {
+     "level": "2–4",
+     "n": 168,
+     "median_gain": 0.2129,
+     "ci95_by_geometry": [
+      0.1436,
+      0.261
+     ]
+    },
+    {
+     "level": "≤1",
+     "n": 89,
+     "median_gain": 0.0,
+     "ci95_by_geometry": [
+      0.0,
+      0.0
+     ]
+    }
+   ]
+  },
+  {
+   "by": "加注次数（总需求/容量）",
+   "rows": [
+    {
+     "level": "1",
+     "n": 113,
+     "median_gain": 0.2553,
+     "ci95_by_geometry": [
+      0.1641,
+      0.2969
+     ]
+    },
+    {
+     "level": "2",
+     "n": 75,
+     "median_gain": 0.1192,
+     "ci95_by_geometry": [
+      0.0,
+      0.1693
+     ]
+    },
+    {
+     "level": "4",
+     "n": 73,
+     "median_gain": 0.0914,
+     "ci95_by_geometry": [
+      0.0298,
+      0.1386
+     ]
+    },
+    {
+     "level": "8",
+     "n": 64,
+     "median_gain": 0.0894,
+     "ci95_by_geometry": [
+      0.0307,
+      0.1271
+     ]
+    }
+   ]
+  },
+  {
+   "by": "地头系数",
+   "rows": [
+    {
+     "level": "0.7",
+     "n": 114,
+     "median_gain": 0.1249,
+     "ci95_by_geometry": [
+      0.0895,
+      0.1869
+     ]
+    },
+    {
+     "level": "1.0",
+     "n": 211,
+     "median_gain": 0.1185,
+     "ci95_by_geometry": [
+      0.0147,
+      0.2198
+     ]
+    }
+   ]
+  },
+  {
+   "by": "机组",
+   "rows": [
+    {
+     "level": "R1_boom",
+     "n": 37,
+     "median_gain": 0.0,
+     "ci95_by_geometry": [
+      0.0,
+      0.0
+     ]
+    },
+    {
+     "level": "R2_trailed",
+     "n": 52,
+     "median_gain": 0.0,
+     "ci95_by_geometry": [
+      -0.178,
+      0.0
+     ]
+    },
+    {
+     "level": "R3_tillage",
+     "n": 36,
+     "median_gain": 0.3741,
+     "ci95_by_geometry": [
+      0.3054,
+      0.4523
+     ]
+    },
+    {
+     "level": "R4_combine",
+     "n": 124,
+     "median_gain": 0.2098,
+     "ci95_by_geometry": [
+      0.1327,
+      0.2776
+     ]
+    },
+    {
+     "level": "R5_orchard",
+     "n": 44,
+     "median_gain": 0.2153,
+     "ci95_by_geometry": [
+      0.1403,
+      0.2825
+     ]
+    },
+    {
+     "level": "R6_robot",
+     "n": 32,
+     "median_gain": 0.0,
+     "ci95_by_geometry": [
+      0.0,
+      0.0169
+     ]
+    }
+   ]
+  },
+  {
+   "by": "田块来源",
+   "rows": [
+    {
+     "level": "generated",
+     "n": 232,
+     "median_gain": 0.0894,
+     "ci95_by_geometry": [
+      0.0,
+      0.1272
+     ]
+    },
+    {
+     "level": "real",
+     "n": 93,
+     "median_gain": 0.2802,
+     "ci95_by_geometry": [
+      0.1715,
+      0.3591
+     ]
+    }
+   ]
+  }
+ ],
+ "pairwise": [
+  {
+   "a": "agri.split_anneal",
+   "b": "agri.sequential",
+   "n": 325,
+   "p": 1.067802097077194e-22,
+   "hodges_lehmann_m": -196.79,
+   "median_gain_vs_b": 0.1199,
+   "ci95_by_geometry": [
+    0.0658,
+    0.1799
+   ],
+   "wins": 220,
+   "losses": 35,
+   "p_holm": 4.271208388308776e-22
+  },
+  {
+   "a": "agri.split_anneal",
+   "b": "agri.skip",
+   "n": 339,
+   "p": 5.728714355440648e-40,
+   "hodges_lehmann_m": -276.71,
+   "median_gain_vs_b": 0.1774,
+   "ci95_by_geometry": [
+    0.1532,
+    0.2161
+   ],
+   "wins": 311,
+   "losses": 19,
+   "p_holm": 2.864357177720324e-39
+  },
+  {
+   "a": "agri.split_anneal",
+   "b": "ortools.field",
+   "n": 366,
+   "p": 0.006570487156051638,
+   "hodges_lehmann_m": -0.09,
+   "median_gain_vs_b": 0.0,
+   "ci95_by_geometry": [
+    0.0,
+    0.0
+   ],
+   "wins": 133,
+   "losses": 106,
+   "p_holm": 0.006570487156051638
+  },
+  {
+   "a": "ortools.field",
+   "b": "agri.sequential",
+   "n": 325,
+   "p": 4.297925515160266e-13,
+   "hodges_lehmann_m": -161.55,
+   "median_gain_vs_b": 0.1117,
+   "ci95_by_geometry": [
+    0.0414,
+    0.1763
+   ],
+   "wins": 213,
+   "losses": 63,
+   "p_holm": 8.595851030320532e-13
+  },
+  {
+   "a": "agri.skip",
+   "b": "agri.sequential",
+   "n": 317,
+   "p": 3.4012999704184413e-19,
+   "hodges_lehmann_m": 113.11,
+   "median_gain_vs_b": -0.0824,
+   "ci95_by_geometry": [
+    -0.1019,
+    -0.0457
+   ],
+   "wins": 73,
+   "losses": 235,
+   "p_holm": 1.0203899911255323e-18
+  }
+ ],
+ "exact_gap": {
+  "agri.sequential": {
+   "n": 33,
+   "median_gap": 0.0286,
+   "worst_gap": 1.0809,
+   "negative": 2
+  },
+  "agri.skip": {
+   "n": 33,
+   "median_gap": 0.1105,
+   "worst_gap": 0.9144,
+   "negative": 0
+  },
+  "ortools.field": {
+   "n": 35,
+   "median_gap": 0.0,
+   "worst_gap": 0.0,
+   "negative": 0
+  },
+  "agri.split_anneal": {
+   "n": 35,
+   "median_gap": 0.0,
+   "worst_gap": 0.0,
+   "negative": 0
+  }
+ },
+ "effects_vs_sequential": {
+  "makespan_s": {
+   "n": 325,
+   "median_gain": 0.021,
+   "ci95_by_geometry": [
+    0.0094,
+    0.0439
+   ]
+  },
+  "field_efficiency_relative": {
+   "n": 325,
+   "median_gain": 0.0216,
+   "ci95_by_geometry": [
+    0.0094,
+    0.0458
+   ]
+  },
+  "trafficked_fraction_relative": {
+   "n": 325,
+   "median_gain": 0.0156,
+   "ci95_by_geometry": [
+    0.0071,
+    0.0249
+   ]
+  }
+ },
+ "skip_gain_by_turn_ratio": [
+  {
+   "level": "0 (原地转向)",
+   "n": 32,
+   "median_gain": -0.1648
+  },
+  {
+   "level": "1–2",
+   "n": 36,
+   "median_gain": -0.0102
+  },
+  {
+   "level": "2–4",
+   "n": 168,
+   "median_gain": -0.0409
+  },
+  {
+   "level": "≤1",
+   "n": 81,
+   "median_gain": -0.0938
+  }
+ ],
+ "sequential_field_efficiency": [
+  {
+   "rig": "R1_boom",
+   "n": 37,
+   "median": 0.696,
+   "min": 0.1272,
+   "max": 0.9611
+  },
+  {
+   "rig": "R2_trailed",
+   "n": 52,
+   "median": 0.627,
+   "min": 0.2243,
+   "max": 0.9628
+  },
+  {
+   "rig": "R3_tillage",
+   "n": 36,
+   "median": 0.836,
+   "min": 0.6063,
+   "max": 0.9402
+  },
+  {
+   "rig": "R4_combine",
+   "n": 124,
+   "median": 0.341,
+   "min": 0.0771,
+   "max": 0.9019
+  },
+  {
+   "rig": "R5_orchard",
+   "n": 44,
+   "median": 0.597,
+   "min": 0.2181,
+   "max": 0.8738
+  },
+  {
+   "rig": "R6_robot",
+   "n": 32,
+   "median": 0.659,
+   "min": 0.1141,
+   "max": 0.9634
+  }
+ ],
+ "failures": [
+  {
+   "algorithm": "agri.split_anneal",
+   "error": "连接几何反复不可行：半径 5.5 m 的车辆在地头内转不过去",
+   "count": 63
+  },
+  {
+   "algorithm": "agri.sequential",
+   "error": "半径 5.5 m 的车辆在地头内转不过去",
+   "count": 28
+  },
+  {
+   "algorithm": "agri.skip",
+   "error": "半径 5.5 m 的车辆在地头内转不过去",
+   "count": 23
+  },
+  {
+   "algorithm": "agri.skip",
+   "error": "半径 7.7 m 的车辆在地头内转不过去",
+   "count": 20
+  },
+  {
+   "algorithm": "agri.sequential",
+   "error": "半径 4.4 m 的车辆在地头内转不过去",
+   "count": 20
+  },
+  {
+   "algorithm": "agri.split_anneal",
+   "error": "连接几何反复不可行：半径 7 m 的车辆在地头内转不过去",
+   "count": 15
+  },
+  {
+   "algorithm": "ortools.field",
+   "error": "连接几何反复不可行：半径 5.5 m 的车辆在地头内转不过去",
+   "count": 14
+  },
+  {
+   "algorithm": "agri.sequential",
+   "error": "半径 7.7 m 的车辆在地头内转不过去",
+   "count": 12
+  },
+  {
+   "algorithm": "agri.split_anneal",
+   "error": "连接几何反复不可行：半径 7.7 m 的车辆在地头内转不过去",
+   "count": 10
+  },
+  {
+   "algorithm": "agri.exact",
+   "error": "半径 5.5 m 的车辆在地头内转不过去",
+   "count": 5
+  },
+  {
+   "algorithm": "agri.split_anneal",
+   "error": "作业区覆盖率 36.7% 低于 90%",
+   "count": 5
+  },
+  {
+   "algorithm": "agri.sequential",
+   "error": "半径 7 m 的车辆在地头内转不过去",
+   "count": 3
+  },
+  {
+   "algorithm": "agri.skip",
+   "error": "半径 7 m 的车辆在地头内转不过去",
+   "count": 3
+  },
+  {
+   "algorithm": "ortools.field",
+   "error": "连接几何反复不可行：半径 7 m 的车辆在地头内转不过去",
+   "count": 3
+  },
+  {
+   "algorithm": "ortools.field",
+   "error": "连接几何反复不可行：半径 7.7 m 的车辆在地头内转不过去",
+   "count": 2
+  },
+  {
+   "algorithm": "agri.split_anneal",
+   "error": "连接几何反复不可行：半径 4.4 m 的车辆在地头内转不过去",
+   "count": 2
+  },
+  {
+   "algorithm": "agri.sequential",
+   "error": "作业区覆盖率 36.7% 低于 90%",
+   "count": 1
+  },
+  {
+   "algorithm": "agri.skip",
+   "error": "作业区覆盖率 36.7% 低于 90%",
+   "count": 1
+  },
+  {
+   "algorithm": "ortools.field",
+   "error": "作业区覆盖率 36.7% 低于 90%",
+   "count": 1
+  },
+  {
+   "algorithm": "agri.exact",
+   "error": "作业区覆盖率 36.7% 低于 90%",
+   "count": 1
+  },
+  {
+   "algorithm": "ortools.field",
+   "error": "连接几何反复不可行：半径 4.4 m 的车辆在地头内转不过去",
+   "count": 1
+  }
+ ]
+}

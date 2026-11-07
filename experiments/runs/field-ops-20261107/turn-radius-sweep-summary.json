@@ -1,0 +1,79 @@
+[
+ {
+  "radius_m": 0.75,
+  "turn_ratio": 0.5,
+  "fields": 4,
+  "anneal_gain": 0.0,
+  "anneal_time_gain": 0.0,
+  "skip_gain": -0.1756,
+  "ortools_gain": 0.0229,
+  "feasible_runs": 32,
+  "runs": 32
+ },
+ {
+  "radius_m": 1.5,
+  "turn_ratio": 1.0,
+  "fields": 4,
+  "anneal_gain": 0.0095,
+  "anneal_time_gain": 0.0025,
+  "skip_gain": -0.1975,
+  "ortools_gain": 0.0347,
+  "feasible_runs": 32,
+  "runs": 32
+ },
+ {
+  "radius_m": 2.25,
+  "turn_ratio": 1.5,
+  "fields": 4,
+  "anneal_gain": 0.374,
+  "anneal_time_gain": 0.031,
+  "skip_gain": -0.0457,
+  "ortools_gain": 0.3865,
+  "feasible_runs": 32,
+  "runs": 32
+ },
+ {
+  "radius_m": 3.0,
+  "turn_ratio": 2.0,
+  "fields": 4,
+  "anneal_gain": 0.4589,
+  "anneal_time_gain": 0.0604,
+  "skip_gain": 0.224,
+  "ortools_gain": 0.4721,
+  "feasible_runs": 32,
+  "runs": 32
+ },
+ {
+  "radius_m": 4.5,
+  "turn_ratio": 3.0,
+  "fields": 4,
+  "anneal_gain": 0.4589,
+  "anneal_time_gain": 0.0899,
+  "skip_gain": 0.3036,
+  "ortools_gain": 0.4728,
+  "feasible_runs": 32,
+  "runs": 32
+ },
+ {
+  "radius_m": 6.0,
+  "turn_ratio": 4.0,
+  "fields": 4,
+  "anneal_gain": 0.4099,
+  "anneal_time_gain": 0.118,
+  "skip_gain": 0.2453,
+  "ortools_gain": 0.4153,
+  "feasible_runs": 32,
+  "runs": 32
+ },
+ {
+  "radius_m": 9.0,
+  "turn_ratio": 6.0,
+  "fields": 4,
+  "anneal_gain": 0.401,
+  "anneal_time_gain": 0.1641,
+  "skip_gain": 0.2126,
+  "ortools_gain": 0.4261,
+  "feasible_runs": 32,
+  "runs": 32
+ }
+]

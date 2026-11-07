@@ -92,6 +92,7 @@
 .stat > span { display: block; font-size: 11.5px; color: var(--mac-label-3); }
 .stat b { display: block; font-weight: 500; font-size: 17px; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .stat em { font-style: normal; font-weight: 400; font-size: 11.5px; color: var(--mac-label-3); margin-left: 3px; }
+.fill { flex: 1 0 auto; }
 .checks { padding: 10px 16px 0; flex: 1 0 auto; }
 .checks ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .checks li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 6px; font-size: 13px; }

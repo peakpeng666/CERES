@@ -27,7 +27,7 @@ def regions(field, obstacles, headland: float, obstacle_margin: float | None = N
     if holes:
         inner = inner.difference(unary_union([h.buffer(margin, join_style=2) for h in holes]))
     if inner.is_empty or inner.area <= 0:
-        raise ValueError('地头太宽：扣除地头后没有作业区')
+        raise ValueError('田块放不下：扣除地头后没有作业区，请加大田块或减小地头')
     return area, inner
 
 
