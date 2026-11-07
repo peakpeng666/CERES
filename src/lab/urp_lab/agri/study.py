@@ -65,7 +65,9 @@ def _long_axis(ring) -> float:
 
 
 def _generated_size(base: dict, rows: int) -> tuple[float, float]:
-    probe = missions.compile_mission({**base, 'field': {'shape': 'rect', 'width_m': 4000, 'height_m': 4000}})
+    width = cat.value(cat.by_id('implements', base['implement'])['width_m'])
+    side = 60 * max(width, 4)
+    probe = missions.compile_mission({**base, 'field': {'shape': 'rect', 'width_m': side, 'height_m': side}})
     pitch, head = probe['pitch_m'], probe['recommended_headland_m']
     height = rows * pitch + 2 * head
     return round(height * 1.5, 1), round(height, 1)
