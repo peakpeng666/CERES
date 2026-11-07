@@ -82,6 +82,10 @@ export const lab = {
   log: (name: string, tail = 400) =>
     request<{ log: string; path: string; lines: string[] }>('GET', `/logs/${encodeURIComponent(name)}?tail=${tail}`),
 
+  agriCatalog: () => request<import('../field/types').Catalog>('GET', '/agri/catalog'),
+  agriCompile: (mission: unknown) => request<import('../field/types').Preview>('POST', '/agri/compile', mission),
+  agriCreate: (mission: unknown) => request<ScenarioSummary>('POST', '/agri/missions', mission),
+
   scenarios: () => request<{ scenarios: ScenarioSummary[] }>('GET', '/scenarios'),
   scenario: (id: string) => request<Scenario>('GET', `/scenarios/${encodeURIComponent(id)}`),
   importScenario: (scenario: unknown) => request<ScenarioSummary>('POST', '/scenarios', scenario),

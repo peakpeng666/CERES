@@ -16,6 +16,7 @@ import { Icon } from './Icon';
 import { NewTask } from './Composer';
 import { decodeStack, encodeStack } from './frames';
 import { MapsPage } from './MapsPage';
+import { FieldPage } from '../field/FieldPage';
 import { openFrames, openRoot, sessionLabel, useMedia } from './nav';
 import { Overlays, Palette } from './Overlays';
 import { ViewErrorBoundary } from '../lab/shell/Page';
@@ -255,6 +256,7 @@ export function Desk({ route, children }: { route: Route; children?: ReactNode }
         {inDock ? <div className={s.dockHost}><Studio onExit={() => setDock(false)} /></div>
           : isChat ? <AgentSurface route={route} />
             : route.view === 'maps' ? <MapsPage route={route} />
+              : route.view === 'field' ? <FieldPage route={route} />
               : route.view === 'algorithms' ? <AlgorithmsPage route={route} />
               : route.view === 'system' ? <SettingsPage route={route} />
                 : surface ? <WorkSurface key={surface} name={surface} route={route} />

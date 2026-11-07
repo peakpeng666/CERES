@@ -37,7 +37,7 @@ def scenario(mission: dict) -> dict:
     place = f"{crop['name']} · " if crop else ''
     return {
         'id': f'field-{stamp}-{digest}', 'title': title[:40],
-        'summary': f"{place}{est['field_ha']:g} ha · {est['lines']} 行 · {inst['fleet']} 台 {rig['name']}",
+        'summary': f"{place}{est['field_ha']:g} ha · {est['lines']} 行 · {inst['machines']} 台 {rig['name']}",
         'problem_class': 'field_operation', 'frame': {'kind': 'field', 'units': 'm', 'crs': 'local'}, 'cost_unit': 'm',
         'provenance': {'generator': 'urp_lab.agri.mission', 'params': {'mission': mission, 'catalog_version': cat.load()['version']}, 'seed': None,
                        'note': '由作业设计生成；田块为生成几何，机组参数见目录来源。'},

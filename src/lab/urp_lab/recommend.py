@@ -40,7 +40,7 @@ def _field_operation(inst):
     demand = sum(x.get('demand', 0) for x in inst['lines'])
     fills = math.ceil(demand / res['capacity']) if res.get('kind') != 'none' and res.get('capacity') else 0
     ratio = 2 * r / pitch
-    feats = [_feature('作业行', 'lines', n), _feature('机组', 'fleet', inst['fleet']),
+    feats = [_feature('作业行', 'lines', n), _feature('机组', 'machines', inst['machines']),
              _feature('至少加注', 'fills', fills, '次', '总用量 / 容量'), _feature('掉头比 2r/w', 'turn_ratio', round(ratio, 2), None, '大于 1 时相邻行需要回绕'),
              _feature('地头', 'headland', inst['headland_m'], 'm'), _feature('目标', 'objective', '最晚完成' if inst.get('objective') == 'makespan' else '非作业里程')]
     score = {'agri.split_anneal': 3.0, 'ortools.field': 2.5, 'agri.skip': 1.0, 'agri.sequential': .8, 'agri.exact': -1.0}
@@ -57,7 +57,7 @@ def _field_operation(inst):
     if fills > 1:
         score['agri.split_anneal'] += .5
         why['agri.split_anneal'].append(f'至少加注 {fills} 次，补给点位置影响里程')
-    if n <= 12 and inst['fleet'] == 1 and len(inst.get('stations') or []) == 1 and list(inst['stations'][0]['xy']) == list(inst['depot']):
+    if n <= 12 and inst['machines'] == 1 and len(inst.get('stations') or []) == 1 and list(inst['stations'][0]['xy']) == list(inst['depot']):
         score['agri.exact'] = 2.8
         why['agri.exact'].append('行数少，可以求到最优，用来核对启发式')
     else:

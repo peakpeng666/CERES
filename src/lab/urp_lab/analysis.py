@@ -571,7 +571,7 @@ def features(scenario: dict, instance: dict) -> tuple[list[str], list[float]] | 
         demand = sum(x.get('demand', 0) for x in instance['lines'])
         capacity = (rig.get('resource') or {}).get('capacity') or 0
         return (['作业行数', '机组数', '总需求/容量', '掉头比 2r/w', '地头宽度'],
-                [len(instance['lines']), instance['fleet'], demand / capacity if capacity else 0,
+                [len(instance['lines']), instance['machines'], demand / capacity if capacity else 0,
                  2 * rig['min_turn_radius_m'] / instance['pitch_m'], instance['headland_m']])
     if pc == 'turn_routing':
         nodes = {u for u, _, _ in instance['arcs']} | {v for _, v, _ in instance['arcs']}

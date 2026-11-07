@@ -3,7 +3,7 @@
  * both together. Values the gateway cannot know are null, never invented.
  */
 
-export type ProblemClass = 'turn_routing' | 'euclidean_cvrp' | 'coverage' | 'point_to_point' | 'fleet_routing';
+export type ProblemClass = 'turn_routing' | 'euclidean_cvrp' | 'coverage' | 'point_to_point' | 'fleet_routing' | 'field_operation';
 export type Source = 'project' | 'third_party' | 'panel_baseline' | 'nav2';
 export type XY = [number, number];
 

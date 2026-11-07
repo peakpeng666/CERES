@@ -1,3 +1,4 @@
+import { executableRun } from '../field/PlanSide';
 import { useMemo, useState } from 'react';
 import { lab, useLabResource } from '../lab/api';
 import type { EngineGap, PhysicsRun } from '../lab/types';
@@ -132,7 +133,7 @@ export function PhysicsPanel() {
         <p key={name} className={s.docBad} role="alert">{name}读取失败：{resource.error.message} <button type="button" className={s.go} onClick={resource.reload}>重新读取{name}</button></p>
       ))}
       {actionError && <p className={s.docBad} role="alert">{actionError}</p>}
-      {focus && plan?.problem_class === 'fleet_routing' && plan.state === 'done' && (
+      {focus && plan && executableRun(plan) && (
         <div className={s.nextRow}>
           <button type="button" className={s.btn} disabled={busy || !available} onClick={() => void submit({ run_id: focus })}>逐车执行 · {plan.algorithm.name}</button>
           {(plan.routes?.length ?? 0) > 1 && <button type="button" className={s.btn} disabled={busy || !available} onClick={() => void submit({ run_id: focus, traffic: 'coordinated' })}>并行执行</button>}

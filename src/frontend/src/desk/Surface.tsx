@@ -114,6 +114,11 @@ export function SurfaceFrame({ name, children, pane }: { name: string; children:
 }
 
 const PAGE_TABS: Record<string, { title: string; tabs: { label: string; href: string; on: (r: Route) => boolean }[] }> = {
+  field: { title: '作业', tabs: [
+    { label: '作业设计', href: '#/field', on: (r) => r.view === 'field' && !r.id },
+    { label: '农机', href: '#/field/machines', on: (r) => r.view === 'field' && r.id === 'machines' },
+    { label: '场景与作业', href: '#/field/coverage', on: (r) => r.view === 'field' && r.id === 'coverage' },
+  ] },
   maps: { title: '地图', tabs: [
     { label: '任务地图', href: '#/maps', on: (r) => r.view === 'maps' },
     { label: '资产', href: '#/assets', on: (r) => r.view === 'assets' },

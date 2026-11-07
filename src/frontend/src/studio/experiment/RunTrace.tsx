@@ -49,7 +49,7 @@ export function RunTrace({ run, title = '可追溯信息' }: { run: Solution; ti
   const t = traceFields(run);
   return (
     <>
-      <h3>{title}</h3>
+      {title && <h3>{title}</h3>}
       <div className={a.kv} aria-label="运行追溯">
         <span>运行</span><span className={a.mono}>{t.runId}</span>
         <span>输入场景</span><span>{t.scenarioHref ? <a className={p.link} href={t.scenarioHref}>{t.scenarioId}</a> : t.scenarioId}</span>

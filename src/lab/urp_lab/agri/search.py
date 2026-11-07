@@ -26,7 +26,7 @@ class Plan:
         self.Q = res['capacity'] if res['kind'] != 'none' and res['capacity'] else None
         self.E = rig.get('endurance_s')
         self.objective = inst.get('objective', 'nonworking')
-        self.K = inst['fleet']
+        self.K = inst['machines']
         self.n = F.n
         self.refresh()
 
@@ -236,27 +236,32 @@ def anneal(plan: Plan, start: list[list[int]], seed: int, deadline: float, itera
     cur = total(parts)
     best, best_orders = cur, [list(o) for o in orders]
     t0 = time.perf_counter()
-    span = max(deadline - t0, 1e-6)
+    # Cycles of cooling, each restarting from the best plan at a lower temperature, so a larger budget keeps paying.
+    cycle = max(20000, 400 * F.n)
     temp0 = max(cur * .01, 1.)
     it = 0
     last = -1.
-    stale_limit = max(20000, 400 * F.n)
-    since_best = 0
+    best_at_cycle, idle_cycles, phase = best, 0, 0
     while True:
-        now = time.perf_counter()
         if iterations:
             if it >= iterations:
                 break
-            frac = it / iterations
-        else:
-            if now >= deadline:
-                break
-            frac = (now - t0) / span
+        elif time.perf_counter() >= deadline:
+            break
+        frac = phase / cycle
         temp = temp0 * (1 - frac) ** 2 + 1e-9
         it += 1
-        since_best += 1
-        if not iterations and since_best > stale_limit:
-            break
+        phase += 1
+        if phase >= cycle:
+            phase = 0
+            temp0 *= .7
+            orders = [list(o) for o in best_orders]
+            parts = [plan.split(o)[0] for o in orders]
+            cur = best
+            idle_cycles = idle_cycles + 1 if best >= best_at_cycle - 1e-9 else 0
+            best_at_cycle = best
+            if idle_cycles >= 3 and not iterations:
+                break
         a = rng.randrange(len(orders))
         src = orders[a]
         if not src:
@@ -304,7 +309,6 @@ def anneal(plan: Plan, start: list[list[int]], seed: int, deadline: float, itera
             parts, cur = new_parts, val
             if cur < best - 1e-9:
                 best, best_orders = cur, [list(o) for o in orders]
-                since_best = 0
                 t = time.perf_counter() - t0
                 if t - last > .02:
                     trace.append([round(t, 4), round(best, 3)])

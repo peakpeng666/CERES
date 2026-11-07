@@ -2,6 +2,7 @@
  * Field simulation of a multi-vehicle plan: Gazebo Fortress runs a world generated from the task map,
  * every vehicle drives its planned route over ROS 2, and the executed schedule is compared with the plan.
  */
+import { executableRun } from '../../field/PlanSide';
 import { useState } from 'react';
 import { Box, Download, MonitorPlay, Play, Square, Tractor } from 'lucide-react';
 import { fmt, lab, useLabResource } from '../../lab/api';
@@ -81,8 +82,8 @@ export function FieldSimPanel() {
   const recent = useLabResource('fieldsim-runs', () => lab.runs({ limit: 60 }), { pollMs: 15000 });
   const results = useLabResource('fieldsim-results', () => studio.fieldsimResults(), { pollMs: 5000 });
   const physics = useLabResource('fieldsim-physics', () => studio.fieldsimPhysics());
-  const fleetRuns = (recent.data?.runs ?? []).filter((r) => r.problem_class === 'fleet_routing' && r.state === 'done' && r.routes.length);
-  const focused = focusRun && runs[focusRun]?.problem_class === 'fleet_routing' ? runs[focusRun] : null;
+  const fleetRuns = (recent.data?.runs ?? []).filter(executableRun);
+  const focused = focusRun && runs[focusRun] && executableRun(runs[focusRun]!) ? runs[focusRun] : null;
   const running = !!state?.running;
   const phase = PHASE[state?.phase ?? 'idle'];
 

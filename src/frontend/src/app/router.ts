@@ -7,6 +7,7 @@ import { pageChange } from '../lib/motion';
  * replace() so the history stack only records deliberate navigation.
  */
 export type ViewName =
+  | 'field'
   | 'lab'
   | 'agent'
   | 'maps'
@@ -28,7 +29,7 @@ export type ViewName =
   | 'notfound';
 
 /** Workbench views do not depend on the historical BPP exports. */
-export const LAB_VIEWS: ReadonlySet<ViewName> = new Set(['lab', 'agent', 'maps', 'plan', 'algorithms', 'assets', 'experiments', 'sim', 'library', 'system', 'runs', 'archive']);
+export const LAB_VIEWS: ReadonlySet<ViewName> = new Set(['lab', 'agent', 'maps', 'plan', 'field', 'algorithms', 'assets', 'experiments', 'sim', 'library', 'system', 'runs', 'archive']);
 
 export interface Route {
   view: ViewName;
@@ -43,6 +44,7 @@ const VIEWS: Record<string, ViewName> = {
   agent: 'agent',
   maps: 'maps',
   plan: 'plan',
+  field: 'field',
   algorithms: 'algorithms',
   assets: 'assets',
   experiments: 'experiments',

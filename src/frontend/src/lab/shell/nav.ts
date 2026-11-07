@@ -57,6 +57,7 @@ export const VIEW_TITLES: Record<ViewName, string> = {
   agent: '智能体',
   maps: '任务地图',
   plan: '规划',
+  field: '作业',
   assets: '资产库',
   experiments: '算法实验',
   sim: '仿真',

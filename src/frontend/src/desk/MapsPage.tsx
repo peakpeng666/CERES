@@ -9,7 +9,7 @@ import { PageHead } from './Surface';
 import { Row, Rows } from './ui';
 import s from './desk.module.css';
 
-const CLASS: Partial<Record<ProblemClass, string>> = { fleet_routing: '多车任务', turn_routing: '转弯约束', euclidean_cvrp: 'CVRP 算例', point_to_point: '点到点', coverage: '覆盖作业' };
+const CLASS: Partial<Record<ProblemClass, string>> = { field_operation: '田间作业', fleet_routing: '多车任务', turn_routing: '转弯约束', euclidean_cvrp: 'CVRP 算例', point_to_point: '点到点', coverage: '覆盖作业' };
 
 const cache = new Map<string, FleetInstance | null>();
 function useThumb(id: string, on: boolean) {

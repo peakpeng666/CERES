@@ -81,7 +81,7 @@
 .solveBar .field { flex: 1; }
 
 /* compare */
-.compare { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 34%); gap: 12px; height: 100%; padding: 10px; overflow: auto; }
+.compare { display: flex; flex-direction: column; height: 100%; overflow: auto; }
 .compare > * { min-width: 0; }
 .tableWrap { overflow: auto; min-width: 0; }
 .table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 12px; }
@@ -171,3 +171,21 @@ td[data-best] { font-weight: 700; color: var(--mac-green); }
 .sessionEvidence .kv { grid-template-columns: minmax(80px, auto) minmax(0, 1fr); }
 .sessionEvidence .kv b { white-space: normal; overflow-wrap: anywhere; }
 .sessionEvidence details > summary { cursor: pointer; font-size: 12px; }
+
+.planBar { display: flex; align-items: center; gap: 12px; padding: 8px 14px; border-bottom: 1px solid var(--mac-separator); font-size: 12.5px; flex-wrap: wrap; }
+.planBar a { color: var(--mac-label-2); text-decoration: none; }
+.planBar a:hover { color: var(--mac-accent); }
+.foldCharts { padding: 8px 14px 20px; }
+.foldCharts > summary { cursor: pointer; font-size: 12.5px; color: var(--mac-label-3); width: fit-content; }
+.foldCharts[open] > summary { margin-bottom: 8px; }
+
+.fieldSummary { padding: 12px 14px 10px; border-bottom: 1px solid var(--mac-separator); }
+.fieldSummary header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 7px; font-size: 13px; }
+.fieldSummary header b { font-weight: 500; }
+.fieldSummary header span { color: var(--mac-accent); }
+.fieldBar { display: flex; gap: 1px; height: 10px; border-radius: 3px; overflow: hidden; }
+.fieldBar i { display: block; min-width: 2px; }
+.fieldLegend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 7px; font-size: 12.5px; color: var(--mac-label-2); }
+.fieldLegend span { display: inline-flex; align-items: center; gap: 5px; font-variant-numeric: tabular-nums; }
+.fieldLegend i { width: 8px; height: 8px; border-radius: 2px; }
+.fieldLegend small { color: var(--mac-label-3); }

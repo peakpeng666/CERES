@@ -489,12 +489,12 @@ def field_operation(inst: dict) -> dict:
         raise ValueError('至少需要一个补给站或出入口')
     for i, st in enumerate(stations):
         _xy((st or {}).get('xy'), f'stations[{i}].xy')
-    fleet = _int(inst.get('fleet', 1), 'fleet', 1)
-    if fleet > 12:
+    machines = _int(inst.get('machines', 1), 'machines', 1)
+    if machines > 12:
         raise ValueError('机组数超过 12')
     if inst.get('objective', 'nonworking') not in ('nonworking', 'makespan'):
         raise ValueError('objective 须为 nonworking 或 makespan')
-    out.update(field=field, obstacles=obstacles, headland_m=head, pitch_m=pitch, depot=_xy(inst.get('depot'), 'depot'), fleet=fleet,
+    out.update(field=field, obstacles=obstacles, headland_m=head, pitch_m=pitch, depot=_xy(inst.get('depot'), 'depot'), machines=machines,
                objective=inst.get('objective', 'nonworking'), units='m')
     return out
 

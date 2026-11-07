@@ -140,7 +140,7 @@ describe('comparison panel explains map-check exclusions', () => {
     useStudio.setState({ scenario: { id: 'scene', problem_class: 'euclidean_cvrp' } as Scenario, draft: { capacity: 8 },
       runIds: [r.run_id], runs: { [r.run_id]: r }, focusRun: r.run_id, algorithms: [] });
     const html = renderToStaticMarkup(createElement(ComparePanel));
-    expect(html).toContain('本批 1 次运行 · 0 个已验算可行解');
+    expect(html).toContain('1 个方案 · 0 个可行');
     expect(html).toContain('data-exclusion-summary="map_check"');
     expect(html).toContain('<li data-exclusion="map_collision">');
     expect(html).toContain('路线 0 第 0 段 · (-7.582, 3.360) · 净空 0.000 m');
@@ -158,8 +158,8 @@ describe('comparison panel explains map-check exclusions', () => {
     useStudio.setState({ scenario: { id: 'scene', problem_class: 'euclidean_cvrp' } as Scenario, draft: { capacity: 8 },
       runIds: [l.run_id, q.run_id], runs: { [l.run_id]: l, [q.run_id]: q }, focusRun: q.run_id, algorithms: [] });
     const html = renderToStaticMarkup(createElement(ComparePanel));
-    expect(html).toContain('run_e2e_quarantined_unverified · ');
-    expect(html).toContain('run_e2e_legacy_noidentity · ');
+    expect(html).toContain('run_e2e_quarantined_unverified\n');
+    expect(html).toContain('run_e2e_legacy_noidentity\n');
     expect(html).toContain('data-selected-run="run_e2e_quarantined_unverified"');
     expect(html).toContain('已隔离：');
   });

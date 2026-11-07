@@ -15,9 +15,10 @@ import s from './desk.module.css';
 
 const BPP_VIEWS: Route['view'][] = ['overview', 'samples', 'replay', 'risk', 'evidence'];
 const PLACES: { view: Route['view'][]; href: string; icon: IconName; label: string }[] = [
+  { view: ['field'], href: '#/field', icon: 'furrow', label: '作业' },
+  { view: ['maps', 'plan', 'assets'], href: '#/maps', icon: 'map', label: '地图' },
   { view: ['algorithms'], href: '#/algorithms', icon: 'route', label: '算法库' },
   { view: ['sim'], href: '#/sim', icon: 'rover', label: '仿真' },
-  { view: ['maps', 'plan', 'assets'], href: '#/maps', icon: 'map', label: '地图' },
   { view: ['experiments', 'runs', 'jobs'], href: '#/experiments', icon: 'flask', label: '实验' },
   { view: ['library', 'archive', ...BPP_VIEWS], href: '#/library', icon: 'book', label: '资料' },
 ];

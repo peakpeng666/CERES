@@ -22,6 +22,8 @@ def assess(env: dict, crop: dict | None, operation: dict, platform: dict, implem
     v = cat.value
     if operation.get('family') != 'line':
         out.append(_c('family', 'block', '这项作业不是沿行作业', f"「{operation['name']}」按点或协同任务建模，请用任务地图规划。", '回到任务地图'))
+    elif operation['id'] not in env['line_operations']:
+        out.append(_c('fit', 'block', '这里不做这项作业', f"{env['name']}没有「{operation['name']}」这项作业。", '换一项作业或环境'))
     if platform['class'] not in env['platforms']:
         names = '、'.join(cat.PLATFORM_CLASSES[c] for c in env['platforms'])
         out.append(_c('environment', 'block', '平台不适用此环境', f"{env['name']}适用：{names}。", '更换平台'))

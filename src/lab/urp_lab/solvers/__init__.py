@@ -101,7 +101,7 @@ FIELD_PARAMS = [dict(TIME, default=5), SEED]
 _TABLE += [
     ('agri.split_anneal', '退火排序 + 最优补给切分', 'field_operation', '本项目', 'metaheuristic', 'none',
      '在作业行顺序与方向上做模拟退火，每个候选用线性时间最短路切分出最优补给点；以两种基线中较好的为起点。',
-     ['hossain2026capacitated', 'prins2004split', 'kirkpatrick1983sa'], 'src/lab/urp_lab/agri/search.py', {'params': [*FIELD_PARAMS, {'name': 'iterations', 'type': 'integer', 'default': 0, 'min': 0, 'max': 10000000, 'label': '固定迭代数（0 = 按时间）'}]}),
+     ['hossain2026capacitated', 'prins2004split', 'kirkpatrick1983sa'], 'src/lab/urp_lab/agri/search.py', {'params': FIELD_PARAMS}),
     ('ortools.field', 'OR-Tools 作业行路由', 'field_operation', 'OR-Tools', 'metaheuristic', 'none',
      '把每行的两个方向建成互斥节点，一趟一辆虚拟车，用引导局部搜索排序；求得的顺序再走同一补给切分与几何生成。',
      ['ortools', 'voudouris1999gls', 'bochtis2008headland'], 'ortools', {'params': FIELD_PARAMS}),

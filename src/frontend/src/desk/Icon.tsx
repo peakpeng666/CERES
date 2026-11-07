@@ -33,6 +33,7 @@ const PATHS = {
   download: 'M8 2.5v8M4.5 7 8 10.5 11.5 7M3 13.5h10',
   edit: 'M3 13l.6-2.6 7-7a1.3 1.3 0 0 1 1.9 1.9l-7 7zM9.6 4.4l2 2',
   archive: 'M2.5 3.5h11v3h-11zM3.5 6.5v6h9v-6M6.5 9h3',
+  furrow: 'M2.5 13.5 6 3M6.5 13.5 8 3M9.5 13.5 10 3M13.5 13.5 12 3M2 13.5h12',
   map: 'M2.5 4l3.7-1.5 3.6 1.5 3.7-1.5v9.5l-3.7 1.5-3.6-1.5L2.5 13.5zM6.2 2.5V12M9.8 4v9.5',
 } as const;
 export type IconName = keyof typeof PATHS;

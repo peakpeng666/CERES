@@ -137,6 +137,14 @@ def test_wheeled_rig_is_refused_in_paddy_and_narrow_vineyard_blocks_guss():
     assert checks_of(dict(ORCHARD, environment='vineyard', crop='grape', platform='guss_orchard', implement='guss_sprayer'))['alley']['level'] == 'block'
 
 
+def test_operation_must_belong_to_the_environment():
+    barn = dict(BOOM, environment='livestock_barn', crop=None, operation='tillage', platform='robotti_150d', implement='disk_harrow')
+    assert checks_of(barn)['fit']['level'] == 'block'
+    assert 'fit' not in checks_of(BOOM)
+    for env in cat.load()['environments']:
+        assert set(env['line_operations']) <= {o['id'] for o in cat.load()['operations'] if o['family'] == 'line'}
+
+
 def test_power_block_names_the_figures():
     c = checks_of(dict(environment='open_field', crop=None, operation='tillage', platform='jd_5075gn', implement='moldboard_plow',
                        field={'shape': 'rect', 'width_m': 200, 'height_m': 100}, overrides={'work_width_m': 3.0}))['power']

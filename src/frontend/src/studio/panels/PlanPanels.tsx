@@ -32,6 +32,7 @@ import { OBSTACLE_STYLE, area } from '../editor/geometry';
 import { useLanes } from '../editor/lanes';
 import { asFleet, isFleet, retrySave, saveDraftCopy, useStudio } from '../store';
 import { GeneratedFrom } from '../agri/GeneratedFrom';
+import { FieldOperationInspector, FieldPlanSummary, executableRun } from '../../field/PlanSide';
 import { studio, urls } from '../api';
 import type { FleetInstance, FleetRoute, FleetScenario, ObstacleKind, PerVehicle } from '../types';
 import { addDepot, depotsOf, fleetClassFor, fleetClasses, fleetSize, planningFingerprint, removeDepot, setDepot } from '../fleet';
@@ -391,6 +392,7 @@ export function InspectorPanel() {
     return () => window.removeEventListener('studio:focus-field', onFocusField);
   }, []);
   if (!sc || !draft) return <EmptyState title="未打开场景" />;
+  if (sc.problem_class === 'field_operation') return <FieldOperationInspector scenario={sc} draft={draft} />;
   if (!isFleet(sc)) return <div className={s.scroll}><ProblemEditor key={useStudio.getState().editorSession ?? sc.id} scenario={sc} draft={draft} /><ScenarioInfo /></div>;
   return (
     <div className={s.inspector}>
@@ -802,6 +804,13 @@ type Col = {
 const metric = (k: string) => (r: Solution) => r.metrics[k] as number | string | boolean | null | undefined;
 const objectiveUnit = (r: Solution) => ` ${r.objective.unit}`;
 const COLUMNS: Record<string, Col[]> = {
+  field_operation: [
+    { label: '非作业里程', get: metric('nonworking_distance_m'), digits: 0, unit: ' m', better: 'min' },
+    { label: '最晚完成', get: (r) => { const v = r.metrics.makespan_s as number | undefined; return v == null ? undefined : v / 60; }, digits: 1, unit: ' min', better: 'min' },
+    { label: '田间效率', get: metric('field_efficiency'), digits: 1, pct: true, better: 'max' },
+    { label: '加注', get: metric('refills'), digits: 0, unit: ' 次' },
+    { label: '碾压比', get: metric('trafficked_fraction'), digits: 1, pct: true, better: 'min' },
+  ],
   fleet_routing: [
     { label: '总里程', get: (r) => metric('total_distance_m')(r), digits: 1, unit: ' m', better: 'min' },
     { label: '最晚完成', get: metric('makespan_s'), digits: 0, unit: ' s', better: 'min' },
@@ -865,8 +874,9 @@ export function ComparePanel() {
   return (
     <div className={s.compare}>
       {readErrors}
+      {st.scenario?.problem_class === 'field_operation' && <FieldPlanSummary runs={valid} focus={anchor} />}
       <div className={s.pad} style={{ paddingBottom: 4 }}>
-        <p className={s.meta}>本批 {rows.length} 次运行 · {rows.filter(verifiedPlan).length} 个已验算可行解。</p>
+        <p className={s.meta}>{rows.length} 个方案 · {rows.filter(verifiedPlan).length} 个可行。</p>
         {mapExcluded.length > 0 && (
           <div className={s.meta} data-exclusion-summary="map_check" aria-label="地图检查未计入的运行">
             {mapExcluded.length} 次运行的地图检查未通过或未完成，未计入可行解。展开下方「未参与比较与排名」查看原因与位置。
@@ -886,7 +896,7 @@ export function ComparePanel() {
             <tr>
               <th>算法</th><th>状态</th>
               {cols.map((c) => <th key={c.label} className={s.num}>{c.label}</th>)}
-              <th className={s.num}>计算</th><th>验算</th><th />
+              <th className={s.num}>计算</th><th />
             </tr>
           </thead>
           <tbody>
@@ -896,7 +906,6 @@ export function ComparePanel() {
               const algorithm = st.algorithms.find((a) => a.id === r.algorithm.id);
               const supportsBudget = !!algorithm?.params.some((param) => param.name === 'time_limit_s');
               const supportsSeed = !!algorithm?.params.some((param) => param.name === 'seed') && algorithm.randomness?.uses_seed !== false;
-              const differentParams = (supportsBudget && r.params.time_limit_s !== st.budget) || (supportsSeed && r.params.seed !== st.seed);
               const frozenParams = [
                 supportsBudget ? `预算 ${String(r.params.time_limit_s ?? '默认/未记录')} s` : '',
                 supportsSeed ? `种子 ${String(r.params.seed ?? '默认/未记录')}` : '',
@@ -908,11 +917,9 @@ export function ComparePanel() {
               return (
                 <tr key={r.run_id} data-run={r.run_id} aria-selected={st.focusRun === r.run_id} onClick={() => st.focus(r.run_id)}>
                   <td>
-                    <span className={s.algName} title={`${r.algorithm.origin}${r.algorithm.version ? ` · 版本/源码 ${r.algorithm.version}` : ''}`}>{r.algorithm.name}</span>
-                    <div className={s.meta} title={`冻结 run_id：${r.run_id}；${frozenParams || '参数见原始记录'}`}>{r.run_id} · {frozenParams || '参数见原始记录'}</div>
+                    <span className={s.algName} title={`${r.algorithm.origin}${r.algorithm.version ? ` · 版本/源码 ${r.algorithm.version}` : ''}\n${r.run_id}\n${frozenParams || '参数见原始记录'}`}>{r.algorithm.name}</span>
                     <div className={s.row}>
                       {historicalInput && <Badge tone="orange" >历史输入</Badge>}
-                      {differentParams && <Badge tone="gray">当前参数不同</Badge>}
                       {anchor && !comparable(r, anchor) && <Badge tone="gray">独立口径</Badge>}
                       {exclusionReason(r) && <Badge tone="orange">不参与排名</Badge>}
                       {identityState(r) === 'unknown' && r.state === 'done' && <Badge tone="gray">身份未核验</Badge>}
@@ -920,7 +927,11 @@ export function ComparePanel() {
                       {blocked && <Badge tone="orange">{blocked}</Badge>}
                     </div>
                   </td>
-                  <td title={state.title}>{state.text === '计算中' ? <span className={s.running}><Spinner /> 计算中</span> : state.text}{state.title ? ' ⓘ' : ''}</td>
+                  <td title={state.title} data-verify={identityState(r) === 'quarantined' ? 'quarantined' : requiresCoverageRecheck(r) ? 'legacy' : verifyText(r).code}>{state.text === '计算中' ? <span className={s.running}><Spinner /> 计算中</span>
+                    : identityState(r) === 'quarantined' ? '已隔离 · 不适用'
+                      : verifyText(r).code === 'pass' ? <span className={s.ok}><Check size={13} /> {state.text}</span>
+                        : verifyText(r).code === 'unchecked' ? state.text
+                          : <span className={s.bad} title={verifyText(r).code === 'route_fail' ? r.check?.errors.join('；') : '路线检查通过，但地图碰撞检查未通过或未完成'}><X size={13} /> {verifyText(r).text}</span>}</td>
                   {cols.map((c, i) => {
                     const shown = withoutInvalidatedResults(r)!;
                     const v = shown.state === 'done' && shown.routes.length ? c.get(shown) : null;
@@ -934,17 +945,7 @@ export function ComparePanel() {
                     return <td key={c.label} className={s.num} data-best={isBest || undefined}>{text}</td>;
                   })}
                   <td className={s.num}>{fmt.sec(r.metrics.wall_s)}</td>
-                  <td data-verify={identityState(r) === 'quarantined' ? 'quarantined' : requiresCoverageRecheck(r) ? 'legacy' : verifyText(r).code}>{identityState(r) === 'quarantined' ? '已隔离 · 不适用' : requiresCoverageRecheck(r) ? '旧版检查 · 待重验' : (() => {
-                    const v = verifyText(r);
-                    return v.code === 'pass' ? <span className={s.ok}><Check size={13} /> 通过</span>
-                      : v.code === 'unchecked' ? v.text
-                      : <span className={s.bad} title={v.code === 'route_fail' ? r.check?.errors.join('；') : '路线检查通过，但地图碰撞检查未通过或未完成'}><X size={13} /> {v.text}</span>;
-                  })()}</td>
                   <td className={s.rowActions} onClick={(e) => e.stopPropagation()}>
-                    <a href={exportUrl.run(r.run_id, 'json')} download title="求解结果 JSON（路线与指标）">JSON</a>
-                    <a href={exportUrl.run(r.run_id, 'csv')} download title="几何点 CSV（兼容格式）">几何 CSV</a>
-                    {r.problem_class === 'fleet_routing' && <a href={exportUrl.run(r.run_id, 'tasks-csv')} download title="任务服务行，按车辆/趟次/顺序；不包含回仓几何点">任务/趟次 CSV</a>}
-                    <a href={exportUrl.run(r.run_id, 'geojson')} download title="地图与路线">GeoJSON</a>
                     {['queued', 'running'].includes(r.state) && (
                       <button type="button" className={s.simLink} title="取消这个求解运行" disabled={canceling === r.run_id}
                         onClick={async () => {
@@ -960,25 +961,28 @@ export function ComparePanel() {
                         <X size={12} /> {canceling === r.run_id ? '取消中…' : '取消'}
                       </button>
                     )}
-                    {r.problem_class === 'fleet_routing' && r.state === 'done' && r.routes.length > 0 && (
-                      <button type="button" className={s.simLink} title="在 Gazebo 田间世界里让各车按此方案执行"
-                        onClick={() => void import('./FieldSimPanel').then((m) => m.startFieldSim(r.run_id))}>
-                        <Tractor size={12} /> Gazebo
-                      </button>
-                    )}
-                    {r.problem_class !== 'fleet_routing' && r.frame.kind === 'map' && verifiedPlan(r) && (
-                      <button type="button" className={s.simLink} title="将此方案交给独立的 TurtleBot4 仿真；执行方式在仿真面板确认"
-                        onClick={() => { st.focus(r.run_id); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'sim' })); }}>
-                        <Tractor size={12} /> TB4 仿真
-                      </button>
-                    )}
                   </td>
                 </tr>
               );
             })}
           </tbody>
         </table>
-        {anchor && <div className={s.pad} data-selected-run={anchor.run_id}><IntegrityNotice run={anchor} /><RunTrace run={anchor} title="选中方案追溯" /></div>}
+        {anchor && <div className={s.planBar} aria-label="选中方案的操作">
+          {executableRun(anchor) && <button type="button" className={s.simLink} title="在 Gazebo 田间世界里让各车按此方案执行"
+            onClick={() => void import('./FieldSimPanel').then((m) => m.startFieldSim(anchor.run_id))}><Tractor size={12} /> Gazebo</button>}
+          {executableRun(anchor) && <button type="button" className={s.simLink} title="在 MuJoCo 里物理预演"
+            onClick={() => { st.focus(anchor.run_id); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'physics' })); }}><Tractor size={12} /> 物理预演</button>}
+          {anchor.problem_class !== 'fleet_routing' && anchor.problem_class !== 'field_operation' && anchor.frame.kind === 'map' && verifiedPlan(anchor) && (
+            <button type="button" className={s.simLink} title="将此方案交给独立的 TurtleBot4 仿真；执行方式在仿真面板确认"
+              onClick={() => { st.focus(anchor.run_id); window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'sim' })); }}><Tractor size={12} /> TB4 仿真</button>
+          )}
+          <span className={s.spacer} />
+          <a href={exportUrl.run(anchor.run_id, 'json')} download title="求解结果 JSON（路线与指标）">JSON</a>
+          <a href={exportUrl.run(anchor.run_id, 'csv')} download title="几何点 CSV">几何 CSV</a>
+          {anchor.problem_class === 'fleet_routing' && <a href={exportUrl.run(anchor.run_id, 'tasks-csv')} download title="任务服务行，按车辆/趟次/顺序">任务 CSV</a>}
+          <a href={exportUrl.run(anchor.run_id, 'geojson')} download title="地图与路线">GeoJSON</a>
+        </div>}
+        {anchor && <div className={s.pad} data-selected-run={anchor.run_id}><IntegrityNotice run={anchor} /><details className={s.foldCharts} style={{ padding: 0 }}><summary>选中方案追溯</summary><RunTrace run={anchor} title="" /></details></div>}
         {partition.excluded.length > 0 && (
           <details className={s.pad}>
             <summary>未参与比较与排名（{partition.excluded.length}）</summary>
@@ -992,10 +996,13 @@ export function ComparePanel() {
         )}
         {rows.some((r) => r.error) && <Notice tone="error">{rows.filter((r) => r.error).map((r) => `${r.algorithm.name}：${r.error}`).join('；')}</Notice>}
       </div>
-      <Convergence runs={group.filter((r) => r.process?.source_identity_verified !== false)} />
-      <SeedBandChart runs={group} />
-      <VerificationChart runs={rows} />
-      <StatusFlowChart runs={rows} />
+      <details className={s.foldCharts}>
+        <summary>过程与复核</summary>
+        <Convergence runs={group.filter((r) => r.process?.source_identity_verified !== false)} />
+        <SeedBandChart runs={group} />
+        <VerificationChart runs={rows} />
+        <StatusFlowChart runs={rows} />
+      </details>
     </div>
   );
 }
@@ -1042,7 +1049,15 @@ export function VerifyPanel() {
   const fleet = isFleet(st.scenario);
   const rows = (run.instance as unknown as FleetInstance | undefined)?.vehicles?.travel === 'rows';
   const has = (re: RegExp) => errors.filter((e) => re.test(e));
-  const items = fleet ? [
+  const items = run.problem_class === 'field_operation' ? [
+    { label: '每条作业行恰好作业一次', bad: has(/未作业|重复作业|几何与实例/) },
+    { label: '从车库出发并返回', bad: has(/车库/) },
+    { label: '路径连续，分段长度与用时可复算', bad: has(/不连续|分段|工期/) },
+    { label: '转弯不小于最小转弯半径', bad: has(/曲率|倒车/) },
+    { label: '车体不出田块、不压障碍', bad: has(/越出/) },
+    { label: '容量与续航不超限', bad: has(/容量|续航|补给点/) },
+    { label: '作业区覆盖率达标', bad: has(/覆盖率/) },
+  ] : fleet ? [
     { label: '每个任务点恰好服务一次', bad: has(/未被分配|重复/) },
     { label: '每趟载重不超过容量', bad: has(/载重/) },
     { label: '使用车辆不超过车队规模', bad: has(/超过车队|单趟/) },

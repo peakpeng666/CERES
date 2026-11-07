@@ -106,7 +106,7 @@ def compile_mission(mission: dict) -> dict:
         raise ValueError('优化目标须为 nonworking 或 makespan')
     instance = {
         'schema': SCHEMA, 'field': field, 'obstacles': obstacles, 'headland_m': headland, 'angle_deg': angle,
-        'pitch_m': pitch, 'pattern': pattern, 'lines': lines, 'stations': [station], 'depot': station['xy'], 'fleet': fleet,
+        'pitch_m': pitch, 'pattern': pattern, 'lines': lines, 'stations': [station], 'depot': station['xy'], 'machines': fleet,
         'rig': {k: v for k, v in rig.items() if k != 'derivation'}, 'crop_protected': bool(operation.get('crop_protected')) and platform['class'] != 'uav',
         'overfly': platform['class'] == 'uav', 'objective': objective, 'coverage_required': .9,
         'mission': {**m, 'catalog_version': cat.load()['version'], 'recommended_headland_m': recommended},
@@ -132,7 +132,7 @@ def estimate(inst: dict) -> dict:
     eff = rig.get('efficiency_typical') or 1
     return {'field_ha': round(field.area / 10000, 3), 'work_ha': round(work_ha, 3), 'lines': len(inst['lines']), 'line_total_m': round(total_m, 1),
             'pitch_m': inst['pitch_m'], 'theoretical_ha_h': round(theoretical_ha_h, 3), 'effective_ha_h': round(theoretical_ha_h * eff, 3),
-            'hours_at_typical_efficiency': round(work_ha / (theoretical_ha_h * eff) / inst['fleet'], 2) if theoretical_ha_h else None,
+            'hours_at_typical_efficiency': round(work_ha / (theoretical_ha_h * eff) / inst['machines'], 2) if theoretical_ha_h else None,
             'demand_total': round(demand, 1), 'fills_min': fills, 'rows_per_fill': rows_per_fill, 'unit': res.get('unit'),
             'turn_ratio': round(2 * rig['min_turn_radius_m'] / inst['pitch_m'], 2),
             'skip_rows_needed': max(0, math.ceil(2 * rig['min_turn_radius_m'] / inst['pitch_m']) - 1)}

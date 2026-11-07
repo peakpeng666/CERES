@@ -19,8 +19,16 @@ import type {
 } from '../../types';
 import type { CanvasMarker, CanvasNode, CanvasPath, CanvasPolygon, CanvasScene } from '../../canvas/types';
 
-export const CLASS_ORDER: ProblemClass[] = ['fleet_routing', 'turn_routing', 'euclidean_cvrp', 'coverage', 'point_to_point'];
+/** Field-operation instance as the canvas reads it. */
+export interface FieldInstance {
+  field: XY[]; obstacles: XY[][]; pitch_m: number; lines: { id: number; row: number; p1: XY; p2: XY; length_m: number }[]; stations: { id: string; xy: XY }[];
+  rig: { name: string; tier: string; work_width_m: number; min_turn_radius_m: number; speed_work_mps: number; resource: { kind: string; name?: string; unit?: string; capacity: number | null; rate_per_ha: number | null } };
+  headland_m: number; machines: number; objective: string; mission?: Record<string, unknown>;
+}
+
+export const CLASS_ORDER: ProblemClass[] = ['field_operation', 'fleet_routing', 'turn_routing', 'euclidean_cvrp', 'coverage', 'point_to_point'];
 export const CLASS_LABEL: Record<ProblemClass, string> = {
+  field_operation: '田间作业',
   fleet_routing: '多车任务',
   turn_routing: '转弯约束路网',
   euclidean_cvrp: '车辆路径 CVRP',
@@ -252,6 +260,11 @@ export function scenarioPolygons(scenario: Scenario, inst: Instance): CanvasPoly
     if (!ringOK(L.field_polygon) && ringOK(c.field)) out.push({ id: 'cov-field', ring: c.field, kind: 'field' });
     push(c.obstacles, 'obstacle');
   }
+  if (scenario.problem_class === 'field_operation') {
+    const f = inst as unknown as FieldInstance;
+    if (ringOK(f.field)) out.push({ id: 'op-field', ring: f.field, kind: 'field' });
+    push(f.obstacles, 'obstacle');
+  }
   return out;
 }
 
@@ -264,6 +277,12 @@ export function baseScene(scenario: Scenario, inst: Instance): CanvasScene {
     polygons: scenarioPolygons(scenario, inst),
     labels: Array.isArray(scenario.layers?.labels) ? scenario.layers!.labels : [],
   };
+  if (scenario.problem_class === 'field_operation') {
+    const f = inst as unknown as FieldInstance;
+    scene.nodes = f.stations.map((x) => ({ id: x.id, xy: x.xy, kind: 'depot', label: '补给站' }));
+    scene.paths = f.lines.map((x) => ({ id: `line:${x.id}`, points: [x.p1, x.p2], color: '#7f9a68', width: 1, opacity: .55, swath: f.pitch_m, title: `第 ${x.row + 1} 行 · ${x.length_m.toFixed(0)} m` }));
+    return scene;
+  }
   if (scenario.problem_class === 'turn_routing') {
     const t = asTurn(inst);
     const coords = t.coordinates ?? {};
@@ -363,10 +382,25 @@ export interface OverlayEntry {
 
 /** Route paths for visible results: per-route colours for a single result, per-result colours when comparing. */
 export function solutionPaths(entries: readonly OverlayEntry[], cls: ProblemClass, inst: Instance, swath: number | null): CanvasPath[] {
-  const compare = entries.length > 1;
+  const compare = entries.length > 1 && cls !== 'field_operation';
   const out: CanvasPath[] = [];
   for (const e of entries) {
+    if (cls === 'field_operation' && !e.focused) continue;   // rows of several plans overlap into noise; the legend switches plans
     e.solution.routes.forEach((r, ri) => {
+      const segments = (r as unknown as { segments?: { kind: string; polyline: XY[]; turn?: string; length_m: number }[] }).segments;
+      if (cls === 'field_operation' && segments && (e.focused || !compare)) {
+        // Work is what the field pays for; turns and transfers are what planning can reduce, so they carry the colour.
+        segments.forEach((seg, si) => {
+          if (seg.polyline.length < 2) return;
+          out.push({
+            id: `${e.solution.run_id}:${ri}:${si}`, points: seg.polyline,
+            color: seg.kind === 'work' ? routeColor(ri) : seg.kind === 'turn' ? '#b5622f' : '#7f7b6e',
+            width: seg.kind === 'work' ? 2.2 : 1.8, opacity: e.current ? 1 : .45, dash: seg.kind === 'transfer' ? [6, 4] : undefined,
+            chevrons: seg.kind === 'work' && segments.length < 20, title: seg.kind === 'work' ? `作业 ${seg.length_m.toFixed(0)} m` : seg.kind === 'turn' ? `${seg.turn} 转弯 ${seg.length_m.toFixed(1)} m` : `转场 ${seg.length_m.toFixed(1)} m`,
+          });
+        });
+        return;
+      }
       const points = routePoints(cls, inst, r);
       if (points.length < 2) return;
       out.push({
@@ -378,7 +412,7 @@ export function solutionPaths(entries: readonly OverlayEntry[], cls: ProblemClas
         dash: e.current ? undefined : [7, 5],
         chevrons: true,
         swath: cls === 'coverage' ? swath : null,
-        order: e.current && (e.focused || !compare) && cls !== 'coverage' ? serviceOrder(cls, inst, r) : undefined,
+        order: e.current && (e.focused || !compare) && cls !== 'coverage' && cls !== 'field_operation' ? serviceOrder(cls, inst, r) : undefined,
         title: `${e.solution.algorithm.name} · 路线 ${ri + 1}`,
       });
     });
