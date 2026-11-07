@@ -15,7 +15,7 @@ def fingerprint(value) -> str:
 
 
 def validate_frame(problem_class: str, frame: dict):
-    if problem_class in ('fleet_routing', 'coverage', 'point_to_point') and (
+    if problem_class in ('fleet_routing', 'coverage', 'point_to_point', 'field_operation') and (
             frame.get('kind') not in ('map', 'field') or frame.get('units') != 'm'):
         raise ValueError('该几何规划模型使用米制尺寸：请声明并转换到 map/field 米坐标，不能把无量纲基准坐标当作米')
     if problem_class == 'point_to_point' and (frame.get('kind') != 'map' or not frame.get('world')):
@@ -39,6 +39,10 @@ def context(scenario: dict, instance: dict, result: dict | None = None, *, resol
     elif pc == 'turn_routing':
         rule = 'directed_arc_cost_plus_turn_penalty'
         label, service = '有向路段成本与转弯惩罚之和', 'point_visit'
+    elif pc == 'field_operation':
+        rule = instance.get('objective', 'nonworking')
+        unit = 's' if rule == 'makespan' else 'm'
+        label, service = ('最晚完成时间（含转弯、转场与补给）' if rule == 'makespan' else '非作业里程（转弯、转场与补给往返）'), 'line_service'
     elif pc == 'coverage':
         rule = 'working_and_transit_geometry_length'
         label, service = '作业与非作业几何总长度', 'area_coverage'

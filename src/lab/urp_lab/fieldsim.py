@@ -97,6 +97,12 @@ class FieldSimManager:
         run = self.store.get_run(str(body.get('run_id') or ''))
         if not run:
             raise ServiceError(404, 'unknown_run', '没有这个运行记录')
+        if run.get('problem_class') == 'field_operation':
+            from .agri.execution import NotExecutable, fleet_view
+            try:
+                run = fleet_view(run)
+            except NotExecutable as exc:
+                raise ServiceError(422, 'not_executable', str(exc)) from None
         if run.get('problem_class') != 'fleet_routing' or run.get('state') != 'done' or not run.get('routes'):
             raise ServiceError(422, 'not_fleet_plan', '只有已完成的多车任务方案可以在 Gazebo 中执行')
         try:

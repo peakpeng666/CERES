@@ -1,5 +1,5 @@
 {
- "source": "DOI 内容协商（doi.org，application/x-bibtex）与 Crossref 检索，2026-10-15；无 DOI 的条目手工录入：holm1979, demsar2006, augerat1995, christofides1979, queiroga2022xml, ortools, cvrplib",
+ "source": "DOI 内容协商（doi.org，application/x-bibtex）与 Crossref 检索，2026-10-15；无 DOI 的条目手工录入：holm1979, demsar2006, augerat1995, christofides1979, queiroga2022xml, ortools, cvrplib；田间作业条目 2026-11-07 手工录入，题录取自本地论文首页或参考文献表",
  "references": [
   {
    "key": "angelopoulos2024crc",
@@ -44,6 +44,21 @@
     "benchmark"
    ],
    "bibtex": "@article{arnold2019ags, title={Efficiently solving very large-scale routing problems}, volume={107}, ISSN={0305-0548}, url={http://dx.doi.org/10.1016/j.cor.2019.03.006}, DOI={10.1016/j.cor.2019.03.006}, journal={Computers &amp; Operations Research}, publisher={Elsevier BV}, author={Arnold, Florian and Gendreau, Michel and Sörensen, Kenneth}, year={2019}, month=July, pages={32–42} }"
+  },
+  {
+   "key": "asae2006d497",
+   "type": "techreport",
+   "title": "ASAE D497.5 Agricultural Machinery Management Data",
+   "authors": [
+    "ASABE"
+   ],
+   "year": 2006,
+   "venue": "ASABE Standards",
+   "url": "https://webstore.ansi.org/standards/asabe/asaed497mar2011r2020",
+   "tags": [
+    "agriculture"
+   ],
+   "bibtex": "@techreport{asae2006d497, title={ASAE D497.5 Agricultural Machinery Management Data}, author={ASABE}, year={2006}, institution={ASABE Standards}, url={https://webstore.ansi.org/standards/asabe/asaed497mar2011r2020} }"
   },
   {
    "key": "augerat1995",
@@ -377,6 +392,26 @@
    "bibtex": "@article{dubins1957, title={On Curves of Minimal Length with a Constraint on Average Curvature, and with Prescribed Initial and Terminal Positions and Tangents}, volume={79}, ISSN={0002-9327}, url={http://dx.doi.org/10.2307/2372560}, DOI={10.2307/2372560}, number={3}, journal={American Journal of Mathematics}, publisher={JSTOR}, author={Dubins, L. E.}, year={1957}, month=July, pages={497} }"
   },
   {
+   "key": "dubins1957curvature",
+   "type": "article",
+   "title": "On Curves of Minimal Length with a Constraint on Average Curvature, and with Prescribed Initial and Terminal Positions and Tangent Directions",
+   "authors": [
+    "Dubins, Lester E."
+   ],
+   "year": 1957,
+   "venue": "American Journal of Mathematics",
+   "volume": "79",
+   "number": "3",
+   "pages": "497–516",
+   "doi": "10.2307/2372560",
+   "url": "https://doi.org/10.2307/2372560",
+   "tags": [
+    "turn",
+    "motion"
+   ],
+   "bibtex": "@article{dubins1957curvature,\n  author  = {Dubins, Lester E.},\n  title   = {On Curves of Minimal Length with a Constraint on Average Curvature, and with Prescribed Initial and Terminal Positions and Tangent Directions},\n  journal = {American Journal of Mathematics},\n  year    = {1957},\n  volume  = {79},\n  number  = {3},\n  pages   = {497--516},\n  doi     = {10.2307/2372560}\n}"
+  },
+  {
    "key": "fisher1981gap",
    "type": "article",
    "title": "A generalized assignment heuristic for vehicle routing",
@@ -621,6 +656,26 @@
    "bibtex": "@article{hart1968astar, title={A Formal Basis for the Heuristic Determination of Minimum Cost Paths}, volume={4}, ISSN={0536-1567}, url={http://dx.doi.org/10.1109/TSSC.1968.300136}, DOI={10.1109/tssc.1968.300136}, number={2}, journal={IEEE Transactions on Systems Science and Cybernetics}, publisher={Institute of Electrical and Electronics Engineers (IEEE)}, author={Hart, Peter and Nilsson, Nils and Raphael, Bertram}, year={1968}, pages={100–107} }"
   },
   {
+   "key": "held1962dp",
+   "type": "article",
+   "title": "A Dynamic Programming Approach to Sequencing Problems",
+   "authors": [
+    "Held, Michael",
+    "Karp, Richard M."
+   ],
+   "year": 1962,
+   "venue": "Journal of the Society for Industrial and Applied Mathematics",
+   "volume": "10",
+   "number": "1",
+   "pages": "196–210",
+   "doi": "10.1137/0110015",
+   "url": "https://doi.org/10.1137/0110015",
+   "tags": [
+    "routing"
+   ],
+   "bibtex": "@article{held1962dp, title={A Dynamic Programming Approach to Sequencing Problems}, author={Held, Michael and Karp, Richard M.}, year={1962}, journal={Journal of the Society for Industrial and Applied Mathematics}, volume={10}, number={1}, pages={196–210}, doi={10.1137/0110015}, url={https://doi.org/10.1137/0110015} }"
+  },
+  {
    "key": "hoffmann2023curvature",
    "type": "article",
    "title": "Optimal Coverage Path Planning for Agricultural Vehicles with Curvature Constraints",
@@ -680,6 +735,25 @@
     "benchmark"
    ],
    "bibtex": "@article{homberger2005, title={A two-phase hybrid metaheuristic for the vehicle routing problem with time windows}, volume={162}, ISSN={0377-2217}, url={http://dx.doi.org/10.1016/j.ejor.2004.01.027}, DOI={10.1016/j.ejor.2004.01.027}, number={1}, journal={European Journal of Operational Research}, publisher={Elsevier BV}, author={Homberger, Jörg and Gehring, Hermann}, year={2005}, month=Apr, pages={220–238} }"
+  },
+  {
+   "key": "hossain2026capacitated",
+   "type": "inproceedings",
+   "title": "Exact and Heuristic Methods for Capacitated Path Planning for Agricultural Field Operations",
+   "authors": [
+    "Hossain, Shahadat",
+    "Zahin, Fabliha"
+   ],
+   "year": 2026,
+   "venue": "Genetic and Evolutionary Computation Conference (GECCO)",
+   "doi": "10.1145/3795095.3805120",
+   "url": "https://doi.org/10.1145/3795095.3805120",
+   "tags": [
+    "agriculture",
+    "coverage",
+    "routing"
+   ],
+   "bibtex": "@inproceedings{hossain2026capacitated, title={Exact and Heuristic Methods for Capacitated Path Planning for Agricultural Field Operations}, author={Hossain, Shahadat and Zahin, Fabliha}, year={2026}, booktitle={Genetic and Evolutionary Computation Conference (GECCO)}, doi={10.1145/3795095.3805120}, url={https://doi.org/10.1145/3795095.3805120} }"
   },
   {
    "key": "janson2015fmt",
@@ -789,6 +863,27 @@
    "bibtex": "@article{kerschke2019survey, title={Automated Algorithm Selection: Survey and Perspectives}, volume={27}, ISSN={1530-9304}, url={http://dx.doi.org/10.1162/evco_a_00242}, DOI={10.1162/evco_a_00242}, number={1}, journal={Evolutionary Computation}, publisher={MIT Press}, author={Kerschke, Pascal and Hoos, Holger H. and Neumann, Frank and Trautmann, Heike}, year={2019}, month=Mar, pages={3–45} }"
   },
   {
+   "key": "kirkpatrick1983sa",
+   "type": "article",
+   "title": "Optimization by Simulated Annealing",
+   "authors": [
+    "Kirkpatrick, Scott",
+    "Gelatt, C. Daniel",
+    "Vecchi, Mario P."
+   ],
+   "year": 1983,
+   "venue": "Science",
+   "volume": "220",
+   "number": "4598",
+   "pages": "671–680",
+   "doi": "10.1126/science.220.4598.671",
+   "url": "https://doi.org/10.1126/science.220.4598.671",
+   "tags": [
+    "routing"
+   ],
+   "bibtex": "@article{kirkpatrick1983sa, title={Optimization by Simulated Annealing}, author={Kirkpatrick, Scott and Gelatt, C. Daniel and Vecchi, Mario P.}, year={1983}, journal={Science}, volume={220}, number={4598}, pages={671–680}, doi={10.1126/science.220.4598.671}, url={https://doi.org/10.1126/science.220.4598.671} }"
+  },
+  {
    "key": "kuffner2000rrtconnect",
    "type": "inproceedings",
    "title": "RRT-connect: An efficient approach to single-query path planning",
@@ -807,6 +902,24 @@
     "motion"
    ],
    "bibtex": "@inproceedings{kuffner2000rrtconnect, title={RRT-connect: An efficient approach to single-query path planning}, url={http://dx.doi.org/10.1109/ROBOT.2000.844730}, DOI={10.1109/robot.2000.844730}, booktitle={Proceedings 2000 ICRA. Millennium Conference. IEEE International Conference on Robotics and Automation. Symposia Proceedings (Cat. No.00CH37065)}, publisher={IEEE}, author={Kuffner, J.J. and LaValle, S.M.}, year={2000}, pages={995–1001 vol.2} }"
+  },
+  {
+   "key": "leny2007dubins",
+   "type": "inproceedings",
+   "title": "On the Dubins Traveling Salesman Problem",
+   "authors": [
+    "Le Ny, Jerome",
+    "Frazzoli, Emilio",
+    "Feron, Eric"
+   ],
+   "year": 2007,
+   "venue": "IEEE Conference on Decision and Control",
+   "tags": [
+    "turn",
+    "motion",
+    "routing"
+   ],
+   "bibtex": "@inproceedings{leny2007dubins,\n  author    = {Le Ny, Jerome and Frazzoli, Emilio and Feron, Eric},\n  title     = {On the Dubins Traveling Salesman Problem},\n  booktitle = {IEEE Conference on Decision and Control},\n  year      = {2007}\n}"
   },
   {
    "key": "li2005",
@@ -850,6 +963,25 @@
     "statistics"
    ],
    "bibtex": "@article{lopez2024eaf,\n  doi = {10.48550/ARXIV.2404.02031},\n  url = {https://arxiv.org/abs/2404.02031},\n  author = {López-Ibáñez, Manuel and Vermetten, Diederick and Dreo, Johann and Doerr, Carola},\n  keywords = {Optimization and Control (math.OC), Neural and Evolutionary Computing (cs.NE), FOS: Mathematics, FOS: Mathematics, FOS: Computer and information sciences, FOS: Computer and information sciences},\n  title = {Using the Empirical Attainment Function for Analyzing Single-objective Black-box Optimization Algorithms},\n  publisher = {arXiv},\n  year = {2024},\n  copyright = {Creative Commons Attribution 4.0 International}\n}"
+  },
+  {
+   "key": "lopezsanchez2025cafvrpila",
+   "type": "inproceedings",
+   "title": "Capacitated Agriculture Fleet Vehicle Routing with Implements and Limited Autonomy: A model and a two-phase solution approach",
+   "authors": [
+    "López-Sánchez, Aitor",
+    "Lujak, Marin",
+    "Semet, Frederic",
+    "Billhardt, Holger"
+   ],
+   "year": 2025,
+   "venue": "IEEE International Conference on Robotics and Automation (ICRA)",
+   "url": "https://hal.science/hal-05443281v1",
+   "tags": [
+    "agriculture",
+    "routing"
+   ],
+   "bibtex": "@inproceedings{lopezsanchez2025cafvrpila, title={Capacitated Agriculture Fleet Vehicle Routing with Implements and Limited Autonomy: A model and a two-phase solution approach}, author={López-Sánchez, Aitor and Lujak, Marin and Semet, Frederic and Billhardt, Holger}, year={2025}, booktitle={IEEE International Conference on Robotics and Automation (ICRA)}, url={https://hal.science/hal-05443281v1} }"
   },
   {
    "key": "lourenco2003ils",
@@ -1027,6 +1159,30 @@
    "bibtex": "@article{mier2024headland, title={Continuous Curvature Path Planning for Headland Coverage With Agricultural Robots}, volume={42}, ISSN={1556-4967}, url={http://dx.doi.org/10.1002/rob.22489}, DOI={10.1002/rob.22489}, number={3}, journal={Journal of Field Robotics}, publisher={Wiley}, author={Mier, Gonzalo and Fennema, Rick and Valente, João and de Bruin, Sytze}, year={2024}, month=Dec, pages={641–656} }"
   },
   {
+   "key": "moghadam2020benchmark",
+   "type": "article",
+   "title": "An Arable Field for Benchmarking of Metaheuristic Algorithms for Capacitated Coverage Path Planning Problems",
+   "authors": [
+    "Khosravani Moghadam, Erfan",
+    "Vahdanjoo, Mahdi",
+    "Jensen, Allan Leck",
+    "Sharifi, Mohammad",
+    "Sørensen, Claus Aage Grøn"
+   ],
+   "year": 2020,
+   "venue": "Agronomy",
+   "volume": "10",
+   "pages": "1454",
+   "doi": "10.3390/agronomy10101454",
+   "url": "https://doi.org/10.3390/agronomy10101454",
+   "tags": [
+    "agriculture",
+    "coverage",
+    "benchmark"
+   ],
+   "bibtex": "@article{moghadam2020benchmark, title={An Arable Field for Benchmarking of Metaheuristic Algorithms for Capacitated Coverage Path Planning Problems}, author={Khosravani Moghadam, Erfan and Vahdanjoo, Mahdi and Jensen, Allan Leck and Sharifi, Mohammad and Sørensen, Claus Aage Grøn}, year={2020}, journal={Agronomy}, volume={10}, pages={1454}, doi={10.3390/agronomy10101454}, url={https://doi.org/10.3390/agronomy10101454} }"
+  },
+  {
    "key": "moysiadis2020review",
    "type": "article",
    "title": "Mobile Robotics in Agricultural Operations: A Narrative Review on Planning Aspects",
@@ -1069,6 +1225,25 @@
     "routing"
    ],
    "bibtex": "@misc{ortools,\n  author = {Perron, Laurent and Furnon, Vincent},\n  title = {{OR-Tools}},\n  organization = {Google}, version = {9.15}, year = {2026},\n  url = {https://developers.google.com/optimization/}\n}"
+  },
+  {
+   "key": "prins2004split",
+   "type": "article",
+   "title": "A simple and effective evolutionary algorithm for the vehicle routing problem",
+   "authors": [
+    "Prins, Christian"
+   ],
+   "year": 2004,
+   "venue": "Computers & Operations Research",
+   "volume": "31",
+   "number": "12",
+   "pages": "1985–2002",
+   "doi": "10.1016/S0305-0548(03)00158-8",
+   "url": "https://doi.org/10.1016/S0305-0548(03)00158-8",
+   "tags": [
+    "routing"
+   ],
+   "bibtex": "@article{prins2004split, title={A simple and effective evolutionary algorithm for the vehicle routing problem}, author={Prins, Christian}, year={2004}, journal={Computers & Operations Research}, volume={31}, number={12}, pages={1985–2002}, doi={10.1016/S0305-0548(03)00158-8}, url={https://doi.org/10.1016/S0305-0548(03)00158-8} }"
   },
   {
    "key": "queiroga2022xml",
@@ -1462,44 +1637,6 @@
     "routing"
    ],
    "bibtex": "@article{wouda2024pyvrp, title={PyVRP: A High-Performance VRP Solver Package}, volume={36}, ISSN={1526-5528}, url={http://dx.doi.org/10.1287/ijoc.2023.0055}, DOI={10.1287/ijoc.2023.0055}, number={4}, journal={INFORMS Journal on Computing}, publisher={Institute for Operations Research and the Management Sciences (INFORMS)}, author={Wouda, Niels A. and Lan, Leon and Kool, Wouter}, year={2024}, month=July, pages={943–955} }"
-  },
-  {
-   "key": "dubins1957curvature",
-   "type": "article",
-   "title": "On Curves of Minimal Length with a Constraint on Average Curvature, and with Prescribed Initial and Terminal Positions and Tangent Directions",
-   "authors": [
-    "Dubins, Lester E."
-   ],
-   "year": 1957,
-   "venue": "American Journal of Mathematics",
-   "volume": "79",
-   "number": "3",
-   "pages": "497–516",
-   "doi": "10.2307/2372560",
-   "url": "https://doi.org/10.2307/2372560",
-   "tags": [
-    "turn",
-    "motion"
-   ],
-   "bibtex": "@article{dubins1957curvature,\n  author  = {Dubins, Lester E.},\n  title   = {On Curves of Minimal Length with a Constraint on Average Curvature, and with Prescribed Initial and Terminal Positions and Tangent Directions},\n  journal = {American Journal of Mathematics},\n  year    = {1957},\n  volume  = {79},\n  number  = {3},\n  pages   = {497--516},\n  doi     = {10.2307/2372560}\n}"
-  },
-  {
-   "key": "leny2007dubins",
-   "type": "inproceedings",
-   "title": "On the Dubins Traveling Salesman Problem",
-   "authors": [
-    "Le Ny, Jerome",
-    "Frazzoli, Emilio",
-    "Feron, Eric"
-   ],
-   "year": 2007,
-   "venue": "IEEE Conference on Decision and Control",
-   "tags": [
-    "turn",
-    "motion",
-    "routing"
-   ],
-   "bibtex": "@inproceedings{leny2007dubins,\n  author    = {Le Ny, Jerome and Frazzoli, Emilio and Feron, Eric},\n  title     = {On the Dubins Traveling Salesman Problem},\n  booktitle = {IEEE Conference on Decision and Control},\n  year      = {2007}\n}"
   }
  ]
 }

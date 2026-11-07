@@ -98,6 +98,12 @@ def sample_seed(seed: int, index: int) -> int:
 
 def plan_from_run(run: dict, out: Path) -> dict:
     """The plan Gazebo would receive for this run, with the same validation."""
+    if run.get('problem_class') == 'field_operation':
+        from .agri.execution import NotExecutable, fleet_view
+        try:
+            run = fleet_view(run)
+        except NotExecutable as exc:
+            raise PhysicsError(422, 'not_executable', str(exc)) from None
     if run.get('problem_class') != 'fleet_routing' or run.get('state') != 'done' or not run.get('routes'):
         raise PhysicsError(422, 'not_fleet_plan', '只有已完成的多车任务方案可以进入物理执行')
     if run.get('status') not in ('feasible', 'optimal') or (run.get('check') or {}).get('valid') is not True:

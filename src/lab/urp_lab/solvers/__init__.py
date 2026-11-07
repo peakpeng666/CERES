@@ -11,6 +11,7 @@ from ..algorithm_ids import canonical_algorithm_id
 from ..scenarios import maps
 from ..planning import context, trace_context, without_stale_reference
 from . import f2c_coverage, fleet, motion, routing
+from ..agri import solve as field_ops
 
 TIME = {'name': 'time_limit_s', 'type': 'number', 'default': 3, 'min': 0.05, 'max': 600, 'label': '时间预算 (s)'}
 SEED = {'name': 'seed', 'type': 'integer', 'default': 42, 'min': 0, 'max': 2147483647, 'label': '随机种子'}
@@ -96,6 +97,24 @@ _TABLE += [
      '按车辆数做容量约束 k-means 分区，再分别构造与改进单车回路；不保证最优或路线互不交叉。',
      ['fisher1981gap', 'croes1958twoopt'], 'src/lab/urp_lab/solvers/fleet.py', {'params': FLEET_PARAMS, 'limits': _windows('panel.cluster_first')}),
 ]
+FIELD_PARAMS = [dict(TIME, default=5), SEED]
+_TABLE += [
+    ('agri.split_anneal', '退火排序 + 最优补给切分', 'field_operation', '本项目', 'metaheuristic', 'none',
+     '在作业行顺序与方向上做模拟退火，每个候选用线性时间最短路切分出最优补给点；以两种基线中较好的为起点。',
+     ['hossain2026capacitated', 'prins2004split', 'kirkpatrick1983sa'], 'src/lab/urp_lab/agri/search.py', {'params': [*FIELD_PARAMS, {'name': 'iterations', 'type': 'integer', 'default': 0, 'min': 0, 'max': 10000000, 'label': '固定迭代数（0 = 按时间）'}]}),
+    ('ortools.field', 'OR-Tools 作业行路由', 'field_operation', 'OR-Tools', 'metaheuristic', 'none',
+     '把每行的两个方向建成互斥节点，一趟一辆虚拟车，用引导局部搜索排序；求得的顺序再走同一补给切分与几何生成。',
+     ['ortools', 'voudouris1999gls', 'bochtis2008headland'], 'ortools', {'params': FIELD_PARAMS}),
+    ('agri.skip', '跳行模式', 'field_operation', '基线', 'baseline', 'none',
+     '按 ⌈2r/w⌉+1 行交替跳行，让每次掉头都是无需回绕的 P 型转弯。',
+     ['bochtis2008headland'], 'src/lab/urp_lab/agri/search.py', {'params': [dict(TIME, default=1)]}),
+    ('agri.sequential', '顺序往复', 'field_operation', '基线', 'baseline', 'none',
+     '按田块顺序逐行往复，转入相邻行；驾驶员或普通 AB 线的做法。',
+     ['choset2000boustrophedon'], 'src/lab/urp_lab/agri/search.py', {'params': [dict(TIME, default=1)]}),
+    ('agri.exact', '枚举最优（≤12 行）', 'field_operation', '本项目', 'exact', 'optimal',
+     'Held–Karp 求每趟最优，再精确划分趟次；用于小实例校验启发式，单机组、补给站与车库同址。',
+     ['held1962dp', 'moghadam2020benchmark'], 'src/lab/urp_lab/agri/search.py', {'limits': {'max_tasks': 12}, 'params': [dict(TIME, default=30)]}),
+]
 for _aid, (_name, _mode, _refs) in motion.GRID_PLANNERS.items():
     _TABLE.append((_aid, _name, 'point_to_point', '基线', 'graph_search', 'resolution_optimal' if _mode != 'theta' else 'none',
                    {'astar': '8 邻接栅格上的 A*，八方向距离启发；在当前栅格分辨率下最优。',
@@ -110,7 +129,7 @@ for _aid, (_name, _cls, _anytime, _refs) in motion.OMPL_PLANNERS.items():
                     '快速求得可行路径的采样规划器（不追求最优），求得后可做路径简化。'), _refs, 'ompl', {'params': OMPL_PARAMS}))
 
 PROBLEM_LABEL = {'turn_routing': '转弯约束任务路由', 'euclidean_cvrp': '容量约束车辆路径（CVRP）', 'coverage': '覆盖作业规划',
-                 'point_to_point': '点到点运动规划', 'fleet_routing': '多车任务分配与路径'}
+                 'point_to_point': '点到点运动规划', 'fleet_routing': '多车任务分配与路径', 'field_operation': '田间作业（作业行服务）'}
 
 
 def _version(origin: str, library: str) -> tuple[str, str]:
@@ -132,7 +151,7 @@ def catalog():
         if pc == 'turn_routing' and not origin.startswith('src/'):
             label += ' + src/research/src/urp_research/turn_modes/evaluate_candidate.py'
         source = 'project' if library == '本项目' else 'panel_baseline' if library == '基线' else 'third_party'
-        uses_seed = aid.startswith(('pyvrp.', 'ompl.')) or aid == 'panel.cluster_first'
+        uses_seed = aid.startswith(('pyvrp.', 'ompl.')) or aid in ('panel.cluster_first', 'agri.split_anneal')
         seed_note = ('使用 seed；墙钟终止仍可能影响跨硬件重现' if uses_seed else
                      '此适配器不使用 seed；更换 seed 不构成独立随机重复')
         available, reason = True, None
@@ -191,6 +210,9 @@ def run_algorithm(scenario, instance, algorithm_id, params):
     elif pc == 'fleet_routing':
         routes, check, extra, raw, status, trace = fleet.solve(scenario, instance, algorithm_id, params)
         objective = fleet.objective_value(instance, extra) if routes else None
+    elif pc == 'field_operation':
+        routes, check, extra, raw, status, trace = field_ops.solve(scenario, instance, algorithm_id, params)
+        objective = field_ops.objective_value(instance, extra) if routes else None
     elif pc == 'point_to_point':
         routes, check, extra, raw, status = motion.solve(scenario, instance, algorithm_id, params)
         objective = routes[0]['cost'] if routes else None
@@ -214,9 +236,10 @@ def run_algorithm(scenario, instance, algorithm_id, params):
         extra['bks'] = reference['bks']
         extra['gap_to_bks_pct'] = 100.0 * (objective - reference['bks']) / reference['bks']
     unit = scenario['cost_unit']
-    if pc == 'fleet_routing':
+    if pc in ('fleet_routing', 'field_operation'):
         unit = 's' if instance.get('objective') == 'makespan' else 'm'
     n_tasks = (len(instance.get('customers', [])) if pc == 'turn_routing' else len(instance['tasks']) if pc == 'fleet_routing' else
+               len(instance['lines']) if pc == 'field_operation' else
                len(instance['coordinates']) - 1 if pc == 'euclidean_cvrp' else 1 if pc == 'point_to_point' else 0)
     result = dict(status=status, objective=dict(value=objective, unit=unit, lower_bound=objective if algorithm_id == 'urp.reset_dp' else None),
                 routes=routes, check=check, map_check=mc, trace=trace,

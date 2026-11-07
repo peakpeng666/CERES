@@ -825,6 +825,27 @@ def create_app(config: Config | None = None) -> FastAPI:
             record = {**record, 'planning_solution': run_or_404(record['run_id'])}
         return export_with(core('export').export_sim_run, record, format)
 
+    # ------------------------------------------------- field operations --
+    @app.get(f'{api}/agri/catalog')
+    def agri_catalog():
+        return core('agri.catalog').load()
+
+    @app.post(f'{api}/agri/compile')
+    def agri_compile(payload: Any = Body(None)):
+        try:
+            return core('agri.api').compile_preview(body_dict(payload))
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ApiError(400, 'invalid_mission', str(exc)) from None
+
+    @app.post(f'{api}/agri/missions', status_code=201)
+    def agri_create(payload: Any = Body(None)):
+        module = core('scenarios')
+        try:
+            scenario = core('agri.api').scenario(body_dict(payload))
+            return module.import_scenario(scenario)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise ApiError(400, 'invalid_mission', str(exc)) from None
+
     # ------------------------------------------------------- compose --
     @app.get(f'{api}/compose/examples')
     def compose_examples():

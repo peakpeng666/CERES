@@ -1,0 +1,17 @@
+[
+ {"id":"wheat","name":"小麦","lane":"小麦","category":"grain","stand":"solid","yield_t_ha":6},
+ {"id":"corn","name":"玉米","lane":"玉米","category":"grain","stand":"row","yield_t_ha":9},
+ {"id":"soybean","name":"大豆","lane":"大豆","category":"grain","stand":"row","yield_t_ha":3},
+ {"id":"rapeseed","name":"油菜","lane":"油菜","category":"grain","stand":"solid","yield_t_ha":3},
+ {"id":"rice","name":"水稻","lane":"水稻","category":"grain","stand":"row","yield_t_ha":7},
+ {"id":"tea","name":"茶","lane":"茶","category":"perennial","stand":"row","yield_t_ha":2},
+ {"id":"vegetable","name":"蔬菜","lane":"蔬菜","category":"horticulture","stand":"row","yield_t_ha":30},
+ {"id":"tomato","name":"番茄","lane":"番茄","category":"horticulture","stand":"row","yield_t_ha":80},
+ {"id":"strawberry","name":"草莓","lane":"草莓","category":"horticulture","stand":"row","yield_t_ha":25},
+ {"id":"nursery","name":"苗木","lane":"苗圃","category":"perennial","stand":"row","yield_t_ha":0},
+ {"id":"grape","name":"葡萄","lane":"葡萄","category":"perennial","stand":"row","yield_t_ha":10},
+ {"id":"kiwifruit","name":"猕猴桃","lane":"猕猴桃","category":"perennial","stand":"row","yield_t_ha":20},
+ {"id":"apple","name":"苹果","lane":"苹果","category":"perennial","stand":"row","yield_t_ha":40,"spacing_source":"umass_apple"},
+ {"id":"citrus","name":"柑橘","lane":"柑橘","category":"perennial","stand":"row","yield_t_ha":30},
+ {"id":"forage","name":"牧草","lane":null,"category":"forage","stand":"solid","yield_t_ha":8}
+]
