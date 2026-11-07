@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Badge, Notice } from '../lab/ui';
+import { Badge, Button, Notice } from '../lab/ui';
 import type { Instance, Scenario, Solution } from '../lab/types';
 import type { FieldInstance } from '../lab/views/plan/planModel';
 import { useStudio } from '../studio/store';
@@ -83,7 +83,7 @@ export function FieldOperationInspector({ scenario, draft }: { scenario: Scenari
         {res.kind !== 'none' && <Row label={res.name ?? '容量'} value={`${res.capacity} ${res.unit} · ${res.rate_per_ha ?? '—'} ${res.unit}/ha`} />}
         {breakdown && Object.keys(breakdown).length > 0 && <Row label="转弯构成" value={Object.entries(breakdown).map(([k, v]) => `${k === 'pivot' ? '原地' : k} ${v}`).join(' · ')} />}
         {rig.tier !== 'simulation' && <Notice tone="info">这台机组没有执行模型，方案可比较，不能进入物理仿真。</Notice>}
-        <button type="button" className={s.link} onClick={edit}>修改作业设计</button>
+        <Button size="sm" onClick={edit}>修改作业设计</Button>
       </div>
     </div>
   );

@@ -67,7 +67,9 @@ class Field:
         band = max(.15, min(self.radius, .45 * (self.inst['headland_m'] - self.clear)))
         inner = self.free.buffer(-band, join_style=2)
         if inner.is_empty:
-            inner = self.free.buffer(-.15, join_style=2)
+            inner = self.free.buffer(-.02, join_style=2)
+        if inner.is_empty:        # a strip too thin to inset: its own vertices are all there is
+            inner = self.free
         polys = [inner] if inner.geom_type == 'Polygon' else list(getattr(inner, 'geoms', []))
         nudged = []
         for g in polys:
@@ -152,6 +154,8 @@ class Field:
         links_in = [self._link(self._out_point(o, True)) for o in range(n2)]
         links_out = [self._link(self._out_point(o, False)) for o in range(n2)]
         self.L_in, self.L_out = np.array(links_in), np.array(links_out)
+        if not len(self.corners):
+            raise ValueError('地头太窄：车体在作业区外没有可通行的空间')
         C = self.Dc
         base = np.min(self.L_out[:, :, None] + C[None, :, :], axis=1) if len(self.corners) else np.full((n2, 0), INF)
         transfer = np.min(base[:, None, :] + self.L_in[None, :, :], axis=2) if len(self.corners) else np.full((n2, n2), INF)

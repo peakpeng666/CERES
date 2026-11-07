@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { navigate } from '../app/router';
 import { Icon } from '../desk/Icon';
 import { useStudio } from '../studio/store';
-import { lab } from '../lab/api';
+import { lab, useLabResource } from '../lab/api';
+import { studio } from '../studio/api';
 import { createMission, useCatalog, usePreview } from './api';
 import { BASE, PRESETS, SHAPES, STAGES, basisOf, fmt, hectares, hours, implementFits, lineOperations, loadMission, platformsFor, reconcile, saveMission } from './model';
 import { FieldPreview } from './Preview';
@@ -116,6 +117,8 @@ export function Design() {
   }, [c, mission]);
   useEffect(() => { if (mission) saveMission(mission); }, [mission]);
   const { preview, error, busy } = usePreview(mission);
+  const fields = useLabResource('field-design-real', () => studio.fields('nl'));
+  const real = fields.data?.fields ?? [];
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
@@ -185,18 +188,31 @@ export function Design() {
               <span>田块形状</span>
               <div className={s.shapes} role="group" aria-label="田块形状">
                 {SHAPES.map((x) => (
-                  <button key={x.id} type="button" aria-pressed={mission.field.shape === x.id} title={x.label} aria-label={x.label} onClick={() => field({ shape: x.id })}>
+                  <button key={x.id} type="button" aria-pressed={!mission.field.field_id && mission.field.shape === x.id} title={x.label} aria-label={x.label} onClick={() => setMission({ ...mission, angle_deg: 0, field: { ...mission.field, shape: x.id, field_id: undefined } })}>
                     <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"><path d={x.d} /></svg>
                   </button>
                 ))}
+                <button type="button" className={s.realBtn} aria-pressed={!!mission.field.field_id} onClick={() => { if (!mission.field.field_id && real[0]) setMission({ ...mission, angle_deg: null, field: { ...mission.field, field_id: real[0].id } }); }} disabled={!real.length} title={real.length ? 'Fields2Benchmark 荷兰开发集' : '先在 资料 → 真实田块 下载'}>真实</button>
               </div>
             </div>
           </div>
-          <div className={s.grid3}>
-            <NumberField label="长" unit="m" min={5} max={5000} value={mission.field.width_m} onChange={(v) => v && field({ width_m: v })} />
-            <NumberField label="宽" unit="m" min={5} max={5000} value={mission.field.height_m} onChange={(v) => v && field({ height_m: v })} />
-            <NumberField label="作业方向" unit="°" min={-90} max={90} value={mission.angle_deg} onChange={(v) => setMission({ ...mission, angle_deg: v ?? 0 })} hint={`约 ${fmt(hectares(mission.field.width_m, mission.field.height_m), 2)} ha`} />
-          </div>
+          {mission.field.field_id ? (
+            <div className={s.grid2}>
+              <label className={s.field}>
+                <span>真实田块</span>
+                <select value={mission.field.field_id} onChange={(e) => field({ field_id: e.target.value })}>
+                  {real.map((f) => <option key={f.id} value={f.id}>{f.id.replace('nl_field_', '荷兰 ')} · {f.area_ha} ha</option>)}
+                </select>
+              </label>
+              <NumberField label="作业方向" unit="°" min={-180} max={180} placeholder="沿长边" value={mission.angle_deg} onChange={(v) => setMission({ ...mission, angle_deg: v })} />
+            </div>
+          ) : (
+            <div className={s.grid3}>
+              <NumberField label="长" unit="m" min={5} max={5000} value={mission.field.width_m} onChange={(v) => v && field({ width_m: v })} />
+              <NumberField label="宽" unit="m" min={5} max={5000} value={mission.field.height_m} onChange={(v) => v && field({ height_m: v })} />
+              <NumberField label="作业方向" unit="°" min={-90} max={90} value={mission.angle_deg} onChange={(v) => setMission({ ...mission, angle_deg: v ?? 0 })} hint={`约 ${fmt(hectares(mission.field.width_m, mission.field.height_m), 2)} ha`} />
+            </div>
+          )}
         </Section>
 
         <Section n={2} title="作业">

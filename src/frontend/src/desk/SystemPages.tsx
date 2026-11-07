@@ -86,7 +86,7 @@ export function EvalsPage() {
         ))}</Rows>
         <h2>任务理解评测</h2>
         <Rows>{nlu.map((r) => <Row key={r.id} title={r.id} sub={[r.mode, r.provider, r.split].filter(Boolean).join(' · ')} value={`F1 ${n3(r.metrics?.f1)}`} valueSub={r.metrics?.exact_match != null ? `完全匹配 ${n3(r.metrics.exact_match)}` : undefined} />)}</Rows>
-        <p className={s.emptyLine} style={{ padding: '12px 0 0' }}>记录位于 experiments/agent-evals/。这些是规划层流程评测，不代表真实物理执行通过。</p>
+        <p className={s.emptyLine} style={{ padding: '12px 0 0' }}>记录位于 experiments/agent-evals/，只评测到规划层。</p>
       </div>
     </div>
   );

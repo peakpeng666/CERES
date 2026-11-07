@@ -57,13 +57,6 @@ def real_fields() -> dict[str, dict]:
     return out
 
 
-def _long_axis(ring) -> float:
-    from shapely.geometry import Polygon
-    box = list(Polygon(ring).minimum_rotated_rectangle.exterior.coords)
-    edges = sorted(((math.dist(a, b), math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))) for a, b in zip(box, box[1:])), reverse=True)
-    return round(edges[0][1] % 180, 2)
-
-
 def _generated_size(base: dict, rows: int) -> tuple[float, float]:
     width = cat.value(cat.by_id('implements', base['implement'])['width_m'])
     side = 60 * max(width, 4)
@@ -84,7 +77,7 @@ def plan_instances() -> list[dict]:
                 fields.append((f'gen-{shape}-{rows}', {'shape': shape, 'width_m': w, 'height_m': h}, 0.))
         if rig_id in REAL_RIGS:
             for fid, geo in reals.items():
-                fields.append((fid, geo, _long_axis(geo['ring'])))
+                fields.append((fid, geo, missions.long_axis(geo['ring'])))
         for name, field, angle in fields:
             for headland in HEADLAND:
                 for fills in FILLS:

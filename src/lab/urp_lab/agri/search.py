@@ -222,6 +222,34 @@ def skip_pattern(F: Field, K: int, step: int | None = None) -> list[list[int]]:
     return out
 
 
+def complete(orders: list[list[int]], n: int) -> list[list[int]]:
+    """A time-limited first solution can leave lines out; they go last, and the checker judges the result."""
+    if not orders:
+        return orders
+    served = {o // 2 for order in orders for o in order}
+    orders[-1].extend(2 * i for i in range(n) if i not in served)
+    return orders
+
+
+def nearest(plan: Plan, K: int) -> list[list[int]]:
+    """Greedy: always the cheapest next line end. A third start point, unlike the two field-order patterns."""
+    F = plan.F
+    left = set(range(F.n))
+    order: list[int] = []
+    cur = min(range(2 * F.n), key=lambda o: plan.to[0][o])
+    while True:
+        order.append(cur)
+        left.discard(cur // 2)
+        if not left:
+            break
+        row = plan.C[cur]
+        cur = min((o for i in left for o in (2 * i, 2 * i + 1)), key=lambda o: row[o])
+    if K == 1:
+        return [order]
+    sequence = [o // 2 for o in order]
+    return [[o for o in order if o // 2 in set(b)] for b in _partition(F, sequence, K)]
+
+
 def anneal(plan: Plan, start: list[list[int]], seed: int, deadline: float, iterations: int | None, trace: list):
     rng = random.Random(seed)
     F = plan.F
@@ -238,7 +266,7 @@ def anneal(plan: Plan, start: list[list[int]], seed: int, deadline: float, itera
     t0 = time.perf_counter()
     # Cycles of cooling, each restarting from the best plan at a lower temperature, so a larger budget keeps paying.
     cycle = max(20000, 400 * F.n)
-    temp0 = max(cur * .01, 1.)
+    temp0 = max(cur * .03, 1.)
     it = 0
     last = -1.
     best_at_cycle, idle_cycles, phase = best, 0, 0
@@ -347,7 +375,8 @@ def ortools_sequence(plan: Plan, deadline_s: float, seed: int) -> list[list[int]
     cb = routing.RegisterTransitCallback(arc)
     routing.SetArcCostEvaluatorOfAllVehicles(cb)
     for i in range(F.n):
-        routing.AddDisjunction([manager.NodeToIndex(1 + 2 * i), manager.NodeToIndex(2 + 2 * i)], big * 10, 1)
+        # Dropping a line must never be cheaper than any route that serves it.
+        routing.AddDisjunction([manager.NodeToIndex(1 + 2 * i), manager.NodeToIndex(2 + 2 * i)], big * 100000, 1)
     if plan.Q:
         units = 1000
         dem = [0] + [int(math.ceil(d * units)) for d in plan.dem]

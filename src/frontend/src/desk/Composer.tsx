@@ -203,6 +203,7 @@ export function NewTask() {
         {providers && !providers.connected.length && <p className={s.helloHint}><a href="#/system/models">连接一个模型服务商</a>，粘贴 API Key 就能用自然语言下任务。没有连接时走规则流程。</p>}
         <ul className={s.helloList}>
           {EXAMPLES.map((t, i) => <li key={t} style={{ '--i': i } as CSSProperties}><button type="button" onClick={() => setSeed({ text: t, token: Date.now() })}>{t}</button></li>)}
+          <li style={{ '--i': EXAMPLES.length } as CSSProperties}><a href="#/field">按行作业，要选机具和药箱？打开作业设计</a></li>
         </ul>
       </div>
     </div>

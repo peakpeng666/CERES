@@ -100,7 +100,7 @@ export function FleetAssetSection() {
           {b.min_turn_radius_m ? <><span>转弯半径</span><span>{b.min_turn_radius_m} m：Dubins 规划与采样几何检查；当前田间差速模型不支持执行</span></> : null}
         </div>
       ) : (
-        <p className={p.hint}>车队参数目前是手工设置的。选一种车辆资产，车体半径、容量和车速会写入任务地图并随方案记录资产版本。</p>
+        <p className={p.hint}>选一种车辆资产，车体半径、容量和车速随方案记录。</p>
       )}
       {drift.length > 0 && <p className={p.hint}><strong className={p.warn}>与车辆资产不一致：</strong>{drift.join('；')}（求解按任务地图里的值）。</p>}
       <div className={p.row}>
@@ -135,7 +135,7 @@ export function FleetAssetSection() {
           })}
         </tbody>
       </table>
-      <p className={p.meta}><Layers size={11} style={{ verticalAlign: -1 }} /> 家库按车辆表序轮询分配，不是优化选库；路线类别、家库、趟次与任务顺序以冻结结果为准。多车执行仍是串行交通基线。</p>
+      <p className={p.meta}><Layers size={11} style={{ verticalAlign: -1 }} /> 车辆按表序轮询分配到各车库。</p>
     </>
   );
 }

@@ -247,7 +247,7 @@ function GenericMap({ scenario, draft, run, runs }: { scenario: Scenario; draft:
         <span className={s.hint} style={{ margin: 0 }}>{frozen ? '历史运行冻结输入 · 只读' : scenario.summary}</span>
         <span className={s.spacer} />
         {frozen ? <Button size="sm" onClick={() => setFrozen(false)}>返回当前草稿</Button> : <SaveChip />}
-        <Button size="sm" title="打开经典视图：可编辑 JSON、逐项调整任务" onClick={() => window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'classic' }))}>经典视图</Button>
+        {shownScenario.problem_class !== 'field_operation' && <Button size="sm" title="打开经典视图：可编辑 JSON、逐项调整任务" onClick={() => window.dispatchEvent(new CustomEvent('studio:open-panel', { detail: 'classic' }))}>经典视图</Button>}
       </div>
       <div className={s.mapStage}>
         <MapCanvas scene={scene} fitKey={`${scenario.id}:${frozen ? run?.run_id : 'draft'}`} centerRequest={center} ariaLabel="场景地图"
@@ -474,8 +474,8 @@ function FleetForm() {
             <Button size="sm" icon={Plus} disabled={classes.length >= 8} onClick={() => set((i) => ({ ...i, vehicles: { ...i.vehicles, fleet: [...fleetClasses(i), { ...fleetClasses(i)[0], name: `车型 ${classes.length + 1}`, count: 1 }] } }))}>添加车型</Button>
             <Button size="sm" variant="plain" onClick={() => set((i) => { const first = fleetClasses(i)[0]; return { ...i, robot_radius: first.robot_radius ?? i.robot_radius, vehicles: { ...i.vehicles, fleet: undefined, count: first.count, capacity: first.capacity, speed_mps: first.speed_mps ?? 1, names: undefined } }; })}>返回同构设置</Button>
           </div>
-          {classes.some((item) => (item.min_turn_radius_m ?? 0) > 0) && <p className={s.hint}><strong className={s.warn}>执行限制：</strong>曲率约束支持规划、保存和查看，并提供采样几何检查；尚无动力学验证。rows 模式不支持，Gazebo 执行返回 422 curvature_constrained_execution。</p>}
-          {classes.length > 1 && <p className={s.hint}>异构车队支持 PyVRP / OR-Tools；Gazebo 执行返回 422 heterogeneous_fleet_execution。各车按设定容量求解，分配错误会直接报出。</p>}
+          {classes.some((item) => (item.min_turn_radius_m ?? 0) > 0) && <p className={s.hint}><strong className={s.warn}>只到规划层：</strong>带转弯半径的车型不能进入仿真，也不支持行间通行。</p>}
+          {classes.length > 1 && <p className={s.hint}>异构车队用 PyVRP 或 OR-Tools 求解，不能进入 Gazebo。</p>}
         </>
       )}
       <label className={s.field}>

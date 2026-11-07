@@ -22,8 +22,8 @@ export interface Catalog {
 }
 export interface Mission {
   environment: string; crop: string | null; operation: string; platform: string; implement: string;
-  field: { shape: string; width_m: number; height_m: number; obstacles?: number[][][]; ring?: number[][] };
-  angle_deg: number; headland_m: number | null; fleet: number; objective: 'nonworking' | 'makespan' | null; station: string;
+  field: { shape: string; width_m: number; height_m: number; obstacles?: number[][][]; ring?: number[][]; field_id?: string };
+  angle_deg: number | null; headland_m: number | null; fleet: number; objective: 'nonworking' | 'makespan' | null; station: string;
   overrides: { work_width_m?: number | null; capacity?: number | null; rate_per_ha?: number | null; speed_kmh?: number | null };
   title?: string;
 }

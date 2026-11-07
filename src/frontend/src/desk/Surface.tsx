@@ -156,7 +156,7 @@ function PlanCrumbs() {
   const session = useAgent((x) => x.session);
   const fromSession = session?.scenario_id && session.scenario_id === scenario?.id;
   return <>
-    {fromSession ? <a href={`#/agent/${encodeURIComponent(session.session_id)}`}>{sessionLabel(session)}</a> : <a href="#/maps">地图</a>}
+    {fromSession ? <a href={`#/agent/${encodeURIComponent(session.session_id)}`}>{sessionLabel(session)}</a> : scenario?.problem_class === 'field_operation' ? <a href="#/field">作业</a> : <a href="#/maps">地图</a>}
     <i>/</i><b>{scenario?.title ?? '规划'}</b>
   </>;
 }

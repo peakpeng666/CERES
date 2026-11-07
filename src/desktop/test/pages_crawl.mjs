@@ -16,7 +16,7 @@ if (!out || !out.startsWith('/') || existsSync(out)) throw new Error('--out é¡»ä
 mkdirSync(out, { recursive: true });
 
 const scenario = arg('--scenario');
-const PAGES = ['#/agent', '#/maps', scenario ? `#/plan/${encodeURIComponent(scenario)}` : '#/plan', '#/assets', '#/experiments', '#/runs', '#/jobs', '#/sim', '#/algorithms', '#/library/cvrplib', '#/library/fields',
+const PAGES = ['#/agent', '#/field', '#/field/machines', '#/field/coverage', '#/maps', scenario ? `#/plan/${encodeURIComponent(scenario)}` : '#/plan', '#/assets', '#/experiments', '#/runs', '#/jobs', '#/sim', '#/algorithms', '#/library/cvrplib', '#/library/fields',
   '#/library/references', '#/archive', '#/bpp', '#/samples', '#/replay', '#/risk', '#/evidence', '#/system', '#/system/models', '#/system/capabilities', '#/system/data', '#/system/tools', '#/system/evals',
   '#/system/services', '#/system/logs', '#/system/desktop'];
 

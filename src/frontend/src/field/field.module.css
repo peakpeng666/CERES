@@ -49,6 +49,8 @@
 .shapes button:hover { color: var(--mac-label); }
 .shapes button[aria-pressed="true"] { color: var(--mac-accent); box-shadow: 0 0 0 1.5px var(--mac-accent); background: var(--mac-accent-soft); }
 
+.shapes .realBtn { flex: 1.2; font: inherit; font-size: 12.5px; }
+.shapes .realBtn:disabled { opacity: .5; cursor: default; }
 .pick { margin-bottom: 10px; }
 .pick h3 { margin: 0 0 5px; font-weight: 400; font-size: 12.5px; color: var(--mac-label-3); }
 .choices { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 5px; }
@@ -71,9 +73,9 @@
 .basis[data-kind="project"] { background: var(--mac-purple-soft); color: var(--mac-purple); }
 .basis[data-kind="assumption"] { background: var(--mac-orange-soft); color: var(--mac-orange); }
 
-.previewBox { position: relative; margin: 14px 16px 0; height: clamp(190px, 34vh, 340px); flex: none; border-radius: var(--mac-r-card); background: var(--mac-inset); overflow: hidden; display: flex; align-items: center; justify-content: center; transition: opacity 200ms; }
+.previewBox { margin: 14px 16px 0; height: clamp(190px, 34vh, 340px); flex: none; border-radius: var(--mac-r-card); background: var(--mac-inset); overflow: hidden; display: flex; flex-direction: column; align-items: stretch; justify-content: center; padding: 8px 8px 6px; }
 .previewBox[data-busy] .previewSvg { opacity: .55; }
-.previewSvg { width: 100%; height: 100%; transition: opacity 180ms; }
+.previewSvg { flex: 1; min-height: 0; width: 100%; transition: opacity 180ms; }
 .pvField { fill: #e9e2cc; stroke: var(--mac-label-3); }
 .pvObstacle { fill: var(--mac-separator-strong); stroke: var(--mac-label-3); }
 .pvSwath { stroke: var(--mac-accent); stroke-opacity: .18; stroke-linecap: butt; }
@@ -81,7 +83,7 @@
 .pvTurn { fill: none; stroke: var(--mac-orange); }
 .pvTransfer { fill: none; stroke: var(--mac-label-3); stroke-dasharray: 4 3; }
 .pvStation { fill: var(--mac-red); stroke: none; }
-.legend { position: absolute; left: 8px; bottom: 6px; display: flex; gap: 10px; font-size: 11.5px; color: var(--mac-label-2); }
+.legend { flex: none; margin-top: 4px; display: flex; gap: 10px; font-size: 11.5px; color: var(--mac-label-2); }
 .legend span::before { content: ""; display: inline-block; width: 10px; height: 2px; margin: 0 4px 3px 0; background: var(--mac-accent); }
 .legend span[data-k="head"]::before { background: #e9e2cc; height: 8px; margin-bottom: 0; box-shadow: 0 0 0 1px var(--mac-label-4); }
 .legend span[data-k="station"]::before { background: var(--mac-red); width: 6px; height: 6px; border-radius: 50%; margin-bottom: 1px; }
@@ -155,9 +157,9 @@
 .matrix td button:hover { transform: scale(1.18); }
 
 @media (max-width: 1060px) {
-  .design { grid-template-columns: minmax(0, 1fr); overflow-y: auto; }
-  .form { overflow: visible; order: 2; padding: 12px 16px 28px; }
-  .side { overflow: visible; order: 1; border-left: 0; border-bottom: 1px solid var(--mac-separator); }
+  .design { display: flex; flex-direction: column; overflow-y: auto; }
+  .form { overflow: visible; order: 2; padding: 12px 16px 28px; flex: none; min-height: auto; }
+  .side { overflow: visible; order: 1; border-left: 0; border-bottom: 1px solid var(--mac-separator); flex: none; min-height: auto; }
   .go { position: static; background: none; }
   .presets { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
   .machines { grid-template-columns: minmax(0, 1fr); grid-template-rows: 42vh minmax(0, 1fr); }

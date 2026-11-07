@@ -8,7 +8,7 @@ from __future__ import annotations
 import math
 
 from shapely import affinity
-from shapely.geometry import LineString, MultiLineString, Polygon
+from shapely.geometry import LineString, MultiLineString, Point, Polygon
 from shapely.ops import unary_union
 
 MIN_LINE_M = 2.0
@@ -29,6 +29,39 @@ def regions(field, obstacles, headland: float, obstacle_margin: float | None = N
     if inner.is_empty or inner.area <= 0:
         raise ValueError('地头太宽：扣除地头后没有作业区')
     return area, inner
+
+
+def trim_for_turning(lines: list[dict], field, obstacles, clearance: float, radius: float) -> list[dict]:
+    """Pull line ends back from corners where a rig with this radius could not leave the line.
+
+    A rig needs `radius` of straight run past a line end before it can curve away. In a sharp field corner that
+    room does not exist; a real operator stops short and leaves the wedge to the headland passes.
+    """
+    if radius <= 0:
+        return lines
+    outer = Polygon(field)
+    holes = [Polygon(o) for o in obstacles or []]
+    room = (outer.difference(unary_union(holes)) if holes else outer).buffer(-clearance, join_style=2)
+    if room.is_empty:
+        return lines
+    keep = []
+    for line in lines:
+        a, b = list(line['p1']), list(line['p2'])
+        length = math.dist(a, b)
+        if length <= 0:
+            continue
+        h = ((b[0] - a[0]) / length, (b[1] - a[1]) / length)
+        cut_a = cut_b = 0.
+        while cut_a + cut_b < length - MIN_LINE_M and not room.covers(Point(a[0] + h[0] * (cut_a - radius), a[1] + h[1] * (cut_a - radius))):
+            cut_a += .5
+        while cut_a + cut_b < length - MIN_LINE_M and not room.covers(Point(b[0] - h[0] * (cut_b - radius), b[1] - h[1] * (cut_b - radius))):
+            cut_b += .5
+        rest = length - cut_a - cut_b
+        if rest < MIN_LINE_M:
+            continue
+        keep.append({**line, 'p1': [round(a[0] + h[0] * cut_a, 3), round(a[1] + h[1] * cut_a, 3)],
+                     'p2': [round(b[0] - h[0] * cut_b, 3), round(b[1] - h[1] * cut_b, 3)], 'length_m': round(rest, 3)})
+    return [{**x, 'id': i + 1} for i, x in enumerate(keep)]
 
 
 def generate(field, obstacles, headland: float, angle_deg: float, pitch: float, obstacle_margin: float | None = None) -> list[dict]:

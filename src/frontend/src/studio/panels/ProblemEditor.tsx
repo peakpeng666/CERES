@@ -57,10 +57,10 @@ export function ProblemEditor({ scenario, draft }: { scenario: Scenario; draft: 
       <div className={s.grid2}>{([['turning_radius', '最小转弯半径 m'], ['robot_radius', '机器人半径 m'], ['clearance_margin', '净空余量 m'], ['goal_tolerance', '终点容差 m']] as const).map(([key, label]) =>
         <label key={key} className={s.field}><span>{label}</span><Input aria-label={label} type="number" min={0} step="any" value={motion[key]}
           onChange={(event) => { const n = event.target.valueAsNumber; if (Number.isFinite(n)) change({ [key]: n }); }} /></label>)}</div>
-      <p className={s.hint}>全向模型只约束 XY，朝向不参与求解；Dubins/Reeds–Shepp 使用弧度朝向。改变运动模型会重新获取适用算法；规划与具体机器人的执行能力分别检查。</p>
+      <p className={s.hint}>改变运动模型会重新筛选适用算法。</p>
     </> : <TaskEditor scenario={scenario} instance={draft} onChange={(value) => edit(() => value)} />}
     <details><summary>完整任务输入 · JSON</summary>
-      <p className={s.meta}>编辑边界、孔洞、路网和约束；应用前文本仅保留在当前面板，应用后自动保存。由后端校验并保留原字段，额外字段不自动增加求解能力。</p>
+      <p className={s.meta}>编辑边界、孔洞、路网和约束，应用后自动保存。</p>
       <textarea aria-label="完整规划输入 JSON" value={text} spellCheck={false} rows={15}
         style={{ width: '100%', boxSizing: 'border-box', fontFamily: 'monospace', fontSize: 11 }}
         onChange={(event) => { setText(event.target.value); setDirty(true); setError(null); }} />

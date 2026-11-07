@@ -69,13 +69,13 @@ function LocalData() {
   };
   return <>
     <h2>本地工作数据</h2>
-    <p className={s.noteLine}>任务、会话和原始结果保存在此处，内置与容器后端共用。代码更新不会覆盖它们。备份与恢复会暂时停止后端，请先结束正在执行的任务。</p>
+    <p className={s.noteLine}>任务和原始结果保存在此处。备份与恢复会暂停后端，请先结束正在执行的任务。</p>
     {info && <Kvs items={[[ '位置', info.root ], [ '数据集', info.dataset.dataset_id ]]} />}
     <div className={s.nextRow} style={{ paddingTop: 10 }}>
       <button type="button" className={s.btn} disabled={busy} onClick={() => void act('export')}>{busy ? '处理中…' : '备份数据'}</button>
       <button type="button" className={s.btn} disabled={busy} onClick={() => void act('restore')}>从备份恢复到新目录</button>
     </div>
-    <p className={s.noteLine}>数据包包含数据库和原始文件，恢复前逐项校验；密钥、ROS 和已编译环境需在目标机器另行配置。原数据目录会保留。</p>
+    <p className={s.noteLine}>恢复前逐项校验，原数据目录保留；密钥和 ROS 环境需在目标机器另配。</p>
     {message && <p className={s.noteLine} role="status">{message}</p>}
     {!message && info?.lastTransfer && <p className={info.lastTransfer.state === 'failed' ? s.docBad : s.noteLine} role="status">{info.lastTransfer.message}{info.lastTransfer.sha256 ? ` · SHA256：${info.lastTransfer.sha256}` : ''}</p>}
   </>;
@@ -96,7 +96,7 @@ function SimBackend({ current }: { current: 'native' | 'container' }) {
   };
   return (
     <>
-      <p className={s.noteLine}>Gazebo 和 ROS 2 只能在 Linux 上运行。容器后端把它们连同完整的工作台放进一个镜像，Fields2Cover 和 CVRP 数值任务也在里面。算法库和 MuJoCo 物理预演不需要它。</p>
+      <p className={s.noteLine}>容器后端提供 Gazebo、ROS 2、Fields2Cover 和 CVRP 数值任务；算法库和 MuJoCo 不需要它。</p>
       <div style={{ paddingTop: 8 }}>
         <Kvs items={[['Docker', st.docker.ready ? `可用 ${st.docker.version}` : st.docker.detail ?? '没有找到'], ['Compose', st.compose.ready ? `可用 ${st.compose.version}` : '没有找到'],
           !!st.wsl && ['WSL2', st.wsl.ready ? '可用' : '未启用'], ['镜像', st.imagePresent ? `已下载 ${size(st.imageBytes)}` : `首次开启时下载，约 10 GB`]]} />

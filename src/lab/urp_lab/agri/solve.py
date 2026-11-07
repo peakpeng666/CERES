@@ -17,6 +17,7 @@ MODEL = {'schema': 'urp.field-operation-model/1', 'service': 'directed work line
 
 def _orders(plan, F, algorithm_id, params, deadline, trace):
     seed = int(params.get('seed', 42))
+    budget_floor = max(1., float(params.get('time_limit_s', 5)) * .3)   # a repair round still needs a full first solution
     iterations = params.get('iterations') or None
     K = plan.K
     if algorithm_id == 'agri.sequential':
@@ -24,13 +25,13 @@ def _orders(plan, F, algorithm_id, params, deadline, trace):
     if algorithm_id == 'agri.skip':
         return search.skip_pattern(F, K), {'skip_step': search.skip_step(F)}
     if algorithm_id == 'agri.split_anneal':
-        seeds = [search.sequential(F, K), search.skip_pattern(F, K)]
+        seeds = [search.sequential(F, K), search.skip_pattern(F, K), search.nearest(plan, K)]
         start = min(seeds, key=plan.score)
         orders, count = search.anneal(plan, start, seed, deadline, iterations, trace)
         return orders, {'iterations': count}
     if algorithm_id == 'ortools.field':
-        orders = search.ortools_sequence(plan, max(.1, deadline - time.perf_counter()), seed)
-        return orders, {}
+        orders = search.ortools_sequence(plan, max(budget_floor, deadline - time.perf_counter()), seed)
+        return search.complete(orders, F.n), {}
     if algorithm_id == 'agri.exact':
         result = search.exact_small(plan)
         if not result:
@@ -43,7 +44,10 @@ def _orders(plan, F, algorithm_id, params, deadline, trace):
 def solve(scenario: dict, inst: dict, algorithm_id: str, params: dict):
     t0 = time.perf_counter()
     budget = float(params.get('time_limit_s', 5))
-    F = Field(inst)
+    try:
+        F = Field(inst)
+    except ValueError as exc:
+        return [], {'valid': False, 'errors': [str(exc)]}, {}, {'model_contract': MODEL}, 'no_solution', []
     plan = search.Plan(F)
     model_s = time.perf_counter() - t0
     deadline = t0 + budget
@@ -53,6 +57,8 @@ def solve(scenario: dict, inst: dict, algorithm_id: str, params: dict):
     fixed = algorithm_id in ('agri.sequential', 'agri.skip', 'agri.exact')
     orders = None
     for attempt in range(40):
+        if attempt and time.perf_counter() > deadline + max(5., 2 * budget):
+            return [], {'valid': False, 'errors': ['连接几何反复不可行：' + raw['rejected_arcs'][-1]['reason']]}, {}, raw, 'no_solution', trace
         if orders is None or algorithm_id == 'ortools.field':
             orders, extra = _orders(plan, F, algorithm_id, params, deadline, trace)
             raw.update(extra)

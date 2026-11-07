@@ -70,6 +70,8 @@ ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDD
  "start": [x, y], "route_pattern": "boustrophedon"|"snake"|"spiral", "angle_deg": null}
 ```
 
+`field_operation`（2026-11-07）：`schema: urp.field-operation/1`，含 `field`、`obstacles`、`headland_m`、`pitch_m`、`lines[{id,row,piece,p1,p2,length_m,demand}]`、`stations`、`depot`、`machines`、`rig`、`objective`（`nonworking` / `makespan`）、`mission`。由 `POST /lab/api/agri/missions` 从任务描述生成；`POST /lab/api/agri/compile` 只预览，`GET /lab/api/agri/catalog` 返回目录。路线在通用字段之外带 `segments[{kind: work|turn|transfer|service, polyline, length_m, duration_s, turn?, reverse?, line?}]`。说明见 `docs/agri/model.md`。
+
 ### 2.3 Algorithm catalog entry (`GET /lab/api/algorithms`)
 ```jsonc
 {"id": "urp.turn_mode_dp", "name": "转弯模式分层 DP（精确）", "problem_classes": ["turn_routing"],

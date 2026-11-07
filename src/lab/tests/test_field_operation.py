@@ -118,6 +118,15 @@ def test_lines_cover_the_working_area_and_split_around_obstacles():
     assert max(len(v) for v in rows.values()) == 2
 
 
+def test_line_ends_pull_back_from_sharp_corners():
+    wedge = [[0, 0], [120, 0], [0, 60]]
+    lines = worklines.generate(wedge, [], 6, 0, 6)
+    trimmed = worklines.trim_for_turning(lines, wedge, [], 1.5, 5)
+    assert sum(x['length_m'] for x in trimmed) < sum(x['length_m'] for x in lines)
+    assert [x['id'] for x in trimmed] == list(range(1, len(trimmed) + 1))
+    assert worklines.trim_for_turning(lines, wedge, [], 1.5, 0) == lines
+
+
 def test_alley_pitch_follows_planting_and_row_pitch_rounds_to_rows():
     out, _ = compiled(ORCHARD)
     assert out['pitch_m'] == 4.0 and out['pattern'] == 'alley'
@@ -164,6 +173,16 @@ def test_blocked_mission_cannot_become_a_scenario():
 def test_narrow_headland_is_flagged_and_too_narrow_blocks():
     assert checks_of(dict(ORCHARD, headland_m=7))['headland']['level'] == 'warn'
     assert checks_of(dict(ORCHARD, headland_m=3))['headland']['level'] == 'block'
+
+
+def test_sealed_fields_are_refused_before_any_geometry_is_read():
+    with pytest.raises(ValueError, match='封存'):
+        mission.compile_mission(dict(BOOM, field={'field_id': 'lt_field_3'}))
+
+
+def test_angle_follows_the_long_side_when_left_open():
+    out = mission.compile_mission(dict(BOOM, angle_deg=None, field={'ring': [[0, 0], [100, 100], [80, 120], [-20, 20]]}))
+    assert out['instance']['angle_deg'] == pytest.approx(45, abs=.1)
 
 
 def test_only_the_reference_robot_reaches_simulation():
@@ -215,6 +234,21 @@ def test_exact_small_instance_bounds_the_heuristic():
     assert status == 'feasible' and chk['valid']
     heuristic = plan(m)[3]
     assert exact['nonworking_distance_m'] <= heuristic['nonworking_distance_m'] * 1.03
+
+
+def test_or_tools_never_drops_a_line():
+    irregular = dict(BOOM, field={'shape': 'pentagon', 'width_m': 300, 'height_m': 200}, angle_deg=20)
+    inst, routes, chk, metrics, _, status = plan(irregular, 'ortools.field')
+    assert metrics.get('lines_served', len(inst['lines'])) == len(inst['lines']) or status == 'no_solution'
+    assert not any('只含' in e for e in chk.get('errors', []))
+
+
+def test_thin_headland_fails_with_a_reason_not_a_crash():
+    m = dict(ROBOT, headland_m=.4)
+    _, inst = compiled(m)
+    routes, chk, _, _, status, _ = solve.solve({}, inst, 'agri.sequential', {'time_limit_s': 1})
+    assert status in ('feasible', 'no_solution')
+    assert status == 'feasible' or chk['errors']
 
 
 def test_turn_radius_changes_the_plan():

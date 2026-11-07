@@ -4,6 +4,10 @@
 
 **[交付要求](requirements.md)** · **[研究决策图](research-map.md)**
 
+## 2026-11-07 田间作业模型
+
+农业语义从前端目录进入后端：环境、作物、作业、车辆、机具组成机组，统一编译为作业行问题 `field_operation`，进入约束、求解、独立验算和指标。Lab 新增「作业」入口。说明见[田间作业模型](agri/model.md)与[参数目录](agri/catalog.md)，验收见[工程报告](../setup/2026-10-30/engineering/REPORT.md)，对照实验见[研究报告](../experiments/runs/field-ops-20261107/REPORT.md)。
+
 ## 2026-11-06 Lab 双引擎一体化
 
 开发在唯一工程 `~/Projects/Lab/code` 的 main 中继续；本机与 GitHub 当前均仅有 main 开发分支。Lab 的原 Dock 入口已完成目录迁移，学术研究位于 `~/Research/URP`。源码 Electron 可运行本机 Gazebo；同一仿真页接入逐车/并行交通、时间窗、MuJoCo 冻结重放和同条件比较。实际两车验收与完整工程结果见[工程报告](../setup/2026-10-30/engineering/REPORT.md)，操作与指标定义见[使用说明](../setup/README.md#仿真与引擎比较)。本轮源码进展不代表旧安装包或容器镜像已更新。

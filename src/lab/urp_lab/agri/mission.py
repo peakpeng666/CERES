@@ -28,8 +28,22 @@ def shape_ring(shape: str, width: float, height: float) -> list[list[float]]:
     }[shape]
 
 
+def long_axis(ring) -> float:
+    """Direction of the field's long side: where a farmer would lay the passes."""
+    box = list(Polygon(ring).minimum_rotated_rectangle.exterior.coords)
+    edges = sorted(((math.dist(a, b), math.degrees(math.atan2(b[1] - a[1], b[0] - a[0]))) for a, b in zip(box, box[1:])), reverse=True)
+    return round(edges[0][1] % 180, 2)
+
+
 def _field(m: dict) -> tuple[list, list]:
     f = m.get('field') or {}
+    if f.get('field_id'):
+        from ..evolve.instances import split_of
+        from ..library import fields
+        if split_of(f['field_id']) != 'dev':
+            raise ValueError('这块田属于封存验证集，不用于作业规划')
+        inst = fields.scenario(f['field_id'])['instance']
+        return inst['field'], inst.get('obstacles') or []
     if f.get('ring'):
         return [list(map(float, p)) for p in f['ring']], [[list(map(float, p)) for p in o] for o in f.get('obstacles') or []]
     shape = f.get('shape', 'rect')
@@ -89,9 +103,12 @@ def compile_mission(mission: dict) -> dict:
     field, obstacles = _field(m)
     recommended = rigs.headland_for(rig, pitch)
     headland = float(m['headland_m']) if m.get('headland_m') is not None else recommended
-    angle = float(m.get('angle_deg') or 0)
+    angle = long_axis(field) if m.get('angle_deg') is None else float(m['angle_deg'])
     clear = rig['clearance_width_m'] / 2 + .1
     lines = worklines.generate(field, obstacles, headland, angle, pitch)
+    lines = worklines.trim_for_turning(lines, field, obstacles, clear, rig['min_turn_radius_m'])
+    if not lines:
+        raise ValueError('这块田放不下这台机组的转弯；换更小的机组或减小地头')
     per_m = rigs.demand_per_m(rig, pitch)
     for line in lines:
         line['demand'] = round(line['length_m'] * per_m, 4)

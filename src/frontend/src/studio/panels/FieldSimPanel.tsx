@@ -128,7 +128,6 @@ export function FieldSimPanel() {
           <h3><Tractor size={14} style={{ verticalAlign: -2 }} /> 田间多车仿真</h3>
           <Badge tone={phase.tone}>{phase.text}</Badge>
         </div>
-        <p className={s.meta}>Gazebo Fortress 按任务地图生成场景。车辆跟踪规划路径，规划路线与实际轨迹分别记录，完成状态以执行检查为准。</p>
         {error && <Notice tone="error">仿真状态读取失败：{error}</Notice>}
         {actionError && <Notice tone="error">{actionError}<div className={s.row}><Button size="sm" onClick={() => void refreshFieldSim()}>刷新会话状态</Button><Button size="sm" variant="plain" onClick={() => setFieldSimActionError(null)}>知道了</Button></div></Notice>}
 
@@ -283,7 +282,7 @@ function RunningView({ state, busy, onStop, onWindow }: { state: FieldSimState; 
       </div>
       {state.errors.map((e) => <Notice key={e} tone="error">{e}</Notice>)}
       {state.warnings.map((w) => <Notice key={w} tone="info">{w}</Notice>)}
-      {state.execution?.localization && state.execution.localization !== 'truth' && <p className={s.hint}>车辆位置、到点进度与在线速度来自定位估计 / 轮式输入；最终是否完成由真值轨迹与停留检查决定。</p>}
+      {state.execution?.localization && state.execution.localization !== 'truth' && <p className={s.hint}>在线状态来自定位估计，完成与否按真值轨迹判定。</p>}
       <div className={s.vehicleList}>
         {state.vehicles.map((v) => (
           <div key={v.name} className={s.vehicleRow}>
@@ -331,7 +330,7 @@ function RunningView({ state, busy, onStop, onWindow }: { state: FieldSimState; 
         )}
       </div>
       {state.running && (
-        <p className={s.hint}><MonitorPlay size={12} style={{ verticalAlign: -2 }} /> 中间查看 ROS 2 实时视图，旁边查看 Gazebo 场景，底部查看遥测。停止或关闭会保存记录并结束会话；暂不支持暂停物理，或取消任务后保留会话。</p>
+        <p className={s.hint}><MonitorPlay size={12} style={{ verticalAlign: -2 }} /> 停止或关闭都会保存记录并结束会话。</p>
       )}
     </div>
   );

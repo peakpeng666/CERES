@@ -13,11 +13,11 @@ export const STAGES: { id: string; label: string }[] = [
 
 /** Starting points for the jobs people actually come with. */
 export const PRESETS: { id: string; label: string; hint: string; mission: Partial<Mission> }[] = [
-  { id: 'boom', label: '大田喷杆植保', hint: '12 m 喷杆 · 800 L', mission: { environment: 'open_field', crop: 'wheat', operation: 'spraying_blanket', platform: 'row_tractor_120', implement: 'boom_mounted', field: { shape: 'rect', width_m: 400, height_m: 250 }, overrides: { rate_per_ha: 150 } } },
-  { id: 'orchard', label: '果园风送植保', hint: '苹果 · 窄型车', mission: { environment: 'orchard', crop: 'apple', operation: 'spraying_blanket', platform: 'jd_5075gn', implement: 'air_blast', field: { shape: 'trapezoid', width_m: 220, height_m: 120 }, overrides: { rate_per_ha: 500 } } },
+  { id: 'boom', label: '大田植保', hint: '12 m 喷杆 · 800 L', mission: { environment: 'open_field', crop: 'wheat', operation: 'spraying_blanket', platform: 'row_tractor_120', implement: 'boom_mounted', field: { shape: 'rect', width_m: 400, height_m: 250 }, overrides: { rate_per_ha: 150 } } },
+  { id: 'orchard', label: '果园植保', hint: '苹果 · 窄型车', mission: { environment: 'orchard', crop: 'apple', operation: 'spraying_blanket', platform: 'jd_5075gn', implement: 'air_blast', field: { shape: 'trapezoid', width_m: 220, height_m: 120 }, overrides: { rate_per_ha: 500 } } },
   { id: 'tillage', label: '履带耕整', hint: '3 m 圆盘耙', mission: { environment: 'open_field', crop: null, operation: 'tillage', platform: 'agxeed_5115t2', implement: 'disk_harrow', field: { shape: 'pentagon', width_m: 300, height_m: 200 }, overrides: {} } },
   { id: 'harvest', label: '小麦收获', hint: '6 m 割台', mission: { environment: 'open_field', crop: 'wheat', operation: 'combine_harvest', platform: 'combine_generic', implement: 'combine_header', field: { shape: 'rect', width_m: 500, height_m: 300 }, overrides: {} } },
-  { id: 'robot', label: '机器人小田块', hint: '可进仿真', mission: { environment: 'open_field', crop: 'wheat', operation: 'spraying_blanket', platform: 'field_diffdrive', implement: 'spray_module', field: { shape: 'rect', width_m: 36, height_m: 24 }, overrides: { rate_per_ha: 200 }, fleet: 2 } },
+  { id: 'robot', label: '机器人田块', hint: '可进仿真', mission: { environment: 'open_field', crop: 'wheat', operation: 'spraying_blanket', platform: 'field_diffdrive', implement: 'spray_module', field: { shape: 'rect', width_m: 36, height_m: 24 }, overrides: { rate_per_ha: 200 }, fleet: 2 } },
 ];
 
 export const BASE: Mission = {

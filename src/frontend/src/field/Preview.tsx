@@ -19,7 +19,6 @@ export function FieldPreview({ preview, segments }: { preview: Preview; segments
   if (!geo || !preview.field) return null;
   const px = (p: number[]) => `${p[0] - geo.minx},${geo.maxy - p[1]}`;
   const ring = preview.field.map(px).join(' ');
-  const rig = preview.rig;
   const pitch = preview.pitch_m ?? 1;
   const st = preview.stations?.[0];
   return (
@@ -37,7 +36,7 @@ export function FieldPreview({ preview, segments }: { preview: Preview; segments
       {segments?.flat().filter((x) => x.kind !== 'work' && x.polyline.length > 1).map((x, i) => (
         <polyline key={i} points={x.polyline.map(px).join(' ')} className={x.kind === 'turn' ? s.pvTurn : s.pvTransfer} strokeWidth={geo.stroke * 1.4} />
       ))}
-      {st && <circle cx={st.xy[0] - geo.minx} cy={geo.maxy - st.xy[1]} r={Math.max(geo.stroke * 4, rig?.clearance_width_m ?? 0)} className={s.pvStation} />}
+      {st && <circle cx={st.xy[0] - geo.minx} cy={geo.maxy - st.xy[1]} r={geo.stroke * 5} className={s.pvStation} />}
     </svg>
   );
 }

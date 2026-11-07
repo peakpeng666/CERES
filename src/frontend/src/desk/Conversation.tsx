@@ -344,7 +344,7 @@ function RobustnessDoc({ msg }: { msg: AgentMessage }) {
         ))}</tbody>
       </table>
       {d && d.both_passed > 0 && <p className={s.docNote}>逐次配对：{d.a} 更快 {d.a_faster} 次，{d.b} 更快 {d.b_faster} 次，工期差中位数 {n1(d.median_delta_s)} s{d.only_a_passed + d.only_b_passed > 0 ? `；只有一方通过 ${d.only_a_passed + d.only_b_passed} 次` : ''}。</p>}
-      <p className={s.docNote}>假定参数范围内的仿真敏感度，不是实车可靠性。</p>
+      <p className={s.docNote}>假定参数范围内的仿真敏感度。</p>
     </div>
   );
 }

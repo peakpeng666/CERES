@@ -5,7 +5,7 @@
 ## 入口与分工
 
 - 唯一使用说明：`setup/README.md`；本轮工程验证在 `setup/2026-10-30/engineering/REPORT.md`；现场仿真记录在 `setup/2026-10-15/integration/REPORT.md`。
-- 农业工作台、算法适配、网关和 ROS 会话：`src/lab/`；前端：`src/frontend/`。
+- 农业工作台、算法适配、网关和 ROS 会话：`src/lab/`；前端：`src/frontend/`。田间作业模型（环境、作物、作业、车辆、机具、作业行）：`src/lab/urp_lab/agri/`，界面 `src/frontend/src/field/`，说明 `docs/agri/`。新增机具或平台改目录数据，每个参数带来源与证据等级，再运行 `tools/export_agri_catalog.py`。
 - 档案与有界 CVRP 数值任务：`src/backend/`；研究算法：`src/research/`；独立验算与协议：`independent/`、`protocol/`。
 - 首页是科研工作台；`#/jobs` 是数值任务，`#/bpp` 是历史 BPP。保留同一 4100 入口，不重新搭建平行系统。
 

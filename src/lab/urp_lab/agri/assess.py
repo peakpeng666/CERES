@@ -81,6 +81,9 @@ def assess(env: dict, crop: dict | None, operation: dict, platform: dict, implem
         blocked = headland_m < floor
         out.append(_c('headland', 'block' if blocked else 'warn', '地头宽度', f'地头 {headland_m:.1f} m，相邻行掉头需 {need_depth:.1f} m。',
                       f'加宽到 {need_depth:.1f} m' if blocked else '求解时用跳行或倒车转弯', ['bochtis2008']))
+    body = rig['clearance_width_m'] / 2 + .3
+    if r <= 0 and platform['class'] != 'uav' and headland_m < body:
+        out.append(_c('headland', 'block', '地头宽度', f'地头 {headland_m:.1f} m，车体通过需 {body:.1f} m。', f'加宽到 {body:.1f} m'))
     limit = PLATFORM_SLOPE_DEG.get(platform['class'], 15)
     if env['slope_deg'] > limit:
         out.append(_c('slope', 'warn', '坡度', f"{env['name']}典型坡度 {env['slope_deg']}°，{cat.PLATFORM_CLASSES[platform['class']]}平台按 {limit}° 考虑。", '坡度未进入路径成本'))

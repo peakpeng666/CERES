@@ -283,7 +283,7 @@ function PlanLayer({ c, id, api }: { c: Ctx; id: string; api: React.RefObject<Ma
       <h2>{r.algorithm.name}</h2>
       <p className={s.subMono}>{id}</p>
       {r.state === 'done' ? <Facts items={[['总里程', n1(metric(r, 'total_distance_m')), 'm'], ['最晚完成', n1(metric(r, 'makespan_s')), 's'], ...(metric(r, 'predicted_makespan_s') != null ? [['预计工期', n1(metric(r, 'predicted_makespan_s')), 's'] as [string, string, string]] : []), ['车辆', metric(r, 'vehicles_used') ?? '—', '台'], ['趟数', metric(r, 'trips') ?? '—'], ['求解', n2(metric(r, 'wall_s')), 's']]} /> : <p className={s.txt}>状态：{r.state}{r.error ? ` · ${r.error}` : ''}</p>}
-      {!current && <p className={s.docWarn}>这是历史任务版本的方案。地图按它当时的冻结输入显示，不代表当前合同。</p>}
+      {!current && <p className={s.docWarn}>这是历史版本的方案，地图按当时的输入显示。</p>}
       {!!windows?.late?.length && <p className={s.docBad}>晚于截止：{lateLine(windows)}</p>}
       <h3>车辆</h3>
       <Rows>{routesOf(r).map((x, i) => <Row key={i} lead={<span className={s.sw} style={{ background: routeColor(i) }} />} title={x.vehicle_name} sub={`${x.services.length} 个任务点 · ${x.trips?.length ?? 1} 趟 · 载重 ${x.load ?? '—'}`} value={`${n1(x.cost)} m`}
@@ -353,7 +353,7 @@ function Arrivals({ c, run }: { c: Ctx; run: string }) {
         <Facts items={[['按时', `${w.on_time}/${w.total}`], w.worst_slack_s != null && ['最小余量', n1(w.worst_slack_s), 's'], !!w.start_clock && ['出发', w.start_clock]]} />
         {!!w.late?.length && <p className={s.docBad}>晚于截止：{lateLine(w, 8)}</p>}
         <ArrivalRows record={w} />
-        {w.scope && <p className={s.txt}>{w.scope}。时间窗约束到达任务点的时刻，早到就地等待。这是规划复算，实测到达见物理预演。</p>}
+        {w.scope && <p className={s.txt}>{w.scope}。早到就地等待；实测到达见物理预演。</p>}
       </>}
     </div>
   );
@@ -449,7 +449,7 @@ function Exec({ c, f }: { c: Ctx; f: Extract<Frame, { t: 'exec' }> }) {
       <h2>仿真执行</h2>
       <p className={s.sub}>{e.algorithm ?? ''} · Gazebo Fortress。虚线为规划路线，实线为 Gazebo 真值轨迹。</p>
       <Facts items={[['完成', `${m.tasks_completed ?? '—'}/${m.tasks_total ?? '—'}`], ['仿真里程', n1(m.total_distance_m), 'm'], ['规划里程', n1(m.planned_total_distance_m), 'm'], ['仿真工期', n1(m.makespan_s), 's'], ['横向偏差最大', n3(m.cross_track_max_m), 'm']]} />
-      {traffic?.scope && <p className={s.txt}>{traffic.scope}；规划工期 {n1(m.planned_makespan_s)} s 为恒速估计，仿真工期含排队与接驳。</p>}
+      {traffic?.scope && <p className={s.txt}>{traffic.scope}；规划工期 {n1(m.planned_makespan_s)} s（恒速估计）。</p>}
       <h3>车辆</h3>
       <Rows>{e.vehicles.map((x, i) => <Row key={x.name} lead={<span className={s.sw} style={{ background: routeColor(i) }} />} title={x.label} sub={`${x.tasks_done}/${x.tasks_total} 个任务点`} value={`${n1(x.distance_m)} m`} onClick={() => push({ t: 'execv', run: f.run, session: f.session, name: x.name })} />)}</Rows>
       <h3>运行核验</h3>
