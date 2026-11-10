@@ -1,5 +1,0 @@
-[1;33m[Wrn] [WebsocketServer.cc:554] [0m[1;33mPartial SSL configuration specified. Please specify: [0m[1;33m	<ssl>[0m
-[1;33m	  <cert_file>PATH_TO_CERT_FILE</cert_file>[0m
-[1;33m	  <private_key_file>PATH_TO_KEY_FILE</private_key_file>[0m
-[1;33m	</ssl>.[0m
-[1;33mContinuing without SSL.[0m

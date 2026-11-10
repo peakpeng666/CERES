@@ -1,29 +1,5 @@
-"""Fillet (corner-rounding) executability verdict for coverage paths — a research evaluation instrument.
-
-Three verdicts are compared in the evolve studies:
-
-- **official**: ``f2c_coverage.check_path`` on the path's native samples. Turns are sampled every 2 cm, but swath
-  and headland segments are single long chords, so a corner between two long chords is judged by a wide
-  three-point circle and passes although a vehicle cannot follow it exactly (2026-10-23 audit: 44 % of officially
-  feasible paths contain such corners, 75 % for the small robot);
-- **strict**: the same three-point test after densifying every chord to 2 cm (``reverify.strict_curvature``); it
-  also rejects sub-degree numerical kinks that a controller absorbs;
-- **fillet** (this module): the physical question in between. Every vertex is classified as
-  (a) *arc sample* — both legs ≤ 2·STEP and three-point radius ≥ r(1 − 1e-3), already curvature-feasible;
-  (b) *numerical kink* — a heading jump whose minimal rounding at radius r would deviate from the planned path by
-  e(δ) = r·(1/cos(δ/2) − 1) ≤ ``dev_tol`` (1 cm main, 0.5 cm / 2 cm sensitivity). The tolerance is a deviation,
-  not an angle, so it scales with the machine: 1 cm admits δ ≤ 16.1° at r = 1 m, 7.6° at 4.5 m, 6.1° at 7 m.
-  Kinks are rounded when the legs allow it, otherwise tolerated and counted;
-  (c) *corner* — everything else, which must be rounded by an arc of the minimum turning radius r. The arc needs
-  tangent length t = r·tan(δ/2) on both legs; the two tangent lengths that share a segment must fit in it. A corner
-  that does not fit (e.g. next to a 2 cm turn sample) is *not filletable* and the path fails with that reason.
-  The rounded path — swath segments trimmed by their tangent lengths and declared as the trimmed swaths — must
-  then pass the **unchanged** official checker (footprint inside the field, inner coverage ≥ 90 %, sampled
-  curvature, declared swaths on the path). Arc deviation from the original corner is e = r·(1/cos(δ/2) − 1).
-
-Single-cell adapters densify their swaths and turns everywhere (no long chords), so for them the fillet verdict
-equals official ∧ strict. The verdict never modifies solver outputs or the official checker.
-"""
+# CERES 路径转角倒圆可执行性独立裁决 (Fillet Corner Rounding)
+# 判别三点曲率采样盲区、数值微小扭结与实际圆弧倒圆，严格复核车体刚体足迹与覆盖率
 from __future__ import annotations
 
 import hashlib

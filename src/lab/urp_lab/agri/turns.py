@@ -1,10 +1,6 @@
-"""Headland manoeuvres between parallel work lines.
-
-Lengths follow Bochtis & Vougioukas (2008): P(d) = d·w + (π − 2) r when d·w ≥ 2r, otherwise the U (loop) turn
-U(d) = r (3π − 4 asin((2r + d·w) / 4r)). Geometry comes from Dubins paths, which reduce to the same curves, so
-the tests can hold the closed form and the sampled path against each other. A T (reverse) turn is
-kept for rigs that may reverse when the loop does not fit.
-"""
+# CERES 地头掉头转弯运动学模型 (Bochtis & Vougioukas 2008)
+# 间距 d*w >= 2r 时采用 P 型平滑曲线；间距 < 2r 时采用灯泡状 U 型回绕曲线 (闭式解析与 Dubins 几何)
+# 允许倒车机具采用三段式 T 型转弯；零转向半径平台采用原地自转 (Pivot)
 from __future__ import annotations
 
 import math

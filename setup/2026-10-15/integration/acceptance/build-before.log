@@ -1,8 +1,0 @@
-
-> bpp-research-console@1.0.0 build
-> tsc -p tsconfig.json --noEmit && vite build
-
-src/app/App.tsx(22,32): error TS2307: Cannot find module '../lab/views/Runs' or its corresponding type declarations.
-src/app/App.tsx(23,35): error TS2307: Cannot find module '../lab/views/Archive' or its corresponding type declarations.
-src/app/App.tsx(58,41): error TS2322: Type '{ route: Route; }' is not assignable to type 'IntrinsicAttributes'.
-  Property 'route' does not exist on type 'IntrinsicAttributes'.

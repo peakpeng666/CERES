@@ -1,3 +1,0 @@
-?? setup/
-?? src/repos/typesafe-router/.env.1password
-?? src/repos/typesafe-router/.env.local.example

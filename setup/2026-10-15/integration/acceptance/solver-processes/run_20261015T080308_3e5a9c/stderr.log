@@ -1,8 +1,0 @@
-Traceback (most recent call last):
-  File "/home/peakpeng/Desktop/URP/src/lab/urp_lab/worker.py", line 18, in main
-    result = run_algorithm(request['scenario'], request['instance'], request['algorithm_id'], request['params'])
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/peakpeng/Desktop/URP/src/lab/urp_lab/solvers/__init__.py", line 156, in run_algorithm
-    if n > alg['limits'].get('max_tasks', 200): raise ValueError('超过该算法可用任务数上限')
-                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ValueError: 超过该算法可用任务数上限

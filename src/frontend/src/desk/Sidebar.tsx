@@ -118,7 +118,7 @@ export function Sidebar({ route }: { route: Route }) {
       <div className={s.sideIn}>
         <div className={s.brand}>
           <Mark />
-          <b>Lab</b>
+          <b>CERES</b>
           <button type="button" className={s.iconBtn} title="收起任务栏 ⌘B" aria-label="收起任务栏" onClick={() => setSide(false)}><Icon name="side" /></button>
         </div>
         <nav className={s.nav} ref={places} aria-label="工作区">

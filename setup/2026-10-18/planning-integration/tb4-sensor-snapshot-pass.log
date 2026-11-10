@@ -1,2 +1,0 @@
-1792298358.270835 [139]    python3: selected interface "lo" is not multicast-capable: disabling multicast
-{"frame": "world = map (official pairing)", "scan_frame": "turtlebot4/rplidar_link/rplidar", "scan_time": 170.034, "truth_time": 0.0, "truth": [-1.4426436275242431, -1.0804471231753876e-05, 3.1414405346272396], "laser_mount": [-0.04, 0.0, 1.5707963267948963], "laser_origin": [-1.4026436279870467, -1.6889229710432337e-05], "finite_count": 628, "total_beams": 640}

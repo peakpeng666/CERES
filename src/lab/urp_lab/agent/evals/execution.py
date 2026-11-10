@@ -1,11 +1,5 @@
-"""Agent execution benchmark: end-to-end sessions on a private Lab (job manager, solvers, checker; no Gazebo).
-
-Each scenario states what a correct agent must do; the runner records what actually happened:
-verified plan, approval requested and of which kind, unsupported requirement reported, injected claim repeated,
-narrative numbers absent from the evidence, refused or failed tool calls, model calls, tokens and wall time.
-
-Usage (from src/lab): ``.venv/bin/python -m urp_lab.agent.evals.execution --mode rule --out /new/absolute/dir``
-"""
+# CERES 任务智能体端到端基准评估器：真实求解器与独立检查器闭环交互
+# 统计验证达成率、工具调用有效性、审批门禁遵从性与计算时延
 from __future__ import annotations
 
 import argparse

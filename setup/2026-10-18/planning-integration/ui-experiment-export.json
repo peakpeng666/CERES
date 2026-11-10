@@ -1,7 +1,0 @@
-{
-  "download": "/home/peakpeng/Downloads/experiment-run_20261018T043004_829b68.json",
-  "record_matches_api": true,
-  "canonical_record_sha256_recomputed": "e405527002974504ddac0de9d7bd373a7fc7e34242a8a32f6ffc3e5de86b64bb",
-  "envelope_file_sha256": "dedfc8cd3dc570943a383937fb966e1b51cb5b382e9099472daaf8a266f974fd",
-  "assembled_utc_differs_by_request_as_designed": true
-}

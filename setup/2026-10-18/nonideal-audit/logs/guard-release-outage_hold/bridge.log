@@ -1,7 +1,0 @@
-[INFO] [1792318086.306328634] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
-[INFO] [1792318086.306814776] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/vehicle_1/cmd_vel (geometry_msgs/msg/Twist) -> /model/vehicle_1/cmd_vel (ignition.msgs.Twist)] (Lazy 0)
-[INFO] [1792318086.307267371] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_1/pose (ignition.msgs.Pose_V) -> /ground_truth/poses (tf2_msgs/msg/TFMessage)] (Lazy 0)
-[INFO] [1792318086.307557682] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_1/odometry (ignition.msgs.Odometry) -> /vehicle_1/odom (nav_msgs/msg/Odometry)] (Lazy 0)
-[INFO] [1792318086.307791792] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_1/contacts (ignition.msgs.Contacts) -> /model/vehicle_1/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
-[INFO] [1792318087.336670511] [ros_gz_bridge]: Passing message from ROS geometry_msgs/msg/Twist to Gazebo gz.msgs.Twist (showing msg only once per type)
-[INFO] [1792318115.879875886] [rclcpp]: signal_handler(SIGINT/SIGTERM)

@@ -1,7 +1,7 @@
-"""Independent checks of recorded field-simulation trajectories, run in the solver environment.
+"""CERES 物理仿真时空轨迹独立核验器
 
-Checks the observed line segments swept by the declared circular footprint. This is not a proof
-about unobserved motion between telemetry samples or collision avoidance between robots.
+复核 Gazebo/MuJoCo 遥测时序真值、车体与机具刚体占用扫掠面、
+离散 Menger 曲率超限与速度换向接缝连续性。
 """
 from __future__ import annotations
 

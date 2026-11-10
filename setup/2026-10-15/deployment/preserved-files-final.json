@@ -1,6 +1,0 @@
-{
-  "src/frontend/package-lock.json": true,
-  "src/frontend/requirements.lock": true,
-  "src/repos/typesafe-router/.env.1password": true,
-  "src/repos/typesafe-router/.env.local.example": true
-}

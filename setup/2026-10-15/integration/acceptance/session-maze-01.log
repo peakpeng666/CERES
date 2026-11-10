@@ -1,9 +1,0 @@
-1792048898.685769 [139]    python3: selected interface "lo" is not multicast-capable: disabling multicast
-undocking
-localizing
-nav2_starting
-ready
-executing
-ready
-stopping
-{"shutdown": "PASS", "report": "/home/peakpeng/Desktop/URP/src/lab/runtime/sim/acceptance-maze-01/session-report.json"}

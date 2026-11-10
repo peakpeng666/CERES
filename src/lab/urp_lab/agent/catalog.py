@@ -1,10 +1,4 @@
-"""Model services a person can connect with nothing but an API key.
-
-The catalog follows models.dev, the open registry opencode reads as well. A trimmed snapshot ships with the code, so the
-list works offline; ``refresh`` replaces it with a cached copy of the current registry. Only services reachable through an
-OpenAI-compatible or Anthropic endpoint with a single key qualify, and only models that can call tools, because the agent
-works through tools. Local runtimes, cloud-account logins and subscription plans limited to coding tools are left out.
-"""
+# CERES 模型服务目录：API 密钥适配与统一工具调用能力发现
 from __future__ import annotations
 
 import json

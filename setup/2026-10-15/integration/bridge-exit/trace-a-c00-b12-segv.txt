@@ -1,3 +1,0 @@
-1792047448.411133 [177] parameter_: selected interface "lo" is not multicast-capable: disabling multicast
-[INFO] [1792047448.430333474] [repro_0_12]: Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
-[INFO] [1792047451.367857273] [rclcpp]: signal_handler(SIGINT/SIGTERM)

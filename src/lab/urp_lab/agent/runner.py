@@ -1,10 +1,5 @@
-"""Phase-gated agent runner: understand → confirm → execute → report, with pause, cancel, retry, approval and takeover.
-
-The model proposes tool calls; the runner validates them, executes them through ``tools`` and records the real
-results. Verification is mandatory: every run that reports a feasible plan is independently re-checked before the
-report, whether or not the model asked for it. Without a usable model the same phases run on deterministic rules,
-and the session says so.
-"""
+# CERES 任务智能体状态机驱动器：阶段门禁 (理解 → 确认 → 执行 → 报告)，支持中断、恢复、重试与审批接管
+# 模型提议工具调用，运行器严密校验 Schema、门禁策略并在后台执行真实规划与独立几何/物理核验
 from __future__ import annotations
 
 import copy
@@ -32,7 +27,7 @@ QUESTIONS = {
     'start_clock': ('车辆几点出发？钟点要从出发时刻算起才能成为时间窗，并且要早于截止时间。', ['06:00', '07:00', '08:00']),
     'task_deadline': ('截止时间要晚于最早时间，请重新给出截止时间。', []),
 }
-RUNNER_VERSION = 'agent-runner/7'      # 7: a time window is judged on the execution the plan's clock describes
+RUNNER_VERSION = 'ceres-runner'
 MAX_LLM_CALLS = 20
 MAX_TOOL_CALLS = 30
 MAX_UNDERSTAND_CALLS = 4

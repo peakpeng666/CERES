@@ -1,7 +1,0 @@
-{
-  "returncode": 0,
-  "image_id": "sha256:560989d78e37b2fcbde64561be343975779a29798037c202519c5157187e27ad",
-  "matches_git_catalog": true,
-  "seconds": 14.14,
-  "source": "50 parts downloaded anew from GitHub Release, not the build staging files"
-}

@@ -1,9 +1,4 @@
-"""What the harness can reach, and what is running behind it, as two plain lists.
-
-A capability is anything the agent or a person can put to work: a planning algorithm, a simulator, a learned model, a
-transfer between engines. Each entry states its own status, so nothing unconnected reads as available. The job list
-gathers the long-running work of every backend into one view; each backend keeps its own queue and records.
-"""
+# CERES 规划算法、动力学仿真器与元学习模型能力发现与长时任务监控
 from __future__ import annotations
 
 import json

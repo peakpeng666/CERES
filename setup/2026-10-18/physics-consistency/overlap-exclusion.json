@@ -1,7 +1,0 @@
-{
-  "reason": "second harness started before previous batch completed; ROS nodes briefly shared domain 142 and received old /clock data",
-  "failed_attempt": "reference-holdout/step4ms-0",
-  "excluded_prior_trial": "reference-primary/cylinder_reference-2",
-  "treatment": "retain all raw evidence, exclude both from final acceptance, add kernel session lock before ROS initialization and rerun serially",
-  "fresh_batch": "reference-holdout-serial"
-}

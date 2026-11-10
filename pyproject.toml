@@ -1,7 +1,7 @@
 [project]
 name = "urp-workspace"
 version = "0.1.0"
-description = "Local URP application and reproducible engineering checks"
+description = "CERES (灵畴): 农业机器人规划调度算法库与可复现基准"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "jsonschema==4.26.0",

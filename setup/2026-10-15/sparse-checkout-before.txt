@@ -1,6 +1,0 @@
-/README.md
-/按需取用.md
-/storage.json
-/.gitignore
-/tools/restore_materials.py
-/.vscode/

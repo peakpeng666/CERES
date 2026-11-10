@@ -1,4 +1,5 @@
-"""Algorithm library: catalog metadata plus one dispatch entry point. Every witness is re-scored independently."""
+# CERES 算法库元数据与统一求解分发入口：多机路径规划、田间全覆盖行作与点对点运动学搜索
+# 独立重验：每个求解器输出均经独立检查器与物理引擎二次复核
 from __future__ import annotations
 
 import hashlib
@@ -43,7 +44,7 @@ _TABLE = [
     ('ortools.gls+urp.layered', 'OR-Tools GLS + 转弯分层补全', 'turn_routing', 'OR-Tools', 'metaheuristic', 'none',
      'OR-Tools 引导局部搜索给出分配与顺序，项目分层 DP 补全转弯可行路径。', ['ortools', 'voudouris1999gls', 'vidal2017turn'], 'ortools', {}),
     ('pyvrp.ils', 'PyVRP 迭代局部搜索', 'euclidean_cvrp', 'PyVRP', 'metaheuristic', 'none',
-     'PyVRP 0.14 的迭代局部搜索（含 SWAP* 邻域）；改进幅度以相同输入、预算与独立复算为准。', ['wouda2024pyvrp', 'vidal2022hgs', 'lourenco2003ils'], 'pyvrp', {}),
+     'PyVRP 的迭代局部搜索（含 SWAP* 邻域）；改进幅度以相同输入、预算与独立复算为准。', ['wouda2024pyvrp', 'vidal2022hgs', 'lourenco2003ils'], 'pyvrp', {}),
     ('ortools.gls', 'OR-Tools 引导局部搜索', 'euclidean_cvrp', 'OR-Tools', 'metaheuristic', 'none',
      'Google OR-Tools 路由求解器：最便宜弧构造 + 引导局部搜索。', ['ortools', 'voudouris1999gls'], 'ortools', {}),
     ('urp.js.savings', 'Clarke–Wright 节约算法', 'euclidean_cvrp', '本项目', 'heuristic', 'none',

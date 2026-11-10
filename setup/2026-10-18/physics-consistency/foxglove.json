@@ -1,5 +1,0 @@
-{
-  "channel": "/workbench/fleet_status",
-  "schema": "std_msgs/msg/String",
-  "message_bytes": 945
-}

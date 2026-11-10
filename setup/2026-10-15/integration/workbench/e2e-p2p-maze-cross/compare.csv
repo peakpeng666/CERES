@@ -1,2 +1,0 @@
-﻿run_id,scenario,instance_sha256,algorithm,name,state,status,cost,unit,valid,length,total_distance_m,makespan_s,vehicles_used,trips,balance_cv,gap_to_bks_pct,wall_s
-run_20261015T143902_bee557,p2p-maze-cross,59dcc9df8fe4e4ca83d2dcb5e2fffece6a36e566fee86bdf0cbdd66cd21afba2,grid.theta_star,Theta*,done,feasible,11.851826313385457,m,True,11.851826313385457,,,,,,,0.04517572700206074

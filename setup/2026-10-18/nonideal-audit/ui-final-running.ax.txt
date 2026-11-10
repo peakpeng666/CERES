@@ -1,4 +1,0 @@
-Browser tab: 1, Title: "农业机器人路径规划工作台", URL: "http://127.0.0.1:4100/#/plan/nonideal-audit-demo-20261018".
-The following is a diff from the previous accessibility tree with ~ and + representing changed and added elements, respectively. Removed elements are summarized by ID range.
-~									521 text 全部完成 Gazebo Fortress 按任务地图生成田块、作物行、障碍和车库。URP 路径跟踪、规划几何和实际轨迹分开记录；HTTP 200 或窗口打开不等于执行成功。 方案 PyVRP 固定车队 场景 nonideal-audit-demo-20261018 仿真时间 11 min 47 s  · 3.9× 执行条件
-The focused UI element is 502 container Description: 田间仿真, ID: dv-tabpanel-4

@@ -1,3 +1,0 @@
-torch
-numpy
-huggingface_hub

@@ -1,4 +1,4 @@
-"""Workbench gateway: serves the panel (src/frontend/dist), /lab/api (CONTRACT §2), SSE and the /api archive proxy."""
+# CERES 核心网关：挂载前端静态资源、/lab/api REST 接口、SSE 事件流与底层评测代理
 from __future__ import annotations
 
 import asyncio
@@ -366,7 +366,7 @@ def create_app(config: Config | None = None) -> FastAPI:
             await asyncio.to_thread(lab.shutdown)
             log.info('gateway stopped')
 
-    app = FastAPI(title='Agricultural Robot Path Planning Workbench', version=VERSION, lifespan=lifespan, docs_url=None, redoc_url=None,
+    app = FastAPI(title='CERES 灵畴 · 农业机器人规划调度与自主执行工作台', lifespan=lifespan, docs_url=None, redoc_url=None,
                   openapi_url='/lab/api/openapi.json')
     app.state.lab = lab
     app.add_middleware(Guard, extra_hosts=config.extra_hosts)
@@ -417,7 +417,7 @@ def create_app(config: Config | None = None) -> FastAPI:
             dataset_id = identity['dataset_id'] if identity.get('schema') == 'urp.dataset/1' else None
         except (OSError, ValueError, KeyError, TypeError):
             dataset_id = None
-        return {'status': 'ok', 'version': VERSION, 'executes_solvers': True,
+        return {'status': 'ok', 'product': 'CERES', 'executes_solvers': True,
                 'runtime_id': hashlib.sha256(str(lab.runtime.resolve()).encode()).hexdigest(), 'dataset_id': dataset_id,
                 'archive_required': config.archive_autostart}
 

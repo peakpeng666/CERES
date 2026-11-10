@@ -1,6 +1,0 @@
-{
-  "reason": "Audit found raised friction patch introduces geometry confound; gracefully stop owned regression before changing world generation, rerun final code afterwards.",
-  "pid": 242297,
-  "signal": "SIGINT",
-  "utc": "2026-10-18T09:34:24.874382+00:00"
-}

@@ -147,3 +147,17 @@ src/desktop/dist/
 src/desktop/build/backend/
 src/desktop/build/python-cache/
 src/desktop/build/packs/
+
+# 外部独立资料与历史大文件隔离（已外置至独立仓库 Lab-materials）
+papers/
+literature/
+materials/
+src/repos/
+setup/2026-*/
+experiments/results/
+data/cifar-training/
+data/cifar-training.SOURCE.json
+*.pdf
+*.zip
+*.tar.gz
+

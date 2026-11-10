@@ -1,9 +1,0 @@
-# Reproducibility and evidence
-
-This package preserves a completed historical study and its failed outputs. Start with summary.json, then follow URP-relative paths in evidence and requests. Paths embedded inside the original full report remain relative to the original run directory unless explicitly absolute. The public allowlist excludes model weights, runtime/dependency environments, bytecode caches and execution-authorization records.
-
-The frozen source, prompts, schemas, panel, seeds, historical file hashes, raw HTTP bodies, original content and observations are retained unchanged. Recreate the exact official runtime/model from the protocol revision and SHA256 identities; restore the NumPy/interpreter environment from the evaluator provenance. Source files importing the evaluator use the documented sibling-directory layout. Do not execute downloaded author source bytes or reinterpret model JSON as Python. The fixed interpreter accepts only the declared DAG data operations.
-
-Omitted bytecode and relocated/rebuilt environments mean historical integrity snapshots cannot simply be reused as a new runnable environment. A new execution requires a fresh environment-specific inventory, verification of the original numerical/type semantics, and a new user-controlled one-use run authorization. Historical run directories must not be overwritten, retried or used as permission to rerun. There is no automatic replay instruction in this delivery.
-
-The projection script in delivery_tools reads saved JSON/text and hashes files; it does not import the model or numerical evaluator. Prior preparation results are included for audit, not repeated measurements. The source protocol’s prospective wording describes what was frozen before this run; the terminal report is authoritative for what actually ran.

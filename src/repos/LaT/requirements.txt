@@ -1,7 +1,0 @@
-# Install a CUDA-compatible PyTorch build first when GPU acceleration is needed.
-torch>=1.12
-numpy>=1.21
-scipy>=1.7
-matplotlib>=3.5
-tqdm>=4.64
-pytz>=2022.1

@@ -1,9 +1,0 @@
-submit True
-solver_and_footprint True
-start True
-ready True
-stationary_scan True
-scan_map_alignment True
-execute True
-headland_route True
-PASS

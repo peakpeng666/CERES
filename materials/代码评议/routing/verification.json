@@ -1,6 +1,0 @@
-{
-  "verification": "static artifact integrity only; not research code execution",
-  "indexed_files": 42,
-  "hash_mismatches": [],
-  "no_solver_training_or_model_execution": true
-}

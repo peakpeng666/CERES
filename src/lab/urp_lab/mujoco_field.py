@@ -1,14 +1,5 @@
-"""The frozen field plan, executed in MuJoCo.
-
-The plan, the vehicle's mass, inertia, geometry and friction, the velocity limiter, the control and truth rates, the path
-follower and the mission queue are the ones the Gazebo session uses, so a difference between the two records comes from
-the physics engines. Contact models differ by design: MuJoCo's soft convex contacts against DART's LCP. Only the ideal
-configuration is modelled: declared ground zones, synthetic localization and anisotropic tyres raise ``Unsupported``
-rather than being approximated.
-
-``perturb`` varies that ideal model from a seed: ground friction, each vehicle's load, each wheel's true radius and each
-task's working time. The plan, its gates and the controller stay nominal, because they are what is being tested.
-"""
+# CERES MuJoCo 物理预演适配器：轻量物理引擎闭环验证、随机扰动鲁棒性评估
+# 刚体动力学校核：软凸接触模型、质量惯量张量、路径跟踪横向偏差与执行工期复算
 from __future__ import annotations
 
 import hashlib
@@ -58,14 +49,17 @@ class Unsupported(ValueError):
 
 
 def supports(plan: dict) -> str | None:
-    """Why this plan cannot run here, or None."""
+    # 检验物理预演支持度
     physics = plan.get('physics') or {}
     if plan.get('execution'):
         return '此方案使用非理想执行配置（地面分区或合成定位），MuJoCo 适配器只覆盖理想配置'
     if physics.get('wheel_lateral_friction') is not None:
         return 'MuJoCo 适配器不模拟各向异性轮胎摩擦'
-    if not {'actuator_mode', 'wheel_contact', 'wheel', 'caster', 'truth_hz'} <= set(physics):
-        return f"这条记录的物理模型 {physics.get('schema', '未记录')} 缺少完整参数，无法在 MuJoCo 中复现"
+    req = {'actuator_mode', 'wheel_contact', 'wheel', 'truth_hz'}
+    if physics.get('platform_type', 'diff_drive') == 'diff_drive' and 'caster' in physics:
+        req.add('caster')
+    if not req <= set(physics):
+        return f"物理模型参数不完整，缺少必须项：{sorted(req - set(physics))}"
     return None
 
 

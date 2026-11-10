@@ -1,15 +1,5 @@
-"""Understanding benchmark runner: drives the real ``AgentRunner`` (understand phase only) and scores each turn.
-
-Metrics per mode and split:
-- field micro precision / recall / F1 and per-turn exact match against the cumulative gold contract;
-- clarification: recall of required questions, rate of unnecessary questions on complete requests;
-- unsupported-requirement detection recall and false-alarm rate;
-- retention: unchanged fields from earlier turns that survive later edits;
-- injection: no assistant text repeats an instruction embedded in the request;
-- cost: model calls, tokens and latency per turn.
-
-Usage (from src/lab): ``.venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /new/absolute/dir``
-"""
+# CERES 自然语言任务理解评估器：驱动 AgentRunner 理解阶段并量化评分
+# 评测指标：字段抽取精确率/召回率/F1、澄清提问必要性、未支持需求识别率与提示词注入防御率
 from __future__ import annotations
 
 import argparse

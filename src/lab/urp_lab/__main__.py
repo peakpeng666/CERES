@@ -1,4 +1,4 @@
-"""python -m urp_lab serve [--port 4100] [--open] [--no-archive] | doctor | solve --scenario ID --algorithm ID [--param k=v]"""
+# CERES CLI 入口：服务启动 (serve)、环境体检 (doctor)、离线求解 (solve)
 from __future__ import annotations
 
 import argparse
@@ -193,7 +193,7 @@ def solve(args) -> int:
 
 def main(argv=None) -> int:
     from .runtime_transfer import configure_cli, run_cli
-    parser = argparse.ArgumentParser(prog='python -m urp_lab', description='农业机器人路径规划工作台')
+    parser = argparse.ArgumentParser(prog='python -m urp_lab', description='CERES (灵畴) 农业机器人可验证规划调度工作台')
     sub = parser.add_subparsers(dest='command', required=True)
     configure_cli(sub)
     p = sub.add_parser('serve', help='启动网关（默认只监听 127.0.0.1）')

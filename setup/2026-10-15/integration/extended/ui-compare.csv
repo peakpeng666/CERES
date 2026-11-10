@@ -1,3 +1,0 @@
-﻿run_id,scenario,instance_sha256,algorithm,state,status,cost,unit,valid
-run_20261015T092131_6c7123,field-coverage-depot,1f7f8ef93dfc279925943ca6a69dcdd252ae25f5db079c4322be57c35d0002ee,f2c.snake,done,feasible,27.462499492691965,m,True
-run_20261015T092117_d27fa3,field-coverage-depot,1f7f8ef93dfc279925943ca6a69dcdd252ae25f5db079c4322be57c35d0002ee,f2c.boustrophedon,done,feasible,27.74232315133464,m,True

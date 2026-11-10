@@ -1,4 +1,7 @@
-"""Entry point for problem class `field_operation`."""
+"""CERES 田间行作规划求解器入口 (field_operation)
+
+综合考虑作业垄行遍历次序、Bochtis 调头转弯轨迹、机具启停与容量补给停靠。
+"""
 from __future__ import annotations
 
 import time

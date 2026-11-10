@@ -1,7 +1,0 @@
-{
-  "samples": 466,
-  "fraction_within_015m": 1.0,
-  "max_clearance_m": 0.10757359117269516,
-  "mean_clearance_m": 0.008381456712284826,
-  "scope": "One stationary pose near tested headland; not exhaustive map/geometry equivalence"
-}

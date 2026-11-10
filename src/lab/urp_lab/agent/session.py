@@ -1,4 +1,4 @@
-"""Agent session documents and their SQLite store (``runtime/agent.sqlite3``, separate from ``lab.sqlite3``)."""
+# CERES 智能体会话管理与持久化存储 (runtime/agent.sqlite3)
 from __future__ import annotations
 
 import json

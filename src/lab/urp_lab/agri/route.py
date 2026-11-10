@@ -1,4 +1,4 @@
-"""Exact geometry for a plan: work segments, headland turns, transfers and refill stops."""
+# CERES 田间作业精确轨迹生成器：作业垄行直线、地头转弯、地头转场通道与进站补给弧段
 from __future__ import annotations
 
 import heapq

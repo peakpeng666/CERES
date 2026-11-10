@@ -1,6 +1,0 @@
-{
-  "tf_valid": true,
-  "gui_valid": true,
-  "changed_fingerprint_rejected": true,
-  "error": "GUI overlay fingerprint changed or file missing: /home/peakpeng/Desktop/URP/setup/2026-10-15/deployment/gui-plugin-lifetime.cpp. Rebuild and revalidate explicitly; do not bypass this check."
-}

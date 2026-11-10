@@ -1,3 +1,0 @@
-1792298181.707003 [139] parameter_: selected interface "lo" is not multicast-capable: disabling multicast
-[INFO] [1792298181.709566191] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/world/maze/dynamic_pose/info (ignition.msgs.Pose_V) -> /world/maze/dynamic_pose/info (tf2_msgs/msg/TFMessage)] (Lazy 0)
-[INFO] [1792298381.172664638] [rclcpp]: signal_handler(SIGINT/SIGTERM)

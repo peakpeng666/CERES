@@ -1,8 +1,8 @@
 {
-  "name": "agri-route-workbench",
-  "productName": "agri-route-workbench",
+  "name": "ceres-desktop",
+  "productName": "CERES 灵畴工作台",
   "version": "0.2.0",
-  "description": "农业机器人路径规划工作台",
+  "description": "CERES 农业机器人自主规划与调度桌面环境",
   "author": {
     "name": "peakpeng666",
     "email": "270361242+peakpeng666@users.noreply.github.com"

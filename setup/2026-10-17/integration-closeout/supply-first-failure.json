@@ -1,4 +1,0 @@
-{
-  "type": "AssertionError",
-  "error": "{\"error\":\"world_failed\",\"message\":\"任务作业位置不在有序执行路径上\"}"
-}

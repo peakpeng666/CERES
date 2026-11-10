@@ -1,8 +1,0 @@
-/home/peakpeng/Desktop/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
-  from starlette.testclient import TestClient as TestClient  # noqa
-{"case": "geometry_control", "state": "succeeded", "failed_assertions": []}
-{"case": "ground_low", "state": "succeeded", "failed_assertions": []}
-{"case": "localization", "state": "succeeded", "failed_assertions": []}
-{"case": "combined", "state": "succeeded", "failed_assertions": []}
-{"case": "outage_hold", "state": "succeeded", "failed_assertions": []}
-{"case": "severe", "state": "failed", "failed_assertions": []}

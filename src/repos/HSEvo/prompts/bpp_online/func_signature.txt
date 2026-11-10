@@ -1,1 +1,0 @@
-def priority_v{version}(item: float, bins_remain_cap: np.ndarray) -> np.ndarray:

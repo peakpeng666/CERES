@@ -1,8 +1,4 @@
-"""Work lines: the single service object for row and swath operations.
-
-A work line is a straight segment the rig must traverse with the implement engaged. Crop rows, orchard alleys
-and coverage swaths all compile to this: they differ only in how the lines are spaced and what they consume.
-"""
+# CERES 田间作业垄行生成器：地块有效作业区生成、垄向等距平行线分割、避障边界截断与转弯缩进
 from __future__ import annotations
 
 import math

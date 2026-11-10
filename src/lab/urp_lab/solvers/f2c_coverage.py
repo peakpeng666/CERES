@@ -1,8 +1,5 @@
-"""Optional Fields2Cover swath ordering + Dubins connectors, checked with Shapely.
-
-Do not use Path.discretize(): it interpolates/smooths, which changes the route.
-Retain native turn samples and densify only straight swaths.
-"""
+# CERES Fields2Cover 全覆盖路径规划适配器：作业行生成、次序优化与 Dubins 曲线连接
+# 保持原始采样点与离散曲率几何真实验证
 import hashlib
 import importlib.util
 import importlib.metadata

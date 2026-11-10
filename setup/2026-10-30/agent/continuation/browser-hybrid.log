@@ -1,7 +1,0 @@
-welcome {}
-contract_ready {"seconds":4.832}
-report_ready {"seconds":30.161}
-session {"sid":"agt_20261029T163345_054069","state":"done","mode":"hybrid","provider":"qwen3.8:27b","runs":3,"verified":3,"unsupported":["每个点要在上午九点前完成（时间窗约束）"],"unverified_numbers":[]}
-edit_done {"seconds":50.618}
-after_edit {"state":"done","vehicle_count":3,"task_count":8,"capacity":4,"scenario":"task-sampling-20261029-163353-042-054069-r2","runs":6,"verified":3}
-restored {"sid":"agt_20261029T163345_054069","active_runs":3}

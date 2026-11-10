@@ -1,7 +1,0 @@
-ros-humble-rviz2
-ros-humble-navigation2
-ros-humble-nav2-bringup
-ros-humble-turtlebot4-simulator
-ros-humble-irobot-create-nodes
-ros-humble-ros-gz
-ignition-fortress

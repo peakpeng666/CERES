@@ -1,6 +1,0 @@
-{
-  "outer_tool_session": 15843,
-  "reported_outer_returncode": 143,
-  "gateway_log": "src/lab/runtime/logs/planning-integration-verified-20261018.log",
-  "observation": "server lifespan and archive shutdown logged normally; outer-shell cause not established; separate gateway lifecycle trials reported 0 three times"
-}

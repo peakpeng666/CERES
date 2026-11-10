@@ -1,8 +1,5 @@
-"""Transition model between work lines, stations and the depot, for one rig on one field.
-
-Node ids: oriented line o = 2·i + d (d = 0 p1→p2, 1 p2→p1). The solver searches on these estimates; `realise`
-then builds the exact geometry of the arcs a plan uses, and an arc that cannot be built is forbidden and solved again.
-"""
+# CERES 田间行作、补给站与停靠点状态转移拓扑模型
+# 节点编码：定向作业行 o = 2*i + d (d=0 正向, 1 反向)；精确弧段几何构建与干涉禁行回退
 from __future__ import annotations
 
 import math

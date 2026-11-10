@@ -1,13 +1,6 @@
-"""Multi-vehicle task allocation and routing on 2-D maps with obstacles (problem class `fleet_routing`).
-
-Distances are shortest paths on the constructed travel graph (`vehicles.travel`):
-- `free`: anywhere clear of obstacles — a visibility graph over the robot-inflated obstacles (exact for
-  the generated visibility graph);
-- `rows`: along the lanes between crop rows, entering and leaving them at the headland or a farm road,
-  never across rows (`urp_lab.lanes`); each task is served from the nearest point of that network.
-All-pairs Dijkstra runs between the depot and the service positions. Solvers decide assignment and order;
-routes are realised along those shortest paths and re-checked against the map independently.
-"""
+# CERES 多机协同任务分配与路径规划求解器 (fleet_routing)
+# 拓扑行作图与障碍物膨胀可视度图最短路规划 (All-pairs Dijkstra / A*)
+# 求解器决策机群分配与访问次序，轨迹经运动学转弯平滑后由独立核验器二次复验
 from __future__ import annotations
 
 import math
@@ -19,11 +12,11 @@ import numpy as np
 from .. import lanes, time_windows
 from ..path_geometry import arc_lengths, locate
 from .fleet_graph import Graph, LaneGraph
-from .fleet_common import depot_list, fleet_classes, vehicle_table  # fleet shape helpers (2026-10-17 拆分)
-from .fleet_curvature import (  # curvature realisation stack (2026-10-17 拆分)
+from .fleet_common import depot_list, fleet_classes, vehicle_table  # 机群拓扑辅助
+from .fleet_curvature import (  # 曲率与转弯平滑
     _circumradius, dubins_realize, min_curvature_radius, ompl_dubins_fallback, relax_corners)
 from .fleet_balanced import pyvrp_makespan
-from .fleet_engines import metaheuristic, ortools_makespan  # PyVRP / OR-Tools engines (2026-10-17 拆分)
+from .fleet_engines import metaheuristic, ortools_makespan  # 元启发式求解引擎
 
 COLORS = ['#007aff', '#ff6b00', '#34a853', '#a142f4', '#e8336d', '#00a6a6', '#c49000', '#5856d6', '#8e5a2b', '#2f7d32',
           '#d81b60', '#1e88e5']

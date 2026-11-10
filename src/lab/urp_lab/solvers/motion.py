@@ -1,4 +1,4 @@
-"""Point-to-point motion planning on occupancy maps: grid search (A*, Dijkstra, Theta*) and OMPL sampling planners."""
+# CERES 点对点运动规划器：栅格图搜索 (A* / Dijkstra / Theta*) 与 OMPL 采样规划 (RRT* / BIT* / Informed RRT* / FMT*)
 from __future__ import annotations
 
 import heapq

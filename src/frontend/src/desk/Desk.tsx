@@ -33,7 +33,7 @@ const WORKSPACE_OF: Partial<Record<ViewName, Workspace>> = {
 };
 const SURFACE_OF: Partial<Record<ViewName, SurfaceName>> = { plan: 'plan', assets: 'assets', experiments: 'experiments', runs: 'experiments', sim: 'sim', library: 'library', archive: 'library' };
 const BPP: ViewName[] = ['overview', 'samples', 'replay', 'risk', 'evidence'];
-const PRODUCT = 'Lab';
+const PRODUCT = 'CERES 灵畴';
 
 function hrefFor(w: Workspace): string {
   const st = useStudio.getState();

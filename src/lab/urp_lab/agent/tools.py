@@ -1,10 +1,5 @@
-"""Tool registry: JSON-schema arguments, policy gates and handlers over the existing workbench services.
-
-Handlers return JSON-native dicts built from real service results. A handler raises ``ToolError`` for a refused or
-failed call; the runner records it and shows the model the error, so recovery is visible in the call log.
-Effects: ``session`` (agent state only), ``compute`` (solver/checker processes), ``write`` (stored scenario),
-``physical`` (Gazebo session; always requires explicit user approval).
-"""
+# CERES 智能体工具注册表：Schema 校验、安全门禁与规划/核验服务底层适配
+# 纯函数返回值：从规划器/独立核验/物理仿真真实结果构建 JSON 字典；异常抛出 ToolError
 from __future__ import annotations
 
 import copy
@@ -709,6 +704,43 @@ def run_study(ctx: ToolContext, args: dict) -> dict:
             'note': '统计检验、性能剖面与临界差图见「算法实验 → 统计分析」'}
 
 
+def assess_agri_rig(ctx: ToolContext, args: dict) -> dict:
+    # 农机机组物理与农艺匹配性校核 (ASAE D497 牵引力、接地比压、安全爬坡角)
+    from ..agri import catalog as agri_cat
+    from ..agri import rig as agri_rig
+    from ..agri import assess as agri_assess
+    platform_id = args.get('platform_id', 'standard_tractor')
+    implement_id = args.get('implement_id', 'boom_sprayer_12m')
+    operation_id = args.get('operation_id', 'spraying')
+    try:
+        platform = agri_cat.by_id('platforms', platform_id)
+        implement = agri_cat.by_id('implements', implement_id)
+        operation = agri_cat.by_id('operations', operation_id)
+        rig = agri_rig.derive(platform, implement, operation)
+        slope_deg = float(args.get('slope_deg', 0.0))
+        assessment = agri_assess.assess_rig(rig, slope_deg=slope_deg)
+        return {'status': 'ok', 'rig_name': rig['name'], 'min_turn_radius_m': rig['min_turn_radius_m'],
+                'work_width_m': rig['work_width_m'], 'speed_work_mps': rig['speed_work_mps'],
+                'assessment': assessment}
+    except Exception as exc:
+        raise ToolError('rig_assessment_failed', f'农机机组参数校核失败：{exc}')
+
+
+def solve_field_operation(ctx: ToolContext, args: dict) -> dict:
+    # 田间全覆盖行作与地头转弯规划求解
+    from ..agri import api as agri_api
+    mission = args.get('mission')
+    if not mission or not isinstance(mission, dict):
+        raise ToolError('invalid_mission', '缺少田间作业任务定义字典 (mission)')
+    try:
+        preview = agri_api.compile_preview(mission)
+        return {'status': 'ok', 'blocked': preview.get('blocked', False),
+                'checks': preview.get('checks', []), 'lines_count': len(preview.get('lines', [])),
+                'pitch_m': preview.get('pitch_m'), 'recommended_headland_m': preview.get('recommended_headland_m')}
+    except Exception as exc:
+        raise ToolError('field_solve_failed', f'田间作业规划失败：{exc}')
+
+
 # ---------------------------------------------------------------- registry --
 RUN_ID = {'type': 'object', 'properties': {'run_id': {'type': 'string', 'maxLength': 80}}, 'required': ['run_id'],
           'additionalProperties': False}
@@ -735,6 +767,18 @@ def registry() -> dict[str, Tool]:
              {'type': 'object', 'properties': {'query': {'type': 'string', 'maxLength': 60},
                                                'limit': {'type': 'integer', 'minimum': 1, 'maximum': 20}},
               'additionalProperties': False}, find_real_fields, 'session', 'understand'),
+        Tool('assess_agri_rig', '评估农机机组',
+             '评估底盘与农机具装配后的物理可行性（ASAE D497 牵引力转换比、轮压比与爬坡稳定性）。',
+             {'type': 'object', 'properties': {
+                 'platform_id': {'type': 'string', 'maxLength': 80},
+                 'implement_id': {'type': 'string', 'maxLength': 80},
+                 'operation_id': {'type': 'string', 'maxLength': 80},
+                 'slope_deg': {'type': 'number', 'minimum': 0, 'maximum': 45}},
+              'additionalProperties': False}, assess_agri_rig, 'compute', 'understand'),
+        Tool('solve_field_operation', '求解田间作业',
+             '对指定地块、垄向与机组配置求解田间全覆盖行作与地头转弯路线。',
+             {'type': 'object', 'properties': {'mission': {'type': 'object'}},
+              'required': ['mission'], 'additionalProperties': False}, solve_field_operation, 'compute', 'solve'),
         Tool('build_scenario', '建立任务地图',
              '按已确认的任务合同生成或更新任务地图。只改车队、容量、目标时原地更新；改场地、任务点或障碍时另存新地图。',
              EMPTY, build_scenario, 'write', 'scenario', needs_confirmed=True),
@@ -789,9 +833,9 @@ def registry() -> dict[str, Tool]:
 
 
 PHASE_TOOLS = {
-    'understand': ['update_task_contract', 'ask_user', 'find_real_fields'],
+    'understand': ['update_task_contract', 'ask_user', 'find_real_fields', 'assess_agri_rig'],
     'execute': ['build_scenario', 'list_algorithms', 'describe_algorithm', 'list_capabilities', 'recommend_algorithms', 'solve', 'run_study', 'verify_run', 'compare_runs',
-                'diagnose_run', 'propose_task_change', 'physics_check', 'physics_robustness', 'start_simulation', 'simulation_status', 'ask_user'],
+                'diagnose_run', 'propose_task_change', 'physics_check', 'physics_robustness', 'start_simulation', 'simulation_status', 'ask_user', 'assess_agri_rig', 'solve_field_operation'],
 }
 
 

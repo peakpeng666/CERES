@@ -1,7 +1,5 @@
-"""Mission → instance. A mission is what the user decides; the instance is what the solver and checker read.
-
-The mission stays inside the instance, so a run record says which crop, operation and machines produced it.
-"""
+# CERES 农艺作业任务定义与求解实例编译 (Mission → Instance)
+# 挂载作物种类、作业工艺、机具平台、作业行垄向与地头转弯空间
 from __future__ import annotations
 
 import copy

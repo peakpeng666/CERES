@@ -1,13 +1,5 @@
-"""Candidate library member for loop ②: Fields2Cover full pipeline plus local Dubins repair of curvature defects.
-
-Most coverage paths rejected by the project checker fail at one or a few isolated samples (a headland corner or
-a turn junction). This candidate replays the same Fields2Cover 2.1 pipeline as ``f2c_coverage.solve_full`` (same
-calls, same order, same discretisation), keeps the native section labels, and replaces a short window around each
-curvature defect by the shortest forward Dubins path between the window's end poses. Windows never include a
-working swath, so declared swaths stay on the path; the repaired path must then pass the unchanged official
-checker (``check_path``) — the repair is accepted only through that independent check. It is a research
-candidate evaluated by marginal contribution, not a change to the registered adapter.
-"""
+# CERES 局部 Dubins 倒圆缺陷自愈修复器
+# 提取曲率超限孤立窗口，利用前向 Dubins 最短曲线局部重连，交由独立检查器全量复算
 from __future__ import annotations
 
 import math

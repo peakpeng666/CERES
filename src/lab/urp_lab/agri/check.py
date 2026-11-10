@@ -1,7 +1,7 @@
-"""Independent check of a field-operation plan. Reads only the instance and the exported geometry.
+"""CERES 农田行作独立几何与资源验证器
 
-It imports nothing from the solver side: lengths, times, curvature, footprint, coverage and the tank level are
-recomputed from the polylines, so a bug in the transition model cannot pass here unnoticed.
+零信任独立核验：完全不依赖求解器中间状态，仅从输出折线复核里程、时间、离散曲率、
+有效施作覆盖率与药箱补给积分，拦截求解器漏检或虚报。
 """
 from __future__ import annotations
 
@@ -10,8 +10,8 @@ import math
 from shapely.geometry import LineString, Polygon
 from shapely.ops import unary_union
 
-CURVATURE_TOL = 1.02        # arc sampling and rounding
-GEOM_TOL = 1e-3
+CURVATURE_TOL = 1.02        # 离散圆弧采样曲率容差系数
+GEOM_TOL = 1e-3             # 空间几何数值精度 (m)
 
 
 def _length(pts) -> float:

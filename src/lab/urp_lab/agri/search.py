@@ -1,9 +1,5 @@
-"""Sequencing: which line after which, in which direction, on which machine, with refills where.
-
-All algorithms produce the same thing, an ordered list of oriented lines per machine; `split` then places the
-refill stops optimally for that order (Prins-style shortest path over a sliding window, as in the giant-tour +
-split scheme of Hossain & Zahin 2026). Only the ordering differs between algorithms, so comparisons isolate it.
-"""
+# CERES 作业行次序搜索与最优补给切分算法 (巨环分割 + 拓扑最短路切分，Prins 2004 / Hossain & Zahin 2026)
+# 垄向方向枚举、模拟退火次序寻优、跳行 (Skip) 与连续顺序基线对比
 from __future__ import annotations
 
 import math

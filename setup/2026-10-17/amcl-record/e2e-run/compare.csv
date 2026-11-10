@@ -1,6 +1,0 @@
-﻿run_id,scenario,instance_sha256,algorithm,name,state,status,cost,unit,valid,length,total_distance_m,makespan_s,vehicles_used,trips,balance_cv,gap_to_bks_pct,wall_s
-run_20261017T034538_21f85a,maze-inspection,e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548,urp.turn_mode_dp,转弯模式分层 DP,done,optimal,490,cm_equivalent,True,4.3,,,,,,,0.026246357998388703
-run_20261017T034538_607cdb,maze-inspection,e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548,urp.raw_oracle,原图状态精确搜索,done,optimal,490,cm_equivalent,True,4.3,,,,,,,0.027231992999077193
-run_20261017T034538_574041,maze-inspection,e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548,urp.reset_dp,方向松弛 DP,done,optimal,430,cm_equivalent,False,4.3,,,,,,,0.026855628999328474
-run_20261017T034538_6809a7,maze-inspection,e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548,pyvrp.hgs+urp.layered,PyVRP + 转弯分层补全,done,feasible,490,cm_equivalent,True,4.3,,,,,,,3.07421305599928
-run_20261017T034538_c6020b,maze-inspection,e430a73ef5fb841f2fd1468f38bdb4db380717c20374fa7bb6fd2046e5eb7548,ortools.gls+urp.layered,OR-Tools GLS + 转弯分层补全,done,feasible,490,cm_equivalent,True,4.3,,,,,,,3.058709363998787

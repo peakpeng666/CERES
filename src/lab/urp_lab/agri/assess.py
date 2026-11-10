@@ -1,15 +1,16 @@
-"""Does this machine fit this job? Each check states what was compared and what to change.
+"""CERES 农机与作业任务相容性规则校核 (ASAE D497)
 
-Levels: pass, warn (planning continues, the result depends on it), block (no meaningful plan), info.
+核验底盘牵引功率、机具幅宽匹配度、坡度极限与土壤承载压强。
+门禁级别：通过 (pass)、警告 (warn)、阻断 (block)、提示 (info)。
 """
 from __future__ import annotations
 
 from . import catalog as cat
 from . import rig as rigs
 
-DRAWBAR_RATIO = .77           # ASAE D497 fig. 1 worked example: 4WD on firm soil, PTO → drawbar
-PLATFORM_SLOPE_DEG = {'ackermann': 15, 'diff_drive': 12, 'skid_steer': 15, 'tracked': 25, 'uav': 90, 'rail': 2, 'boat': 0}   # assumption
-WHEEL_LOAD_WARN_KG = 3000     # Horn et al. 2003 as cited by Augustin et al. 2022
+DRAWBAR_RATIO = .77           # ASAE D497 牵引力转换系数 (硬实土壤四驱 PTO → 牵引钩)
+PLATFORM_SLOPE_DEG = {'ackermann': 15, 'diff_drive': 12, 'skid_steer': 15, 'tracked': 25, 'uav': 90, 'rail': 2, 'boat': 0}   # 各底盘最大安全爬坡角 (deg)
+WHEEL_LOAD_WARN_KG = 3000     # 单轮压强警戒载荷 (kg，防止根系层不可逆土壤紧实)
 
 
 def _c(check_id, level, title, detail, fix=None, sources=()):

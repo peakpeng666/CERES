@@ -1,3 +1,0 @@
-- FQL (https://github.com/seohongpark/fql/)
-- Unifloral (https://github.com/EmptyJackson/unifloral)
-- ReBRAC (https://github.com/EmptyJackson/unifloral/blob/main/algorithms/rebrac.py)

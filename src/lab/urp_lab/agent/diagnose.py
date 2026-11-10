@@ -1,14 +1,5 @@
-"""Failure diagnosis and repair proposals for fleet-routing runs.
-
-Three causes are kept apart because they call for different actions:
-
-- ``task_infeasible``  the task as stated cannot be served (unreachable task, demand above capacity, single-trip demand
-  above fleet capacity); repairs change the task and therefore need the user's approval;
-- ``method_not_applicable`` / ``budget_insufficient``  the task may be solvable but this method or budget did not
-  produce a verified plan; the agent may switch method or raise the budget within the declared limits;
-- ``implementation_error``  a solver crash, a malformed result, or the independent re-check disagreeing with the
-  stored verdict; this is reported as a software defect and never "repaired" by relaxing the task.
-"""
+# CERES 求解失败归因诊断与自愈修复提议
+# 三类根因划分：任务不可行 (task_infeasible)、方法不适用/预算不足、底层实现错误
 from __future__ import annotations
 
 import math

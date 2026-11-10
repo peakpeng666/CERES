@@ -1,5 +1,0 @@
-/home/peakpeng/Desktop/URP/src/lab/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
-  from starlette.testclient import TestClient as TestClient  # noqa
-rich {'session_id': 'field_20261018T113003_cc7e7c', 'state': 'failed', 'tau': 8.0, 'tasks': '2/2', 'makespan_s': 78.41, 'distance_m': 72.43, 'cross_track_max': 0.1202, 'cleanup': 'PASS', 'trace_rows': {'vehicle_1': 1492}, 'check_valid': False}
-starved {'session_id': 'field_20261018T113021_acb206', 'state': 'failed', 'tau': 0.5, 'tasks': '2/2', 'makespan_s': 110.6, 'distance_m': 80.34, 'cross_track_max': 1.2001, 'cleanup': 'PASS', 'trace_rows': {'vehicle_1': 2162}, 'check_valid': False}
-SUMMARY FAIL

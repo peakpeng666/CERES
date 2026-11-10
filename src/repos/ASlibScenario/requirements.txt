@@ -1,5 +1,0 @@
-numpy
-scipy
-pyyaml
-liac-arff
-pandas

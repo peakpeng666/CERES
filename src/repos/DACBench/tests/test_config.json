@@ -1,4 +1,0 @@
-{
-  "_observation_space_type": "None",
-  "wrappers": [["RewardNoiseWrapper", []]]
-}

@@ -1,8 +1,7 @@
-"""Task contract ``urp.task-contract/1``: the structured, confirmable form of a natural-language request.
+"""CERES 强类型农艺任务契约与多源证据追溯 (task-contract)
 
-Each field carries its value in SI units plus provenance (``user_text`` from the rule parser, ``llm`` with a quoted
-evidence span, ``user_edit`` from the form, ``default`` from the composer, ``repair`` for an approved repair). Requests
-the planner cannot represent are kept verbatim in ``unsupported`` so they are reported, never silently dropped.
+将自然语言意图编译为结构化契约。每个字段携带国际单位制数值及证据来源链
+(用户原句 / LLM原文引证 / 表单修正 / 默认推导 / 自动修复)。不可行需求显式保留挂起。
 """
 from __future__ import annotations
 

@@ -7,7 +7,7 @@ const { Settings } = require('./settings');
 const { Updater } = require('./updater');
 const { DataTransfer } = require('./data-transfer');
 
-const TITLE = 'Lab';
+const TITLE = 'CERES 灵畴';
 const SPLASH = path.join(__dirname, '..', 'splash.html');
 const THEMES = ['system', 'light', 'dark'];
 const HANDOFF_MS = 340;   // the splash finishes its route before the app takes the window

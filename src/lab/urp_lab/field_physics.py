@@ -1,9 +1,5 @@
-"""Versioned SI model for the existing ideal-actuated, rigid-ground field robot.
-
-These parameters define a reproducible simulation model, not a calibrated real
-machine. Geometry, inertia, friction, actuator limits and assumptions travel with
-every execution record. No system ROS or physics library is replaced.
-"""
+# CERES 刚体地面农机物理与动力学仿真参数模型 (ASAE D497 滚动阻力、接触多边形与执行器极限)
+# 运动学能耗后验核算与无滑移里程计契约
 from __future__ import annotations
 
 import copy

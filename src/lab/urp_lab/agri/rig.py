@@ -1,7 +1,7 @@
-"""A rig is a platform with an implement on it. This is where catalog values become planning inputs.
+"""CERES 农机机组装配与运动学参数导出 (Rig)
 
-Every derived quantity keeps the rule and the sources it came from, so the interface and the run record can
-show why a turning radius or a speed has the value it has.
+将底盘平台与作业机具挂接，导出规划器所需的最小转弯半径、作业幅宽、地速及补给参数。
+保留每项参数的推导规则与依据来源。
 """
 from __future__ import annotations
 
@@ -10,13 +10,13 @@ import math
 from . import catalog as cat
 
 KMH = 1 / 3.6
-TURN_SPEED_RATIO = .75       # hossain2026 test setting: 15 km/h turning for 20 km/h working
-TRANSFER_CAP_KMH = 15.0      # in-field transfer on headland; assumption
-PIVOT_RATE = .8              # rad/s for in-place turns; assumption, below the reference model's 2 rad/s limit
-FILL_FIXED_S = 240.0         # connect, fill, disconnect; assumption
-FILL_RATE_PER_MIN = 200.0    # L or kg per minute; assumption
-TRAILED_MARGIN = 1.1         # trailed implements track inside the tractor; radius margin, assumption
-OVERHEAD_CATEGORIES = {'植保', '施肥'}   # booms and spreaders pass above the crop; their width does not clear the ground
+TURN_SPEED_RATIO = .75       # 地头转向降速比 (转弯 15 km/h vs 作业 20 km/h)
+TRANSFER_CAP_KMH = 15.0      # 地头转场空驶限速 (km/h)
+PIVOT_RATE = .8              # 原地自转角速度极限 (rad/s)
+FILL_FIXED_S = 240.0         # 进站停靠对接基础固定耗时 (s)
+FILL_RATE_PER_MIN = 200.0    # 药液/物料加注流率 (L/min)
+TRAILED_MARGIN = 1.1         # 牵引机具转弯内切安全余量系数
+OVERHEAD_CATEGORIES = {'植保', '施肥'}   # 顶置式作业幅宽 (喷杆/撒肥机高于作物冠层)
 
 
 def _derived(value, unit, rule, sources):

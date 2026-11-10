@@ -1,1 +1,0 @@
-"""Task config group."""

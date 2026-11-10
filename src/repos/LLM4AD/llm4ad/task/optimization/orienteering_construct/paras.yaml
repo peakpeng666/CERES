@@ -1,7 +1,0 @@
-name: OrienteeringEvaluation
-timeout_seconds: 30
-n_instance: 16
-problem_size: 50
-max_length_ratio: 0.35
-seed: 2024
-

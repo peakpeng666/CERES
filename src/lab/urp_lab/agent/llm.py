@@ -1,15 +1,5 @@
-"""Provider-neutral chat with tool calling, bounded retries, cancellation, usage and cost records.
-
-A ``Provider`` is one model on one service. ``providers.py`` builds them from the model catalog and what the user has
-connected. Secrets live only in ``~/.config/urp-workbench/credentials.json`` (``URP_LLM_CREDENTIALS``, mode 600) or in
-environment variables, are read at call time in the gateway process and never returned by any endpoint, log line or export.
-
-Internal message format (converted per provider)::
-
-    {'role': 'system' | 'user' | 'assistant' | 'tool', 'content': str,
-     'tool_calls': [{'id': str, 'name': str, 'arguments': dict}],   # assistant only
-     'tool_call_id': str, 'name': str}                                # tool only
-"""
+# CERES 多厂商大模型统一调用客户端：支持工具调用 (Function Calling)、指数退避重试与用量统计
+# 密钥仅从凭证文件或环境变量读取，严禁泄漏入日志与导出数据
 from __future__ import annotations
 
 import concurrent.futures

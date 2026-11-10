@@ -1,3 +1,0 @@
---alpha    "--alpha "   r    (0.01, 1.0)
---beta     "--beta "    r    (0.0, 10.0)
---iterations "--iterations " i (100, 10000)

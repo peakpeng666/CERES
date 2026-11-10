@@ -1,6 +1,0 @@
-{
-  "initial_patch_sha256": "5133b1681977cff15cc686e9964abe09183d3ac052cf6350c60892d9f3db5335",
-  "current_diff_sha256": "5133b1681977cff15cc686e9964abe09183d3ac052cf6350c60892d9f3db5335",
-  "tracked_patch_equal": true,
-  "scope": "literature/papers tracked dirty files left untouched; untracked PDFs not staged"
-}

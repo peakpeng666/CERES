@@ -1,6 +1,0 @@
-
-=== 2026-10-18T09:38:21.837Z 网关启动 fieldsim-field_20261018T093821_bdfb7a: bash -c 'source /opt/ros/humble/setup.bash && exec bash setup/profile.sh simulation /usr/bin/python3 src/lab/ros/field_sim_session.py --runtime /home/peakpeng/Desktop/URP/setup/2026-10-18/nonideal-audit/coplanar-v4/runtime/fieldsim/field_20261018T093821_bdfb7a --port 4194 --no-web' ===
-ready
-running
-finished
-{"shutdown": "PASS"}

@@ -1,2 +1,0 @@
-{"frame": "world = map (official pairing)", "scan_frame": "turtlebot4/rplidar_link/rplidar", "scan_time": 13.761, "truth_time": 0.0, "truth": [-5.07999748926647, -1.1021918443706376, -1.579597644389969], "laser_mount": [-0.04, 0.0, 1.5707963267948963], "laser_origin": [-5.079645441107837, -1.0621933936244647], "finite_count": 466, "total_beams": 640}
-1792051878.324401 [139]    python3: selected interface "lo" is not multicast-capable: disabling multicast

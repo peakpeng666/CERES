@@ -1,7 +1,0 @@
-ros-humble-rviz2=11.2.29-1jammy.20260916.003100
-ros-humble-navigation2=1.1.20-1jammy.20260916.003813
-ros-humble-nav2-bringup=1.1.20-1jammy.20260916.005516
-ros-humble-turtlebot4-simulator=1.0.3-1jammy.20261006.004227
-ros-humble-irobot-create-nodes=2.1.0-1jammy.20260915.205945
-ros-humble-ros-gz=0.244.26-1jammy.20260916.004151
-ignition-fortress=1.0.3-2~jammy

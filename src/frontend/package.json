@@ -1,8 +1,8 @@
 {
-  "name": "bpp-research-console",
+  "name": "ceres-workbench",
   "version": "1.0.0",
   "private": true,
-  "description": "URP 路径任务与实验档案工作台，保留 BPP 历史结果及回放",
+  "description": "CERES 灵畴：农业机器人规划调度与自主智能体交互工作台",
   "type": "module",
   "engines": {
     "node": ">=22.12.0"

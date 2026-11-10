@@ -1,8 +1,0 @@
-[INFO] [1792322266.216337860] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/clock (ignition.msgs.Clock) -> /clock (rosgraph_msgs/msg/Clock)] (Lazy 0)
-[INFO] [1792322266.217145966] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_1/pose (ignition.msgs.Pose_V) -> /ground_truth/poses (tf2_msgs/msg/TFMessage)] (Lazy 0)
-[INFO] [1792322266.218301406] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_1/contacts (ignition.msgs.Contacts) -> /model/vehicle_1/contacts (ros_gz_interfaces/msg/Contacts)] (Lazy 0)
-[INFO] [1792322266.218756836] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/vehicle_1/wheel_cmd/left (std_msgs/msg/Float64) -> /model/vehicle_1/joint/left_wheel_joint/cmd_vel (ignition.msgs.Double)] (Lazy 0)
-[INFO] [1792322266.219047340] [ros_gz_bridge]: Creating ROS->GZ Bridge: [/vehicle_1/wheel_cmd/right (std_msgs/msg/Float64) -> /model/vehicle_1/joint/right_wheel_joint/cmd_vel (ignition.msgs.Double)] (Lazy 0)
-[INFO] [1792322266.219153700] [ros_gz_bridge]: Creating GZ->ROS Bridge: [/model/vehicle_1/joint_state (ignition.msgs.Model) -> /vehicle_1/joint_state (sensor_msgs/msg/JointState)] (Lazy 0)
-[INFO] [1792322267.190391957] [ros_gz_bridge]: Passing message from ROS std_msgs/msg/Float64 to Gazebo gz.msgs.Double (showing msg only once per type)
-[INFO] [1792322273.640703530] [rclcpp]: signal_handler(SIGINT/SIGTERM)
