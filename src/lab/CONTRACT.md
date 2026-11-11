@@ -389,8 +389,10 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 
 - 任务合同 `urp.task-contract/1` 与会话 `urp.agent-session/1` 的字段、来源标签和状态机见 [agent/README](urp_lab/agent/README.md)。
 - 工具只调用本契约已有接口的同一实现（`compose`、`recommend`、`JobManager.submit`、`solvers.fleet.check`、`FieldSimManager.start`）；Gazebo 会话与改变任务本身的修复须经用户批准。
-- 报告前对本会话所有报告可行的运行重新执行 `fleet.check`，并与存档判定比对；不一致归类为软件实现错误。
+- 报告前对本会话所有报告可行的当前运行重新执行 `fleet.check` 或 `agri.check`，并与存档判定和数值比对；不一致归类为软件实现错误。田间输入保存在须确认的 `field_mission`，正式运行也进入物理预演与既有执行适配门禁。
 - 模型密钥只在服务端配置中；接口与导出不返回密钥。没有可用模型时 `mode=auto` 使用规则流程并在会话中注明，`mode=llm|hybrid` 返回 409 `llm_unavailable`。
+
+2026-11-11 运行器更新：重启时封口悬空工具调用；控制请求不覆盖工作线程会话；系统提示词与工具声明固定前缀、动态状态尾部注入；超过 4 KiB 的结果落盘为本会话只读 JSON 引用。报告数值核对失败时重写一次，再回退模板。科研对话状态仅挂载于 `/lab/api/research/agent`，两套控制器共用模型客户端、结果落盘与数值核对模块。
 
 ## 10. 算法库记录、物理运行与能力清单（2026-11-05）
 

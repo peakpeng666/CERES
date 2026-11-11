@@ -14,6 +14,7 @@ from .. import physics_stats, time_windows
 from ..paths import gazebo_gap
 from . import contract as tc
 from . import diagnose
+from .artifacts import ArtifactStore, READ_SCHEMA
 
 
 ROBUSTNESS_RUNS = 16          # the two best plans of a session; 0 leaves the evaluation out
@@ -79,8 +80,11 @@ def validate(schema: dict, value, path: str = '参数') -> list[str]:
             return [f'{path} 类型应为 {t}']
     if 'enum' in schema and value not in schema['enum']:
         errors.append(f'{path} 须为 {schema["enum"]} 之一')
-    if t == 'string' and isinstance(value, str) and len(value) > schema.get('maxLength', 2000):
-        errors.append(f'{path} 过长')
+    if t == 'string' and isinstance(value, str):
+        if len(value) > schema.get('maxLength', 2000):
+            errors.append(f'{path} 过长')
+        if len(value) < schema.get('minLength', 0):
+            errors.append(f'{path} 过短')
     if t == 'array':
         if len(value) < schema.get('minItems', 0) or len(value) > schema.get('maxItems', 10_000):
             errors.append(f'{path} 元素个数须在 {schema.get("minItems", 0)}–{schema.get("maxItems", "∞")}')
@@ -103,9 +107,11 @@ def validate(schema: dict, value, path: str = '参数') -> list[str]:
     return errors
 
 
-def digest(result: Any, limit: int = 6000) -> str:
-    text = json.dumps(result, ensure_ascii=False, default=str)
-    return text if len(text) <= limit else text[:limit] + '…（已截断）'
+def read_artifact(ctx: ToolContext, args: dict) -> dict:
+    try:
+        return ArtifactStore(ctx.lab.runtime, ctx.session['session_id']).read(**args)
+    except (OSError, ValueError) as exc:
+        raise ToolError('artifact_unavailable', str(exc)) from None
 
 
 def log_arguments(value):
@@ -154,7 +160,9 @@ def run_matches_current(session: dict, run: dict) -> bool:
 
 
 def _catalog(ctx: ToolContext) -> list[dict]:
-    return [a for a in ctx.lab.catalog() if 'fleet_routing' in a.get('problem_classes', [])]
+    problem = _scenario(ctx)['problem_class'] if ctx.session.get('scenario_id') else (
+        'field_operation' if tc.value(ctx.session['contract'], 'field_mission') else 'fleet_routing')
+    return [a for a in ctx.lab.catalog() if problem in a.get('problem_classes', [])]
 
 
 def _run(ctx: ToolContext, run_id: str) -> dict:
@@ -237,7 +245,8 @@ def update_task_contract(ctx: ToolContext, args: dict) -> dict:
 
 def ask_user(ctx: ToolContext, args: dict) -> dict:
     gaps = set(tc.missing(ctx.session['contract']))
-    if ctx.session.get('phase') == 'understand' and not gaps:
+    ambiguity = args.get('ambiguity')
+    if not gaps and not (isinstance(ambiguity, str) and ambiguity.strip()):
         raise ToolError('question_not_needed', '任务点数、车辆数与场地大小均已确定；其余字段使用默认值，由用户在确认合同时修改，不需要提问')
     questions = [{'question': str(q.get('question', ''))[:300], 'field': q.get('field'),
                   'options': [str(o)[:60] for o in (q.get('options') or [])][:6]} for q in args['questions']]
@@ -269,6 +278,8 @@ def find_real_fields(ctx: ToolContext, args: dict) -> dict:
 
 
 def build_scenario(ctx: ToolContext, args: dict) -> dict:
+    if tc.value(ctx.session['contract'], 'field_mission'):
+        return _build_field_scenario(ctx)
     from .. import compose
     from ..planning import fingerprint
     from ..scenarios import get_scenario, save_user_scenario
@@ -282,6 +293,8 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
     geometry_changed = any(built_from.get(k) != tc.value(contract, k) for k in GEOMETRY_FIELDS)
     # Removing an explicit demand must restore the generator's task-kind default, not retain the old value.
     geometry_changed = geometry_changed or built_from.get('task_demand') is not None and tc.value(contract, 'task_demand') is None
+    if existing and get_scenario(existing).get('problem_class') != 'fleet_routing':
+        geometry_changed = True
     if existing and not geometry_changed:
         sc = get_scenario(existing)
         inst = sc['instance']
@@ -328,6 +341,7 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
         if existing:
             ctx.session.setdefault('previous_scenarios', []).append(existing)
     ctx.session['scenario_id'] = stored['id']
+    ctx.session['problem_class'] = stored['problem_class']
     ctx.session['scenario_contract_fields'] = {k: tc.value(contract, k) for k in tc.FIELDS}
     instance_sha256 = fingerprint(stored['instance'])
     changed = (ctx.session.get('built_revision') != contract['revision']
@@ -351,6 +365,46 @@ def build_scenario(ctx: ToolContext, args: dict) -> dict:
             'capacity': inst['vehicles']['capacity'], 'trips': inst['vehicles'].get('trips'),
             'travel': inst['vehicles'].get('travel'), 'obstacles': len(inst.get('obstacles') or []),
             'objective': inst.get('objective'), 'time_window': tc.window(contract), 'start_clock': inst.get('start_clock'), 'precheck': pre}
+
+
+def _build_field_scenario(ctx: ToolContext) -> dict:
+    import secrets
+    from ..agri.api import scenario
+    from ..planning import fingerprint
+    from ..scenarios import get_scenario, save_user_scenario
+    from .session import set_step
+    s, contract = ctx.session, ctx.session['contract']
+    mission = tc.value(contract, 'field_mission')
+    if contract['status'] != 'confirmed':
+        raise ToolError('contract_not_confirmed', '田间任务须先经用户确认')
+    old_id = s.get('scenario_id')
+    if old_id and s.get('built_revision') == contract['revision']:
+        old = get_scenario(old_id)
+        if old.get('problem_class') == 'field_operation' and fingerprint(old['instance']) == s.get('scenario_instance_sha256'):
+            set_step(s, 'scenario', 'done', old['summary'])
+            return {'scenario_id': old_id, 'problem_class': 'field_operation', 'mode': 'unchanged',
+                    'summary': old['summary'], 'lines': len(old['instance']['lines']),
+                    'machines': old['instance']['machines'], 'precheck': s.get('precheck')}
+    try:
+        sc = scenario(mission)
+    except (ValueError, KeyError) as exc:
+        raise ToolError('invalid_mission', str(exc)) from None
+    sc['id'] += f"-{s['session_id'][-6:]}-r{contract['revision']}-{secrets.token_hex(3)}"
+    sc['provenance']['agent'] = {'session_id': s['session_id'], 'contract_revision': contract['revision']}
+    stored = save_user_scenario(sc, overwrite=False)
+    if old_id and old_id != stored['id']:
+        s.setdefault('previous_scenarios', []).append(old_id)
+    s.update(scenario_id=stored['id'], problem_class='field_operation', built_revision=contract['revision'],
+             scenario_instance_sha256=fingerprint(stored['instance']), solved_since_build=False,
+             active_run_ids=[], active_sim_runs=[], recommendation=None, tried_algorithms=[])
+    s.setdefault('verification_history', {}).update(s.get('verifications') or {})
+    s['verifications'] = {}
+    s['precheck'] = diagnose.precheck(stored['instance'])
+    set_step(s, 'scenario', 'done', stored['summary'])
+    ctx.emit('scenario', {'scenario_id': stored['id']})
+    return {'scenario_id': stored['id'], 'problem_class': 'field_operation', 'mode': 'created',
+            'summary': stored['summary'], 'lines': len(stored['instance']['lines']),
+            'machines': stored['instance']['machines'], 'precheck': s['precheck']}
 
 
 def list_algorithms(ctx: ToolContext, args: dict) -> dict:
@@ -411,7 +465,7 @@ def solve(ctx: ToolContext, args: dict) -> dict:
     for aid in dict.fromkeys(args['algorithms']):
         algo = catalog.get(aid)
         if algo is None:
-            raise ToolError('unknown_algorithm', f'{aid} 不是可用于多车任务的算法；可先调用 list_algorithms')
+            raise ToolError('unknown_algorithm', f'{aid} 不是可用于 {sc["problem_class"]} 的算法；可先调用 list_algorithms')
         if not algo.get('available'):
             raise ToolError('algorithm_unavailable', f"{algo['name']} 不可用：{algo.get('unavailable_reason') or '未说明'}")
         params = {}
@@ -727,18 +781,25 @@ def assess_agri_rig(ctx: ToolContext, args: dict) -> dict:
 
 
 def solve_field_operation(ctx: ToolContext, args: dict) -> dict:
-    # 田间全覆盖行作与地头转弯规划求解
-    from ..agri import api as agri_api
-    mission = args.get('mission')
-    if not mission or not isinstance(mission, dict):
-        raise ToolError('invalid_mission', '缺少田间作业任务定义字典 (mission)')
-    try:
-        preview = agri_api.compile_preview(mission)
-        return {'status': 'ok', 'blocked': preview.get('blocked', False),
-                'checks': preview.get('checks', []), 'lines_count': len(preview.get('lines', [])),
-                'pitch_m': preview.get('pitch_m'), 'recommended_headland_m': preview.get('recommended_headland_m')}
-    except Exception as exc:
-        raise ToolError('field_solve_failed', f'田间作业规划失败：{exc}')
+    from .field_contract import normalize
+    mission = tc.value(ctx.session['contract'], 'field_mission')
+    if not mission or ctx.session['contract']['status'] != 'confirmed':
+        raise ToolError('contract_not_confirmed', '先把 field_mission 写入任务合同并由用户确认')
+    if args.get('mission') is not None:
+        try:
+            proposed = normalize(args['mission'])
+        except ValueError as exc:
+            raise ToolError('invalid_mission', str(exc)) from None
+        if proposed != mission:
+            raise ToolError('mission_changed', '求解参数与已确认的田间任务不一致；请用 propose_task_change 申请修改')
+    built = _build_field_scenario(ctx)
+    algorithms = args.get('algorithms')
+    if not algorithms:
+        rec = recommend_algorithms(ctx, {})
+        algorithms = rec.get('compare') or ['agri.sequential']
+        algorithms = algorithms[:tc.execution(ctx.session['contract'])['compare_count']]
+    result = solve(ctx, {**{k: v for k, v in args.items() if k in ('time_limit_s', 'seed')}, 'algorithms': algorithms})
+    return {**result, 'scenario_id': built['scenario_id'], 'problem_class': 'field_operation'}
 
 
 # ---------------------------------------------------------------- registry --
@@ -748,7 +809,10 @@ EMPTY = {'type': 'object', 'properties': {}, 'additionalProperties': False}
 
 
 def registry() -> dict[str, Tool]:
+    from .field_contract import MISSION_SCHEMA
     tools = [
+        Tool('read_artifact', '读取完整结果', '按结果编号读取本会话落盘 JSON，可用 pointer 选择字段、offset 分页。',
+             READ_SCHEMA, read_artifact, 'session'),
         Tool('update_task_contract', '更新任务合同',
              '把用户原话中的任务要素写入任务合同（单位统一为米、秒、平方米）。只填写本轮读到或被用户改动的字段；'
              '所有任务共用的时间要求写入 task_deadline、task_earliest、start_clock；无法用字段表达的要求放进 unsupported。',
@@ -761,7 +825,9 @@ def registry() -> dict[str, Tool]:
                                                       'field': {'type': 'string', 'enum': list(tc.FIELDS)},
                                                       'options': {'type': 'array', 'items': {'type': 'string'}, 'maxItems': 6}},
                      'required': ['question'], 'additionalProperties': False}},
-                 'reason': {'type': 'string', 'maxLength': 300}},
+                 'reason': {'type': 'string', 'maxLength': 300},
+                 'ambiguity': {'type': 'string', 'minLength': 1, 'maxLength': 300,
+                               'description': '关键字段已齐时必须说明具体歧义，例如同名站点或禁喷/禁行；默认参数不属于歧义'}},
               'required': ['questions'], 'additionalProperties': False}, ask_user, 'session', 'understand'),
         Tool('find_real_fields', '检索真实田块', '在 Fields2Benchmark 荷兰真实田块中检索可用作场地边界的田块（按编号片段过滤）。',
              {'type': 'object', 'properties': {'query': {'type': 'string', 'maxLength': 60},
@@ -777,8 +843,11 @@ def registry() -> dict[str, Tool]:
               'additionalProperties': False}, assess_agri_rig, 'compute', 'understand'),
         Tool('solve_field_operation', '求解田间作业',
              '对指定地块、垄向与机组配置求解田间全覆盖行作与地头转弯路线。',
-             {'type': 'object', 'properties': {'mission': {'type': 'object'}},
-              'required': ['mission'], 'additionalProperties': False}, solve_field_operation, 'compute', 'solve'),
+             {'type': 'object', 'properties': {'mission': MISSION_SCHEMA,
+                 'algorithms': {'type': 'array', 'minItems': 1, 'maxItems': 6, 'items': {'type': 'string', 'maxLength': 80}},
+                 'time_limit_s': {'type': 'number', 'minimum': .2, 'maximum': 60},
+                 'seed': {'type': 'integer', 'minimum': 0, 'maximum': 2147483647}},
+              'additionalProperties': False}, solve_field_operation, 'compute', 'solve', needs_confirmed=True),
         Tool('build_scenario', '建立任务地图',
              '按已确认的任务合同生成或更新任务地图。只改车队、容量、目标时原地更新；改场地、任务点或障碍时另存新地图。',
              EMPTY, build_scenario, 'write', 'scenario', needs_confirmed=True),
@@ -833,9 +902,9 @@ def registry() -> dict[str, Tool]:
 
 
 PHASE_TOOLS = {
-    'understand': ['update_task_contract', 'ask_user', 'find_real_fields', 'assess_agri_rig'],
+    'understand': ['update_task_contract', 'ask_user', 'find_real_fields', 'assess_agri_rig', 'read_artifact'],
     'execute': ['build_scenario', 'list_algorithms', 'describe_algorithm', 'list_capabilities', 'recommend_algorithms', 'solve', 'run_study', 'verify_run', 'compare_runs',
-                'diagnose_run', 'propose_task_change', 'physics_check', 'physics_robustness', 'start_simulation', 'simulation_status', 'ask_user', 'assess_agri_rig', 'solve_field_operation'],
+                'diagnose_run', 'propose_task_change', 'physics_check', 'physics_robustness', 'start_simulation', 'simulation_status', 'ask_user', 'assess_agri_rig', 'solve_field_operation', 'read_artifact'],
 }
 
 

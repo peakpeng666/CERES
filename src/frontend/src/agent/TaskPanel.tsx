@@ -44,6 +44,16 @@ export const OPTIONAL_LABEL: Record<string, string> = {
   start_clock: '出发时刻', task_deadline: '截止时间', task_earliest: '最早时间',
 };
 
+export function ContractDetails({ card }: { card: ContractCard }) {
+  if (!card.details?.length) return null;
+  return (
+    <details>
+      <summary>完整作业参数</summary>
+      <dl>{card.details.map((d) => <div key={d.label}><dt>{d.label}</dt><dd>{d.text}</dd></div>)}</dl>
+    </details>
+  );
+}
+
 export function FieldEditor({ card, onDone }: { card: Pick<ContractCard, 'key' | 'value'>; onDone: () => void }) {
   const spec = EDITABLE[card.key];
   const editContract = useAgent((x) => x.editContract);
@@ -106,8 +116,9 @@ function ContractSection({ session }: { session: AgentSession }) {
               <td>
                 {editing === card.key ? <FieldEditor card={card} onDone={() => setEditing(null)} /> : (
                   <button type="button" className={s.valueButton} disabled={locked || pending || !EDITABLE[card.key]}
-                    title={EDITABLE[card.key] ? '点击修改' : '请在地图上编辑'} onClick={() => setEditing(card.key)}>{card.text}</button>
+                    title={EDITABLE[card.key] ? '点击修改' : card.key === 'field_mission' ? '请在对话中修改田间任务，再确认' : '请在地图上编辑'} onClick={() => setEditing(card.key)}>{card.text}</button>
                 )}
+                <ContractDetails card={card} />
               </td>
               <td title={card.evidence ? `依据：${card.evidence}` : undefined}>
                 <span className={s.source} data-source={card.source}>{SOURCE_LABEL[card.source]}</span>
@@ -150,7 +161,9 @@ function PlanSection({ session }: { session: AgentSession }) {
   const studioScenario = useStudio((x) => x.scenario);
   const studioRuns = useStudio((x) => x.runIds);
   const idle = session.state !== 'running' && !session.restoration?.read_only;
-  const userMap = studioScenario && studioScenario.problem_class === 'fleet_routing' && (studioScenario as { origin?: string }).origin === 'user'
+  const userMap = studioScenario
+    && (studioScenario.problem_class === 'fleet_routing' || studioScenario.problem_class === 'field_operation')
+    && (studioScenario as { origin?: string }).origin === 'user'
     ? studioScenario.id : null;
   return (
     <section className={s.section}>

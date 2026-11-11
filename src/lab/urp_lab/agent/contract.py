@@ -40,6 +40,7 @@ class FieldDef:
 
 
 FIELDS: dict[str, FieldDef] = {
+    'field_mission': FieldDef('田间行作任务', 'mission', describe='全覆盖行作的田块、作物、作业、平台、机具及机组数；经用户确认后才执行'),
     'task_kind': FieldDef('作业类型', 'enum', options=KIND_OPTIONS, spec='kind', describe='作业类型'),
     'field_size_m': FieldDef('场地尺寸', 'size', 'm', 5, 5000, spec='size', describe='矩形外包尺寸 [宽, 高]，米'),
     'field_area_m2': FieldDef('场地面积', 'number', 'm²', 25, 25_000_000, spec='area_m2',
@@ -126,6 +127,9 @@ def normalize(key: str, value):
     spec = FIELDS.get(key)
     if spec is None:
         raise ValueError(f'未知字段 {key}')
+    if spec.kind == 'mission':
+        from .field_contract import normalize as normalize_mission
+        return normalize_mission(value)
     if spec.kind in ('clock', 'time'):
         return _time_value(spec, value)
     if spec.kind == 'enum':
@@ -276,6 +280,8 @@ def later_deadline(contract: dict, seconds: float) -> str | None:
 
 def missing(contract: dict) -> list[str]:
     """Key fields still unknown. A size, an area or a real field is needed; the rest are task-defining counts."""
+    if value(contract, 'field_mission') is not None:
+        return time_gaps(contract)
     gaps = [key for key in KEY_FIELDS if key not in contract['fields']]
     if not any(key in contract['fields'] for key in SIZE_FIELDS):
         gaps.append('field_size_m')
@@ -299,6 +305,24 @@ def from_rule_parse(text: str) -> dict:
         target = 'obstacles' if prefix == 'obstacle' else RULE_KEYS.get(prefix)
         if target:
             evidence[target] = (evidence.get(target, '') + ' ' + item['text']).strip()
+    # These are workflow constraints, so the map composer's lexicon does not
+    # contain them. Keep explicit requests (including negation) in the same
+    # source-backed contract rather than silently using execution defaults.
+    trip_requests = re.compile(
+        r'(?P<multi>(?:允许|可以|可|改成|改为)多趟(?:往返)?|(?:允许|可以|可)回库补给|不限趟次|'
+        r'(?:不要|取消)(?:每车)?单趟(?:限制)?)|'
+        r'(?P<single>(?:每(?:台)?车)?只(?:能)?(?:跑|走)?[一1]趟|每(?:台)?车单趟|'
+        r'(?:改成|改为|只允许|仅允许)单趟|(?:禁止|不能|不允许)回库补给|(?:不允许|不能)多趟)')
+    for match in trip_requests.finditer(text):
+        values['trip_mode'] = 'multi' if match.lastgroup == 'multi' else 'single'
+        evidence['trip_mode'] = match.group()
+    simulation_requests = re.compile(
+        r'(?P<skip>(?:不要|不用|不需要|无需|取消)[^，。；\n]{0,16}(?:仿真|Gazebo))|'
+        r'(?P<run>(?:放到|送入|进入|启动|开始|执行)[^，。；\n]{0,12}(?:仿真|Gazebo)|'
+        r'(?:跑|运行)(?:一下)?(?:Gazebo)?仿真)', re.IGNORECASE)
+    for match in simulation_requests.finditer(text):
+        values['simulate'] = match.lastgroup == 'run'
+        evidence['simulate'] = match.group()
     contract, _, _ = apply(contract, values, 'user_text', evidence, '规则解析')
     return add_unsupported(contract, parsed['unsupported'], 'user_text')
 
@@ -307,6 +331,10 @@ def confirm(contract: dict) -> dict:
     gaps = missing(contract)
     if gaps:
         raise ValueError('仍缺少：' + '、'.join(FIELDS[g].label for g in gaps))
+    mission = value(contract, 'field_mission')
+    if mission:
+        from .field_contract import check_shared_fields
+        check_shared_fields(contract, mission)
     out = copy.deepcopy(contract)
     out['status'] = 'confirmed'
     out['confirmed_revision'] = out['revision']
@@ -338,13 +366,20 @@ def cards(contract: dict, defaults: list[dict] | None = None) -> list[dict]:
             continue
         rows.append({'key': key, 'label': spec.label, 'value': item['value'], 'text': format_value(key, item['value']),
                      'source': item['source'], 'evidence': item.get('evidence', '')})
+        if key == 'field_mission':
+            from .field_contract import details
+            rows[-1]['details'] = details(item['value'])
     for d in defaults or []:
+        if value(contract, 'field_mission'):
+            continue
         target = RULE_KEYS.get(d['key'])
         if target and target not in contract['fields']:
             rows.append({'key': target, 'label': FIELDS[target].label, 'value': d['value'],
                          'text': format_value(target, d['value']), 'source': 'default', 'evidence': ''})
     if defaults is not None:  # execution settings are part of what the user confirms
         for key, v in EXECUTION_DEFAULTS.items():
+            if value(contract, 'field_mission') and key in ('trip_mode', 'travel_mode'):
+                continue
             if key not in contract['fields']:
                 rows.append({'key': key, 'label': FIELDS[key].label, 'value': v, 'text': format_value(key, v),
                              'source': 'default', 'evidence': ''})
@@ -353,6 +388,9 @@ def cards(contract: dict, defaults: list[dict] | None = None) -> list[dict]:
 
 def format_value(key: str, v) -> str:
     spec = FIELDS[key]
+    if spec.kind == 'mission':
+        from .field_contract import summary
+        return summary(v)
     if spec.kind in ('clock', 'time'):
         if not v.endswith('s'):
             return v
@@ -375,7 +413,10 @@ def tool_schema() -> dict:
     """JSON schema of the ``update_task_contract`` arguments (one optional property per field)."""
     props = {}
     for key, spec in FIELDS.items():
-        if spec.kind == 'enum':
+        if spec.kind == 'mission':
+            from .field_contract import MISSION_SCHEMA
+            p = copy.deepcopy(MISSION_SCHEMA)
+        elif spec.kind == 'enum':
             p = {'type': 'string', 'enum': list(spec.options)}
         elif spec.kind == 'bool':
             p = {'type': 'boolean'}

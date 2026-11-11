@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import json
-import re
 import secrets
 import sqlite3
 import threading
@@ -10,6 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from . import contract as tc
+from .grounding import claims_check
 
 SCHEMA = 'urp.agent-session/1'
 STATES = ('idle', 'running', 'awaiting_user', 'awaiting_confirmation', 'awaiting_approval', 'paused', 'cancelled',
@@ -18,7 +18,6 @@ ACTIVE = ('running',)
 STEP_TITLES = {'understand': '理解需求', 'confirm': '确认任务合同', 'scenario': '建立任务地图', 'recommend': '推荐算法',
                'solve': '求解对比', 'study': '重复实验', 'verify': '独立复核', 'physics': '物理预演', 'robustness': '鲁棒性评估', 'repair': '诊断与修复', 'simulate': '田间仿真',
                'report': '结果报告'}
-NUMBER = re.compile(r'(?<![\w.])-?\d+(?:\.\d+)?')
 SITE_WORDS = ('猕猴桃园', '葡萄园', '苹果园', '果园', '茶园', '菜地', '麦田', '稻田', '玉米地', '棉田', '大豆田', '油菜田', '温室', '大棚',
               '农场', '牧场', '林地', '田块', '农田', '园区')
 TASK_WORDS = {'sampling': '采样', 'inspection': '巡检', 'transport': '运输', 'harvest': '采收', 'spraying': '喷施'}
@@ -88,6 +87,7 @@ def add_usage(session: dict, record: dict):
     usage = record.get('usage') or {}
     u['input_tokens'] += int(usage.get('input_tokens') or 0)
     u['output_tokens'] += int(usage.get('output_tokens') or 0)
+    u['cached_tokens'] = u.get('cached_tokens', 0) + int(usage.get('cached_tokens') or 0)
     u['calls'] += 1
     u['latency_s'] = round(u['latency_s'] + float(record.get('latency_s') or 0), 3)
     if record.get('cost') is not None:
@@ -95,40 +95,6 @@ def add_usage(session: dict, record: dict):
         u['currency'] = record.get('currency')
     else:
         u['unpriced_calls'] = u.get('unpriced_calls', 0) + 1  # subscription quota or no price configured
-
-
-def claims_check(text: str, evidence) -> list[str]:
-    """Numbers in a narrative that do not occur in the evidence (to 0–2 decimals); flags fabricated figures."""
-    known: set[str] = set()
-
-    def collect(v):
-        if isinstance(v, bool):
-            return
-        if isinstance(v, (int, float)):
-            for nd in (0, 1, 2, 3):
-                known.add(f'{round(float(v), nd):.{nd}f}')
-            known.add(str(v))
-        elif isinstance(v, dict):
-            for x in v.values():
-                collect(x)
-        elif isinstance(v, (list, tuple)):
-            for x in v:
-                collect(x)
-        elif isinstance(v, str):
-            for m in NUMBER.findall(v):
-                known.add(m)
-    collect(evidence)
-    flagged = []
-    for m in NUMBER.findall(text or ''):
-        if len(m.replace('-', '').replace('.', '')) < 2:
-            continue  # single digits are ordinal words, not measured values
-        candidates = {m}
-        if '.' in m:
-            whole, frac = m.split('.')
-            candidates |= {f'{float(m):.{nd}f}' for nd in range(0, len(frac) + 1)}
-        if not candidates & known and m not in flagged:
-            flagged.append(m)
-    return flagged
 
 
 def short_title(session: dict) -> str:
@@ -163,7 +129,7 @@ class AgentStore:
     def __init__(self, path: Path):
         self.path = Path(path)
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._db = sqlite3.connect(self.path, check_same_thread=False, isolation_level=None)
         self._db.execute('PRAGMA journal_mode=WAL')
         self._db.execute('CREATE TABLE IF NOT EXISTS sessions (session_id TEXT PRIMARY KEY, created_utc TEXT, '
@@ -192,8 +158,8 @@ class AgentStore:
         return {'custom_title': row[0] if row else None, 'pinned': bool(row[1]) if row else False, 'archived': bool(row[2]) if row else False}
 
     def set_meta(self, session_id: str, fields: dict) -> dict:
-        current = self.meta(session_id) | {k: v for k, v in fields.items() if k in META_FIELDS}
         with self._lock:
+            current = self.meta(session_id) | {k: v for k, v in fields.items() if k in META_FIELDS}
             self._db.execute('INSERT INTO session_meta VALUES (?,?,?,?) ON CONFLICT(session_id) DO UPDATE SET custom_title=excluded.custom_title, '
                              'pinned=excluded.pinned, archived=excluded.archived',
                              (session_id, current['custom_title'], int(current['pinned']), int(current['archived'])))

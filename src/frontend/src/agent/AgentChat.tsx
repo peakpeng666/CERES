@@ -26,6 +26,7 @@ import {
 } from './api';
 import { findModel, useAgent } from './store';
 import { currentRuns, syncAgentStudio } from './studioSync';
+import { ContractDetails } from './TaskPanel';
 import s from './agent.module.css';
 
 const EXAMPLES = [
@@ -82,7 +83,7 @@ function ConfirmationCard({ msg, session, latest }: { msg: AgentMessage; session
           {data.cards.map((c) => (
             <tr key={c.key} data-default={c.source === 'default' || undefined}>
               <th>{c.label}</th>
-              <td>{c.text}</td>
+              <td>{c.text}<ContractDetails card={c} /></td>
               <td title={c.evidence ? `依据：${c.evidence}` : undefined}><SourceTag source={c.source} /></td>
             </tr>
           ))}

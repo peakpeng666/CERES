@@ -97,7 +97,7 @@ npm ci --prefix src/desktop && npm run dist:linux --prefix src/desktop
 
 **任务理解评测**：`cd src/lab && .venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid --provider 服务商/模型` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
 
-**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --provider 服务商/模型 --out /新的绝对路径`。6 个情景使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
+**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --provider 服务商/模型 --out /新的绝对路径`。7 个情景（含田间行作）使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
 
 ## 仿真与引擎比较
 

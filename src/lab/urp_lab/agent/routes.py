@@ -1,4 +1,4 @@
-"""/lab/api/agent endpoints (CONTRACT §9.1). Request bodies are typed, so they appear in the OpenAPI schema."""
+# CERES 科研智能体 HTTP 接口（/lab/api/research/agent）
 from __future__ import annotations
 
 from fastapi import FastAPI, Query
@@ -19,7 +19,6 @@ class AgentDecision(BaseModel):
 def install(app: FastAPI, lab, api: str = '/lab/api'):
     base = f'{api}/research/agent'
 
-    @app.get(f'{api}/agent', include_in_schema=False)
     @app.get(base)
     def agent_status():
         return lab.research_agent.status()

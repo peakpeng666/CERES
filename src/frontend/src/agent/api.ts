@@ -23,6 +23,7 @@ export interface ContractField {
 }
 
 export interface ContractCard {
+  details?: { label: string; text: string }[];
   key: string;
   label: string;
   value: unknown;

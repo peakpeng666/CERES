@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from ..events import utc_now
 from ..services import ServiceError
 from . import grounding
+from .artifacts import ArtifactStore
 from .research_llm import ModelError, configured_model
 from .prompt import PROMPT_ID, PROMPT_SHA256, SYSTEM_PROMPT
 from .research_tools import BY_NAME, TOOLS, ToolContext, ToolError
@@ -235,9 +236,9 @@ class AgentManager:
 
     def _reply(self, session: dict, call: dict, result: dict):
         """Every tool call in an assistant message gets exactly one tool message before the next model call."""
-        text = json.dumps(result, ensure_ascii=False, default=str)
+        text = ArtifactStore(self.lab.runtime, session['session_id']).payload(result)
         session['messages'].append({'role': 'tool', 'tool_call_id': call['id'],
-                                    'content': _clip(text, POLICY['tool_result_chars'])})
+                                    'content': text})
 
     def _end(self, session: dict, state: str, error: str | None = None, announce: bool = True):
         # Calls still queued (a restart or an internal error mid-turn) are answered now: providers reject a history
@@ -415,11 +416,9 @@ class AgentManager:
             self._reply(session, call, payload)
             if ok:
                 collect_ids(result, session['evidence'])
-            text = json.dumps(payload, ensure_ascii=False, default=str)
-            view = payload if len(text) <= POLICY['step_result_chars'] else _clip(text, POLICY['step_result_chars'])
             self._append(session, {'kind': 'tool', 'call_id': call['id'], 'name': call['name'],
                                    'tier': tool.tier if tool else None, 'label': tool.label if tool else None,
-                                   'arguments': call['args'], 'ok': ok, 'error': error, 'result': view, 'duration_s': duration})
+                                   'arguments': call['args'], 'ok': ok, 'error': error, 'result': payload, 'duration_s': duration})
             session['usage']['tool_calls'] += 1
             session['turn_tool_calls'] = session.get('turn_tool_calls', 0) + 1
             session['queue'].pop(0)

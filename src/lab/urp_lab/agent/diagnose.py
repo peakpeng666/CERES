@@ -17,6 +17,12 @@ CATEGORY_LABEL = {
 def precheck(instance: dict) -> dict:
     """Cheap necessary conditions on the task map, before any solver runs."""
     from shapely.geometry import Point, Polygon
+    if instance.get('schema') == 'urp.field-operation/1':
+        from ..agri.mission import compile_mission
+        compiled = compile_mission(instance['mission'])
+        findings = [{'code': c['id'], 'severity': 'infeasible' if c['level'] == 'block' else 'warning',
+                     'message': c['title'] + '：' + c['detail']} for c in compiled['checks'] if c['level'] in ('block', 'warn')]
+        return {'feasible_by_precheck': not compiled['blocked'], 'findings': findings, 'problem_class': 'field_operation'}
     findings = []
     veh = instance['vehicles']
     caps = [int(c.get('capacity', veh['capacity'])) * int(c.get('count', 1)) for c in veh.get('fleet') or []] \
@@ -109,6 +115,8 @@ def classify(run: dict, precheck_result: dict | None = None) -> dict:
 def recheck(scenario: dict, run: dict) -> dict:
     """Independent re-verification of a stored fleet run: re-run the checker on the stored routes and instance."""
     from ..solvers import fleet
+    if run.get('problem_class') == 'field_operation':
+        return _recheck_field(scenario, run)
     if run.get('problem_class') != 'fleet_routing' or run.get('state') != 'done' or run.get('status') != 'feasible':
         return {'performed': False, 'reason': '仅对已完成且报告可行的多车方案复核'}
     inst = run.get('instance') or scenario.get('instance')
@@ -140,12 +148,34 @@ def recheck(scenario: dict, run: dict) -> dict:
             'checker': fresh.get('checker'), **({'time_windows': windows} if windows else {})}
 
 
+def _recheck_field(scenario: dict, run: dict) -> dict:
+    from ..agri.check import check
+    from ..agri.solve import objective_value
+    if run.get('state') != 'done' or run.get('status') != 'feasible':
+        return {'performed': False, 'reason': '仅对已完成且报告可行的田间方案复核'}
+    inst = run.get('instance') or scenario['instance']
+    try:
+        fresh, metrics = check(inst, run.get('routes') or [])
+        stored, archived = run.get('check') or {}, run.get('metrics') or {}
+        same = lambda a, b: isinstance(a, (float, int)) and not isinstance(a, bool) and isinstance(b, (float, int)) and not isinstance(b, bool) and math.isclose(a, b, rel_tol=1e-6, abs_tol=1e-6)
+        differences = [key for key, value in metrics.items() if isinstance(value, (float, int)) and not same(value, archived.get(key))]
+        agrees = (fresh.get('valid') == stored.get('valid') and same(fresh.get('computed_cost'), stored.get('computed_cost'))
+                  and not differences and same(objective_value(inst, metrics), (run.get('objective') or {}).get('value')))
+    except Exception as exc:
+        return {'performed': True, 'valid': False, 'agrees': False, 'errors': [f'田间复核异常：{type(exc).__name__}: {exc}']}
+    return {'performed': True, 'valid': bool(fresh['valid']), 'agrees': agrees, 'computed_cost': fresh.get('computed_cost'),
+            'checker': fresh.get('checker'), 'metrics': metrics, 'errors': fresh.get('errors') or [],
+            'items': [{'id': 'checker', 'label': '作业行、覆盖、曲率、容量与避障独立复算', 'ok': bool(fresh['valid']),
+                       'detail': '；'.join(fresh.get('errors') or []) or '无违规'},
+                      {'id': 'agreement', 'label': '复核与存档指标一致', 'ok': agrees, 'detail': '、'.join(differences)}]}
+
+
 def repairs(category: str, run: dict, precheck_result: dict | None, catalog: list[dict], tried: set[str],
             budget_s: float) -> list[dict]:
     """Ordered repair actions; ``needs_user`` marks changes to the task itself."""
     actions = []
     windowed = time_windows.present(run.get('instance') or {})
-    applicable = [a for a in catalog if 'fleet_routing' in a.get('problem_classes', []) and a.get('available')
+    applicable = [a for a in catalog if run.get('problem_class', 'fleet_routing') in a.get('problem_classes', []) and a.get('available')
                   and not (windowed and (a.get('limits') or {}).get('time_windows') == 'unsupported')]
     untried = [a['id'] for a in applicable if a['id'] not in tried]
     if category == 'budget_insufficient' and budget_s < MAX_BUDGET_S:

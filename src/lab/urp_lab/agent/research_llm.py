@@ -1,11 +1,8 @@
-"""Chat-completions client with tool calling for any OpenAI-compatible endpoint (GLM by default).
-
-Only the endpoint host, model name and sampling settings are recorded; the API key stays in the
-environment and never enters a session record, an event or a response.
-"""
+# CERES 科研智能体大模型适配层（复用统一重试与私钥存储，支持环境变量直连）
 from __future__ import annotations
 
 import ipaddress
+import json
 import os
 from dataclasses import dataclass, field
 from typing import Mapping, Protocol
@@ -71,57 +68,15 @@ class OpenAICompatibleModel:
         return {'provider': 'openai-compatible', 'endpoint': urlsplit(self.base_url).hostname, 'model': self.model,
                 'temperature': self.temperature, 'max_tokens': self.max_tokens, 'timeout_s': self.timeout_s}
 
-    def _error_excerpt(self, response: httpx.Response) -> str:
-        text = response.text.replace(self._key, '[已隐藏]') if self._key else response.text
-        return text[:300]
-
     def complete(self, messages: list[dict], tools: list[dict]) -> Reply:
-        payload = {'model': self.model, 'messages': messages, 'temperature': self.temperature, 'stream': False}
-        if tools:
-            payload.update(tools=tools, tool_choice='auto')
-        if self.max_tokens:
-            payload['max_tokens'] = self.max_tokens
-        try:
-            with httpx.Client(timeout=httpx.Timeout(self.timeout_s, connect=10.0), transport=self._transport) as client:
-                response = client.post(f'{self.base_url}/chat/completions', json=payload,
-                                       headers={'Authorization': f'Bearer {self._key}', 'Accept': 'application/json'})
-        except httpx.TimeoutException:
-            raise ModelError(f'模型接口超时（{self.timeout_s:g} s）') from None
-        except httpx.HTTPError as exc:
-            raise ModelError(f'模型接口不可达：{type(exc).__name__}') from None
-        if response.status_code >= 400:
-            raise ModelError(f'模型接口返回 HTTP {response.status_code}：{self._error_excerpt(response)}')
-        try:
-            data = response.json()
-            choice = data['choices'][0]
-            message = choice['message']
-        except (ValueError, KeyError, IndexError, TypeError):
-            raise ModelError(f'模型接口返回了无法解析的内容：{self._error_excerpt(response)}') from None
-        if not isinstance(message, dict):
-            raise ModelError('模型返回的 message 须为对象')
-        content = message.get('content')
-        if content is not None and not isinstance(content, str):
-            raise ModelError('模型返回的 content 须为字符串或 null')
-        raw_calls = message.get('tool_calls', [])
-        if raw_calls is None:
-            raw_calls = []
-        if not isinstance(raw_calls, list):
-            raise ModelError('模型返回的 tool_calls 须为数组')
-        calls = []
-        for call in raw_calls:
-            if not isinstance(call, dict) or not isinstance(call.get('function'), dict):
-                raise ModelError('模型返回的工具调用及 function 须为对象')
-            fn = call['function']
-            if not isinstance(fn.get('name'), str) or not fn['name']:
-                raise ModelError('模型返回的工具调用缺少函数名')
-            if not isinstance(fn.get('arguments'), str):
-                raise ModelError('模型返回的工具参数 arguments 须为 JSON 字符串')
-            # The manager owns call-id allocation and JSON-object validation.
-            # Keep invalid JSON intact so the tool result can ask the model to correct it.
-            calls.append({'id': str(call.get('id') or ''), 'name': fn['name'], 'arguments': fn['arguments']})
-        reasoning = message.get('reasoning_content')
-        return Reply(content or '', calls, reasoning if isinstance(reasoning, str) else None,
-                     data.get('usage') if isinstance(data.get('usage'), dict) else {}, choice.get('finish_reason'))
+        from . import llm
+
+        options = {'temperature': self.temperature, 'reasoning_field': 'reasoning_content'}
+        if self.max_tokens is not None:
+            options['max_tokens'] = self.max_tokens
+        provider = llm.Provider(id='openai-compatible', kind='openai', model=self.model,
+                                base_url=self.base_url, options=options, timeout_s=self.timeout_s)
+        return _complete(provider, messages, tools, api_key=self._key, transport=self._transport)
 
 
 def model_from_env(env: Mapping[str, str] | None = None) -> tuple[OpenAICompatibleModel | None, str | None]:
@@ -158,6 +113,8 @@ def _internal_messages(messages: list[dict]) -> list[dict]:
 
     out = []
     for message in messages:
+        if message.get('reasoning_content') and not message.get('reasoning'):
+            message = {**message, 'reasoning': message['reasoning_content']}
         if message.get('role') == 'assistant' and message.get('tool_calls'):
             calls = []
             for call in message['tool_calls']:
@@ -182,20 +139,24 @@ class ConnectedModel:
                 'temperature': p.options.get('temperature'), 'timeout_s': p.timeout_s}
 
     def complete(self, messages: list[dict], tools: list[dict]) -> Reply:
-        import json
-        from . import llm
+        return _complete(self.provider, messages, tools)
 
-        try:
-            response = llm.chat(self.provider, _internal_messages(messages), _internal_tools(tools))
-        except llm.LLMError as exc:
-            raise ModelError(str(exc)) from None
-        calls = [{'id': c['id'], 'name': c['name'],
-                  'arguments': '{' if c.get('parse_error') else json.dumps(c['arguments'], ensure_ascii=False)}
-                 for c in response.tool_calls]
-        usage = {'prompt_tokens': response.usage.get('input_tokens'),
-                 'completion_tokens': response.usage.get('output_tokens'),
-                 'total_tokens': response.usage.get('total_tokens')}
-        return Reply(response.content, calls, response.reasoning, usage, response.finish_reason)
+
+def _complete(provider, messages: list[dict], tools: list[dict], **kwargs) -> Reply:
+    from . import llm
+
+    try:
+        response = llm.chat(provider, _internal_messages(messages), _internal_tools(tools), **kwargs)
+    except llm.LLMError as exc:
+        raise ModelError(str(exc)) from None
+    calls = [{'id': c['id'], 'name': c['name'],
+              'arguments': '{' if c.get('parse_error') else json.dumps(c['arguments'], ensure_ascii=False)}
+             for c in response.tool_calls]
+    usage = {'prompt_tokens': response.usage.get('input_tokens'),
+             'completion_tokens': response.usage.get('output_tokens'),
+             'total_tokens': response.usage.get('total_tokens'),
+             'cached_tokens': response.usage.get('cached_tokens', 0)}
+    return Reply(response.content, calls, response.reasoning, usage, response.finish_reason)
 
 
 def configured_model():

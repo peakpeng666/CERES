@@ -94,6 +94,7 @@ def run(mode: str, split: str, out: Path, provider_id: str | None = None, limit:
                 'assistant_text': texts[:2000],
                 'llm_calls': len(calls), 'input_tokens': sum((c.get('usage') or {}).get('input_tokens') or 0 for c in calls),
                 'output_tokens': sum((c.get('usage') or {}).get('output_tokens') or 0 for c in calls),
+                'cached_tokens': sum((c.get('usage') or {}).get('cached_tokens') or 0 for c in calls),
                 'llm_latency_s': round(sum(c.get('latency_s') or 0 for c in calls), 3), 'wall_s': round(time.monotonic() - t0, 3),
                 'session_id': sid, 'mode': s['mode'], 'provider': s.get('provider'),
             })
@@ -142,6 +143,7 @@ def summarize(records: list[dict]) -> dict:
             'failed_turns': sum(1 for r in rows if r['state'] in ('failed', 'cancelled')),
             'llm_calls_per_turn': _ratio(sum(r['llm_calls'] for r in rows), len(rows)),
             'tokens_per_turn': _ratio(sum(r['input_tokens'] + r['output_tokens'] for r in rows), len(rows)),
+            'cache_hit_ratio': _ratio(sum(r.get('cached_tokens', 0) for r in rows), sum(r['input_tokens'] for r in rows)),
             'llm_latency_per_turn_s': _ratio(round(sum(r['llm_latency_s'] for r in rows) * 1000), len(rows) * 1000),
         }
     return out

@@ -86,7 +86,7 @@ class Response:
 def redact(text: str, secrets: list[str] = ()) -> str:
     out = str(text)
     for s in secrets:
-        if s and len(s) >= 8:
+        if s:
             out = out.replace(s, '«redacted»')
     for pattern in KEY_PATTERNS:
         out = pattern.sub('«redacted»', out)
@@ -197,13 +197,18 @@ def _anthropic_messages(messages: list[dict]) -> tuple[str, list[dict]]:
             out.append({'role': 'assistant', 'content': blocks or [{'type': 'text', 'text': ''}]})
         elif m['role'] == 'tool':
             block = {'type': 'tool_result', 'tool_use_id': m['tool_call_id'], 'content': m['content']}
-            if out and out[-1]['role'] == 'user' and isinstance(out[-1]['content'], list) and out[-1]['content'] \
-                    and out[-1]['content'][0].get('type') == 'tool_result':
-                out[-1]['content'].append(block)
+            if out and out[-1]['role'] == 'user':
+                prev = out[-1]['content']
+                out[-1]['content'] = ([{'type': 'text', 'text': prev}] if isinstance(prev, str) else prev) + [block]
             else:
                 out.append({'role': 'user', 'content': [block]})
         else:
-            out.append({'role': 'user', 'content': m.get('content') or ''})
+            text = m.get('content') or ''
+            if out and out[-1]['role'] == 'user':
+                prev = out[-1]['content']
+                out[-1]['content'] = ([{'type': 'text', 'text': prev}] if isinstance(prev, str) else prev) + [{'type': 'text', 'text': text}]
+            else:
+                out.append({'role': 'user', 'content': text})
     return '\n\n'.join(system), out
 
 
@@ -236,10 +241,18 @@ def inline_tool_calls(content: str, allowed: set[str]) -> tuple[str, list[dict]]
     return (INLINE_CALL.sub('', content).strip() if calls else content), calls
 
 
-def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | None, tool_choice: str | None) -> tuple[dict, dict]:
+def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | None, tool_choice: str | None,
+          *, transport: httpx.BaseTransport | None = None) -> tuple[dict, dict]:
     """One HTTP attempt; returns (normalized message, usage)."""
     timeout = httpx.Timeout(p.timeout_s, connect=10.0)
     opts = dict(p.options or {})
+
+    def post(url, **kwargs):
+        if transport is None:
+            return httpx.post(url, **kwargs)
+        with httpx.Client(transport=transport) as client:
+            return client.post(url, **kwargs)
+
     if p.kind == 'openai':
         field_name = opts.get('reasoning_field')
         body = {'model': p.model, 'messages': _openai_messages(messages, field_name)}
@@ -252,14 +265,22 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
             body['tools'] = [{'type': 'function', 'function': t} for t in tools]
             body['tool_choice'] = tool_choice or 'auto'
         headers = {'Authorization': f'Bearer {secret}'} if secret else {}
-        r = httpx.post(p.base_url.rstrip('/') + '/chat/completions', json=body, headers=headers, timeout=timeout)
+        r = post(p.base_url.rstrip('/') + '/chat/completions', json=body, headers=headers, timeout=timeout)
         _raise_for(r, secret)
         data = r.json()
-        choice = (data.get('choices') or [{}])[0]
-        msg = choice.get('message') or {}
+        if not isinstance(data, dict) or not isinstance(data.get('choices'), list) or not data['choices']:
+            raise LLMError('模型返回缺少 choices', 'invalid_response')
+        choice = data['choices'][0]
+        msg = choice.get('message') if isinstance(choice, dict) else None
+        if not isinstance(msg, dict) or (msg.get('content') is not None and not isinstance(msg['content'], str)):
+            raise LLMError('模型返回的 message/content 类型无效', 'invalid_response')
+        if msg.get('tool_calls') is not None and not isinstance(msg['tool_calls'], list):
+            raise LLMError('模型返回的 tool_calls 须为数组', 'invalid_response')
         calls = []
         for c in msg.get('tool_calls') or []:
-            fn = c.get('function') or {}
+            fn = c.get('function') if isinstance(c, dict) else None
+            if not isinstance(fn, dict) or not isinstance(fn.get('name'), str) or not fn['name']:
+                raise LLMError('模型返回的工具调用缺少函数名', 'invalid_response')
             args, err = _parse_arguments(fn.get('arguments'))
             calls.append({'id': c.get('id') or f'call_{uuid.uuid4().hex[:10]}', 'name': fn.get('name', ''), 'arguments': args,
                           'parse_error': err})
@@ -267,7 +288,7 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
         cached = (u.get('prompt_tokens_details') or {}).get('cached_tokens') or u.get('prompt_cache_hit_tokens') or 0
         usage = {'input_tokens': u.get('prompt_tokens'), 'output_tokens': u.get('completion_tokens'), 'cached_tokens': cached}
         content = msg.get('content') or ''
-        if tools and not calls:
+        if tools and tool_choice != 'none' and not calls:
             content, calls = inline_tool_calls(content, {t['name'] for t in tools})
         reasoning = msg.get(field_name or 'reasoning_content') or ''
         return {'content': content, 'tool_calls': calls, 'finish_reason': choice.get('finish_reason') or 'stop', 'reasoning': reasoning if field_name else None,
@@ -284,9 +305,9 @@ def _call(p: Provider, messages: list[dict], tools: list[dict], secret: str | No
     if tools:
         body['tools'] = [{'name': t['name'], 'description': t['description'], 'input_schema': t['parameters']} for t in tools]
         body['tools'][-1].update(mark)
-        body['tool_choice'] = {'type': 'any' if tool_choice == 'required' else 'auto'}
+        body['tool_choice'] = {'type': 'none' if tool_choice == 'none' else 'any' if tool_choice == 'required' else 'auto'}
     headers = {'x-api-key': secret or '', 'anthropic-version': '2023-06-01'}
-    r = httpx.post(p.base_url.rstrip('/') + '/v1/messages', json=body, headers=headers, timeout=timeout)
+    r = post(p.base_url.rstrip('/') + '/v1/messages', json=body, headers=headers, timeout=timeout)
     _raise_for(r, secret)
     data = r.json()
     text = ''.join(b.get('text', '') for b in data.get('content', []) if b.get('type') == 'text')
@@ -317,9 +338,10 @@ _POOL = concurrent.futures.ThreadPoolExecutor(max_workers=8, thread_name_prefix=
 
 
 def chat(provider: Provider, messages: list[dict], tools: list[dict] | None = None, *, tool_choice: str | None = None,
-         cancel: threading.Event | None = None, sleep=time.sleep) -> Response:
+         cancel: threading.Event | None = None, sleep=time.sleep, api_key: str | None = None,
+         transport: httpx.BaseTransport | None = None) -> Response:
     """Bounded retries on transport errors, 429 and 5xx only; a cancelled call is abandoned and reported as such."""
-    secret = _secret(provider)
+    secret = api_key if api_key is not None else _secret(provider)
     if provider.credential and not secret:
         raise LLMError(f'{provider.label or provider.id} 缺少凭据', 'not_configured')
     start = time.monotonic()
@@ -328,7 +350,8 @@ def chat(provider: Provider, messages: list[dict], tools: list[dict] | None = No
         attempts = attempt + 1
         if cancel is not None and cancel.is_set():
             raise LLMCancelled()
-        future = _POOL.submit(_call, provider, messages, tools or [], secret, tool_choice)
+        kwargs = {'transport': transport} if transport is not None else {}
+        future = _POOL.submit(_call, provider, messages, tools or [], secret, tool_choice, **kwargs)
         try:
             while True:
                 try:
@@ -363,5 +386,5 @@ def chat(provider: Provider, messages: list[dict], tools: list[dict] | None = No
                         reasoning_chars=msg.get('reasoning_chars', 0), reasoning=msg.get('reasoning'))
     raise LLMError(str(last), 'provider_error')  # pragma: no cover - loop always returns or raises
 
-# Compatibility for the main branch's environment-only research client API.
+# 兼容环境变量直连的科研对话客户端接口
 from .research_llm import ModelError, OpenAICompatibleModel, Reply, model_from_env

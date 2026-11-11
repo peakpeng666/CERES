@@ -353,7 +353,7 @@ def test_llm_flow_uses_phase_tools_and_flags_unverified_numbers(gateway):
     sid = client.post('/lab/api/agent/sessions', json={'mode': 'llm', 'text': '果园里两台车给八个点采样'}).json()['session_id']
     s = _wait(client, sid)
     assert s['state'] == 'awaiting_confirmation' and s['contract']['unsupported'] == ['每个点须在上午 9 点前完成']
-    assert script.offered[0] == tools.PHASE_TOOLS['understand']
+    assert script.offered[0] == list(lab.agent.tools)
     client.post(f'/lab/api/agent/sessions/{sid}/control', json={'action': 'confirm'})
     s = _wait(client, sid, ('done', 'failed'))
     assert s['state'] == 'done', s.get('error')
@@ -361,8 +361,9 @@ def test_llm_flow_uses_phase_tools_and_flags_unverified_numbers(gateway):
     assert refused['status'] == 'refused' and refused['error']['code'] == 'no_scenario'
     guard = [c for c in s['tool_calls'] if c['name'] == 'verify_run']
     assert guard and all(c['actor'] == 'system' for c in guard)          # verification enforced by the runner
-    assert s['report']['source'] == 'llm' and s['report']['unverified_numbers'] == ['999.9']
-    assert s['usage']['calls'] == 8 and s['usage']['input_tokens'] == 80
+    assert s['report']['source'] == 'llm' and s['report']['unverified_numbers'] == []
+    assert s['report']['validation_attempts'][0]['unverified_numbers'] == ['999.9']
+    assert s['usage']['calls'] == 9 and s['usage']['input_tokens'] == 90
 
 
 def test_physical_tools_wait_for_approval_and_rejection_is_recorded(gateway):

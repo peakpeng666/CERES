@@ -92,10 +92,10 @@ def test_simulation_requirement_reaches_approval_despite_model_omission(lab, end
     assert session['verifications'][rid]['valid'] and session['verifications'][rid]['agrees']
     assert not lab.test_sim_starts and not session.get('sim_runs')
     assert not any(c['name'] == 'start_simulation' for c in session['tool_calls'])
-    assert all('ask_user' not in offered for offered in script.offered[2:])
+    assert all(offered == list(runner.tools) for offered in script.offered)
     if ending.get('calls'):
         refused = next(c for c in session['tool_calls'] if c['name'] == 'ask_user')
-        assert refused['status'] == 'refused' and refused['error']['code'] == 'wrong_phase'
+        assert refused['status'] == 'refused' and refused['error']['code'] == 'question_not_needed'
     runner.message(sid, '不要')
     session = wait(runner, sid)
     assert session['state'] == 'done', session.get('error')

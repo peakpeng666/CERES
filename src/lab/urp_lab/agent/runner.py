@@ -7,6 +7,7 @@ import json
 import logging
 import math
 import re
+import secrets
 import threading
 import time
 from pathlib import Path
@@ -14,6 +15,7 @@ from pathlib import Path
 from .. import time_windows
 from . import contract as tc
 from . import diagnose, llm, prompts, providers, tools
+from .artifacts import ArtifactStore
 from .session import (AgentStore, add_message, add_usage, claims_check, ensure_step, new_session, public,
                       reset_execution_plan, set_step, utc_now)
 
@@ -58,20 +60,34 @@ FATAL_TOOL_ERRORS = {'source_changed', 'shutting_down', 'tool_exception'}
 
 
 def _close_open_calls(s: dict, status: str, message: str):
-    """Answer the tool calls of the last assistant message that have no result yet.
+    """Close unfinished tool groups before any following user/assistant message.
 
     Providers reject a history in which a tool call has no result, so a turn that stops mid-way (pause, cancel, a
     fatal tool error) records why each remaining call did not run before the session is saved and later resumed.
     """
     msgs = s['llm_messages']
-    last = next((i for i in range(len(msgs) - 1, -1, -1) if msgs[i]['role'] == 'assistant'), None)
-    if last is None or not msgs[last].get('tool_calls'):
-        return
-    answered = {m.get('tool_call_id') for m in msgs[last + 1:] if m['role'] == 'tool'}
-    for call in msgs[last]['tool_calls']:
-        if call['id'] not in answered:
-            msgs.append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
-                         'content': json.dumps({'status': status, 'message': message}, ensure_ascii=False)})
+    closed, i = [], 0
+    while i < len(msgs):
+        assistant = msgs[i]
+        closed.append(assistant)
+        i += 1
+        if assistant['role'] != 'assistant' or not assistant.get('tool_calls'):
+            continue
+        answered = set()
+        while i < len(msgs) and msgs[i]['role'] == 'tool':
+            answered.add(msgs[i].get('tool_call_id'))
+            closed.append(msgs[i])
+            i += 1
+        for call in assistant['tool_calls']:
+            if call['id'] not in answered:
+                closed.append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
+                               'content': json.dumps({'status': status, 'message': message}, ensure_ascii=False)})
+    if len(closed) != len(msgs) and s.get('context_start'):
+        # Inserting a missing result shifts archive offsets. Re-establish the
+        # archive boundary from the repaired history on the next model call.
+        s['context_start'] = 0
+        s.pop('context_archive', None)
+    msgs[:] = closed
 
 
 class RunnerError(Exception):
@@ -85,12 +101,18 @@ class AgentRunner:
         self.lab = lab
         self.store = AgentStore(path or Path(lab.runtime) / 'agent.sqlite3')
         self.tools = tools.registry()
+        self._tool_specs = [tool.spec() for tool in self.tools.values()]
         self.chat = chat or llm.chat
         self._providers = providers           # tests inject a provider list
-        self._mutex = threading.Lock()
+        self._mutex = threading.RLock()
         self._threads: dict[str, threading.Thread] = {}
         self._cancel: dict[str, threading.Event] = {}
         self._pause: dict[str, threading.Event] = {}
+        # A turn owns its private document. HTTP controls enqueue notices instead of
+        # overwriting it with an older database snapshot while a tool is running.
+        self._control_notices: dict[str, list[dict]] = {}
+        self._closing = False
+        self._closed = False
         self.recover()
 
     # ------------------------------------------------------------- public --
@@ -98,6 +120,7 @@ class AgentRunner:
         for s in self.store.by_state(('running',)):
             if (s.get('restoration') or {}).get('read_only'):
                 continue
+            _close_open_calls(s, 'interrupted', '网关在调用期间重启，结果未完整记录；请检查已有运行后再决定是否重试')
             s['state'] = 'interrupted'
             add_message(s, 'event', '网关重启时本会话正在执行，已中断；可点击“继续”从当前阶段恢复。', 'notice')
             self.store.save(s)
@@ -146,8 +169,11 @@ class AgentRunner:
             sc = get_scenario(scenario_id)
         except KeyError:
             raise RunnerError(404, 'not_found', '没有该任务地图') from None
+        if sc.get('problem_class') == 'field_operation':
+            self._takeover_locked(s, {'step': 'scenario', 'scenario_id': scenario_id, 'note': f"来自任务地图 {sc['title']}"})
+            return
         if sc.get('problem_class') != 'fleet_routing':
-            raise RunnerError(400, 'invalid_scenario', '智能体目前只接手多车任务地图')
+            raise RunnerError(400, 'invalid_scenario', '智能体支持多车任务与田间行作地图')
         inst = sc['instance']
         veh = inst.get('vehicles') or {}
         xs, ys = [p[0] for p in inst['boundary']], [p[1] for p in inst['boundary']]
@@ -296,14 +322,12 @@ class AgentRunner:
                 if s['state'] != 'running':
                     raise RunnerError(409, 'not_running', '会话没有在执行')
                 self._event(self._pause, session_id).set()
-                add_message(s, 'event', '已请求暂停：当前步骤结束后停止。', 'notice')
-                self._save(s)
+                self._control_notice(s, '已请求暂停：当前步骤结束后停止。')
                 return self._view(s)
             if action == 'cancel':
                 if s['state'] == 'running':
                     self._event(self._cancel, session_id).set()
-                    add_message(s, 'event', '已请求取消：正在中止模型调用与求解进程。', 'notice')
-                    self._save(s)
+                    self._control_notice(s, '已请求取消：正在中止模型调用与求解进程。')
                     return self._view(s)
                 s['pending'] = None
                 s['state'] = 'cancelled'
@@ -341,11 +365,21 @@ class AgentRunner:
             raise RunnerError(400, 'invalid_action', f'未知操作 {action}')
 
     def shutdown(self):
-        for ev in list(self._cancel.values()):
-            ev.set()
-        for t in list(self._threads.values()):
+        with self._mutex:
+            if self._closed:
+                return
+            self._closing = True
+            for ev in self._cancel.values():
+                ev.set()
+            threads = list(self._threads.values())
+        for t in threads:
             t.join(timeout=5)
-        self.store.close()
+        with self._mutex:
+            # A provider/tool may ignore cancellation. Keep its last checkpoint
+            # recoverable and prevent a late reply from writing a closed database.
+            self.recover()
+            self._closed = True
+            self.store.close()
 
     # ----------------------------------------------------------- control --
     def _load(self, session_id: str) -> dict:
@@ -360,8 +394,23 @@ class AgentRunner:
         return table[sid]
 
     def _save(self, s: dict):
-        self.store.save(s)
-        self._publish(s)
+        with self._mutex:
+            if self._closed:
+                return
+            known = {m['id'] for m in s['messages']}
+            for notice in self._control_notices.pop(s['session_id'], []):
+                if notice['id'] not in known:
+                    s['messages'].append(notice)
+            self.store.save(s)
+            self._publish(s)
+
+    def _control_notice(self, snapshot: dict, text: str):
+        """Called under _mutex: publish immediately, then merge into the worker's next checkpoint."""
+        notice = add_message(snapshot, 'event', text, 'notice')
+        notice['id'] = 'control-' + secrets.token_hex(8)
+        self._control_notices.setdefault(snapshot['session_id'], []).append(notice)
+        self.store.save(snapshot)
+        self._publish(snapshot)
 
     def _publish(self, s: dict, kind: str = 'state', data: dict | None = None):
         bus = getattr(self.lab, 'bus', None)
@@ -370,9 +419,12 @@ class AgentRunner:
                                           'updated_utc': s['updated_utc'], 'kind': kind, **(data or {})})
 
     def _start_locked(self, s: dict) -> dict:
+        if self._closing:
+            raise RunnerError(409, 'shutting_down', '智能体正在关闭，暂不能启动新一轮')
         sid = s['session_id']
-        self._event(self._cancel, sid).clear()
-        self._event(self._pause, sid).clear()
+        _close_open_calls(s, 'interrupted', '上一轮调用没有完整结果；请先检查已有运行，再决定是否重试')
+        self._cancel[sid] = threading.Event()
+        self._pause[sid] = threading.Event()
         s['state'] = 'running'
         s['turn_started'] = {'llm_calls': len(s['llm_calls']), 'tool_calls': len(s['tool_calls'])}
         self._save(s)
@@ -420,7 +472,7 @@ class AgentRunner:
             ctx = tools.ToolContext(self.lab, s, self._event(self._cancel, s['session_id']),
                                     lambda kind, data: self._publish(s, kind, data))
             rec = self._record(s, tools.execute(self.tools, ctx, call['name'], call['arguments']), 'user_approved')
-            note = tools.digest({'status': rec['status'], 'result': rec.get('result'), 'error': rec.get('error')}, 3000)
+            note = self._digest(s, {'status': rec['status'], 'result': rec.get('result'), 'error': rec.get('error')})
             s['llm_messages'].append({'role': 'user', 'content': f"[用户已批准并执行 {call['name']}] {note}"})
             add_message(s, 'event', f"已批准：{rec.get('label', call['name'])}（{'成功' if rec['status'] == 'ok' else '失败：' + rec['error']['message']}）", 'notice')
             if call['name'] == 'start_simulation':
@@ -588,13 +640,26 @@ class AgentRunner:
                 sc = get_scenario(str(payload['scenario_id']))
             except KeyError:
                 raise RunnerError(404, 'not_found', '没有该任务地图') from None
-            if sc.get('problem_class') != 'fleet_routing':
-                raise RunnerError(400, 'invalid_scenario', '只能接管多车任务地图')
+            if sc.get('problem_class') not in ('fleet_routing', 'field_operation'):
+                raise RunnerError(400, 'invalid_scenario', '只能接管多车任务与田间行作地图')
+            if sc['problem_class'] == 'field_operation':
+                from .field_contract import from_scenario
+                try:
+                    mission = from_scenario(sc)
+                except (ValueError, KeyError) as exc:
+                    raise RunnerError(400, 'invalid_mission', str(exc)) from None
+                s['contract'], _, rejected = tc.apply(s['contract'], {'field_mission': mission}, 'user_edit', note=note or '接管田间任务地图')
+                if rejected:
+                    raise RunnerError(400, 'invalid_mission', rejected[0]['reason'])
+                s['phase'] = 'execute'
+                s['pending'] = None
             s['scenario_id'] = sc['id']
+            s['problem_class'] = sc['problem_class']
             s['scenario_contract_fields'] = {k: tc.value(s['contract'], k) for k in tools.GEOMETRY_FIELDS}
             s['scenario_instance_sha256'] = fingerprint(sc['instance'])
             s['built_revision'] = s['contract']['revision']
             s['solved_since_build'] = False
+            s['rule_progress'] = {}
             s['active_run_ids'], s['active_sim_runs'] = [], []
             s['verifications'], s['recommendation'], s['tried_algorithms'] = {}, None, []
             s['precheck'] = diagnose.precheck(sc['instance'])
@@ -631,12 +696,14 @@ class AgentRunner:
 
     # -------------------------------------------------------------- turn --
     def _turn(self, sid: str):
-        s = self.store.get(sid)
-        cancel, pause = self._event(self._cancel, sid), self._event(self._pause, sid)
+        with self._mutex:
+            s = self.store.get(sid)
+            cancel, pause = self._cancel[sid], self._pause[sid]
         try:
             if s['phase'] == 'understand':
                 if not self._understand(s, cancel, pause):
                     return
+                self._checkpoint(s, cancel, pause)
                 gaps = tc.missing(s['contract'])
                 if gaps:
                     self._ask_missing(s, gaps)
@@ -659,14 +726,23 @@ class AgentRunner:
                 self._save(s)
                 return
             if s['phase'] == 'execute':
+                if s['contract']['status'] != 'confirmed':
+                    self._await_confirmation(s)
+                    self._save(s)
+                    return
                 if tc.execution(s['contract'])['simulate']:
                     ensure_step(s, 'simulate')
                 if not self._execute(s, cancel, pause):
                     return
                 s['phase'] = 'report'
             if s['phase'] == 'report':
+                if s['contract']['status'] != 'confirmed':
+                    self._await_confirmation(s)
+                    self._save(s)
+                    return
                 self._watch_simulation(s, cancel, pause)
                 self._report(s, cancel)
+                self._checkpoint(s, cancel, pause)
                 s['state'] = 'done'
                 self._save(s)
         except Paused:
@@ -713,6 +789,14 @@ class AgentRunner:
             s['error'] = {'kind': 'implementation_error', 'message': f'{type(exc).__name__}: {exc}'[:500], 'where': 'runner'}
             add_message(s, 'event', f'智能体内部错误：{type(exc).__name__}: {str(exc)[:300]}', 'error')
             self._save(s)
+        finally:
+            with self._mutex:
+                # A new turn may already have started after the final save.
+                if self._threads.get(sid) is threading.current_thread():
+                    self._threads.pop(sid, None)
+                    self._cancel.pop(sid, None)
+                    self._pause.pop(sid, None)
+                    self._control_notices.pop(sid, None)
 
     def _checkpoint(self, s, cancel, pause):
         if cancel.is_set():
@@ -720,17 +804,18 @@ class AgentRunner:
         if pause.is_set():
             raise Paused()
 
-    def _llm(self, s: dict, phase: str, system: str, names: list[str] | None, cancel) -> llm.Response:
+    def _llm(self, s: dict, phase: str, cancel, *, evidence=None, feedback=None) -> llm.Response:
         started = s.get('turn_started') or {}
         if len(s['llm_calls']) - started.get('llm_calls', 0) >= MAX_LLM_CALLS:
             raise Budget(f'本轮模型调用已达上限 {MAX_LLM_CALLS} 次，已停止；可检查调用记录后重试')
         provider = self._find_provider((s.get('provider') or {}).get('id'))
         if provider is None:
             raise llm.LLMError('这个会话使用的模型已不可用，请在设置里重新连接服务商', 'not_configured')
-        messages = [{'role': 'system', 'content': system}] + self._context(s)
-        specs = [self.tools[n].spec() for n in names] if names else None
+        messages = [{'role': 'system', 'content': prompts.SYSTEM}] + self._context(s)
+        messages.append({'role': 'user', 'content': prompts.state(s, phase, evidence=evidence, feedback=feedback)})
         try:
-            resp = self.chat(provider, messages, specs, cancel=cancel)
+            kwargs = {'tool_choice': 'none'} if phase == 'report' else {}
+            resp = self.chat(provider, messages, self._tool_specs, cancel=cancel, **kwargs)
         except llm.LLMCancelled:
             s['llm_calls'].append({'phase': phase, 'utc': utc_now(), 'provider': provider.id, 'model': provider.model,
                                    'error': 'cancelled', 'usage': {}})
@@ -748,17 +833,27 @@ class AgentRunner:
         rec = resp.record() | {'phase': phase, 'utc': utc_now(), 'prompt_version': prompts.VERSION, 'runner_version': RUNNER_VERSION}
         s['llm_calls'].append(rec)
         add_usage(s, rec)
+        if cancel.is_set():
+            raise Cancelled()
         return resp
 
     def _context(self, s: dict) -> list[dict]:
-        msgs = copy.deepcopy(s['llm_messages'][-CONTEXT_MESSAGES:])
-        while msgs and msgs[0]['role'] == 'tool':
-            msgs.pop(0)
-        recent = len(msgs) - 10
-        for i, m in enumerate(msgs):
-            if m['role'] == 'tool' and i < recent and len(m['content']) > 500:
-                m['content'] = m['content'][:500] + '…（较早的工具结果已压缩）'
-        return msgs
+        history = s['llm_messages']
+        start = s.get('context_start', 0)
+        # Archive whole message groups at an explicit boundary, never shift or
+        # rewrite the previous prefix on every tool result.
+        if len(history) - start > 2 * CONTEXT_MESSAGES:
+            start = len(history) - CONTEXT_MESSAGES
+            while start < len(history) and history[start]['role'] == 'tool':
+                start += 1
+            ref = ArtifactStore(self.lab.runtime, s['session_id']).put(history[:start])
+            s['context_start'] = start
+            s['context_archive'] = {'role': 'user', 'content': '[较早历史已归档，可用 read_artifact 读取] ' + json.dumps(ref, ensure_ascii=False)}
+        prefix = [s['context_archive']] if start else []
+        return copy.deepcopy(prefix + history[start:])
+
+    def _digest(self, s: dict, result) -> str:
+        return ArtifactStore(self.lab.runtime, s['session_id']).payload(result)
 
     def _record(self, s: dict, rec: dict, actor: str) -> dict:
         tool = self.tools.get(rec['name'])
@@ -823,7 +918,7 @@ class AgentRunner:
         if s['mode'] in ('llm', 'hybrid'):
             for _ in range(MAX_UNDERSTAND_CALLS):
                 self._checkpoint(s, cancel, pause)
-                resp = self._llm(s, 'understand', prompts.understand(s['contract']), tools.PHASE_TOOLS['understand'], cancel)
+                resp = self._llm(s, 'understand', cancel)
                 if not resp.tool_calls:
                     if resp.content.strip():
                         s['llm_messages'].append({'role': 'assistant', 'content': resp.content})
@@ -833,6 +928,7 @@ class AgentRunner:
                                           'tool_calls': [{'id': c['id'], 'name': c['name'], 'arguments': c['arguments']} for c in resp.tool_calls]})
                 asked = False
                 for call in resp.tool_calls:
+                    self._checkpoint(s, cancel, pause)
                     if call['name'] not in tools.PHASE_TOOLS['understand']:
                         rec = {'name': call['name'], 'arguments': call.get('arguments') or {}, 'status': 'refused',
                                'started_utc': utc_now(), 'duration_s': 0, 'label': call['name'],
@@ -841,7 +937,7 @@ class AgentRunner:
                     else:
                         rec = self._tool(s, call, 'llm', cancel)
                     s['llm_messages'].append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
-                                              'content': tools.digest({'status': rec['status'], 'result': rec.get('result'),
+                                              'content': self._digest(s, {'status': rec['status'], 'result': rec.get('result'),
                                                                        'error': rec.get('error')})})
                     asked = asked or (call['name'] == 'ask_user' and rec['status'] == 'ok')
                 if asked:
@@ -892,15 +988,15 @@ class AgentRunner:
         if not s.get('scenario_id') or s.get('built_revision') != s['contract']['revision']:
             gaps.append('build_scenario（按当前合同建立任务地图）')
         if not s.get('solved_since_build'):
-            gaps.append('solve（求解对比）')
+            gaps.append('solve_field_operation 或 solve（田间作业求解）' if tc.value(s['contract'], 'field_mission') else 'solve（求解对比）')
         return gaps
 
     def _execute_llm(self, s, cancel, pause) -> bool:
         nudges = 0
-        execution_tools = [name for name in tools.PHASE_TOOLS['execute'] if name != 'ask_user']
+        execution_tools = tools.PHASE_TOOLS['execute']
         for _ in range(MAX_LLM_CALLS):
             self._checkpoint(s, cancel, pause)
-            resp = self._llm(s, 'execute', prompts.execute(s['contract'], s), execution_tools, cancel)
+            resp = self._llm(s, 'execute', cancel)
             if not resp.tool_calls:
                 s['llm_messages'].append({'role': 'assistant', 'content': resp.content or ''})
                 gaps = self._unmet(s)
@@ -930,10 +1026,10 @@ class AgentRunner:
                     asked = asked or call['name'] == 'ask_user'
                     rec = self._record(s, {'name': call['name'], 'arguments': call.get('arguments') or {}, 'status': 'refused',
                                            'started_utc': utc_now(), 'duration_s': 0, 'label': tool.label if tool else call['name'],
-                                           'error': {'code': 'wrong_phase', 'message': '执行阶段按已确认合同调用工具，不再提问；'
+                                           'error': {'code': 'wrong_phase', 'message': '执行阶段按已确认合同调用工具；'
                                                      '任务修改用 propose_task_change，合同要求仿真时用 start_simulation 请求批准'}}, 'llm')
                     s['llm_messages'].append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
-                                              'content': tools.digest({'status': rec['status'], 'error': rec['error']})})
+                                              'content': self._digest(s, {'status': rec['status'], 'error': rec['error']})})
                     continue
                 if tool and tool.effect == 'physical' and not call.get('parse_error'):
                     errors = tools.validate(tool.parameters, call.get('arguments') or {})
@@ -946,7 +1042,7 @@ class AgentRunner:
                                                    'started_utc': utc_now(), 'duration_s': 0, 'label': tool.label,
                                                    'error': {'code': refusal[0], 'message': refusal[1]}}, 'llm')
                             s['llm_messages'].append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
-                                                      'content': tools.digest({'status': rec['status'], 'error': rec['error']})})
+                                                      'content': self._digest(s, {'status': rec['status'], 'error': rec['error']})})
                             continue
                         self._queue_simulation(s, call['arguments'])
                         s['llm_messages'].append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
@@ -955,10 +1051,12 @@ class AgentRunner:
                         continue
                 rec = self._tool(s, call, 'llm', cancel)
                 s['llm_messages'].append({'role': 'tool', 'tool_call_id': call['id'], 'name': call['name'],
-                                          'content': tools.digest({'status': rec['status'], 'result': rec.get('result'),
+                                          'content': self._digest(s, {'status': rec['status'], 'result': rec.get('result'),
                                                                    'error': rec.get('error')})})
                 if rec['status'] == 'ok' and call['name'] == 'ask_user':
                     stop = 'questions'
+                elif call['name'] == 'ask_user' and (rec.get('error') or {}).get('code') == 'question_not_needed':
+                    asked = True
                 elif rec['status'] == 'ok' and call['name'] == 'propose_task_change':
                     stop = 'approval'
             if stop:
@@ -966,6 +1064,7 @@ class AgentRunner:
                 return False
             if asked:
                 self._guard_verification(s, cancel)
+                self._guard_physics(s, cancel, pause)
                 if self._guard_simulation(s):
                     return False
         raise Budget(f'执行阶段模型调用已达上限 {MAX_LLM_CALLS} 次')
@@ -1223,6 +1322,8 @@ class AgentRunner:
                     r[k] = round(r[k], 2)
         c = s['contract']
         return {'contract': {tc.FIELDS[k].label: tc.format_value(k, v['value']) for k, v in c['fields'].items()},
+                'problem_class': s.get('problem_class', 'fleet_routing'),
+                'field_mission': tc.value(c, 'field_mission'),
                 'time_window': tc.window(c) if not tc.time_gaps(c) else None,
                 'scenario_id': s.get('scenario_id'), 'runs': runs, 'best_verified': _rounded(self._best_verified(s)),
                 'best_executable': _rounded(self._best_executable(s)),
@@ -1237,25 +1338,38 @@ class AgentRunner:
         set_step(s, 'report', 'running')
         self._save(s)
         evidence = self._evidence(s)
-        text, source = None, 'template'
+        text, source, feedback = None, 'template', None
+        attempts = []
         if s['mode'] != 'rule':
-            try:
-                resp = self._llm(s, 'report', prompts.report(evidence), None, cancel)
-                text, source = _strip_think(resp.content).strip() or None, 'llm'
-            except llm.LLMError as exc:
-                add_message(s, 'event', f'报告生成调用失败（{exc.kind}），改用模板报告。', 'notice')
+            for _ in range(2):
+                try:
+                    resp = self._llm(s, 'report', cancel, evidence=evidence, feedback=feedback)
+                except (llm.LLMError, Budget) as exc:
+                    attempts.append({'error': str(exc)[:300]})
+                    add_message(s, 'event', '报告生成未完成，改用模板报告。', 'notice')
+                    break
+                draft = _strip_think(resp.content).strip()
+                flagged = claims_check(draft, evidence)
+                attempt_rec = {'narrative': draft, 'unverified_numbers': flagged}
+                if resp.tool_calls:
+                    attempt_rec['unexpected_tool_calls'] = [c['name'] for c in resp.tool_calls]
+                attempts.append(attempt_rec)
+                if draft and not flagged and not resp.tool_calls:
+                    text, source = draft, 'llm'
+                    break
+                feedback = {'rejected_draft': draft, 'unverified_numbers': flagged,
+                            'instruction': '请重写报告，删去无依据数字，仅输出正文。'}
         if not text:
             text, source = _template_report(evidence), 'template'
-        flagged = claims_check(text, evidence) if source == 'llm' else []
-        s['report'] = {'evidence': evidence, 'narrative': text, 'source': source, 'unverified_numbers': flagged,
-                       'utc': utc_now()}
+        s['report'] = {'evidence': evidence, 'narrative': text, 'source': source, 'unverified_numbers': [],
+                       'validation_attempts': attempts, 'utc': utc_now()}
         add_message(s, 'assistant', text, 'report', s['report'])
         if not any(st['kind'] == 'repair' and st['status'] not in ('pending',) for st in s['plan']):
             set_step(s, 'repair', 'skipped', '无需修复')
         for st in s['plan']:
             if st['status'] == 'pending' and st['kind'] not in ('report',):
                 st['status'] = 'skipped'
-        set_step(s, 'report', 'done', '依据已核对' if not flagged else f'{len(flagged)} 个数值未在依据中找到')
+        set_step(s, 'report', 'done', '数值已核对' if source == 'llm' else '依据模板生成')
 
 
 def _timed(row: dict) -> dict:
@@ -1313,10 +1427,12 @@ def _detail(rec: dict) -> str:
     r = rec.get('result') or {}
     name = rec['name']
     if name == 'build_scenario':
+        if r.get('problem_class') == 'field_operation':
+            return f"{r['lines']} 条作业行 · {r['machines']} 台机组" if 'lines' in r else (r.get('summary') or '')
         return f"{r.get('tasks')} 个任务点 · {r.get('vehicles')} 台车"
     if name == 'recommend_algorithms':
         return f"推荐 {r.get('recommended')}"
-    if name == 'solve':
+    if name in ('solve', 'solve_field_operation'):
         runs = r.get('runs') or []
         ok = sum(1 for x in runs if x['status'] == 'feasible' and x['check_valid'])
         return f'{ok}/{len(runs)} 个方案通过检查'
@@ -1386,6 +1502,8 @@ def _template_report(e: dict) -> str:
         f"单车容量 {c['单车容量']}" if '单车容量' in c else '',
         f"障碍为 {c['障碍']}" if c.get('障碍') not in (None, '无') else '') if x)
     parts = [f'任务规模：{scale}。' if scale else '']
+    if e.get('problem_class') == 'field_operation':
+        parts = [f"田间行作：{c.get('田间行作任务', '')}。"]
     runs = e['runs']
     if runs:
         names = '、'.join(dict.fromkeys(r['algorithm'] for r in runs if r['algorithm']))
@@ -1394,7 +1512,7 @@ def _template_report(e: dict) -> str:
     best = e.get('best_verified')
     if best:
         parts.append(f"经复核的最优方案为 {best['algorithm']}（{best['run_id']}），总里程 {best['total_distance_m']} m，"
-                     f"按恒速模型计算的最晚完成时间为 {best['makespan_s']} s" + (f"，计入转向、作业和路线相遇等待后预计 {best['predicted_makespan_s']} s。" if best.get('predicted_makespan_s') else '。'))
+                     f"按规划模型计算的最晚完成时间为 {best['makespan_s']} s" + (f"，计入转向、作业和路线相遇等待后预计 {best['predicted_makespan_s']} s。" if best.get('predicted_makespan_s') else '。'))
         if best.get('time_windows'):
             parts.append(f"时间窗按全部车辆同时出发复算：{time_windows.verdict(best['time_windows'])}。")
     else:
@@ -1411,7 +1529,8 @@ def _template_report(e: dict) -> str:
     if physics:
         head = '；'.join(f"{r['algorithm']} 实际里程 {r['metrics'].get('total_distance_m')} m、工期 {r['metrics'].get('makespan_s')} s" if r.get('check_valid')
                         else f"{r['algorithm']} 未通过" for r in physics)
-        parts.append(f"物理预演（MuJoCo {physics[0].get('engine_version')}）：{head}。")
+        scope = '，仅跟踪底盘路径，不验证机具作业效果' if e.get('problem_class') == 'field_operation' else ''
+        parts.append(f"物理预演（MuJoCo {physics[0].get('engine_version')}{scope}）：{head}。")
         together = [r for r in physics if (r.get('coordinated') or {}).get('check_valid')]
         if together:
             parts.append('全部车辆同时出发、在路线相遇处依次通行时：' + '；'.join(

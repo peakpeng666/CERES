@@ -190,9 +190,11 @@ def test_nothing_measured_means_nothing_said():
 
 
 def test_the_model_is_told_to_explain_the_difference_within_its_scope():
-    text = prompts.report({'robustness': evidence()})
+    from urp_lab.agent.session import new_session
+    text = prompts.SYSTEM
     assert 'robustness' in text and '不是实车可靠性' in text and '车距保护停车' in text
-    assert prompts.VERSION == 'agent-prompts/7'
+    assert 'robustness' in prompts.state(new_session('llm', None), 'report', evidence={'robustness': evidence()})
+    assert prompts.VERSION == 'agent-prompts/8'
 
 
 def test_the_template_report_carries_the_paragraph():

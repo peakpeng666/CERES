@@ -15,6 +15,7 @@ from ..jobs import FINAL
 from ..scenarios.validate import PROBLEM_CLASSES
 from ..services import ServiceError
 from ..solve_request import SolveRequestError, check_label, resolve_algorithms
+from .artifacts import ArtifactStore, READ_SCHEMA
 
 TIERS = ('read', 'compute', 'actuate')
 MAX_SOLVE_ALGORITHMS = 6
@@ -380,7 +381,19 @@ PC = {'type': 'string', 'enum': list(PROBLEM_CLASSES)}
 ALGOS = {'type': 'array', 'minItems': 1, 'maxItems': MAX_SOLVE_ALGORITHMS,
          'items': {'type': 'object', 'properties': {'id': STR, 'params': {'type': 'object'}}, 'required': ['id']}}
 
+def read_artifact(ctx, args):
+    from .tools import validate
+    errors = validate(READ_SCHEMA, args)
+    if errors:
+        raise ToolError('；'.join(errors))
+    try:
+        return ArtifactStore(ctx.lab.runtime, ctx.session_id).read(**args)
+    except (OSError, ValueError) as exc:
+        raise ToolError(str(exc)) from None
+
+
 TOOLS: list[Tool] = [
+    Tool('read_artifact', 'read', '读取完整结果', '按结果编号读取本会话落盘 JSON 的指定字段或分页。', READ_SCHEMA, read_artifact),
     Tool('list_scenarios', 'read', '查找场景', '列出工作台里的场景（内置、用户生成、已打开的 CVRPLIB 与真实田块），可按问题类型和关键词过滤。',
          _obj({'problem_class': PC, 'query': STR, 'limit': {'type': 'integer', 'minimum': 1, 'maximum': 50}}), list_scenarios),
     Tool('get_scenario', 'read', '查看场景', '读取一个场景的摘要、坐标系与单位、任务规模、车队和目标。',
