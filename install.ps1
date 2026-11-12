@@ -21,10 +21,14 @@ Get-ChildItem Env:URP_* | ForEach-Object {
 if (-not $Ref) { $Ref = $env:CERES_REF }
 
 $RawRoot = 'https://raw.githubusercontent.com/peakpeng666/URP'
-$defaultState = Join-Path $env:LOCALAPPDATA 'ceres'
-$legacyState = Join-Path $env:LOCALAPPDATA 'urp'
-if (-not (Test-Path $defaultState) -and (Test-Path $legacyState)) { $defaultState = $legacyState }
-$State = if ($env:CERES_HOME) { $env:CERES_HOME } else { $defaultState }
+if ($env:CERES_HOME) {
+    $State = $env:CERES_HOME
+} else {
+    $defaultState = Join-Path $env:LOCALAPPDATA 'ceres'
+    $legacyState = Join-Path $env:LOCALAPPDATA 'urp'
+    if (-not (Test-Path -LiteralPath $defaultState) -and (Test-Path -LiteralPath $legacyState)) { $defaultState = $legacyState }
+    $State = $defaultState
+}
 $saved = $null
 $selectionPath = Join-Path $State 'install.selection.json'
 if (Test-Path -LiteralPath $selectionPath) { $saved = Get-Content -Raw -LiteralPath $selectionPath -Encoding UTF8 | ConvertFrom-Json }

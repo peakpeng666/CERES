@@ -372,6 +372,8 @@ $Ref = 'v1'; $Raw = 'https://raw.githubusercontent.com/peakpeng666/URP/v1'; $Tag
 Save-Selection
 foreach ($name in @('CERES_REF', 'CERES_RAW', 'CERES_IMAGE_TAG', 'CERES_COMPONENTS', 'CERES_PORT')) { [Environment]::SetEnvironmentVariable($name, $null, 'Process') }
 $env:CERES_HOME = $State
+# An explicit home must not depend on Windows-only default paths.
+[Environment]::SetEnvironmentVariable('LOCALAPPDATA', $null, 'Process')
 . ([scriptblock]::Create($source.Substring(0, $source.IndexOf('function Save-Selection {'))))
 [IO.File]::WriteAllText($env:CERES_TEST_OUTPUT, (@{ref=$Ref; tag=$Tag; components=$Components; port=$Port} | ConvertTo-Json))
 '''
