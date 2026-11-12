@@ -3,10 +3,10 @@ import copy
 
 import pytest
 
-from urp_lab import fieldworld, ground_execution
-from urp_lab.ground_map import SCHEMA, normalize_ground
-from urp_lab.ground_risk import exposure_line, route_ground_stats, speed_profile
-from urp_lab.solvers import fleet
+from ceres_lab import fieldworld, ground_execution
+from ceres_lab.ground_map import SCHEMA, normalize_ground
+from ceres_lab.ground_risk import exposure_line, route_ground_stats, speed_profile
+from ceres_lab.solvers import fleet
 from test_ground_risk import ground_inst
 
 
@@ -92,7 +92,7 @@ def test_localization_preserves_map_explicit_override_is_recorded(tmp_path):
 
 
 def test_risk_policy_and_weight_do_not_share_automatic_comparison_group():
-    from urp_lab.planning import context, comparison_key
+    from ceres_lab.planning import context, comparison_key
     inst = ground_inst()
     scenario = {'problem_class':'fleet_routing', 'frame':{'kind':'field','units':'m'}, 'cost_unit':'m'}
     keys = []

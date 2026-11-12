@@ -6,7 +6,7 @@ from unittest.mock import patch
 import time
 
 import pytest
-from urp_lab import services
+from ceres_lab import services
 
 
 @pytest.fixture
@@ -30,7 +30,7 @@ def test_root_environment_without_legacy_backend_venv_is_startable(manager, tmp_
     interpreter.parent.mkdir(parents=True)
     interpreter.symlink_to('/bin/sh')
     monkeypatch.setattr(services.paths, 'REPO', tmp_path)
-    monkeypatch.delenv('URP_PYTHON', raising=False)
+    monkeypatch.delenv('CERES_PYTHON', raising=False)
     state = manager._archive_service()
     assert state['state'] == 'stopped'
     assert state['controls'] == ['start']
@@ -38,10 +38,10 @@ def test_root_environment_without_legacy_backend_venv_is_startable(manager, tmp_
 
 
 def test_missing_override_has_exact_unavailable_diagnostic(manager):
-    with patch.dict(os.environ, {'URP_PYTHON': '/urp-missing/python'}):
+    with patch.dict(os.environ, {'CERES_PYTHON': '/ceres-missing/python'}):
         state = manager._archive_service()
     assert state['state'] == 'unavailable'
-    assert '/urp-missing/python' in state['detail']
+    assert '/ceres-missing/python' in state['detail']
 
 
 @pytest.mark.parametrize('alive,code,stopped,age,expected', [
@@ -51,7 +51,7 @@ def test_missing_override_has_exact_unavailable_diagnostic(manager):
 ])
 def test_process_state_not_masked_by_missing_interpreter(manager, alive, code, stopped, age, expected):
     manager.archive = process(alive=alive, code=code, stopped=stopped, age=age)
-    with patch.dict(os.environ, {'URP_PYTHON': '/urp-missing/python'}):
+    with patch.dict(os.environ, {'CERES_PYTHON': '/ceres-missing/python'}):
         state = manager._archive_service()
     assert state['state'] == expected
     if expected == 'failed':
@@ -61,7 +61,7 @@ def test_process_state_not_masked_by_missing_interpreter(manager, alive, code, s
 
 def test_stopped_process_can_restart(manager):
     manager.archive = process(alive=False, code=-2, stopped=True)
-    with patch.dict(os.environ, {'URP_PYTHON': '/bin/sh'}):
+    with patch.dict(os.environ, {'CERES_PYTHON': '/bin/sh'}):
         state = manager._archive_service()
     assert state['state'] == 'stopped'
     assert state['controls'] == ['start']
@@ -77,9 +77,9 @@ def test_healthy_owned_and_external_control_boundaries(manager):
 @pytest.mark.parametrize('environment,disabled,required', [('1', False, True), ('0', False, False), ('1', True, False)])
 def test_health_exposes_effective_mode_not_archive_liveness(tmp_path, monkeypatch, environment, disabled, required):
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import Config, create_app
-    from urp_lab.runtime_config import archive_autostart
-    monkeypatch.setenv('URP_ARCHIVE_AUTOSTART', environment)
+    from ceres_lab.gateway import Config, create_app
+    from ceres_lab.runtime_config import archive_autostart
+    monkeypatch.setenv('CERES_ARCHIVE_AUTOSTART', environment)
     monkeypatch.setattr(services.ServiceManager, 'start_archive', lambda self: None)
     app = create_app(Config(runtime=tmp_path, background=False, extra_hosts={'testserver'},
                             archive_autostart=archive_autostart(disabled)))

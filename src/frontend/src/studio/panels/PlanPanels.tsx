@@ -59,7 +59,7 @@ const LIB_TONE: Record<string, 'blue' | 'purple' | 'teal' | 'orange' | 'gray' | 
   本项目: 'blue', PyVRP: 'purple', 'OR-Tools': 'teal', Fields2Cover: 'green', OMPL: 'orange', 基线: 'gray',
 };
 /** Older run records carry the previous labels. */
-const LIB_ALIAS: Record<string, string> = { URP: '本项目', 面板: '基线' };
+const LIB_ALIAS: Record<string, string> = { CERES: '本项目', 面板: '基线' };
 
 export function LibraryBadge({ library }: { library?: string }) {
   if (!library) return null;

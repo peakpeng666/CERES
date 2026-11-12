@@ -99,7 +99,7 @@ class SyntaxAndPins(unittest.TestCase):
         self.assertLess(script.index('run apt-update'), install)
         self.assertLess(script.index('phase=public_ca_seed'), script.index('phase=signed_metadata'))
         self.assertIn('ORIGIN=https://snapshot.ubuntu.com/', script)
-        self.assertIn('Acquire::https::CaInfo "/opt/urp-bootstrap-evidence/bootstrap-ca.pem";', script)
+        self.assertIn('Acquire::https::CaInfo "/opt/ceres-bootstrap-evidence/bootstrap-ca.pem";', script)
         self.assertLess(install, script.index('/usr/bin/python3 -I -B "$HELPERS/check_python_prerequisites.py"'))
         for forbidden in ["--allow-unauthenticated", "--allow-downgrades", "trusted=yes", "curl ", "wget ", "sudo ", "docker "]:
             self.assertNotIn(forbidden, script)
@@ -214,19 +214,19 @@ class SimulationFixtures(unittest.TestCase):
 
 class UriFixtures(unittest.TestCase):
     def test_cache_name_only(self):
-        text = "'file:/opt/urp-bootstrap-evidence/repo/pool/main/e/example/example_1_amd64.deb' example_1_amd64.deb 123 MD5Sum:ignored\n"
+        text = "'file:/opt/ceres-bootstrap-evidence/repo/pool/main/e/example/example_1_amd64.deb' example_1_amd64.deb 123 MD5Sum:ignored\n"
         result = awk("parse_uris.awk", text)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(result.stdout, "pool/main/e/example/example_1_amd64.deb\texample_1_amd64.deb\t123\n")
 
     def test_url_decode_bounded(self):
-        text = "'file:///opt/urp-bootstrap-evidence/repo/pool/main/e/example/example_1%2b2_amd64.deb' example_1%2b2_amd64.deb 123 SHA256:ignored\n"
+        text = "'file:///opt/ceres-bootstrap-evidence/repo/pool/main/e/example/example_1%2b2_amd64.deb' example_1%2b2_amd64.deb 123 SHA256:ignored\n"
         result = awk("parse_uris.awk", text)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn("example_1+2_amd64.deb", result.stdout)
 
     def test_uri_path_and_collision_rejection(self):
-        text = "'file:/opt/urp-bootstrap-evidence/repo/pool/main/e/example/example_1_amd64.deb' example_1_amd64.deb 123 MD5Sum:ignored\n"
+        text = "'file:/opt/ceres-bootstrap-evidence/repo/pool/main/e/example/example_1_amd64.deb' example_1_amd64.deb 123 MD5Sum:ignored\n"
         changes = [text + text, text.replace("file:", "https:"), text.replace("/e/example/", "/../example/"), text.replace("example_1_amd64.deb 123", "../example_1_amd64.deb 123"), text.replace("/e/example/", "/%2e%2e/example/")]
         for item in changes:
             with self.subTest(item=item):

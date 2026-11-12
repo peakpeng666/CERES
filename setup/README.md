@@ -4,7 +4,7 @@
 
 ## 本机软件与研究目录（2026-11-06）
 
-软件名暂用 **Lab**，沿用 `src/desktop/` Electron 工程。现有 Dock 入口运行 `~/Projects/Lab/bin/lab`，唯一开发工程为 `~/Projects/Lab/code`（main），方法研究与算法实验为 `~/Research/URP`。学术目录的参考源码、文献与资料链接回主工程，原始实验记录独立保留；桌面旧 URP 目录已退役，不再作为启动依赖。
+软件名暂用 **Lab**，沿用 `src/desktop/` Electron 工程。现有 Dock 入口运行 `~/Projects/Lab/bin/lab`，唯一开发工程为 `~/Projects/Lab/code`（main），方法研究与算法实验为 `~/Research/CERES`。学术目录的参考源码、文献与资料链接回主工程，原始实验记录独立保留；桌面旧 CERES 目录已退役，不再作为启动依赖。
 
 应用可写数据位于 `~/.local/share/Lab/data`，与迁入工程记录及学术目录的历史数据库分开；不同数据集不能互相覆盖。本机已验证 Dock 冷启动、数据集身份、历史 SQLite 完整性与目录链接。安装包仍为原有 0.2.0，没有随源码变更重新发布；历史 Git 保留为本机私有档案，其中原本未下载的历史对象不构成完整历史恢复保证。
 
@@ -14,7 +14,7 @@ main 是完整集成入口。普通开发可按[源码检出清单](source-check
 
 ```sh
 git clone --filter=blob:none --no-checkout --branch main https://github.com/peakpeng666/URP.git
-cd URP
+cd CERES
 git show HEAD:setup/source-checkout.txt | git sparse-checkout set --no-cone --stdin
 git checkout
 uv sync --locked --extra solvers
@@ -33,13 +33,13 @@ bash setup/run.sh lab-code --open
 
 ## 云端纯代码与地图验收
 
-官方地图优先读 `/opt/ros/humble/share/turtlebot4_navigation/maps`；这台机器没有 ROS 时读 `src/lab/urp_lab/data/maps/` 里的原样副本，云端和安装版因此不需要额外配置。`URP_ROS_MAPS=/绝对路径/地图目录` 可以指定别的副本。这些副本用于地图检查与求解测试，地图几何以官方文件为准；Gazebo 执行需另行测试。
+官方地图优先读 `/opt/ros/humble/share/turtlebot4_navigation/maps`；这台机器没有 ROS 时读 `src/lab/ceres_lab/data/maps/` 里的原样副本，云端和安装版因此不需要额外配置。`CERES_ROS_MAPS=/绝对路径/地图目录` 可以指定别的副本。这些副本用于地图检查与求解测试，地图几何以官方文件为准；Gazebo 执行需另行测试。
 
 云端测试结果见 [2026-10-19 测试报告](2026-10-19/delivery-review/REPORT.md)。容器和本机测试的对应版本见各自记录。
 
 ## 打开
 
-安装器部署后使用 `urp up`、`urp status`、`urp down`。Windows PowerShell 的对应命令见 [DEPLOY.md](../DEPLOY.md)。
+安装器部署后使用 `ceres up`、`ceres status`、`ceres down`。Windows PowerShell 的对应命令见 [DEPLOY.md](../DEPLOY.md)。
 
 已准备好依赖的源码工作区也可直接运行：
 
@@ -68,7 +68,7 @@ bash setup/run.sh lab --open
 第一次打开后，在输入框右下角点「连接模型」，选一家服务商，粘贴 API Key。不连接也能用规则流程。
 
 - **内置后端能做的**：智能体全流程、算法库、地图、课题实验、MuJoCo 物理预演。Windows 上 OMPL 的 7 个采样规划器和 Fields2Cover 显示未安装，A*、Theta* 等栅格规划器和平行往复基线可用；CVRP 数值任务的进程监督只支持 Linux，这一页在 Windows 上列出算法但不能提交，需要时走容器后端。没有 ROS 的电脑用内置的官方地图副本。
-- **数据**：`设置 → 数据` 里按需下载历史实验档案（约 50 MB，校验后解压，档案后端随之启动）。CVRPLIB 和真实田块在打开时从原始站点下载。运行库在应用数据目录，Linux 是 `~/.config/agri-route-workbench/runtime`，Windows 是 `%APPDATA%\agri-route-workbench\runtime`。模型 Key 在 `~/.config/urp-workbench/`。
+- **数据**：`设置 → 数据` 里按需下载历史实验档案（约 50 MB，校验后解压，档案后端随之启动）。CVRPLIB 和真实田块在打开时从原始站点下载。运行库在应用数据目录，Linux 是 `~/.config/agri-route-workbench/runtime`，Windows 是 `%APPDATA%\agri-route-workbench\runtime`。模型 Key 在 `~/.config/ceres-workbench/`。
 - **Gazebo 与 ROS**：安装版一律走容器后端，Linux 也一样，因为 ROS 桥接要在运行它的机器上编译和验收。`设置 → 桌面应用 → 仿真后端` 检测 Docker，开启后把工作台切到 `ghcr.io/peakpeng666/urp-sim` 容器，Fields2Cover 和 CVRP 数值任务也在里面。Windows 需要 Docker Desktop（WSL2 后端）。容器和内置后端共用同一持久运行库、档案库和模型连接，切换前先停止当前后端；Linux 容器使用当前用户的 UID/GID，保留密钥文件的 0600 权限。源码 Electron 与源码工作台均使用本机 ROS；桌面进程显式区分源码与安装包，实际启动仍核验本机桥接及物理实现指纹。
 - **更新**：应用每 6 小时检查仓库最新 Release，下载后在 `设置 → 桌面应用` 点「重启并更新」。deb 安装时更新需要系统授权。
 
@@ -83,7 +83,7 @@ npm ci --prefix src/desktop && npm run dist:linux --prefix src/desktop
 
 验收脚本都在 `src/desktop/test/`：`backend_smoke.py` 走一遍后端和全部只读接口，`pages_crawl.mjs` 打开每一页，`app_e2e.mjs` 驱动安装后的应用，`container_e2e.mjs` 用真实 Docker 走容器后端和 Gazebo。这台机器有 ROS，只在这里测会漏掉依赖 ROS 的问题；`electronuserland/builder:wine` 镜像是没有 ROS 的 Ubuntu 22.04，暂存的 Linux 后端和 Wine 下的 Windows 后端都可以放进去跑。Windows 安装包也在这个镜像里构建。Wine 的 PowerShell 是总返回成功的空壳，安装程序会误判应用正在运行，测试时要先删掉它；这个镜像没有中文字体，安装程序窗口里的中文显示成方块，应用界面有内置字体回退。
 
-打 `v*` 标签后，`.github/workflows/desktop.yml` 在 Linux 和 Windows 上分别构建并运行后端与安装检查；同一次流程构建并验收两个镜像，验证匿名拉取及固定历史包，再校验安装器体积、版本、更新 SHA512 并生成 SHA256SUMS，通过后发布为最新 Release。Windows 代码签名读取仓库密钥 `WIN_CSC_LINK`、`WIN_CSC_KEY_PASSWORD`，没有证书时安装包照常生成，但 Windows 会提示未知发布者。历史档案用 `python3 src/desktop/scripts/build_data_pack.py` 生成，校验值写入 `src/lab/urp_lab/data/packs.json`，zip 上传到清单里 `base_url` 指向的 Release。
+打 `v*` 标签后，`.github/workflows/desktop.yml` 在 Linux 和 Windows 上分别构建并运行后端与安装检查；同一次流程构建并验收两个镜像，验证匿名拉取及固定历史包，再校验安装器体积、版本、更新 SHA512 并生成 SHA256SUMS，通过后发布为最新 Release。Windows 代码签名读取仓库密钥 `WIN_CSC_LINK`、`WIN_CSC_KEY_PASSWORD`，没有证书时安装包照常生成，但 Windows 会提示未知发布者。历史档案用 `python3 src/desktop/scripts/build_data_pack.py` 生成，校验值写入 `src/lab/ceres_lab/data/packs.json`，zip 上传到清单里 `base_url` 指向的 Release。
 
 ## 智能体：从需求到经复核、可执行的方案（2026-11-05）
 
@@ -93,11 +93,11 @@ npm ci --prefix src/desktop && npm run dist:linux --prefix src/desktop
 
 修改合同后，报告、比较与仿真只使用与本轮冻结输入一致的运行，历史方案及原复核证据仍随会话导出保留。仅改车队或容量时原地更新地图，当前结果重新求解；车宽改变会重新生成几何。合同要求仿真且已有通过复核的方案时，运行器会提出具体批准请求；拒绝后模型不会重复要求批准，也不会启动 Gazebo。用户主动重试失败或拒绝的仿真时会重新请求批准，成功启动过的仿真不因重试报告而再次启动。切换会话、取消和刷新时，过期响应不能覆盖当前会话或较新的状态。
 
-**模型**：在 `设置 → 模型与用量` 里选一家服务商，粘贴 API Key，就能用。目录来自公开的 models.dev，列出 DeepSeek、智谱 GLM、Kimi、通义千问、豆包、硅基流动、OpenRouter、OpenAI、Anthropic、Gemini 等 180 多家，只保留能调用工具的模型；也可以添加任何兼容 OpenAI 接口的自定义地址。第一次连接时自动选中该服务的主力模型，之后在输入框右下角切换。Key 只保存在 `~/.config/urp-workbench/credentials.json`（权限 600），不进入前端存储、日志、仓库或导出。没有连接时，新任务走**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核、物理预演与报告，可作为对照基线。已有的订阅端点（如智谱 Coding Plan）继续出现在已连接列表里，只有手动选中才会使用，条款提示随选项显示。架构、接口与评测见 [智能体说明](../src/lab/urp_lab/agent/README.md)。
+**模型**：在 `设置 → 模型与用量` 里选一家服务商，粘贴 API Key，就能用。目录来自公开的 models.dev，列出 DeepSeek、智谱 GLM、Kimi、通义千问、豆包、硅基流动、OpenRouter、OpenAI、Anthropic、Gemini 等 180 多家，只保留能调用工具的模型；也可以添加任何兼容 OpenAI 接口的自定义地址。第一次连接时自动选中该服务的主力模型，之后在输入框右下角切换。Key 只保存在 `~/.config/ceres-workbench/credentials.json`（权限 600），不进入前端存储、日志、仓库或导出。没有连接时，新任务走**规则流程**并在会话中注明；规则流程同样完成建图、求解、复核、物理预演与报告，可作为对照基线。已有的订阅端点（如智谱 Coding Plan）继续出现在已连接列表里，只有手动选中才会使用，条款提示随选项显示。架构、接口与评测见 [智能体说明](../src/lab/ceres_lab/agent/README.md)。
 
-**任务理解评测**：`cd src/lab && .venv/bin/python -m urp_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid --provider 服务商/模型` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
+**任务理解评测**：`cd src/lab && .venv/bin/python -m ceres_lab.agent.evals.nlu --mode rule --split dev --out /新的绝对路径`（`--mode hybrid --provider 服务商/模型` 使用模型）。评测集区分模板生成与人工编写条目，按底本划分开发集与留出测试集；结果见 `experiments/agent-evals/`。
 
-**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m urp_lab.agent.evals.execution --mode hybrid --provider 服务商/模型 --out /新的绝对路径`。7 个情景（含田间行作）使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
+**执行流程评测**：在 `src/lab` 执行 `.venv/bin/python -m ceres_lab.agent.evals.execution --mode hybrid --provider 服务商/模型 --out /新的绝对路径`。7 个情景（含田间行作）使用真实求解器与独立检查器，任务修复批准后继续，物理仿真请求统一拒绝。目录逐例保存会话导出与 `progress.json`，最终结果为 `records.json`；任一情景未通过时进程返回非零。规则模式使用 `--mode rule`，其未支持要求识别局限如实计入失败；这些评测不代表真实物理执行通过。
 
 ## 仿真与引擎比较
 
@@ -272,7 +272,7 @@ Gazebo 场景中「已连接」表示通信握手完成；资源计数达到完�
 - 新部署使用 `setup/cyclonedds.xml` 和回环单播，不需要修改宿主机组播路由。旧本机环境的组播修复记录保留在历史验收报告中。
 - 运行记录：`src/lab/runtime/lab.sqlite3`；我的场景：`src/lab/runtime/scenarios/`；田间仿真（世界、计划、结果、各组件日志）：`src/lab/runtime/fieldsim/<会话>/`；TurtleBot4 仿真日志：`src/lab/runtime/sim/<会话>/`；资料缓存：`src/lab/runtime/library/`。
 - 依赖：田间求解器用 `src/lab/.venv`，档案 / CVRP 数值任务用根目录 `.venv`（均为 uv 锁定的 Python 3.12）；ROS 用系统 Python 3.10，互不替换。`lab-setup` 同时准备两个求解环境。仿真修补库被清理后，入口会自动按原命令重建（`src/lab/ros/native/rebuild-ros-overlays.sh`），产物与验收时逐字节一致。
-- `parameter_bridge` 退出竞态已用源码修复：等待 ROS 信号线程完成日志关闭后正常析构，不再使用 `_exit` 垫片。源码修复自动构建并校验指纹，详见 [集成报告](2026-10-15/integration/REPORT.md)；`URP_BRIDGE_FIX=0`、`URP_TF_FIX=0`、`URP_GUI_FIX=0` 可分别关闭对应修补做对照。
+- `parameter_bridge` 退出竞态已用源码修复：等待 ROS 信号线程完成日志关闭后正常析构，不再使用 `_exit` 垫片。源码修复自动构建并校验指纹，详见 [集成报告](2026-10-15/integration/REPORT.md)；`CERES_BRIDGE_FIX=0`、`CERES_TF_FIX=0`、`CERES_GUI_FIX=0` 可分别关闭对应修补做对照。
 - 桥接源码修复：`src/lab/ros/native/bridge/`，本地产物：`src/lab/runtime/native/bridge/`；依赖或源码指纹改变会明确拒绝，不能静默回退。目录说明与缓存维护见 [文档目录](../docs/README.md)。
 - 历史 BPP 数据未恢复时，「#/bpp」页面显示无历史数据。
 
@@ -282,22 +282,22 @@ Gazebo 场景中「已连接」表示通信握手完成；资源计数达到完�
 
 本地保留 ROS/Gazebo、仿真资产、密钥、运行环境、当前状态和大体积原始数据；GitHub 保存源码、文档、依赖锁、可复现配置、实验摘要、身份与恢复索引。现有冻结证据和历史失败保持原件，沿用[资产与副本登记](../docs/assets/README.md)。运行需要的源码和安装包是本地工作副本。
 
-`URP_DATA_HOME=/绝对路径` 将新运行集中在 `runtime/` 与 `archive/research.sqlite3`；不设置时，源码版兼容原来的 `src/lab/runtime/` 和 `.local-state/research.sqlite3`。`URP_LAB_RUNTIME`、`URP_API_DB` 可单独覆盖。桌面默认仍为应用数据目录，也可在启动前设置 `URP_DATA_HOME`；内置和容器挂载同一位置，并避免两个网关同时持有运行库。`dataset.json` 标识数据集；改变路径不改变记录的 ID、种子、失败、单位与来源。历史绝对路径是来源记录，不自动改写。
+`CERES_DATA_HOME=/绝对路径` 将新运行集中在 `runtime/` 与 `archive/research.sqlite3`；不设置时，源码版兼容原来的 `src/lab/runtime/` 和 `.local-state/research.sqlite3`。`CERES_LAB_RUNTIME`、`CERES_API_DB` 可单独覆盖。桌面默认仍为应用数据目录，也可在启动前设置 `CERES_DATA_HOME`；内置和容器挂载同一位置，并避免两个网关同时持有运行库。`dataset.json` 标识数据集；改变路径不改变记录的 ID、种子、失败、单位与来源。历史绝对路径是来源记录，不自动改写。
 
 桌面「设置 → 数据」可备份，或从备份恢复到新目录后切换数据位置。CLI 在 `src/lab` 下使用：
 
 ```sh
 # 先有序停止所有使用这份数据的内置、源码及容器后端。
-.venv/bin/python -m urp_lab data export --runtime /原目录/runtime --archive-db /原目录/archive/research.sqlite3 --out /备份位置/urp-data.zip
-.venv/bin/python -m urp_lab data verify --bundle /备份位置/urp-data.zip --sha256 <导出回执中的SHA256>
-.venv/bin/python -m urp_lab data restore --bundle /备份位置/urp-data.zip --sha256 <SHA256> --dest /尚不存在的新数据目录
+.venv/bin/python -m ceres_lab data export --runtime /原目录/runtime --archive-db /原目录/archive/research.sqlite3 --out /备份位置/ceres-data.zip
+.venv/bin/python -m ceres_lab data verify --bundle /备份位置/ceres-data.zip --sha256 <导出回执中的SHA256>
+.venv/bin/python -m ceres_lab data restore --bundle /备份位置/ceres-data.zip --sha256 <SHA256> --dest /尚不存在的新数据目录
 ```
 
 档案库不存在时省去 `--archive-db`。数据包使用 Zip64；SQLite 通过备份 API 纳入 WAL 内容，校验清单、SHA256、结构和表行数后才接受恢复。运行库被执行服务占用、文件改写、路径越界、重复/大小写冲突、符号链接、凭据和损坏包会明确拒绝。原目录不被覆盖。原始包保留本地或私有大容量存储，不会自动上传；回执可以随代码保存。编译的 `runtime/native/`、已下载的调试工具及锁/SQLite sidecar 不随数据包搬迁，环境在目标机器重建。
 
 仅剩公开会话 JSON 时，可用 `data recover --runtime /新数据目录/runtime --source /会话.json`（`--source` 可多次指定）补回查阅索引。带完整性信封的导出先验证摘要；原 JSON 逐字节保存。缺少模型上下文、轨迹或附件的会话标为只读，拒绝继续/重试/编辑合同；不会生成虚假的成功、轨迹或上下文，也不覆盖已有会话、场景和运行。完整运行库备份则保留真实上下文。
 
-研究基准根可设 `URP_DATA_ROOT`（包含 `research/`）；可读资产根可设 `URP_FUEL_CACHE`、`URP_ROS_SHARE`、`URP_GAZEBO_SHARE`，地图可设 `URP_ROS_MAPS`，固定包镜像源可设 `URP_PACKS_BASE_URL`。这些参数调整数据入口，不能代替安装环境，也不表示所有冻结实验脚本都支持任意重排。容器独立部署默认仍使用命名卷；已有旧卷先备份、校验、恢复到新目录，再改为桌面绑定目录，勿用 `down -v` 做同步。
+研究基准根可设 `CERES_DATA_ROOT`（包含 `research/`）；可读资产根可设 `CERES_FUEL_CACHE`、`CERES_ROS_SHARE`、`CERES_GAZEBO_SHARE`，地图可设 `CERES_ROS_MAPS`，固定包镜像源可设 `CERES_PACKS_BASE_URL`。这些参数调整数据入口，不能代替安装环境，也不表示所有冻结实验脚本都支持任意重排。容器独立部署默认仍使用命名卷；已有旧卷先备份、校验、恢复到新目录，再改为桌面绑定目录，勿用 `down -v` 做同步。
 
 本机本轮把原运行库复制恢复到 `.local-state/workbench-data/`，并从 25 份完整性信封、6 份会话快照补回 31 个只读会话与 75 条求解记录。原默认运行库和一致备份均保留。此前 `/tmp/claude-1000` 临时目录已消失，其中约 1.72 GB 的完整运行原始文件及临时验收脚本没有完整副本，不能把上述部分恢复称为全量找回。[逐项证据、哈希与验收](2026-10-15/integration/REPORT.md)。
 
@@ -313,7 +313,7 @@ Gazebo 场景中「已连接」表示通信握手完成；资源计数达到完�
 
 ```bash
 git clone https://github.com/peakpeng666/URP.git
-cd URP
+cd CERES
 bash setup/run.sh reproduce --acceptance
 ```
 
@@ -326,7 +326,7 @@ bash setup/run.sh reproduce stop
 bash setup/run.sh reproduce
 ```
 
-关闭会等待会话清理并报告真实退出码。数据库、资产及新轨迹保存在 `urp-platform-runtime` / `urp-platform-state` Docker 命名卷；停止与重启不删除它们。更换镜像版本时用新的 `--name` 创建独立部署，旧容器及数据保留。`docker cp urp-platform:/home/peakpeng/Desktop/URP/src/lab/runtime ./urp-runtime-export` 可完整导出运行数据；导出前先停止。验收原始日志在容器 `.local-state/container-acceptance-*`，也可用 `docker cp` 导出。
+关闭会等待会话清理并报告真实退出码。数据库、资产及新轨迹保存在 `ceres-platform-runtime` / `ceres-platform-state` Docker 命名卷；停止与重启不删除它们。更换镜像版本时用新的 `--name` 创建独立部署，旧容器及数据保留。`docker cp ceres-platform:/home/peakpeng/Desktop/CERES/src/lab/runtime ./ceres-runtime-export` 可完整导出运行数据；导出前先停止。验收原始日志在容器 `.local-state/container-acceptance-*`，也可用 `docker cp` 导出。
 
 默认使用浏览器的二维视图、ROS 视图和 Gazebo 场景，物理引擎仍是真实 Gazebo。Linux X11 桌面如需原生 RViz2/Gazebo 窗口，在**首次创建**时加 `--gui`，并提供当前有效的 `DISPLAY` / `XAUTHORITY`；仅给容器传入本次显示授权，不执行 `xhost +`。Wayland/远程无桌面机器优先使用网页视图。
 
@@ -343,9 +343,9 @@ bash setup/run.sh reproduce
 如需单独研究和还原原始文件（不是启动容器），在安装有 Python 3.10+ 和 `zstd` 的机器执行以下命令。下载目录可断点续用，解包目标目录必须尚不存在：
 
 ```sh
-bash setup/run.sh reproduce download --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets-20261018
-python3 tools/platform_snapshot.py verify --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets-20261018
-python3 tools/platform_snapshot.py restore --catalog setup/platform-snapshot.json --assets-dir ../urp-snapshot-assets-20261018 --destination ../urp-snapshot-restored-20261018
+bash setup/run.sh reproduce download --catalog setup/platform-snapshot.json --assets-dir ../ceres-snapshot-assets-20261018
+python3 tools/platform_snapshot.py verify --catalog setup/platform-snapshot.json --assets-dir ../ceres-snapshot-assets-20261018
+python3 tools/platform_snapshot.py restore --catalog setup/platform-snapshot.json --assets-dir ../ceres-snapshot-assets-20261018 --destination ../ceres-snapshot-restored-20261018
 ```
 
 校验清单同时保存在 [platform-snapshot.json](platform-snapshot.json)。`snapshot.json` 列出每个分包的 SHA256 和体积；`files.jsonl.zst` 给出逐文件原始/发布哈希、数据库备份与脱敏记录；`exclusions.json` 列出浏览器配置、认证文件和临时文件等排除项。下载后应先与仓库清单核对，不能只相信同一下载目录里未经核实的校验文件。
@@ -372,16 +372,16 @@ python3 tools/restore_local_preservation.py --cache "$PWD/.local-state/preserved
 
 ### 历史完整 ZIP 资料入口
 
-`tools/restore_materials.py` 仅用于旧的完整 `URP.zip`。其 [独立清单](materials-archive.json) 保留 `66b2b8c742598378898d02643d4ddc2f58f1a686:storage.json#/archive` 中的大小 **10,450,371,700 字节**和 SHA256，也保留原记录“Windows 报告已验证、当次任务不可读”的状态；本轮没有取得或重验这份 ZIP。现行 `storage.json` 登记位置与副本，不含旧 `archive` 键。
+`tools/restore_materials.py` 仅用于旧的完整 `CERES.zip`。其 [独立清单](materials-archive.json) 保留 `66b2b8c742598378898d02643d4ddc2f58f1a686:storage.json#/archive` 中的大小 **10,450,371,700 字节**和 SHA256，也保留原记录“Windows 报告已验证、当次任务不可读”的状态；本轮没有取得或重验这份 ZIP。现行 `storage.json` 登记位置与副本，不含旧 `archive` 键。
 
 持有对应原件时先检查，确认后再去掉 `--list` 恢复所选目录：
 
 ```sh
-python3 tools/restore_materials.py /absolute/path/to/URP.zip --list --include papers
+python3 tools/restore_materials.py /absolute/path/to/CERES.zip --list --include papers
 ```
 
 列出与恢复均先严格核对大小和 SHA256；仅恢复允许目录内未受 Git 跟踪的文件，遇到内容不同的本地文件即失败。`--manifest` 可显式指定同 schema 的历史指纹清单；缺失或不合法时明确报错。此入口不接受平台补充包，也不下载 Drive 文件或登记迁移；平台 Release 使用上面的 `platform_snapshot.py` 流程。
 
-写入前完整预检所选材料：归档须有 `URP/` 根目录及匹配文件；重复规范化目标、文件/子路径冲突、归档符号链接和本地目标任一符号链接组件均拒绝。已有材料逐字节比对；只包含已存在材料时状态为 `already-present`，只包含 Git 管理文件时为 `tracked-only`，均不报告“已恢复”。`--list` 的非空计划为 `planned`；只有实际完成全部计划写入才报告 `restored`。
+写入前完整预检所选材料：归档须有 `CERES/` 根目录及匹配文件；重复规范化目标、文件/子路径冲突、归档符号链接和本地目标任一符号链接组件均拒绝。已有材料逐字节比对；只包含已存在材料时状态为 `already-present`，只包含 Git 管理文件时为 `tracked-only`，均不报告“已恢复”。`--list` 的非空计划为 `planned`；只有实际完成全部计划写入才报告 `restored`。
 
 恢复使用同一个已校验的打开文件读取 ZIP，新目标以排他方式创建，预检后出现的文件也不会被覆盖。请串行使用，不要同时修改 ZIP、恢复目录或其链接。解压、权限或存储错误会非零退出，并给出已完成文件数及可能残留的新文件；它不回滚此前完成的新材料，也不自动删除失败残留。检查后再处理残留，不能把部分写入当作整批成功。`--list` 不读取尚未恢复成员的全部解压内容，CRC/解压错误仍可能在实际恢复时发现。

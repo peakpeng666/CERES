@@ -5,16 +5,16 @@ import copy
 
 import pytest
 
-from urp_lab.agent import research_tools as tools
-from urp_lab.jobs import resolve_params
-from urp_lab.scenarios.validate import PROBLEM_CLASSES
-from urp_lab.solvers import catalog, TIME
-from urp_lab.studies import StudyManager
-from urp_lab.store import Store
+from ceres_lab.agent import research_tools as tools
+from ceres_lab.jobs import resolve_params
+from ceres_lab.scenarios.validate import PROBLEM_CLASSES
+from ceres_lab.solvers import catalog, TIME
+from ceres_lab.studies import StudyManager
+from ceres_lab.store import Store
 
 
 def test_agent_problem_classes_and_point_to_point_filter(monkeypatch):
-    from urp_lab import scenarios
+    from ceres_lab import scenarios
     assert set(tools.PC['enum']) == set(PROBLEM_CLASSES)
     assert 'motion' not in tools.PC['enum']
     monkeypatch.setattr(scenarios, 'list_scenarios', lambda: [
@@ -97,7 +97,7 @@ def test_seedless_compatibility_seed_is_preserved_and_invalid_params_still_fail(
 
 
 def test_agent_analysis_keeps_inference_gate_without_expanding_run_evidence(monkeypatch):
-    from urp_lab import analysis
+    from ceres_lab import analysis
     block = {'schema': 'urp.analysis-blocks/1', 'n_comparison_blocks': 11, 'n_complete_blocks': 11,
              'n_declared_groups': 0, 'alias_blocks_collapsed': 2, 'inference_eligible': False,
              'reason_code': 'independence_not_established', 'note': '未知来源仅作描述，历史不回填。',

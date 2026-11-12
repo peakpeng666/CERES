@@ -4,7 +4,7 @@ from datetime import datetime,timezone
 from pathlib import Path
 from full_loop import Client
 ROOT=Path(__file__).resolve().parents[3];sys.path.insert(0,str(ROOT/'src/lab'))
-from urp_lab.scenarios.maps import load
+from ceres_lab.scenarios.maps import load
 out=ROOT/'src/lab/runtime/e2e'/('warehouse-'+datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ'))
 out.mkdir(parents=True,exist_ok=False)
 api=Client('http://127.0.0.1:4100');report={'status':'INCOMPLETE','steps':[]};sid=None
@@ -28,7 +28,7 @@ try:
  c,st,_=api.call('POST','/lab/api/sim/session',dict(world='warehouse',spawn=s['sim']['spawn'],gui=False,rviz=False));sid=st.get('session_id')
  check('start',c==202);st=wait('/lab/api/sim/state','phase',{'ready','failed','stopped'})
  check('ready',st['phase']=='ready',state=st);sid=st['session_id'];report['session_id']=sid
- probe=subprocess.run(['bash','-lc','source /opt/ros/humble/setup.bash && exec bash setup/profile.sh simulation /usr/bin/python3 src/lab/e2e/sensor_snapshot.py --out "$1"','urp-scan',str(out/'warehouse-scan.json')],cwd=ROOT,capture_output=True,text=True,timeout=35)
+ probe=subprocess.run(['bash','-lc','source /opt/ros/humble/setup.bash && exec bash setup/profile.sh simulation /usr/bin/python3 src/lab/e2e/sensor_snapshot.py --out "$1"','ceres-scan',str(out/'warehouse-scan.json')],cwd=ROOT,capture_output=True,text=True,timeout=35)
  (out/'warehouse-scan.log').write_text(probe.stdout+probe.stderr);check('stationary_scan',probe.returncode==0)
  scan=json.loads((out/'warehouse-scan.json').read_text());grid=load('warehouse');dist=[grid.clearance_at(*p) for p in scan['endpoints']]
  audit=dict(samples=len(dist),fraction_within_015m=sum(x<=.15 for x in dist)/len(dist),max_clearance_m=max(dist),mean_clearance_m=sum(dist)/len(dist),scope='One stationary pose near tested headland; not exhaustive map/geometry equivalence')

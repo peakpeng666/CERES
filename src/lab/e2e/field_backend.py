@@ -23,12 +23,12 @@ p.add_argument('--headless', action='store_true', help='Verify real web bridges 
 args = p.parse_args()
 out = args.out.resolve()
 out.mkdir(parents=True, exist_ok=False)
-os.environ['URP_LAB_RUNTIME'] = str(out / 'runtime')
-os.environ['URP_ROS_DOMAIN_ID'] = '141'
+os.environ['CERES_LAB_RUNTIME'] = str(out / 'runtime')
+os.environ['CERES_ROS_DOMAIN_ID'] = '141'
 
 from fastapi.testclient import TestClient
-from urp_lab.gateway import Config, create_app
-from urp_lab.scenarios.validate import validate_instance
+from ceres_lab.gateway import Config, create_app
+from ceres_lab.scenarios.validate import validate_instance
 
 
 def save(name, data):

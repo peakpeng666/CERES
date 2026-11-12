@@ -62,26 +62,26 @@ def until(sid, states, seconds):
 root = args.backend.resolve()
 lab = root / 'app' / 'src' / 'lab'
 python = root / 'python' / 'python.exe' if (root / 'python' / 'python.exe').exists() else lab / '.venv' / 'bin' / 'python'
-home = Path(tempfile.mkdtemp(prefix='urp-smoke-'))
-env = {'HOME': str(home), 'USERPROFILE': str(home), 'PATH': os.environ.get('SystemRoot', '') and os.environ['PATH'] or '/usr/bin:/bin', 'URP_LAB_RUNTIME': str(out / 'runtime'),
-       'URP_CONFIG_DIR': str(home / 'config'), 'URP_LLM_CONFIG': str(home / 'config' / 'llm.json'), 'URP_LLM_CREDENTIALS': str(home / 'config' / 'credentials.json'),
-       'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONUNBUFFERED': '1', 'PYTHONUTF8': '1', 'URP_DESKTOP': '1'}
+home = Path(tempfile.mkdtemp(prefix='ceres-smoke-'))
+env = {'HOME': str(home), 'USERPROFILE': str(home), 'PATH': os.environ.get('SystemRoot', '') and os.environ['PATH'] or '/usr/bin:/bin', 'CERES_LAB_RUNTIME': str(out / 'runtime'),
+       'CERES_CONFIG_DIR': str(home / 'config'), 'CERES_LLM_CONFIG': str(home / 'config' / 'llm.json'), 'CERES_LLM_CREDENTIALS': str(home / 'config' / 'credentials.json'),
+       'PYTHONDONTWRITEBYTECODE': '1', 'PYTHONUNBUFFERED': '1', 'PYTHONUTF8': '1', 'CERES_DESKTOP': '1'}
 for key in ('SystemRoot', 'TEMP', 'TMP', 'LOCALAPPDATA', 'APPDATA', 'WINEPREFIX', 'WINEDEBUG', 'WINEDLLOVERRIDES', 'DISPLAY', 'LANG', 'LC_ALL'):   # Wine stores non-ASCII file names through the locale
     if key in os.environ:
         env[key] = os.environ[key]
 if args.launcher:
     env['PATH'] = os.environ['PATH']
 if args.node:
-    env['URP_NODE'] = args.node
+    env['CERES_NODE'] = args.node
 if args.packs:
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(args.packs.resolve()))
     handler.log_message = lambda *a: None
     host = http.server.ThreadingHTTPServer(('127.0.0.1', 0), handler)
     threading.Thread(target=host.serve_forever, daemon=True).start()
-    env['URP_PACKS_BASE_URL'] = f'http://127.0.0.1:{host.server_port}'
+    env['CERES_PACKS_BASE_URL'] = f'http://127.0.0.1:{host.server_port}'
 log = (out / 'gateway.log').open('wb')
 started = time.monotonic()
-proc = subprocess.Popen([*([args.launcher] if args.launcher else []), str(python), '-m', 'urp_lab', 'serve', '--port', str(args.port), '--no-archive', '--exit-with-stdin'], cwd=lab, env=env, stdin=subprocess.PIPE, stdout=log, stderr=log)
+proc = subprocess.Popen([*([args.launcher] if args.launcher else []), str(python), '-m', 'ceres_lab', 'serve', '--port', str(args.port), '--no-archive', '--exit-with-stdin'], cwd=lab, env=env, stdin=subprocess.PIPE, stdout=log, stderr=log)
 failed = None
 try:
     end = time.monotonic() + 120
@@ -193,7 +193,7 @@ try:
     step('有序退出', code=proc.returncode)
     assert proc.returncode == 0
     # Exercise the shipped CLI, SQLite WAL handling and Windows paths, not only the host's source environment.
-    transfer = [*([args.launcher] if args.launcher else []), str(python), '-m', 'urp_lab', 'data']
+    transfer = [*([args.launcher] if args.launcher else []), str(python), '-m', 'ceres_lab', 'data']
     def transfer_call(*words):
         result = subprocess.run([*transfer, *words], cwd=lab, env=env, capture_output=True, text=True, encoding='utf-8', timeout=120)
         assert result.returncode == 0, result.stderr

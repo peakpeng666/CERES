@@ -31,7 +31,7 @@ class DockerLayoutTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, 'isolation protocol'): g.require_docker_layout(value)
 
     def test_writable_or_relocated_input_is_refused(self):
-        for key, alternative in [('inputs_readonly', False), ('control_readonly', False), ('inputs', '/opt/urp/prepared'), ('build', '/inputs/output')]:
+        for key, alternative in [('inputs_readonly', False), ('control_readonly', False), ('inputs', '/opt/ceres/prepared'), ('build', '/inputs/output')]:
             value = self.fixture(); value['layout'][key] = alternative
             with self.subTest(key=key), self.assertRaises(RuntimeError): g.require_docker_layout(value)
 

@@ -78,7 +78,7 @@ export const VIEW_TITLES: Record<ViewName, string> = {
 /** Lab views whose last address (scenario, run, comparison) is restored from the sidebar. */
 const REMEMBERED: ReadonlySet<ViewName> = new Set(['plan', 'sim', 'runs']);
 
-const storageKey = (view: ViewName) => `urp:last:${view}`;
+const storageKey = (view: ViewName) => `ceres:last:${view}`;
 
 export function rememberLabHref(route: Route) {
   if (!REMEMBERED.has(route.view)) return;

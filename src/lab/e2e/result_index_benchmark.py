@@ -11,7 +11,7 @@ import time
 from types import SimpleNamespace
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from urp_lab.fieldsim import FieldSimManager
+from ceres_lab.fieldsim import FieldSimManager
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--runtime', type=Path, required=True)

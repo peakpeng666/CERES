@@ -68,7 +68,7 @@ const { Container } = require('../main/container');
 function fakeDocker(script) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'fake-docker-'));
   const file = path.join(dir, 'docker');
-  fs.writeFileSync(file, `#!/bin/sh\necho "$@" >> "${dir}/calls"\nenv | grep '^URP_' >> "${dir}/env"\n${script}\n`);
+  fs.writeFileSync(file, `#!/bin/sh\necho "$@" >> "${dir}/calls"\nenv | grep '^CERES_' >> "${dir}/env"\n${script}\n`);
   fs.chmodSync(file, 0o755);
   const before = process.env.PATH;
   process.env.PATH = `${dir}${path.delimiter}${before}`;
@@ -76,7 +76,14 @@ function fakeDocker(script) {
 }
 const testData = fs.mkdtempSync(path.join(os.tmpdir(), 'desktop-data-'));
 const { after } = require('node:test');
-after(() => fs.rmSync(testData, { recursive: true, force: true }));
+// Container startup creates configuration directories; tests must not touch the real user home.
+const originalHome = process.env.HOME;
+process.env.HOME = path.join(testData, 'home');
+fs.mkdirSync(process.env.HOME, { recursive: true });
+after(() => {
+  if (originalHome === undefined) delete process.env.HOME; else process.env.HOME = originalHome;
+  fs.rmSync(testData, { recursive: true, force: true });
+});
 const app = { isPackaged: false, getVersion: () => '0.2.0', getPath: () => testData };
 
 test('a machine with Docker and the image reports what it has', { skip: process.platform === 'win32' }, async () => {
@@ -108,11 +115,11 @@ test('starting passes both compose files and the shared configuration, then wait
   d.done();
   server.close();
   assert.match(calls, /compose -f .*docker-compose\.sim\.yml -f .*docker-compose\.desktop\.yml up -d/);
-  assert.match(env, /URP_IMAGE_TAG=deploy/);
-  assert.match(env, /URP_HOST_CONFIG=.*urp-workbench/);
-  assert.match(env, /URP_HOST_RUNTIME=.*runtime/);
-  assert.match(env, /URP_HOST_ARCHIVE=.*archive/);
-  assert.match(env, new RegExp(`URP_HOST_UID=${os.userInfo().uid}`));
+  assert.match(env, /CERES_IMAGE_TAG=deploy/);
+  assert.match(env, /CERES_HOST_CONFIG=.*ceres-workbench/);
+  assert.match(env, /CERES_HOST_RUNTIME=.*runtime/);
+  assert.match(env, /CERES_HOST_ARCHIVE=.*archive/);
+  assert.match(env, new RegExp(`CERES_HOST_UID=${os.userInfo().uid}`));
 });
 
 test('starting creates the shared configuration folder before docker can', { skip: process.platform === 'win32' }, async () => {
@@ -124,7 +131,7 @@ test('starting creates the shared configuration folder before docker can', { ski
   process.env.HOME = home;
   try {
     await new Container(app, { port: server.address().port }).start();
-    assert.ok(fs.statSync(path.join(home, '.config', 'urp-workbench')).isDirectory());
+    assert.ok(fs.statSync(path.join(home, '.config', 'ceres-workbench')).isDirectory());
   } finally {
     process.env.HOME = before;
     d.done();
@@ -143,7 +150,7 @@ test('a packaged app asks for the image of its own version', () => {
   process.resourcesPath = os.tmpdir();
   const c = new Container({ ...app, isPackaged: true });
   delete process.resourcesPath;
-  assert.equal(c.env().URP_IMAGE_TAG, 'v0.2.0');
+  assert.equal(c.env().CERES_IMAGE_TAG, 'v0.2.0');
 });
 
 test('native and container modes use the same dataset after moving it', () => {
@@ -154,8 +161,8 @@ test('native and container modes use the same dataset after moving it', () => {
   const first = prepareDataHome(app, settings);
   const native = childEnv(app, 4100, settings);
   const container = new Container(app, { settings }).env();
-  assert.equal(native.URP_LAB_RUNTIME, container.URP_HOST_RUNTIME);
-  assert.equal(path.dirname(native.URP_API_DB), container.URP_HOST_ARCHIVE);
+  assert.equal(native.CERES_LAB_RUNTIME, container.CERES_HOST_RUNTIME);
+  assert.equal(path.dirname(native.CERES_API_DB), container.CERES_HOST_ARCHIVE);
   assert.equal(prepareDataHome(app, settings).dataset.dataset_id, first.dataset.dataset_id);
   assert.equal(new Settings(settings.file).get('dataRoot'), first.root);
 });
@@ -169,7 +176,7 @@ test('a healthy container with another dataset cannot be presented as this workb
 
 test('data transfer runs the bundled Python from the Lab folder, wherever the app was launched', { skip: process.platform === 'win32' }, async () => {
   const { DataTransfer } = require('../main/data-transfer');
-  // An installed app: urp_lab sits in backend/app/src/lab and is importable only with that folder as the working directory.
+  // An installed app: ceres_lab sits in backend/app/src/lab and is importable only with that folder as the working directory.
   const resources = fs.mkdtempSync(path.join(os.tmpdir(), 'desktop-resources-'));
   const lab = path.join(resources, 'backend', 'app', 'src', 'lab');
   const python = path.join(lab, '.venv', 'bin', 'python');
@@ -221,7 +228,7 @@ test('an unsuccessful restore cannot advance the data setting', async () => {
 
 test('a data subprocess starts in its module directory even when the application is launched elsewhere', async () => {
   const { run } = require('../main/container');
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'urp modules '));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'ceres modules '));
   try {
     const result = await run(process.execPath, ['-e', 'process.stdout.write(process.cwd())'], { cwd: dir });
     assert.equal(result.code, 0);

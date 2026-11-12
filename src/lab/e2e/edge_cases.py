@@ -68,7 +68,7 @@ try:
  sid=report['session_id'];target=None
  for p in Path('/proc').glob('[0-9]*'):
   try:
-   if (b'URP_SIM_SESSION='+sid.encode()) in (p/'environ').read_bytes().split(b'\0') and os.readlink(p/'exe').endswith('/planner_server'):target=int(p.name);break
+   if (b'CERES_SIM_SESSION='+sid.encode()) in (p/'environ').read_bytes().split(b'\0') and os.readlink(p/'exe').endswith('/planner_server'):target=int(p.name);break
   except OSError:pass
  check('owned_planner_identified',target is not None,pid=target)
  os.kill(target,signal.SIGTERM)

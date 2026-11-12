@@ -301,7 +301,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'cvrp',
     summary: '采摘点（树位/行间集中点）带载果需求，车辆沿行间通道收集并卸至田头装车点，多趟往返。',
     modeling: '采摘点是真实的带需求点集（点集 + 容量 + 卸载），不是行服务的近似；行间通行用 travel=rows 的真实通道图，地头/机耕路为开阔区。',
-    refs: ['seyyedhasani2017', 'urp_fleet144', 'urp_p510'],
+    refs: ['seyyedhasani2017', 'ceres_fleet144', 'ceres_p510'],
     capabilities: cap(
       '任务、容量、卸载点、行间通行均有契约字段。',
       '任务点、车库、容量、需求在既有地图编辑器全部可改。',
@@ -340,7 +340,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'multi_trip_refill',
     summary: '把果树行上的喷药对象离散为带药量需求的点，药箱容量驱动多趟补给。',
     modeling: '近似：连续行喷施退化为点需求代理，不表达全行服务或沉积；文献仅提供选择性施药路线规划背景，连续行服务见提案「行服务 CARP」。',
-    refs: ['conesa2016', 'jensen2015', 'urp_p510'],
+    refs: ['conesa2016', 'jensen2015', 'ceres_p510'],
     capabilities: cap(
       '点需求 + 药箱容量 + 补给点语义完整。',
       '全部参数与几何可编辑。',
@@ -375,7 +375,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'pickup_delivery',
     summary: '接粮车在固定装载点接粮并运往粮库卸载；收割机—接粮车动态汇合见提案。',
     modeling: '装载点是真实带需求点，粮库是卸载点；多趟往返由容量驱动。动态汇合（跟机接粮）超出点集语义，另列提案。',
-    refs: ['jensen2015', 'urp_fleet144', 'urp_p510'],
+    refs: ['jensen2015', 'ceres_fleet144', 'ceres_p510'],
     capabilities: cap(
       '装载点需求 + 容量 + 卸载点完整。',
       '全部可编辑。',
@@ -412,7 +412,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'multi_visit',
     summary: '网格/随机布点采样，车辆依次访问采样点；无容量约束的多点访问。',
     modeling: '采样点是无需求点集（多点访问）；水田样本同样点可复用但下陷风险另列提案。',
-    refs: ['urp_p510'],
+    refs: ['ceres_p510'],
     capabilities: cap(
       '点集完整。',
       '全部可编辑。',
@@ -445,7 +445,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'cvrp',
     summary: '杂草斑块的定点变量喷施：每点带药量需求，药箱容量驱动回站补给。',
     modeling: '点集带需求是真实语义（杂草斑块定位来自视觉识别）；机械除草（刀辊行服务）不在此模式。',
-    refs: ['conesa2016', 'urp_p510'],
+    refs: ['conesa2016', 'ceres_p510'],
     capabilities: cap(
       '点需求 + 容量 + 补给完整。',
       '全部可编辑。',
@@ -479,7 +479,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'cvrp',
     summary: '栽培床间的采收点集货，运至温室集货口；通道窄、对机器人半径敏感。',
     modeling: '点集需求 + 容量 + 卸载；通道宽度通过 robot_radius 与放置校验表达。',
-    refs: ['urp_fleet144', 'urp_p510'],
+    refs: ['ceres_fleet144', 'ceres_p510'],
     capabilities: cap(
       '点需求 + 容量 + 卸载完整。',
       '全部可编辑。',
@@ -513,7 +513,7 @@ export const RUNNABLE_PATTERNS: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'multi_field_alloc',
     summary: '多台车服务多个田块的任务点：田块间转场走开阔近似（真实路网见缺口说明）。',
     modeling: '多田块用多边形分区表达；田块间通行取欧氏近似，未接真实道路网。',
-    refs: ['urp_fleet144', 'urp_p510'],
+    refs: ['ceres_fleet144', 'ceres_p510'],
     capabilities: cap(
       '多区域 + 点集 + 容量齐备；路网缺失显式声明。',
       '全部可编辑。',
@@ -551,7 +551,7 @@ export const RUNNABLE_PATTERNS_REST: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'multi_visit',
     summary: '饮水点/围栏门/草场监测位的巡回检查，无容量约束。',
     modeling: '监测位是真实点集；牲畜活动区作为动态障碍另列提案。',
-    refs: ['urp_p510'],
+    refs: ['ceres_p510'],
     capabilities: cap(
       '点集完整。',
       '全部可编辑。',
@@ -584,7 +584,7 @@ export const RUNNABLE_PATTERNS_REST: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'cvrp',
     summary: '条垄茶园的集叶点收集运输；坡地风险不在本模式（见提案）。',
     modeling: '集叶点是真实带需求点集；条垄按行布置。坡度/侧翻风险无模型，显式列为近似。',
-    refs: ['seyyedhasani2017', 'urp_p510'],
+    refs: ['seyyedhasani2017', 'ceres_p510'],
     capabilities: cap(
       '点需求 + 容量 + 卸载完整。',
       '全部可编辑。',
@@ -619,7 +619,7 @@ export const RUNNABLE_PATTERNS_REST: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'cvrp',
     summary: '打捆后散布田间的草捆收集：每捆一个点，单车按捆数容量多趟运输。',
     modeling: '草捆是真实带需求点（1 捆 = 1 需求）；容量以捆计。',
-    refs: ['urp_fleet144', 'urp_p510'],
+    refs: ['ceres_fleet144', 'ceres_p510'],
     capabilities: cap(
       '点需求 + 容量 + 卸载完整。',
       '全部可编辑。',
@@ -653,7 +653,7 @@ export const RUNNABLE_PATTERNS_REST: AgriTaskPattern[] = [
     vehicleClasses: ['diff_drive'], planningProblem: 'heterogeneous_coop',
     summary: '大车（大容量/大半径）与小车（小容量/灵活）混编集运，vehicles.fleet 多车型映射。',
     modeling: 'fleet 每类有独立容量/半径/速度；后端按 max(类别半径) 校验放置（构建器已对齐）。',
-    refs: ['pyvrp_docs', 'seyyedhasani2017', 'urp_p510'],
+    refs: ['pyvrp_docs', 'seyyedhasani2017', 'ceres_p510'],
     capabilities: cap(
       '多车型 + 点需求 + 容量 + 卸载完整。',
       '全部可编辑。',
@@ -700,7 +700,7 @@ export const RUNNABLE_PATTERNS_REST: AgriTaskPattern[] = [
     vehicleClasses: ['ackermann'], planningProblem: 'multi_visit',
     summary: '最小转弯半径 1.5–10 m 的不可倒车车辆访问作业点；min_turn_radius_m 触发 Dubins 实现。',
     modeling: '先以绕障图距离分配任务/访问顺序，再以 Dubins 航向动态规划或 OMPL 实现曲率约束路径；不声称全局联合最优，无法通过验算时返回无解。',
-    refs: ['dubins1957', 'urp_p510'],
+    refs: ['dubins1957', 'ceres_p510'],
     capabilities: cap(
       '点集 + 最小转弯半径完整。',
       '全部可编辑。',

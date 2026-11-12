@@ -9,11 +9,11 @@
 # contains those laptop binaries. Public upload is deploy/upload-assets.sh.
 set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
-out="${1:-$root/deploy/urp-sim-assets.tar.gz}"
+out="${1:-$root/deploy/ceres-sim-assets.tar.gz}"
 cd "$root"
 
 if [[ -e setup/2026-10-15/cache/ignition-fuel || -e setup/2026-10-15/cache/fuel-cache.tar.zst ]]; then
-  printf '%s\n' "Fuel 缓存还在本机，但不会写入这个包。Warehouse 与 shelf_big 是 CC BY-NC-ND，MovAi shelf 是 CC BY-NC，不能放进公开镜像或公开 Release。搭档用 urp fuel 自己向 fuel.gazebosim.org 下载。"
+  printf '%s\n' "Fuel 缓存还在本机，但不会写入这个包。Warehouse 与 shelf_big 是 CC BY-NC-ND，MovAi shelf 是 CC BY-NC，不能放进公开镜像或公开 Release。搭档用 ceres fuel 自己向 fuel.gazebosim.org 下载。"
 fi
 
 optional=(
@@ -48,18 +48,18 @@ fi
 
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
-mkdir -p "$stage/urp-sim-assets"
-cp deploy/THIRD_PARTY.md "$stage/urp-sim-assets/THIRD_PARTY.md"
+mkdir -p "$stage/ceres-sim-assets"
+cp deploy/THIRD_PARTY.md "$stage/ceres-sim-assets/THIRD_PARTY.md"
 {
   echo "repo=$root"
   echo "created_utc=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
   echo "fuel=excluded"
   printf 'kind\tbytes\tpath\n'
   printf '%s\n' "${notes[@]}"
-} > "$stage/urp-sim-assets/MANIFEST.tsv"
-tar -C "$root" -cf - "${present[@]}" | tar -C "$stage/urp-sim-assets" -xf -
+} > "$stage/ceres-sim-assets/MANIFEST.tsv"
+tar -C "$root" -cf - "${present[@]}" | tar -C "$stage/ceres-sim-assets" -xf -
 mkdir -p "$(dirname "$out")"
-tar -C "$stage" -czf "$out" urp-sim-assets
+tar -C "$stage" -czf "$out" ceres-sim-assets
 echo "已写出 $out"
 echo "这个包不是公开的 Fuel 分发。公开附件只用 bash deploy/upload-assets.sh，并且只在 Fields2Cover 轮子和 BSD 声明都在的时候上传。"
 echo "laptop-only 二进制只在主人那套系统库上通过验收，不要放进公开 Release。"

@@ -6,7 +6,7 @@
       "runtimeExecutable": "bash",
       "runtimeArgs": [
         "-c",
-        "export URP_DATA_HOME=\"$PWD/.local-state/workbench-data\"; exec bash setup/run.sh lab-code"
+        "export CERES_DATA_HOME=\"$PWD/.local-state/workbench-data\"; exec bash setup/run.sh lab-code"
       ],
       "port": 4100
     }

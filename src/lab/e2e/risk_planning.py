@@ -25,12 +25,12 @@ args = p.parse_args()
 if not args.out.is_absolute(): p.error('--out must be absolute')
 out = args.out.resolve()
 out.mkdir(parents=True, exist_ok=False)
-os.environ['URP_LAB_RUNTIME'] = str(out / 'runtime')
-os.environ['URP_ROS_DOMAIN_ID'] = '144'
+os.environ['CERES_LAB_RUNTIME'] = str(out / 'runtime')
+os.environ['CERES_ROS_DOMAIN_ID'] = '144'
 
 from fastapi.testclient import TestClient
-from urp_lab.scenarios.validate import validate_instance
-from urp_lab.gateway import Config, create_app
+from ceres_lab.scenarios.validate import validate_instance
+from ceres_lab.gateway import Config, create_app
 
 INSTANCE = validate_instance('fleet_routing', {
     'boundary': [[0, 0], [34, 0], [34, 26], [0, 26]], 'depot': [3, 3], 'robot_radius': 0.5,

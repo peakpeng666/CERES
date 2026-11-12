@@ -4,6 +4,12 @@
 
 **[交付要求](requirements.md)** · **[研究决策图](research-map.md)**
 
+## 2026-11-12 CERES 命名迁移
+
+活跃 Python 包改为 `ceres_lab`、`ceres_research`，ROS 包改为 `ceres_route_sim`；研究 CLI 为 `src/research/scripts/ceres.py`。产品名称统一为 CERES（灵畴），新配置使用 `CERES_*`，旧 `URP_*` 仍可读取，显式新配置优先。
+
+既有配置、凭证、运行数据和 Docker 数据卷沿用原位置。GitHub 仓库与已发布镜像继续使用实际存在的地址；原生插件 ABI、算法 ID、历史实验格式、冻结源码及归档校验值保留原标识。运行包与数据身份格式支持新旧版本读取。旧批处理入口转发 CERES 入口，避免已有快捷方式失效。
+
 ## 2026-11-07 田间作业模型
 
 农业语义从前端目录进入后端：环境、作物、作业、车辆、机具组成机组，统一编译为作业行问题 `field_operation`，进入约束、求解、独立验算和指标。Lab 新增「作业」入口。说明见[田间作业模型](agri/model.md)与[参数目录](agri/catalog.md)，验收见[工程报告](../setup/2026-10-30/engineering/REPORT.md)，对照实验见[研究报告](../experiments/runs/field-ops-20261107/REPORT.md)。

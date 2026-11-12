@@ -1,7 +1,7 @@
 """AMCL-vs-truth comparison and replan summaries from recorded timelines."""
 import math
 
-from urp_lab.localization_check import compare
+from ceres_lab.localization_check import compare
 
 
 def _exec(const_offset=(0.3, -0.2), yaw_bias=0.05, n=60):

@@ -1,12 +1,13 @@
 import hashlib
 import io
+import json
 from pathlib import Path
 import stat
 import tempfile
 import unittest
 import zipfile
 
-from urp_research.archive import ArchiveError, restore, safe_relative, verify_bundle
+from ceres_research.archive import ArchiveError, load_manifest, restore, safe_relative, verify_bundle
 
 
 class ArchiveContract(unittest.TestCase):
@@ -26,6 +27,16 @@ class ArchiveContract(unittest.TestCase):
                 "zip_prefix": "bundle", "files": {"data/example.json": {
                     "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}}}
         return path, spec
+
+    def test_manifest_schema_names_accept_both_generations(self):
+        path = self.root / "manifest.json"
+        for schema in ("urp-archive-allowlist-v1", "ceres-archive-allowlist-v1"):
+            with self.subTest(schema=schema):
+                path.write_text(json.dumps({"schema": schema}))
+                self.assertEqual(load_manifest(path)["schema"], schema)
+        path.write_text(json.dumps({"schema": "unknown-archive-v1"}))
+        with self.assertRaises(ArchiveError):
+            load_manifest(path)
 
     def test_restore_only_allowlisted_members(self):
         path, spec = self.archive(("bundle/ignored.py", "raise RuntimeError('do not execute')"))
@@ -62,7 +73,7 @@ class ArchiveContract(unittest.TestCase):
         spec["files"]["data/example.json"]["sha256"] = "0" * 64
         with self.assertRaises(ArchiveError):
             restore(path, self.root / "restored", spec)
-        self.assertEqual(list(self.root.glob(".urp-restore-*")), [])
+        self.assertEqual(list(self.root.glob(".ceres-restore-*")), [])
 
     def test_zip_symlink_rejected(self):
         member = zipfile.ZipInfo("bundle/link")

@@ -5,11 +5,11 @@ import json
 
 import pytest
 
-from urp_lab import paths, physics, sim2sim
-from urp_lab.assets import bindings, importer, store as assets
-from urp_lab.physics import PhysicsError, PhysicsManager, plan_from_run
-from urp_lab.scenarios import validate_instance
-from urp_lab.solvers import fleet
+from ceres_lab import paths, physics, sim2sim
+from ceres_lab.assets import bindings, importer, store as assets
+from ceres_lab.physics import PhysicsError, PhysicsManager, plan_from_run
+from ceres_lab.scenarios import validate_instance
+from ceres_lab.solvers import fleet
 
 
 class Store:
@@ -356,7 +356,7 @@ def test_malformed_identity_or_record_conditions_are_unavailable():
 
 
 def test_legal_earliest_wait_beyond_old_engine_deadline_finishes(tmp_path):
-    from urp_lab import mujoco_field
+    from ceres_lab import mujoco_field
     from test_physics import plan_of
 
     frozen = plan_of(tmp_path)
@@ -388,7 +388,7 @@ def test_missing_task_arrivals_never_become_a_complete_arrival_comparison(missin
 
 @pytest.mark.parametrize('code', [7, -9, 0])
 def test_batch_sample_exit_status_cannot_be_hidden_by_a_success_json(manager, code):
-    from urp_lab import physics_stats
+    from ceres_lab import physics_stats
 
     owner, record = manager
     record['batch'] = {'seed': 4}

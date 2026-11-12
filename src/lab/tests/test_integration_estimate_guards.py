@@ -5,8 +5,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab import field_coordination as fc, fieldworld, physics
-from urp_lab.agent import runner, tools
+from ceres_lab import field_coordination as fc, fieldworld, physics
+from ceres_lab.agent import runner, tools
 
 
 def test_explicit_fleet_parameters_are_not_silently_ignored(monkeypatch):
@@ -87,7 +87,7 @@ def test_frozen_coordinated_replay_is_not_labelled_serial(monkeypatch, tmp_path,
     ({'predicted_makespan_s': True, 'execution_estimate': {'status': 'estimated', 'model': fc.ESTIMATE_MODEL}}, False),
 ])
 def test_compare_tool_never_marks_incomparable_predictions_best(monkeypatch, second, comparable):
-    from urp_lab import planning
+    from ceres_lab import planning
     first = {'run_id': 'a', 'state': 'done', 'status': 'feasible', 'check_valid': True,
              'total_distance_m': 10, 'makespan_s': 100, 'wall_s': 1,
              'predicted_makespan_s': 140, 'execution_estimate': {'status': 'estimated', 'model': fc.ESTIMATE_MODEL}}

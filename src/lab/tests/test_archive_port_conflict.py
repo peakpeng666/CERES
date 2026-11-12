@@ -1,7 +1,7 @@
 """A gateway must never proxy archive requests back into itself."""
 import pytest
 
-from urp_lab.gateway import Config, create_app
+from ceres_lab.gateway import Config, create_app
 
 
 @pytest.mark.parametrize('host', ['127.0.0.1', 'localhost', '[::1]'])

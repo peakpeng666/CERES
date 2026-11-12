@@ -58,7 +58,7 @@ class ObserverTests(unittest.TestCase):
     def setUp(self):
         self.clock = Clock()
         self.temp = tempfile.TemporaryDirectory()
-        self.obs = Observer({ENABLE: '1', 'URP_ACCEPTANCE_OWNER': 'PRIVATE'}, self.temp.name,
+        self.obs = Observer({ENABLE: '1', 'CERES_ACCEPTANCE_OWNER': 'PRIVATE'}, self.temp.name,
                             '/known/source', clock=self.clock)
         self.obs.bind('sim_fixture')
 
@@ -337,8 +337,8 @@ class ObserverTests(unittest.TestCase):
     def test_owned_group_exact_partition_and_profile(self):
         calls=self.start_fake('import time;time.sleep(30)')
         command,kw=calls[0]
-        self.assertEqual(kw['env']['IGN_PARTITION'],'urp_sim_fixture')
-        self.assertNotIn('URP_ACCEPTANCE_OWNER',kw['env'])
+        self.assertEqual(kw['env']['IGN_PARTITION'],'ceres_sim_fixture')
+        self.assertNotIn('CERES_ACCEPTANCE_OWNER',kw['env'])
         self.assertTrue(kw['start_new_session'])
         self.assertIn('/known/source/setup/profile.sh',command)
         self.assertNotIn('sim_fixture',str(command))

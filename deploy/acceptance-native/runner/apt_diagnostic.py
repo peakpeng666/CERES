@@ -81,8 +81,8 @@ def diagnose(source, private):
     with log.open('wb') as stream:
         try:
             result=subprocess.run(solver_command(source),env=env,timeout=90,check=False,stdout=stream,stderr=subprocess.STDOUT)
-            print('URP_APT_SOLVER_EXIT_'+str(result.returncode),flush=True)
-        except subprocess.TimeoutExpired:print('URP_APT_SOLVER_TIMEOUT',flush=True)
+            print('CERES_APT_SOLVER_EXIT_'+str(result.returncode),flush=True)
+        except subprocess.TimeoutExpired:print('CERES_APT_SOLVER_TIMEOUT',flush=True)
     projection_run(source,private,env)
 
 

@@ -21,7 +21,7 @@ class InstallOutcomeTests(unittest.TestCase):
                 echo 'The following packages have unmet dependencies:' > "$2/apt-solver-before-repair.log"
                 echo '{"status":"metadata_unavailable","dependencies":[],"metadata_phase":"metadata_project","metadata_error":"api_type","metadata_operation":"dependency_groups"}' > "$2/apt-dependencies-before-repair.json"
                 echo 'The following packages have unmet dependencies:'
-                echo 'URP_INSTALL_ATTEMPT_START 2'
+                echo 'CERES_INSTALL_ATTEMPT_START 2'
                 echo 'PRIVATE_UNKNOWN_ERROR'
                 exit 7
                 ''')
@@ -43,8 +43,8 @@ class InstallOutcomeTests(unittest.TestCase):
     def test_retry_boundary_excludes_resolved_conflict(self):
         with tempfile.TemporaryDirectory() as tmp:
             log=pathlib.Path(tmp)/'install.log'
-            log.write_text('URP_INSTALL_ATTEMPT_START 1\nThe following packages have unmet dependencies:\n'
-                           'URP_INSTALL_ATTEMPT_START 2\nGet:1 PRIVATE_URL PRIVATE_PACKAGE\n')
+            log.write_text('CERES_INSTALL_ATTEMPT_START 1\nThe following packages have unmet dependencies:\n'
+                           'CERES_INSTALL_ATTEMPT_START 2\nGet:1 PRIVATE_URL PRIVATE_PACKAGE\n')
             self.assertEqual(classify(log,7),'unknown')
             with log.open('a') as stream:
                 stream.write('E: Unable to locate package PRIVATE_PACKAGE\n')
@@ -59,9 +59,9 @@ class InstallOutcomeTests(unittest.TestCase):
             (root/'run.py').write_text(original.replace("'install.log', time.monotonic()+3600)","'install.log', time.monotonic()+.5)"))
             (root/'install.sh').write_text('#!/bin/bash\n'
                 'echo "The following packages have unmet dependencies:" > "$2/apt-solver.log"\n'
-                'echo "URP_INSTALL_ATTEMPT_START 2"\n'
+                'echo "CERES_INSTALL_ATTEMPT_START 2"\n'
                 'echo "Get:1 https://PRIVATE.invalid/PRIVATE PRIVATE_PACKAGE"\n'
-                'echo "+URP_SETUP sudo apt-get install -y PRIVATE" > "$2/installation-trace.log"\n'
+                'echo "+CERES_SETUP sudo apt-get install -y PRIVATE" > "$2/installation-trace.log"\n'
                 'sleep 300 &\nwait\n')
             result=subprocess.run([sys.executable,str(root/'run.py'),'--source',str(root),
                 '--harness',str(root),'--private-dir',str(root/'private'),'--harness-sha','a'*40],
@@ -102,7 +102,7 @@ class InstallOutcomeTests(unittest.TestCase):
                 ''')
             result=subprocess.run(['bash',str(pathlib.Path(__file__).with_name('install.sh').resolve()),
                 str(source),str(private)],env=dict(os.environ,PATH=str(bin_dir)+':'+os.environ['PATH'],
-                URP_HOST_APT_REPAIR='1'),capture_output=True,text=True,timeout=10)
+                CERES_HOST_APT_REPAIR='1'),capture_output=True,text=True,timeout=10)
             self.assertEqual(result.returncode,7)
             (private/'install.log').write_text(result.stdout)
             self.assertEqual(classify(private/'install.log',7),'unknown')
@@ -127,9 +127,9 @@ class InstallOutcomeTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             log=pathlib.Path(tmp)/'log'
             log.write_text('The following packages have unmet dependencies:\n'
-                           'URP_INSTALL_ATTEMPT_START 2 PRIVATE_SUFFIX\n')
+                           'CERES_INSTALL_ATTEMPT_START 2 PRIVATE_SUFFIX\n')
             self.assertEqual(classify(log,100),'apt_dependency_conflict')
-            log.write_text('URP_INSTALL_ATTEMPT_START 2\n'
+            log.write_text('CERES_INSTALL_ATTEMPT_START 2\n'
                            'The following packages have unmet dependencies:\n')
             self.assertEqual(classify(log,100),'apt_dependency_conflict')
 

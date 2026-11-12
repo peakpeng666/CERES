@@ -11,11 +11,11 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import gateway, paths
-from urp_lab.agent import ModelError, OpenAICompatibleModel, Reply, TOOLS, grounding, model_from_env
-from urp_lab.agent.manager import POLICY
-from urp_lab.compose import EXAMPLES
-from urp_lab.store import Store
+from ceres_lab import gateway, paths
+from ceres_lab.agent import ModelError, OpenAICompatibleModel, Reply, TOOLS, grounding, model_from_env
+from ceres_lab.agent.manager import POLICY
+from ceres_lab.compose import EXAMPLES
+from ceres_lab.store import Store
 
 FIELD_SESSION = 'field_20261029T101500_abc123'
 
@@ -23,7 +23,7 @@ FIELD_SESSION = 'field_20261029T101500_abc123'
 @pytest.fixture(autouse=True)
 def isolated_provider_selection(monkeypatch):
     # Scripted models and environment-client contracts must never consume a saved personal key.
-    monkeypatch.setattr('urp_lab.agent.providers.selected', lambda: None)
+    monkeypatch.setattr('ceres_lab.agent.providers.selected', lambda: None)
 
 
 class ScriptedModel:
@@ -251,11 +251,11 @@ def test_bad_tool_calls_come_back_as_errors_the_model_can_fix(workbench):
 
 
 def test_unconfigured_agent_reports_setup_and_refuses(workbench, monkeypatch):
-    for name in ('URP_LLM_API_KEY', 'ZHIPU_API_KEY'):
+    for name in ('CERES_LLM_API_KEY', 'ZHIPU_API_KEY'):
         monkeypatch.delenv(name, raising=False)
     c = workbench(None)
     status = c.get('/lab/api/research/agent').json()
-    assert status['configured'] is False and 'URP_LLM_API_KEY' in status['reason'] and status['tools']
+    assert status['configured'] is False and 'CERES_LLM_API_KEY' in status['reason'] and status['tools']
     refused = c.post('/lab/api/research/agent/sessions', json={'message': '你好'})
     assert refused.status_code == 503 and refused.json()['error'] == 'agent_unconfigured'
     assert c.post('/lab/api/research/agent/sessions', json={'message': ''}).status_code == 400
@@ -324,17 +324,17 @@ def test_openai_compatible_client_request_and_errors():
         failing.complete([], [])
 
     assert model_from_env({})[0] is None
-    configured, reason = model_from_env({'ZHIPU_API_KEY': 'k', 'URP_LLM_MODEL': 'glm-x'})
+    configured, reason = model_from_env({'ZHIPU_API_KEY': 'k', 'CERES_LLM_MODEL': 'glm-x'})
     assert reason is None and configured.describe()['endpoint'] == 'open.bigmodel.cn' and configured.model == 'glm-x'
-    assert model_from_env({'URP_LLM_API_KEY': 'k', 'URP_LLM_BASE_URL': 'http://example.com/v1'})[0] is None
-    assert model_from_env({'URP_LLM_API_KEY': 'k', 'URP_LLM_BASE_URL': 'http://127.0.0.1:11434/v1'})[0] is not None
+    assert model_from_env({'CERES_LLM_API_KEY': 'k', 'CERES_LLM_BASE_URL': 'http://example.com/v1'})[0] is None
+    assert model_from_env({'CERES_LLM_API_KEY': 'k', 'CERES_LLM_BASE_URL': 'http://127.0.0.1:11434/v1'})[0] is not None
 
 
 @pytest.mark.parametrize('kind', ['openai', 'anthropic'])
 def test_connected_provider_gets_research_tools_and_tool_history_in_its_own_format(monkeypatch, kind):
     """A provider chosen in Settings runs research turns through llm.chat, which takes the task agent's internal format."""
-    from urp_lab.agent import llm
-    from urp_lab.agent.research_llm import ConnectedModel
+    from ceres_lab.agent import llm
+    from ceres_lab.agent.research_llm import ConnectedModel
     sent = []
 
     def post(url, json=None, headers=None, timeout=None):

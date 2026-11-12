@@ -8,7 +8,7 @@ from types import SimpleNamespace as NS
 
 import pytest
 
-from urp_lab.execution_timing import (ExecutionTiming, REQUIRED_STREAMS, record_telemetry,
+from ceres_lab.execution_timing import (ExecutionTiming, REQUIRED_STREAMS, record_telemetry,
                                      resolve_budget_policy)
 from test_session_action_cancellation import session
 
@@ -253,7 +253,7 @@ def test_trigger_snapshot_is_complete_and_bounded_even_when_scan_fails_first():
 
 
 def test_real_session_observe_records_sources_without_changing_cached_messages():
-    source=Path(__file__).parents[1]/'ros/urp_sim_session.py'
+    source=Path(__file__).parents[1]/'ros/ceres_sim_session.py'
     cls=next(n for n in ast.parse(source.read_text()).body if isinstance(n,ast.ClassDef) and n.name=='Session')
     methods=[n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name in ('observe','sim_time')]
     ns={'time':NS(monotonic=lambda:100),'stamp':lambda s:s.sec+s.nanosec/1e9,

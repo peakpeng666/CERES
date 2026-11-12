@@ -8,7 +8,7 @@ import time
 
 import pytest
 
-from urp_lab import worker
+from ceres_lab import worker
 
 
 @pytest.fixture
@@ -127,7 +127,7 @@ def test_real_watchdog_still_times_out_solver(request_and_result, timer_fallback
     request['params']['time_limit_s'] = 0.05
     code = '''
 import time
-from urp_lab import worker
+from ceres_lab import worker
 worker.run_algorithm = lambda *args: time.sleep(10)
 raise SystemExit(worker.main())
 '''
@@ -145,7 +145,7 @@ def test_main_with_slow_estimate_returns_one_success_json(request_and_result, ti
     request['params']['time_limit_s'] = 0.05
     code = f'''
 import json
-from urp_lab import worker
+from ceres_lab import worker
 worker.run_algorithm = lambda *args: json.loads({json.dumps(result)!r})
 worker._ESTIMATE_CODE = 'import time; time.sleep(30)'
 raise SystemExit(worker.main())

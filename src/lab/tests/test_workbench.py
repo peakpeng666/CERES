@@ -6,15 +6,15 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import analysis
-from urp_lab.compose import EXAMPLES, compose
-from urp_lab.compose.geo import export_geojson, import_geojson
-from urp_lab.compose.nl import cn_number, parse
-from urp_lab.library import cvrplib, references
-from urp_lab.recommend import recommend
-from urp_lab.scenarios import get_scenario
-from urp_lab.scenarios.validate import validate_instance
-from urp_lab.solvers import catalog, run_algorithm
+from ceres_lab import analysis
+from ceres_lab.compose import EXAMPLES, compose
+from ceres_lab.compose.geo import export_geojson, import_geojson
+from ceres_lab.compose.nl import cn_number, parse
+from ceres_lab.library import cvrplib, references
+from ceres_lab.recommend import recommend
+from ceres_lab.scenarios import get_scenario
+from ceres_lab.scenarios.validate import validate_instance
+from ceres_lab.solvers import catalog, run_algorithm
 
 
 def test_chinese_numbers():
@@ -73,7 +73,7 @@ def test_routes_avoid_obstacles():
 
 
 def test_checker_catches_tampering():
-    from urp_lab.solvers import fleet
+    from ceres_lab.solvers import fleet
     sc = _scenario(EXAMPLES[2])
     r = run_algorithm(sc, sc['instance'], 'panel.sweep', {})
     routes = r['routes']
@@ -82,8 +82,8 @@ def test_checker_catches_tampering():
 
 
 def test_lane_graph_connects_every_lane_and_task():
-    from urp_lab import lanes
-    from urp_lab.solvers.fleet import LaneGraph
+    from ceres_lab import lanes
+    from ceres_lab.solvers.fleet import LaneGraph
     sc = _scenario(EXAMPLES[0])
     inst = sc['instance']
     assert inst['vehicles']['travel'] == 'rows'  # generated field maps drive along the crop rows
@@ -108,7 +108,7 @@ def test_lane_graph_connects_every_lane_and_task():
 def test_rows_routes_never_cross_crop_rows(algorithm):
     from shapely.geometry import LineString
     from shapely.strtree import STRtree
-    from urp_lab import lanes
+    from ceres_lab import lanes
     sc = _scenario(EXAMPLES[0])
     inst = sc['instance']
     r = run_algorithm(sc, inst, algorithm, {'time_limit_s': 0.5})
@@ -135,8 +135,8 @@ def test_rows_routes_never_cross_crop_rows(algorithm):
 def test_checker_rejects_shortcut_across_crop_rows():
     from shapely.geometry import LineString
     from shapely.strtree import STRtree
-    from urp_lab import lanes
-    from urp_lab.solvers import fleet
+    from ceres_lab import lanes
+    from ceres_lab.solvers import fleet
     sc = _scenario(EXAMPLES[0])
     inst = sc['instance']
     r = run_algorithm(sc, inst, 'panel.savings_fleet', {})
@@ -224,7 +224,7 @@ def test_analysis_statistics():
 
 
 def test_gateway_compose_edit_solve(tmp_path, monkeypatch):
-    from urp_lab import gateway, paths
+    from ceres_lab import gateway, paths
     monkeypatch.setattr(paths, 'USER_SCENARIOS', tmp_path / 'scenarios')
     app = gateway.create_app(gateway.Config(port=4199, runtime=tmp_path, background=False))
     with TestClient(app, base_url='http://127.0.0.1:4199') as c:
@@ -244,7 +244,7 @@ def test_gateway_compose_edit_solve(tmp_path, monkeypatch):
         assert rec['recommended'] in {a['id'] for a in catalog()}
         assert c.get('/lab/api/references').json()['references']
         assert c.get('/lab/api/library/cvrplib/sets').json()['sets']
-        assert c.get('/lab/api/source', params={'path': 'src/lab/urp_lab/solvers/fleet.py'}).status_code == 200
+        assert c.get('/lab/api/source', params={'path': 'src/lab/ceres_lab/solvers/fleet.py'}).status_code == 200
         assert c.get('/lab/api/source', params={'path': '../../etc/passwd'}).status_code == 403
         geo = c.get(f"/lab/api/scenarios/{sc['id']}/export", params={'format': 'geojson'})
         assert geo.status_code == 200 and b'FeatureCollection' in geo.content
@@ -254,8 +254,8 @@ def test_gateway_compose_edit_solve(tmp_path, monkeypatch):
 
 
 def test_task_map_on_real_field():
-    from urp_lab.compose import from_field
-    from urp_lab.library import fields
+    from ceres_lab.compose import from_field
+    from ceres_lab.library import fields
     if not fields.status()['downloaded']:
         pytest.skip('Fields2Benchmark 未下载')
     sc = from_field('nl_field_7', '3 台机器人采样 20 个点，避开一个池塘')
@@ -280,8 +280,8 @@ def test_makespan_model_beats_distance_routes_on_latest_finish():
 def test_gazebo_world_from_fleet_plan(tmp_path):
     import struct
     import xml.etree.ElementTree as ET
-    from urp_lab import fieldworld
-    from urp_lab.fieldsim import marker_layers
+    from ceres_lab import fieldworld
+    from ceres_lab.fieldsim import marker_layers
     sc = _scenario(EXAMPLES[0])
     r = run_algorithm(sc, sc['instance'], 'panel.savings_fleet', {})
     meta = fieldworld.build(sc['instance'], r['routes'], tmp_path, 'field_test', 4.0)
@@ -372,7 +372,7 @@ def test_constructive_baselines_reject_heterogeneous_fleet(algorithm):
 
 
 def test_heterogeneous_checker_catches_tampering():
-    from urp_lab.solvers.fleet import check as fleet_check
+    from ceres_lab.solvers.fleet import check as fleet_check
     sc = _fleet_scenario(EXAMPLES[0], HETERO_FLEET)
     r = run_algorithm(sc, sc['instance'], 'pyvrp.fleet', {'time_limit_s': 1})
     routes = r['routes']
@@ -446,7 +446,7 @@ def test_recommendation_for_heterogeneous_fleet():
 
 # ------------------------------------------------ curvature-constrained fleet --
 def test_curvature_constrained_fleet_solves_and_checks():
-    from urp_lab.solvers.fleet import min_curvature_radius
+    from ceres_lab.solvers.fleet import min_curvature_radius
     sc = _fleet_scenario(EXAMPLES[0], [{'name': '阿克曼运输车', 'count': 2, 'capacity': 20, 'min_turn_radius_m': 1.5},
                                        {'name': '差速快车', 'count': 1, 'capacity': 10, 'speed_mps': 1.8}], travel='free')
     r = run_algorithm(sc, sc['instance'], 'pyvrp.fleet', {'time_limit_s': 2})
@@ -479,7 +479,7 @@ def test_curvature_length_exceeds_straight_line_and_makespan_uses_it():
 
 
 def test_curvature_checker_catches_sharp_insert():
-    from urp_lab.solvers.fleet import check as fleet_check
+    from ceres_lab.solvers.fleet import check as fleet_check
     sc = _fleet_scenario(EXAMPLES[0], [{'name': '阿克曼车', 'count': 2, 'capacity': 20, 'min_turn_radius_m': 1.5}], travel='free')
     r = run_algorithm(sc, sc['instance'], 'pyvrp.fleet', {'time_limit_s': 1})
     routes = r['routes']
@@ -526,7 +526,7 @@ CORRIDOR_GEOJSON = {
 
 
 def _corridor_scenario(travel='rows'):
-    from urp_lab import lanes as _lanes
+    from ceres_lab import lanes as _lanes
     sc = import_geojson(CORRIDOR_GEOJSON, vehicles={'count': 1})
     inst = validate_instance('fleet_routing', sc['instance'])
     inst['vehicles']['travel'] = travel
@@ -549,7 +549,7 @@ def test_geojson_corridor_import_and_roundtrip():
 
 def test_corridor_stays_unplanted_and_open_for_rows_travel():
     from shapely.geometry import Polygon
-    from urp_lab import lanes
+    from ceres_lab import lanes
     from shapely.ops import unary_union
     sc, inst = _corridor_scenario()
     net = lanes.Network(inst)
@@ -564,7 +564,7 @@ def test_corridor_scenario_solves_along_rows():
     r = run_algorithm(sc, inst, 'pyvrp.fleet', {'time_limit_s': 1})
     assert r['status'] == 'feasible' and r['check']['valid'], r['check']
     from shapely.geometry import LineString
-    from urp_lab import lanes
+    from ceres_lab import lanes
     crop_rows = lanes.Network(inst).rows()
     for route in r['routes']:
         for a, b in zip(route['polyline'], route['polyline'][1:]):
@@ -611,7 +611,7 @@ def test_multi_depot_fleet_solves_and_checks(algorithm):
 
 
 def test_multi_depot_spreads_vehicles_over_depots():
-    from urp_lab.solvers import fleet as F
+    from ceres_lab.solvers import fleet as F
     sc = _multi_depot_scenario(2, count=4)
     table = F.vehicle_table(sc['instance'])
     depots_used = {di for _vi, _ci, _cls, di in table}
@@ -622,7 +622,7 @@ def test_multi_depot_spreads_vehicles_over_depots():
 
 
 def test_multi_depot_checker_rejects_wrong_depot_return():
-    from urp_lab.solvers.fleet import check as fleet_check
+    from ceres_lab.solvers.fleet import check as fleet_check
     sc = _multi_depot_scenario(2, count=2)
     r = run_algorithm(sc, sc['instance'], 'pyvrp.fleet', {'time_limit_s': 1})
     routes = r['routes']
@@ -678,7 +678,7 @@ def test_multi_depot_geojson_roundtrip_and_world_parking(tmp_path):
     assert r['status'] == 'feasible' and r['check']['valid']
     again = import_geojson(_json.loads(export_geojson(sc, None)), vehicles={'count': 2})
     assert len(validate_instance('fleet_routing', again['instance'])['depots']) == 2
-    from urp_lab import fieldworld
+    from ceres_lab import fieldworld
     plan = fieldworld.build(inst, r['routes'], tmp_path, 'multi_depot', 4.0)
     homes = [tuple(v['start'][:2]) for v in plan['vehicles']]
     for v, route in zip(plan['vehicles'], r['routes']):
@@ -728,7 +728,7 @@ def test_curvature_wide_gap_stays_analytic():
 def test_oriented_footprint_clearance_is_reported_not_gating():
     """A 0.8×0.48 rectangle inside a 0.5 m circle: the oriented clearance must be ≥ the circle
     clearance (less conservative), reported per route, and never decides acceptance."""
-    from urp_lab.solvers.fleet import check as fleet_check
+    from ceres_lab.solvers.fleet import check as fleet_check
     sc = _fleet_scenario(EXAMPLES[0], [{'count': 2, 'capacity': 20,
                                         'footprint': {'type': 'polygon',
                                                       'points': [[-0.4, -0.24], [0.4, -0.24], [0.4, 0.24], [-0.4, 0.24]]}}])
@@ -781,7 +781,7 @@ def test_unload_point_shortens_makespan_and_is_verified():
 
 
 def test_unload_point_tampering_is_rejected():
-    from urp_lab.solvers.fleet import check as fleet_check
+    from ceres_lab.solvers.fleet import check as fleet_check
     sc = {'problem_class': 'fleet_routing', 'frame': {'kind': 'field'}, 'cost_unit': 's'}
     r = run_algorithm(sc, _unload_scenario(True), 'ortools.fleet', {'time_limit_s': 3})
     assert r['status'] == 'feasible' and r['check']['valid']

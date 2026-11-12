@@ -17,7 +17,7 @@ Ubuntu 22.04 x86_64（WSL2 或原生）的完整安装：
 bash setup/ubuntu/setup.sh --components full
 ```
 
-`--components` 与安装器的 `URP_COMPONENTS` 对应：
+`--components` 与安装器的 `CERES_COMPONENTS` 对应：
 
 | 组件 | 安装内容 |
 |---|---|
@@ -25,7 +25,7 @@ bash setup/ubuntu/setup.sh --components full
 | `research` | 两套 Python 环境、Node / 前端、JDK 17、AILS 与 SISR；不安装 ROS |
 | `full`（默认） | 合并上面两组，并下载、校验和安装 Fields2Cover 及其系统库 |
 
-`research` 是当前 CVRP 数值基线环境，不包含历史 NAS 训练栈。Docker 的 `urp-sim` 包含完整运行栈，`urp-bench` 包含规划与 CVRP 基线，不含 ROS / Fields2Cover。
+`research` 是当前 CVRP 数值基线环境，不包含历史 NAS 训练栈。Docker 的 `ceres-sim` 包含完整运行栈，`ceres-bench` 包含规划与 CVRP 基线，不含 ROS / Fields2Cover。
 
 手动准备 Python 与前端时：
 
@@ -58,8 +58,8 @@ uv sync --locked --extra solvers --python 3.12.13
 | `torch` | 只出现在 `src/research` 的 NAS 试验代码。网关、档案后端和仿真会话不 import 它。 |
 | `fields2cover` | 由固定 Release 轮子安装，不在 PyPI 锁里。`full` 必须安装成功；`workbench` / `research` 默认只检查本地轮子，缺少时使用覆盖往复基线。下载和 ABI 依赖见下节。 |
 | `rclpy`、`sensor_msgs`、`geometry_msgs`、`nav_msgs`、`nav2_msgs`、`tf2_ros`、`tf2_msgs`、`rosgraph_msgs`、`visualization_msgs`、`std_msgs`、`irobot_create_msgs`、`rcl_interfaces`、`ros_gz_interfaces` | ROS 2 Humble 的系统包，给 `/usr/bin/python3`（Ubuntu 22.04 上的 3.10）用，不进 3.12 虚拟环境。 |
-| 档案后端 `src/backend` | 标准库。CVRP 任务再 import 研究目录里的 `urp_research.cvrplib`，求解包来自根环境的 `solvers` extra。 |
-| `urp_research.cvrp_selection` | 网关的学习特征模块 import 它，该包本身只用标准库。 |
+| 档案后端 `src/backend` | 标准库。CVRP 任务再 import 研究目录里的 `ceres_research.cvrplib`，求解包来自根环境的 `solvers` extra。 |
+| `ceres_research.cvrp_selection` | 网关的学习特征模块 import 它，该包本身只用标准库。 |
 
 ## CVRP 原生基线与 Fields2Cover
 
@@ -71,7 +71,7 @@ Fields2Cover 2.1.0 使用 CPython 3.12 / Linux x86_64 wheel，运行库见 `depl
 
 源码安装支持 `--fields2cover auto|required|skip`。`workbench` / `research` 默认 `auto`，仅安装本地已有且校验通过的轮子；`required` 会下载并安装；`skip` 跳过。`full` 固定为 `required`，缺少资源或校验失败时停止。
 
-安装末尾执行 `deploy/check-runtime.py`，将版本、导入、原生绑定、合成基线与所选 ROS 命令的检查写入 `.local-state/deploy/runtime-*/runtime.json`。复核命令见 [安装验载](../DEPLOY.md#安装验载)；镜像内也提供该脚本，`urp-sim` 用 `--components full`，`urp-bench` 用 `--components research --fields2cover skip`。物理仿真与正式研究复现单独进行。
+安装末尾执行 `deploy/check-runtime.py`，将版本、导入、原生绑定、合成基线与所选 ROS 命令的检查写入 `.local-state/deploy/runtime-*/runtime.json`。复核命令见 [安装验载](../DEPLOY.md#安装验载)；镜像内也提供该脚本，`ceres-sim` 用 `--components full`，`ceres-bench` 用 `--components research --fields2cover skip`。物理仿真与正式研究复现单独进行。
 
 ## 工作台虚拟环境（`src/lab/uv.lock`，56 个）
 
@@ -126,7 +126,7 @@ tqdm==4.70.1
 typing-extensions==4.16.0
 typing-inspection==0.4.4
 tzdata==2026.5
-urp-lab==0.1.0
+ceres-lab==0.1.0
 uvicorn==0.54.0
 uvloop==0.23.0
 vrplib==2.2.0
@@ -165,7 +165,7 @@ six==1.17.0
 tqdm==4.70.1
 typing-extensions==4.16.0
 tzdata==2026.5
-urp-workspace==0.1.0
+ceres-workspace==0.1.0
 vrplib==2.2.0
 ```
 
@@ -270,15 +270,15 @@ Python 轮子是 manylinux 包，数值库的 `.so` 在轮子里。仿真的共�
 
 | 路径 | 如何得到 |
 |---|---|
-| `data/backend/research.sqlite3` | **在 Git 里**。首次启动由 `tools/runtime_db.py` 复制到 `URP_API_DB`（默认 `.local-state/research.sqlite3`，容器里是卷 `/data/archive/research.sqlite3`）。不要覆盖这份冻结库。 |
+| `data/backend/research.sqlite3` | **在 Git 里**。首次启动由 `tools/runtime_db.py` 复制到 `CERES_API_DB`（默认 `.local-state/research.sqlite3`，容器里是卷 `/data/archive/research.sqlite3`）。不要覆盖这份冻结库。 |
 | `data/packages/` | **在 Git 里**。档案的 `--import-root`。 |
 | `data/research/` | **在 Git 里**。选择特征数据。 |
 | `src/lab/runtime/` | 运行时生成：场景、`lab.sqlite3`、仿真日志。容器卷 `/data/lab`。 |
 | `src/lab/vendor/wheels/fields2cover-2.1.0-cp312-cp312-linux_x86_64.whl` | 不在 Git 里。`full` 从固定 Release 获取，SHA256 为 `0fe53e459024b282be455b2a4bdbca3d93efa029539ff87c88c1105361344c19`；路径与指纹由 `src/lab/vendor/fields2cover-manifest.json` 管理。 |
 | `setup/2026-10-15/deployment/runtime/ros-extras` | 不在 Git 里。Foxglove 与 rosx 的 deb 解包。`bash src/lab/ros/native/install-ros-extras.sh` 可以用 apt 重新下载。 |
 | `setup/2026-10-15/deployment/runtime/tf-repro/liburp_tf_buffer.so`、`runtime/liburp_gui_lifetime.so`、`src/lab/runtime/native/bridge/parameter_bridge` | 主人笔记本上的验收二进制。别的机器运行 `python3 deploy/record-sim-profiles.py` 生成自己的产物和 profile，不要复制这些文件来通过检查。 |
-| Fuel 模型缓存 | 新镜像不包含。`maze` 无需下载；`warehouse` / `depot` 由使用者显式执行 `urp fuel`，从 `https://fuel.gazebosim.org` 下载到本机。旧快照另有 `fuel-cache` 组件，其模型许可和文件清单按原发布记录保留。 |
-| CVRPLIB 实例正文 | 目录 JSON 在 `src/lab/urp_lab/library/data/cvrplib-catalog.json`。单题按需从 `https://galgos.inf.puc-rio.br/cvrplib` 下载到运行目录，无密钥。 |
+| Fuel 模型缓存 | 新镜像不包含。`maze` 无需下载；`warehouse` / `depot` 由使用者显式执行 `ceres fuel`，从 `https://fuel.gazebosim.org` 下载到本机。旧快照另有 `fuel-cache` 组件，其模型许可和文件清单按原发布记录保留。 |
+| CVRPLIB 实例正文 | 目录 JSON 在 `src/lab/ceres_lab/library/data/cvrplib-catalog.json`。单题按需从 `https://galgos.inf.puc-rio.br/cvrplib` 下载到运行目录，无密钥。 |
 
 不要把 `data/bpp`（约 206 MB）或 `data/cifar-training` 打进工作台镜像。历史 BPP 页在数据未恢复时显示无历史数据，这是现有行为。
 
@@ -288,24 +288,24 @@ Python 轮子是 manylinux 包，数值库的 `.so` 在轮子里。仿真的共�
 
 | 变量 | 默认 | 含义 |
 |---|---|---|
-| `URP_REF` | `deploy` | 安装来源；可用发布标签、完整提交号或源码分支，后续命令沿用保存的选择 |
-| `URP_IMAGE_TAG` | 所选已发布标签 | Docker 镜像标签；完整 SHA 与 OCI revision 核对 |
-| `URP_COMPONENTS` | `full` | 源码安装组件：`workbench` / `research` / `full` |
-| `URP_BIND_HOST` | `127.0.0.1` | 网关监听地址。WSL 与容器设为 `0.0.0.0` |
-| `URP_PORT` | `4100` | 源码网关端口；Compose 仅改宿主机发布端口，容器内固定 4100 |
-| `URP_PUBLISH_HOST` | `127.0.0.1` | 仅 Compose：宿主机发布地址 |
-| `URP_EXTRA_HOSTS` | 空 | 额外允许的 Host，逗号分隔 |
-| `URP_ADMIN_TOKEN` | 空 | 一旦设置，关闭接口必须带 `X-URP-Admin-Token` 或 `Authorization: Bearer` |
-| `URP_ARCHIVE_URL` | `http://127.0.0.1:4180` | 档案后端 |
-| `URP_ARCHIVE_AUTOSTART` | `1` | `0` 时网关不拉起档案进程 |
-| `URP_API_DB` | `.local-state/research.sqlite3` | 档案库 |
-| `URP_API_PORT` | `4180` | 档案端口 |
-| `URP_LAB_RUNTIME` | `src/lab/runtime` | 网关运行目录 |
-| `URP_FOXGLOVE_BIND` | `127.0.0.1` | Foxglove 监听地址 |
-| `URP_BROWSER_HOST` | `127.0.0.1` | 页面里使用的 WebSocket 主机名 |
-| `URP_BRIDGE_FIX` / `URP_TF_FIX` / `URP_GUI_FIX` | `1` | `0` 表示用未打补丁的系统实现，只作对照 |
-| `URP_RMW` | `rmw_cyclonedds_cpp` | 仿真 RMW |
-| `URP_ROS_DOMAIN_ID` | `139`（profile） | 验收脚本会改成隔离域 |
+| `CERES_REF` | `deploy` | 安装来源；可用发布标签、完整提交号或源码分支，后续命令沿用保存的选择 |
+| `CERES_IMAGE_TAG` | 所选已发布标签 | Docker 镜像标签；完整 SHA 与 OCI revision 核对 |
+| `CERES_COMPONENTS` | `full` | 源码安装组件：`workbench` / `research` / `full` |
+| `CERES_BIND_HOST` | `127.0.0.1` | 网关监听地址。WSL 与容器设为 `0.0.0.0` |
+| `CERES_PORT` | `4100` | 源码网关端口；Compose 仅改宿主机发布端口，容器内固定 4100 |
+| `CERES_PUBLISH_HOST` | `127.0.0.1` | 仅 Compose：宿主机发布地址 |
+| `CERES_EXTRA_HOSTS` | 空 | 额外允许的 Host，逗号分隔 |
+| `CERES_ADMIN_TOKEN` | 空 | 一旦设置，关闭接口必须带 `X-CERES-Admin-Token` 或 `Authorization: Bearer` |
+| `CERES_ARCHIVE_URL` | `http://127.0.0.1:4180` | 档案后端 |
+| `CERES_ARCHIVE_AUTOSTART` | `1` | `0` 时网关不拉起档案进程 |
+| `CERES_API_DB` | `.local-state/research.sqlite3` | 档案库 |
+| `CERES_API_PORT` | `4180` | 档案端口 |
+| `CERES_LAB_RUNTIME` | `src/lab/runtime` | 网关运行目录 |
+| `CERES_FOXGLOVE_BIND` | `127.0.0.1` | Foxglove 监听地址 |
+| `CERES_BROWSER_HOST` | `127.0.0.1` | 页面里使用的 WebSocket 主机名 |
+| `CERES_BRIDGE_FIX` / `CERES_TF_FIX` / `CERES_GUI_FIX` | `1` | `0` 表示用未打补丁的系统实现，只作对照 |
+| `CERES_RMW` | `rmw_cyclonedds_cpp` | 仿真 RMW |
+| `CERES_ROS_DOMAIN_ID` | `139`（profile） | 验收脚本会改成隔离域 |
 | `LIBGL_ALWAYS_SOFTWARE` | 容器默认 `1` | 软件 OpenGL |
 | `DISPLAY` / `XAUTHORITY` | 空 | 仅本机打开 Gazebo/RViz 窗口 |
 
@@ -314,8 +314,8 @@ Python 轮子是 manylinux 包，数值库的 `.so` 在轮子里。仿真的共�
 代码里的绝对路径：
 
 - `/opt/ros/humble`：仿真与地图。不是笔记本家目录。
-- `/home/peakpeng/Desktop/URP` 和 `/home/peakpeng/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu`：只出现在已发布的平台镜像入口（`setup/platform/Dockerfile`、`tools/platform_deploy.py`）。新的 Compose 镜像用 `/opt/urp`，不再依赖这个家目录。
-- `~/.cache/urp/physical-session.lock`：仿真互斥锁。
+- `/home/peakpeng/Desktop/CERES` 和 `/home/peakpeng/.local/share/uv/python/cpython-3.12.13-linux-x86_64-gnu`：只出现在已发布的平台镜像入口（`setup/platform/Dockerfile`、`tools/platform_deploy.py`）。新的 Compose 镜像用 `/opt/urp`，不再依赖这个家目录。
+- `~/.cache/ceres/physical-session.lock`：仿真互斥锁。
 - `~/.nvm`：`setup/run.sh` 在 PATH 里没有 `node` 时才查找。
 
 端口：`4100` 网关，`4180` 档案（只在本机，不发布），`4191` TB4 控制，`4192` 田间仿真控制，`8765` Foxglove，`9002` Gazebo WebSocket。后四个由网关在同一台机器上拉起，不是独立的 Compose 服务。

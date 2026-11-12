@@ -4,10 +4,10 @@ from xml.etree import ElementTree as ET
 
 import pytest
 
-from urp_lab.field_actuation import JOINTS, JOINT_STATE_PLUGIN, WheelOdometry
-from urp_lab import field_physics, fieldworld
-from urp_lab.scenarios.validate import fleet_routing
-from urp_lab.solvers import fleet
+from ceres_lab.field_actuation import JOINTS, JOINT_STATE_PLUGIN, WheelOdometry
+from ceres_lab import field_physics, fieldworld
+from ceres_lab.scenarios.validate import fleet_routing
+from ceres_lab.solvers import fleet
 
 
 def test_encoder_missing_data_cannot_create_fresh_odometry():

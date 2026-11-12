@@ -3,10 +3,10 @@ import copy
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import analysis, paths
-from urp_lab.gateway import Config, create_app
-from urp_lab.planning import comparison_key, context, fingerprint, trace_context, validate_frame, without_stale_reference
-from urp_lab.scenarios import ScenarioConflict, get_scenario, save_user_scenario
+from ceres_lab import analysis, paths
+from ceres_lab.gateway import Config, create_app
+from ceres_lab.planning import comparison_key, context, fingerprint, trace_context, validate_frame, without_stale_reference
+from ceres_lab.scenarios import ScenarioConflict, get_scenario, save_user_scenario
 
 
 def cvrp():
@@ -113,8 +113,8 @@ def test_validation_and_revision_api(tmp_path, monkeypatch):
 
 def test_abstract_cvrp_fleet_is_not_an_asset_binding(tmp_path, monkeypatch):
     import time
-    from urp_lab.assets import bindings
-    from urp_lab.services import ServiceError
+    from ceres_lab.assets import bindings
+    from ceres_lab.services import ServiceError
     monkeypatch.setattr(paths, 'USER_SCENARIOS', tmp_path / 'scenarios')
     stored = save_user_scenario(scenario())
     abstract = {**cvrp(), 'fleet': 'unlimited_identical_vehicles'}
@@ -144,7 +144,7 @@ def test_dimensionless_coordinates_are_not_silently_metres(problem):
 
 
 def test_tb4_admission_preserves_motion_model_scope():
-    from urp_lab.simplan import to_sim_plan, NotSimulatable
+    from ceres_lab.simplan import to_sim_plan, NotSimulatable
     sc = {'problem_class': 'point_to_point', 'instance': {'motion_model': 'dubins'}}
     r = {'frame': {'kind': 'map', 'units': 'm'}, 'check': {'valid': True},
          'map_check': {'collision_free': True}, 'routes': [{}], 'instance': sc['instance']}
@@ -153,7 +153,7 @@ def test_tb4_admission_preserves_motion_model_scope():
 
 
 def test_bool_is_not_a_numeric_solver_parameter():
-    from urp_lab.jobs import resolve_params
+    from ceres_lab.jobs import resolve_params
     with pytest.raises(ValueError, match='布尔'):
         resolve_params({'id': 'test', 'params': [{'name': 'seed', 'type': 'integer'}]}, {'seed': True})
 
@@ -161,7 +161,7 @@ def test_bool_is_not_a_numeric_solver_parameter():
 def test_frozen_map_identity_does_not_use_todays_installed_map(monkeypatch):
     r = run()
     r['frame'] = {'kind': 'map', 'units': 'm', 'world': 'maze'}
-    from urp_lab.scenarios import maps
+    from ceres_lab.scenarios import maps
     monkeypatch.setattr(maps, 'fingerprint', lambda _: 'old-map')
     r['planning'] = context({**r['scenario_snapshot'], 'frame': r['frame']}, r['instance'], r)
     frozen = comparison_key(r)
@@ -172,7 +172,7 @@ def test_frozen_map_identity_does_not_use_todays_installed_map(monkeypatch):
 
 @pytest.mark.parametrize('key', ['time_windows', 'line_tasks', 'energy_constraints', 'resource_capacities'])
 def test_unimplemented_constraints_are_not_silently_ignored(key):
-    from urp_lab.scenarios import validate_instance
+    from ceres_lab.scenarios import validate_instance
     instance = cvrp()
     instance[key] = [{'required': True}]
     with pytest.raises(ValueError, match='尚未实现'):
@@ -181,8 +181,8 @@ def test_unimplemented_constraints_are_not_silently_ignored(key):
 
 
 def test_seed_roles_and_frozen_override_input():
-    from urp_lab.jobs import skeleton
-    from urp_lab.solvers import catalog
+    from ceres_lab.jobs import skeleton
+    from ceres_lab.solvers import catalog
     algorithms = {a['id']: a for a in catalog()}
     assert algorithms['pyvrp.ils']['randomness']['uses_seed']
     assert not algorithms['ortools.gls']['randomness']['uses_seed']
@@ -197,8 +197,8 @@ def test_seed_roles_and_frozen_override_input():
 
 
 def test_point_goal_tolerance_is_kept_and_independently_checked(monkeypatch):
-    from urp_lab.simplan import to_sim_plan
-    from urp_lab import execution_check
+    from ceres_lab.simplan import to_sim_plan
+    from ceres_lab import execution_check
     inst = {'motion_model': 'holonomic', 'goal': [1, 0, 0], 'goal_tolerance': .01}
     r = {'frame': {'kind': 'map', 'units': 'm'}, 'check': {'valid': True}, 'map_check': {'collision_free': True},
          'instance': inst, 'algorithm': {'origin': 'test'}, 'routes': [{'polyline': [[0, 0], [1, 0]]}]}

@@ -25,7 +25,7 @@ def main():
     verifier=load('offline_verifier',ROOT/'recipe/verify_prepared_inputs.py')
     lock=g.read_json(ROOT/'reviewed-inputs.lock.json')
     prefix,commands=verifier.verify_prepared(ROOT,sys.executable,lock,g)
-    g.require(Path(sys.executable)==Path('/opt/urp-python/bin/python3.12'),'wrong Python selection')
+    g.require(Path(sys.executable)==Path('/opt/ceres-python/bin/python3.12'),'wrong Python selection')
     g.require(sys.version_info[:3]==(3,12,13),'wrong Python ABI patch')
     g.require(not OUT.exists() and not OUT.is_symlink(),'never reuse build output')
     g.require(shutil.disk_usage(OUT.parent).free>=lock['build']['minimum_free_bytes'],'insufficient bounded build storage')

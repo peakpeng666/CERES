@@ -3,10 +3,10 @@ import copy
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import paths
-from urp_lab.assets import bindings, importer, store
-from urp_lab.gateway import Config, create_app
-from urp_lab.services import ServiceError
+from ceres_lab import paths
+from ceres_lab.assets import bindings, importer, store
+from ceres_lab.gateway import Config, create_app
+from ceres_lab.services import ServiceError
 from test_backend_integrity import solution
 
 

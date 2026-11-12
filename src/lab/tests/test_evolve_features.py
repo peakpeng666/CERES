@@ -1,11 +1,11 @@
-"""Invariance and correctness checks for the agricultural feature library (urp_lab.evolve.features)."""
+"""Invariance and correctness checks for the agricultural feature library (ceres_lab.evolve.features)."""
 import math
 import random
 
 import pytest
 
-from urp_lab.evolve import features as F
-from urp_lab.evolve.geometry import dubins_length, uturn_length
+from ceres_lab.evolve import features as F
+from ceres_lab.evolve.geometry import dubins_length, uturn_length
 
 L_SHAPE = [[0, 0], [200, 0], [200, 60], [80, 60], [80, 150], [0, 150]]
 IRREGULAR = [[0, 0], [130, -12], [260, 8], [300, 90], [250, 170], [170, 150], [120, 210], [40, 180], [-10, 90]]
@@ -104,7 +104,7 @@ def test_feature_order_and_groups_are_stable():
 
 
 def test_real_field_rotation_invariance():
-    from urp_lab.library import fields
+    from ceres_lab.library import fields
     try:
         fid = next(i for i in fields.all_ids() if i.startswith('nl_'))
     except StopIteration:

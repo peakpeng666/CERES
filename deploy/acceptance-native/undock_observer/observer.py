@@ -46,8 +46,8 @@ def ros_dependencies():
 
 def main(argv=None):
     parser=argparse.ArgumentParser();parser.add_argument('--port',type=int,required=True);parser.add_argument('--output',type=pathlib.Path,required=True);args=parser.parse_args(argv)
-    if not (1<=args.port<=65535 and os.environ.get('ROS_DOMAIN_ID')=='146' and os.environ.get('RMW_IMPLEMENTATION')=='rmw_cyclonedds_cpp' and os.environ.get('ROS_LOCALHOST_ONLY')=='1' and re.fullmatch('[0-9a-f]{48}',os.environ.get('URP_ACCEPTANCE_OWNER',''))):raise ValueError('scope_invalid')
-    runtime=pathlib.Path(os.environ['URP_LAB_RUNTIME'])
+    if not (1<=args.port<=65535 and os.environ.get('ROS_DOMAIN_ID')=='146' and os.environ.get('RMW_IMPLEMENTATION')=='rmw_cyclonedds_cpp' and os.environ.get('ROS_LOCALHOST_ONLY')=='1' and re.fullmatch('[0-9a-f]{48}',os.environ.get('CERES_ACCEPTANCE_OWNER',''))):raise ValueError('scope_invalid')
+    runtime=pathlib.Path(os.environ['CERES_LAB_RUNTIME'])
     if not runtime.is_absolute() or runtime.is_symlink() or not runtime.is_dir():raise ValueError('runtime_invalid')
     # Output must be a new file inside the already-private invocation directory.
     if args.output.parent.resolve()!=runtime.parent.resolve() or args.output.exists() or args.output.is_symlink():raise ValueError('output_invalid')
@@ -58,7 +58,7 @@ def main(argv=None):
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
     try:
         rclpy,SignalHandlerOptions,qos_profile_sensor_data,Clock,Odometry,Twist,DockStatus,WheelStatus=ros_dependencies()
-        rclpy.init(signal_handler_options=SignalHandlerOptions.NO);initialized=True;node=rclpy.create_node('urp_undock_readonly_observer',enable_rosout=False)
+        rclpy.init(signal_handler_options=SignalHandlerOptions.NO);initialized=True;node=rclpy.create_node('ceres_undock_readonly_observer',enable_rosout=False)
         bindings=[(Clock,'/clock',lambda m:a.sample('clock',m.clock.sec+m.clock.nanosec/1e9)),(DockStatus,'/dock_status',lambda m:a.sample('dock',m.is_docked)),(Odometry,'/sim_ground_truth_pose',lambda m:a.sample('pose',(m.pose.pose.position.x,m.pose.pose.position.y,math.atan2(2*(m.pose.pose.orientation.w*m.pose.pose.orientation.z+m.pose.pose.orientation.x*m.pose.pose.orientation.y),1-2*(m.pose.pose.orientation.y**2+m.pose.pose.orientation.z**2))))),(Twist,'/diffdrive_controller/cmd_vel_unstamped',lambda m:a.sample('motor',(m.linear.x,m.angular.z))),(WheelStatus,'/wheel_status',lambda m:a.sample('wheel',m.wheels_enabled))]
         subscriptions=[node.create_subscription(typ,topic,callback,qos_profile_sensor_data) for typ,topic,callback in bindings]
         with args.output.with_suffix('.ready').open('x') as stream:json.dump({'ready':True},stream)

@@ -1,6 +1,6 @@
 import unittest
-from urp_research.archive import ArchiveError
-from urp_research.verification import without_keys, require_equal, TURN_TIMING_KEYS
+from ceres_research.archive import ArchiveError
+from ceres_research.verification import without_keys, require_equal, TURN_TIMING_KEYS
 
 
 class VerificationContract(unittest.TestCase):

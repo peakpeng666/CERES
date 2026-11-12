@@ -6,7 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace as NS
 import unittest
 
-from urp_lab.execution_timing import (ExecutionTiming, MAX_BUDGET_S, MAX_WALL_WATCHDOG_S,
+from ceres_lab.execution_timing import (ExecutionTiming, MAX_BUDGET_S, MAX_WALL_WATCHDOG_S,
                                      budget_metadata, execution_poll_wall_s, freeze_plan_budget,
                                      resolve_budget_policy, validate_plan_budget, record_telemetry)
 from test_session_action_cancellation import session, Interrupted, Future
@@ -286,7 +286,7 @@ class MetadataPlumbing(unittest.TestCase):
         self.assertEqual(c.services.starts,[]);self.assertEqual(workers,[]);self.assertEqual(rows,{})
 
     def test_gateway_forwards_policy_keywords(self):
-        tree=ast.parse((LAB/'urp_lab/gateway.py').read_text())
+        tree=ast.parse((LAB/'ceres_lab/gateway.py').read_text())
         endpoint=next(n for n in ast.walk(tree) if isinstance(n,ast.FunctionDef) and n.name=='sim_run_start')
         call=next(n for n in ast.walk(endpoint) if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='submit')
         self.assertTrue({'budget_s','time_basis','wall_watchdog_s'} <= {k.arg for k in call.keywords})
@@ -308,7 +308,7 @@ if __name__=='__main__':unittest.main()
 def test_sim_export_keeps_complete_json_policy_and_exact_legacy_csv_schema():
     import csv
     import io
-    from urp_lab.export import export_sim_run
+    from ceres_lab.export import export_sim_run
     legacy_fields=['sim_run_id','source','t_sim','x_m','y_m','yaw_rad']
     header='sim_run_id,source,t_sim,x_m,y_m,yaw_rad\r\n'
     metadata_variants=[{}, budget_metadata(freeze_plan_budget({'budget_s':103})),
@@ -335,8 +335,8 @@ def test_actual_execute_shares_one_epoch_across_approach_and_legs(tmp_path, monk
     """Execute the real orchestration method, fake only ROS actions/check subprocess."""
     import math
     import traceback
-    import urp_lab.localization_check
-    source=LAB/'ros/urp_sim_session.py';tree=ast.parse(source.read_text())
+    import ceres_lab.localization_check
+    source=LAB/'ros/ceres_sim_session.py';tree=ast.parse(source.read_text())
     cls=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='Session')
     methods=[n for n in cls.body if isinstance(n,ast.FunctionDef) and n.name in ('execute','navigate','distance_to_path')]
     wall=NS(value=0.)
@@ -378,13 +378,13 @@ def test_actual_execute_shares_one_epoch_across_approach_and_legs(tmp_path, monk
 
 def test_gateway_http_policy_roundtrip_and_invalid_before_queue(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import Config, create_app
+    from ceres_lab.gateway import Config, create_app
     app=create_app(Config(runtime=tmp_path,background=False,archive_autostart=False,extra_hosts={'testserver'}))
     lab=app.state.lab
     solution={'run_id':'r','scenario_id':'fixture','scenario_snapshot':{'sim':{'supported':True,'world':'maze'}},
               'frame':{'kind':'map'},'state':'done','routes':[[0,1]]}
     lab.store.put_run(solution)
-    monkeypatch.setattr('urp_lab.simplan.to_sim_plan',lambda *a:{'budget_s':103,'path':[[0,0],[1,0]],'tasks':[],'planned_length_m':4.3})
+    monkeypatch.setattr('ceres_lab.simplan.to_sim_plan',lambda *a:{'budget_s':103,'path':[[0,0],[1,0]],'tasks':[],'planned_length_m':4.3})
     monkeypatch.setattr(lab.services,'sim_alive',lambda:True)
     lab.services.sim_meta={'world':'maze','session_id':'session1'}
     lab.sim.state={'phase':'ready','session_id':'session1'}
@@ -401,7 +401,7 @@ def test_gateway_http_policy_roundtrip_and_invalid_before_queue(tmp_path, monkey
         fetched=client.get('/lab/api/sim/runs/'+rid).json()
         assert fetched['budget_policy']==queued['budget_policy']
         full={**queued,'state':'failed','finished_utc':'2026-10-22T00:00:00Z','error':'clock_backwards'}
-        monkeypatch.setattr('urp_lab.simclient.http_json',lambda *a,**kw:(200,full))
+        monkeypatch.setattr('ceres_lab.simclient.http_json',lambda *a,**kw:(200,full))
         lab.sim._handle_execution(full)
         terminal=client.get('/lab/api/sim/runs/'+rid).json()
         assert terminal['budget_policy']==queued['budget_policy']
@@ -414,7 +414,7 @@ def test_session_handler_freezes_policy_before_queue_and_rejects_corruption():
     import queue
     import threading
     from http.server import BaseHTTPRequestHandler
-    source=LAB/'ros/urp_sim_session.py';tree=ast.parse(source.read_text())
+    source=LAB/'ros/ceres_sim_session.py';tree=ast.parse(source.read_text())
     handler=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='handler')
     ns={'BaseHTTPRequestHandler':BaseHTTPRequestHandler,'json':json,'FINAL':{'succeeded','failed','canceled'},
         'validate_plan_budget':validate_plan_budget,'budget_metadata':budget_metadata,'now':lambda:'fake-time'}

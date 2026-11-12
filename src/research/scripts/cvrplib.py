@@ -4,7 +4,7 @@ import argparse
 from pathlib import Path
 import sys
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'src'))
-from urp_research.cvrplib.cli import configure, run
+from ceres_research.cvrplib.cli import configure, run
 parser=argparse.ArgumentParser(description=__doc__)
 configure(parser)
 try:

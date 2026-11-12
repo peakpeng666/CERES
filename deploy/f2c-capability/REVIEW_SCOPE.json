@@ -166,7 +166,7 @@
   "publication": {
     "branch": "fix/agriculture-compatibility-20261022",
     "helpers": "deploy/f2c-capability",
-    "repository": "peakpeng666/URP",
+    "repository": "peakpeng666/CERES",
     "runner": "ubuntu-22.04",
     "uploads": false,
     "workflow": ".github/workflows/f2c-capability.yml"

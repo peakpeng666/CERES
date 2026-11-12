@@ -7,7 +7,7 @@ private="${2:?private directory}"
 # cannot lose the phase marker while a long-running command remains active.
 exec 3> "$private/installation-trace.log"
 export BASH_XTRACEFD=3
-phase() { printf 'URP_INSTALL_PHASE %s\n' "$1" >&3; }
+phase() { printf 'CERES_INSTALL_PHASE %s\n' "$1" >&3; }
 phase source_identity
 cd "$source_root"
 [[ "$(git rev-parse HEAD)" == 3acf840d1a0c16ab1cfcca15744e4ea6609ddb35 ]]
@@ -27,10 +27,10 @@ export UV_PYTHON_INSTALL_DIR="$private/python"
 phase registry_check
 python3 "$(dirname "$0")/verify_registry.py" "$source_root" > "$private/registry-identity.json"
 # Xtrace is private; reducer publishes only a fixed installation-step enum.
-export PS4='+URP_SETUP '
+export PS4='+CERES_SETUP '
 set +e
 phase setup
-printf 'URP_INSTALL_ATTEMPT_START 1\n'
+printf 'CERES_INSTALL_ATTEMPT_START 1\n'
 bash -x setup/ubuntu/setup.sh --components workbench --fields2cover skip
 setup_exit=$?
 set -e
@@ -42,7 +42,7 @@ if [[ "$setup_exit" == 100 ]]; then
   # Original exit is retained; simulation diagnostics cannot make failure pass.
   phase apt_diagnostic
   python3 "$(dirname "$0")/apt_diagnostic.py" "$source_root" "$private" || true
-  if [[ "${URP_HOST_APT_REPAIR:-}" == 1 ]] && run_host_apt_repair; then
+  if [[ "${CERES_HOST_APT_REPAIR:-}" == 1 ]] && run_host_apt_repair; then
     # Preserve pre-repair evidence privately, but never mistake it for the
     # retry's failure. A second exit 100 generates fresh diagnostic files.
     if [[ -f "$private/apt-solver.log" ]]; then
@@ -54,7 +54,7 @@ if [[ "$setup_exit" == 100 ]]; then
     # One retry only, still the unchanged pinned installer and original options.
     set +e
     phase setup
-    printf 'URP_INSTALL_ATTEMPT_START 2\n'
+    printf 'CERES_INSTALL_ATTEMPT_START 2\n'
     bash -x setup/ubuntu/setup.sh --components workbench --fields2cover skip
     setup_exit=$?
     set -e

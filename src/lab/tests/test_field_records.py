@@ -1,4 +1,4 @@
-from urp_lab.field_records import contact_metrics
+from ceres_lab.field_records import contact_metrics
 
 
 def test_legacy_geometry_count_is_not_contact_evidence():

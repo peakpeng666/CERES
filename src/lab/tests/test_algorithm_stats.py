@@ -1,4 +1,4 @@
-from urp_lab import algorithm_stats as A
+from ceres_lab import algorithm_stats as A
 
 
 def row(aid, value, *, key='k1', budget=1, state='done', valid=1, scenario='s1', wall=.5, utc='2026-11-05T00:00:00Z', run=None):

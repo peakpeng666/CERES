@@ -12,7 +12,7 @@ class RepairTests(unittest.TestCase):
             execute=Mock();result=repair(tmp,tmp,100,execute)
             self.assertEqual(result['reason'],'opt_in_missing');execute.assert_not_called()
     def test_environment_and_exit_guards(self):
-        env={'URP_HOST_APT_REPAIR':'1','GITHUB_ACTIONS':'true','RUNNER_ENVIRONMENT':'github-hosted'}
+        env={'CERES_HOST_APT_REPAIR':'1','GITHUB_ACTIONS':'true','RUNNER_ENVIRONMENT':'github-hosted'}
         host_gate(env,{'ID':'ubuntu','VERSION_ID':'22.04'},'x86_64','amd64',100)
         for altered in ({**env,'RUNNER_ENVIRONMENT':'self-hosted'},{**env,'GITHUB_ACTIONS':'false'}):
             with self.assertRaises(Refuse):host_gate(altered,{'ID':'ubuntu','VERSION_ID':'22.04'},'x86_64','amd64',100)
@@ -32,7 +32,7 @@ class RepairTests(unittest.TestCase):
             with self.assertRaises(Refuse):essential_gate(raw,{'pkgconf'})
     def test_apply_plan_same_exact_arguments(self):
         # A fully mocked hosted VM; never runs apt or sudo in tests.
-        env={'URP_HOST_APT_REPAIR':'1','GITHUB_ACTIONS':'true','RUNNER_ENVIRONMENT':'github-hosted'}
+        env={'CERES_HOST_APT_REPAIR':'1','GITHUB_ACTIONS':'true','RUNNER_ENVIRONMENT':'github-hosted'}
         with tempfile.TemporaryDirectory() as tmp,patch.dict(os.environ,env,clear=True),patch(MODULE+'.host_gate'),patch(MODULE+'.state_digest',return_value=b'unchanged'):
             root=pathlib.Path(tmp)
             (root/'apt-dependencies.json').write_text(json.dumps({'status':'verified','dependencies':[{'package':p,'dependency':d,'relation':'breaks'} for p,d in NEEDED]}))

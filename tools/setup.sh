@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
-URP_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
-cd "$URP_ROOT"
+CERES_ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+cd "$CERES_ROOT"
 command -v uv >/dev/null || { printf 'Install uv, then run bash tools/setup.sh again.\n' >&2; exit 1; }
 command -v npm >/dev/null || { printf 'Node.js >=22.12 and npm are required.\n' >&2; exit 1; }
 uv sync --locked "$@"

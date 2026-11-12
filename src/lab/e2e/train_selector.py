@@ -2,10 +2,10 @@
 import argparse,copy,hashlib,json,math,os,platform,random,statistics,subprocess,sys,time
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
-from urp_lab import learned
-from urp_lab.jobs import instance_sha256
-from urp_lab.scenarios import benchmark
-from urp_lab import paths
+from ceres_lab import learned
+from ceres_lab.jobs import instance_sha256
+from ceres_lab.scenarios import benchmark
+from ceres_lab import paths
 
 def dump(path,obj):path.write_text(json.dumps(obj,ensure_ascii=False,indent=2,allow_nan=False))
 def generate(seed):
@@ -42,7 +42,7 @@ def main():
             for solver_seed in protocol['solver_seeds']:
                 request=dict(scenario=sc,instance=inst,algorithm_id=algo,params=dict(time_limit_s=learned.BUDGET,seed=solver_seed))
                 stem=rawdir/f'{algo}-{solver_seed}';dump(stem.with_suffix(stem.suffix+'.request.json'),request)
-                p=subprocess.run([sys.executable,'-m','urp_lab.worker'],input=json.dumps(request),text=True,capture_output=True,cwd=paths.LAB,timeout=15)
+                p=subprocess.run([sys.executable,'-m','ceres_lab.worker'],input=json.dumps(request),text=True,capture_output=True,cwd=paths.LAB,timeout=15)
                 stem.with_suffix(stem.suffix+'.stdout.json').write_text(p.stdout);stem.with_suffix(stem.suffix+'.stderr.log').write_text(p.stderr)
                 r=json.loads(p.stdout)
                 if p.returncode or not r.get('check',{}).get('valid'):raise RuntimeError(f'{sid}/{algo} failed: {r}')

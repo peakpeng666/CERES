@@ -2,7 +2,7 @@
 
 `runner.py`保存固定提示、候选文本、调用终态和可用token记录。`frozen_inputs.json`包含已有60个装箱生成输入：EOH_TC和IID_TC各30个，原位置73–132。
 
-以下命令从URP根目录进入本组件后执行；此处列出命令不表示本轮已执行。
+以下命令从CERES根目录进入本组件后执行；此处列出命令不表示本轮已执行。
 
 ```sh
 cd src/research/generator

@@ -10,13 +10,13 @@ import pytest
 from fastapi.testclient import TestClient
 from PIL import Image
 
-from urp_lab import paths
-from urp_lab.assets import imagecal, models, rosmap, safety
+from ceres_lab import paths
+from ceres_lab.assets import imagecal, models, rosmap, safety
 
 
 @pytest.fixture()
 def client(tmp_path, monkeypatch):
-    from urp_lab.gateway import Config, create_app
+    from ceres_lab.gateway import Config, create_app
     monkeypatch.setattr(paths, 'RUNTIME', tmp_path)
     monkeypatch.setattr(paths, 'USER_SCENARIOS', tmp_path / 'scenarios')
     app = create_app(Config(runtime=tmp_path, background=False))

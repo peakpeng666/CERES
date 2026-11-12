@@ -51,10 +51,10 @@ The three inputs are:
 3. The exact signed `ca-certificates_20260816ubuntu0.22.04.1_all.deb`, 139540
    bytes, SHA256 `29ca037f49f7a4b41d67ad72946c2e541f3ae52d8f6ab1495d2af09aa391144b`.
 
-The Dockerfile copies those three exact filenames into `/opt/urp-bootstrap-seed/`.
+The Dockerfile copies those three exact filenames into `/opt/ceres-bootstrap-seed/`.
 It copies `bootstrap.sh` and all eight AWK helper files into
-`/usr/local/lib/urp-bootstrap/`. The exact future invocation is
-`/bin/sh /usr/local/lib/urp-bootstrap/bootstrap.sh --install-bootstrap`.
+`/usr/local/lib/ceres-bootstrap/`. The exact future invocation is
+`/bin/sh /usr/local/lib/ceres-bootstrap/bootstrap.sh --install-bootstrap`.
 An enclosing compiler-preparation Dockerfile may provide these same fixed paths
 and then run its independently reviewed `prepare_packages.py` closure gate.
 
@@ -132,7 +132,7 @@ preparation logs without publishing raw logs or leaking credentials.
 
 ## Preserved evidence and required downstream closure
 
-`/opt/urp-bootstrap-evidence/` retains original and final dpkg status, inventory
+`/opt/ceres-bootstrap-evidence/` retains original and final dpkg status, inventory
 TSVs, copied source helpers and base tool/keyring hashes, CA seed archives/metadata
 and public bundle, all three signed InReleases, six compressed/full indexes,
 effective APT config, native root policies, simulations, transaction records,

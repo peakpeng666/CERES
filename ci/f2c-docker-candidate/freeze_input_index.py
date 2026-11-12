@@ -69,8 +69,8 @@ def freeze(root,phase):
     entry='offline_build.py' if phase=='build' else 'validation/run_pipeline.py'
     require(entry in files and 'engine_gate.py' in files,'phase entrypoint missing')
     index={'schema':1,'protocol':PROTOCOL,'application_commit':'3acf840d1a0c16ab1cfcca15744e4ea6609ddb35',
-        'python':'/opt/urp-python/bin/python3.12','files':files,
-        'commands':{phase:['/opt/urp-python/bin/python3.12','-I','-B','/inputs/'+entry]}}
+        'python':'/opt/ceres-python/bin/python3.12','files':files,
+        'commands':{phase:['/opt/ceres-python/bin/python3.12','-I','-B','/inputs/'+entry]}}
     diagnostic_phase('index_write')
     with destination.open('x') as f:json.dump(index,f,sort_keys=True,indent=2);f.write('\n')
     diagnostic_phase('index_measure')

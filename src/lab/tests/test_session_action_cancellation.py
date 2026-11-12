@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace as NS
 import unittest
 
-SOURCE=Path(os.environ['SESSION_SOURCE']) if 'SESSION_SOURCE' in os.environ else Path(__file__).parents[1]/'ros/urp_sim_session.py'
+SOURCE=Path(os.environ['SESSION_SOURCE']) if 'SESSION_SOURCE' in os.environ else Path(__file__).parents[1]/'ros/ceres_sim_session.py'
 tree=ast.parse(SOURCE.read_text())
 methods=[n for n in next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='Session').body if isinstance(n,ast.FunctionDef) and n.name in ('wait','future','action','cancel_active')]
 

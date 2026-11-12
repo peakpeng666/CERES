@@ -10,7 +10,7 @@ const temporary: string[] = [];
 afterEach(() => { for (const dir of temporary.splice(0)) rmSync(dir, { recursive: true, force: true }); });
 
 test('a fresh checkout builds assets; restored exports are copied without changing the symlink', () => {
-  const dir = mkdtempSync(join(tmpdir(), 'urp-public-')); temporary.push(dir);
+  const dir = mkdtempSync(join(tmpdir(), 'ceres-public-')); temporary.push(dir);
   const source = join(dir, 'public'); mkdirSync(source);
   writeFileSync(join(source, 'favicon.svg'), '<svg/>');
   symlinkSync('../exports', join(source, 'data'));

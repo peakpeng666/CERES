@@ -1,17 +1,17 @@
 /** Live browser acceptance. Run only against a disposable local test database.
  * Uses a six-node engineering example; never starts the formal CVRPLIB baseline.
- * URP_ROUTE_FIXTURE_ID may name an imported backend/tests/route_fixture.py fixture.
+ * CERES_ROUTE_FIXTURE_ID may name an imported backend/tests/route_fixture.py fixture.
  */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { chromium } from 'playwright';
 
-const base = process.env.URP_BASE_URL ?? 'http://127.0.0.1:4173';
+const base = process.env.CERES_BASE_URL ?? 'http://127.0.0.1:4173';
 const url = new URL(base);
 assert.ok(['127.0.0.1', 'localhost', '[::1]'].includes(url.hostname), 'Use a local test service');
 assert.equal(url.protocol, 'http:');
-const output = path.resolve(process.env.URP_BROWSER_OUTPUT ?? `artifacts/workspace-${Date.now()}`);
+const output = path.resolve(process.env.CERES_BROWSER_OUTPUT ?? `artifacts/workspace-${Date.now()}`);
 await fs.mkdir(output, { recursive: false });
 const checks = [], errors = [], jobs = [];
 let browser, page;
@@ -42,7 +42,7 @@ const run = async () => {
 
 try {
   browser = await chromium.launch({ headless: true,
-    executablePath: process.env.URP_BROWSER_EXECUTABLE || undefined,
+    executablePath: process.env.CERES_BROWSER_EXECUTABLE || undefined,
     args: ['--no-sandbox'] });
   page = await browser.newPage({ viewport: { width: 1440, height: 1080 }, acceptDownloads: true });
   page.on('pageerror', (error) => errors.push(error.message));
@@ -110,7 +110,7 @@ try {
     assert.ok(experiments.length > 0, 'Bootstrap the test database before running acceptance');
     await page.getByText(experiments[0].id, { exact: true }).waitFor();
   });
-  const fixture = process.env.URP_ROUTE_FIXTURE_ID;
+  const fixture = process.env.CERES_ROUTE_FIXTURE_ID;
   if (fixture) {
     await check('archived_routes_keep_partial_invalid_and_no_solution', async () => {
       const row = page.getByRole('row').filter({ has: page.getByText(fixture, { exact: true }) });
@@ -166,11 +166,11 @@ try {
   console.error(error.stack); process.exitCode = 1;
 } finally {
   if (browser) await browser.close();
-  const report = { schema: 'urp-workspace-browser-acceptance-v1',
+  const report = { schema: 'ceres-workspace-browser-acceptance-v1',
     status: process.exitCode ? 'failed' : 'passed', generated_utc: new Date().toISOString(),
     scope: 'Real local API, two six-node engineering runs, optional synthetic archived route fixtures, and one explicitly intercepted pagination/terminal-state fixture; no formal baseline or physics.',
-    fixture_id: process.env.URP_ROUTE_FIXTURE_ID ?? null,
-    omitted: process.env.URP_ROUTE_FIXTURE_ID ? [] : ['archived_routes_keep_partial_invalid_and_no_solution'],
+    fixture_id: process.env.CERES_ROUTE_FIXTURE_ID ?? null,
+    omitted: process.env.CERES_ROUTE_FIXTURE_ID ? [] : ['archived_routes_keep_partial_invalid_and_no_solution'],
     checks, browser_errors: errors, jobs: jobs.map(({ id, request, input_sha256, source_sha256, result }) =>
       ({ id, algorithm: request.algorithm, input_sha256, source_sha256, status: result.status, feasible: result.feasible, cost: result.cost })) };
   await fs.writeFile(path.join(output, 'summary.json'), JSON.stringify(report, null, 2) + '\n');

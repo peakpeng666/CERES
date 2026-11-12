@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "URP route-scene v1 (nonmetric visit-order visualization)",
+  "title": "CERES route-scene v1 (nonmetric visit-order visualization)",
   "description": "Strict JSON only. NaN and Infinity are not valid JSON and MUST be rejected by parsing/serialization; Python backend uses allow_nan=False. No physical transform is supplied in v1.",
   "x-json-policy": {
     "allow_nonfinite": false

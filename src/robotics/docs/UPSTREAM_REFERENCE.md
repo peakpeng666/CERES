@@ -12,10 +12,10 @@
 | 检查提交 | `0ea4a60c51e49ed4a9e25b4f9971ff0f0c9a08fe`，Humble 分支当时的 1.0.3 |
 | 目标软件栈 | Ubuntu 22.04、ROS 2 Humble、Gazebo Fortress / Sim 6 |
 | 官方启动文件 | `turtlebot4_ignition_bringup/launch/turtlebot4_ignition.launch.py` |
-| 本仓库入口 | `ros2 launch urp_route_sim turtlebot4_reference.launch.py` |
+| 本仓库入口 | `ros2 launch ceres_route_sim turtlebot4_reference.launch.py` |
 | 机器人与世界 | 官方 `lite` 模型、官方 `depot` 世界；起点 `(0, 0, 0, yaw=0)` |
-| 通信范围 | ROS domain 72、namespace `urp_tb4_reference`、独立 `urp_tb4_*` Gazebo partition、localhost |
-| 当前行为 | 启动上游世界、模型和原桥接，可选 RViz；不提交 URP 任务或运动命令 |
+| 通信范围 | ROS domain 72、namespace `ceres_tb4_reference`、独立 `ceres_tb4_*` Gazebo partition、localhost |
+| 当前行为 | 启动上游世界、模型和原桥接，可选 RViz；不提交 CERES 任务或运动命令 |
 | 导航设置 | `nav2=false`、`localization=false`、`slam=false`；未将任意世界与默认定位地图混配 |
 
 官方 [Humble 使用说明](https://turtlebot.github.io/turtlebot4-user-manual/software/turtlebot4_simulator.html)和[固定提交的主 launch](https://github.com/turtlebot/turtlebot4_simulator/blob/0ea4a60c51e49ed4a9e25b4f9971ff0f0c9a08fe/turtlebot4_ignition_bringup/launch/turtlebot4_ignition.launch.py)支持上述入口和模型参数。上游 launch 会启动 Gazebo GUI；本适配没有声称提供上游的 headless 模式，关闭 RViz 也不等于关闭 Gazebo GUI。
@@ -39,19 +39,19 @@ python3 scripts/check_upstream.py --output-dir evidence/tb4_preflight_new
 
 当前云端实际执行的预检见 [本轮结果](../evidence/20261017_hardening/upstream_preflight/preflight.json)：Ubuntu 24.04，无 Humble 环境、`ros2`、`ign`、ament 或图形会话，因此退出 2。
 
-依赖清单和 6 个关键文件身份在 [upstream_turtlebot4_humble.json](../urp_route_sim/config/upstream_turtlebot4_humble.json)。TurtleBot 的可选依赖没有加入本包的强制 package.xml 依赖，避免只看研究路线也必须安装整套仿真。
+依赖清单和 6 个关键文件身份在 [upstream_turtlebot4_humble.json](../ceres_route_sim/config/upstream_turtlebot4_humble.json)。TurtleBot 的可选依赖没有加入本包的强制 package.xml 依赖，避免只看研究路线也必须安装整套仿真。
 
 ## 有匹配环境后启动参考
 
-先按官方手册在目标环境准备依赖与 `urp_route_sim` 工作空间，固定 TurtleBot 4 到上述提交或与所审查文件一致的 1.0.3 安装包，再执行：
+先按官方手册在目标环境准备依赖与 `ceres_route_sim` 工作空间，固定 TurtleBot 4 到上述提交或与所审查文件一致的 1.0.3 安装包，再执行：
 
 ```sh
 source /opt/ros/humble/setup.bash
-source ~/urp_sim_ws/install/setup.bash
+source ~/ceres_sim_ws/install/setup.bash
 export ROS_LOCALHOST_ONLY=1 ROS_DOMAIN_ID=72 IGN_IP=127.0.0.1
-export IGN_PARTITION=urp_tb4_reference_manual
-ros2 run urp_route_sim upstream_preflight --output-dir /absolute/path/to/new_tb4_preflight
-ros2 launch urp_route_sim turtlebot4_reference.launch.py rviz:=true
+export IGN_PARTITION=ceres_tb4_reference_manual
+ros2 run ceres_route_sim upstream_preflight --output-dir /absolute/path/to/new_tb4_preflight
+ros2 launch ceres_route_sim turtlebot4_reference.launch.py rviz:=true
 ```
 
 launch 会再次预检，随后直接 include 官方入口。它不开放任意命令、地图路径、机器人命名或 benchmark 坐标作为启动参数。上述命令是入口使用方法，没有在当前云端执行。

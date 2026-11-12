@@ -38,7 +38,7 @@ def active_manifest():
 
     A machine profile (written by deploy/record-sim-profiles.py) is consulted only
     when those libraries differ. It must carry the same source hashes, so a profile
-    cannot authorize a different patch. URP_BRIDGE_FIX=0 remains the explicit
+    cannot authorize a different patch. CERES_BRIDGE_FIX=0 remains the explicit
     contrast switch and is not a fallback.
     """
     audited = SOURCE / 'manifest.json'
@@ -59,10 +59,10 @@ def active_manifest():
 
     if _mapping_ok(laptop.get('system_files', {})):
         # The audited binary wins whenever it is the file on disk. A different binary
-        # is accepted only for an image profile, and only when URP_SIM_PROFILE=image.
+        # is accepted only for an image profile, and only when CERES_SIM_PROFILE=image.
         if EXECUTABLE.is_file() and sha(EXECUTABLE) == laptop.get('executable_sha256'):
             return laptop
-        if os.environ.get('URP_SIM_PROFILE') == 'image' and profile_ok() and profile.get('scope') == 'image':
+        if os.environ.get('CERES_SIM_PROFILE') == 'image' and profile_ok() and profile.get('scope') == 'image':
             return profile
         return laptop
     if profile_ok():
@@ -101,9 +101,9 @@ def verified_bridge():
 
 
 def bridge_environment():
-    option = os.environ.get('URP_BRIDGE_FIX', '1')
+    option = os.environ.get('CERES_BRIDGE_FIX', '1')
     if option not in ('0', '1'):
-        raise RuntimeError('URP_BRIDGE_FIX 必须是 0 或 1')
+        raise RuntimeError('CERES_BRIDGE_FIX 必须是 0 或 1')
     if option == '0':
         return {}
     prefix = verified_bridge()
@@ -111,7 +111,7 @@ def bridge_environment():
 
 
 def bridge_provenance():
-    enabled = os.environ.get('URP_BRIDGE_FIX', '1') != '0'
+    enabled = os.environ.get('CERES_BRIDGE_FIX', '1') != '0'
     executable = EXECUTABLE if enabled else SYSTEM_EXECUTABLE
     return {'mode': 'source_shutdown_join' if enabled else 'system_unfixed',
             'executable': str(executable), 'sha256': sha(executable), 'exit_guard': False,

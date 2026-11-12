@@ -10,10 +10,10 @@ import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import field_coordination, fieldcheck, gateway, mujoco_field, physics, physics_stats, physics_worker
-from urp_lab.algorithm_stats import physical_record
-from urp_lab.gateway import Config, Lab
-from urp_lab.physics import PhysicsError, batch_cpus, sample_seed
+from ceres_lab import field_coordination, fieldcheck, gateway, mujoco_field, physics, physics_stats, physics_worker
+from ceres_lab.algorithm_stats import physical_record
+from ceres_lab.gateway import Config, Lab
+from ceres_lab.physics import PhysicsError, batch_cpus, sample_seed
 
 from test_physics import plan_of, solved
 
@@ -458,7 +458,7 @@ def cpu_tree(tmp_path, monkeypatch):
                 (tmp_path / f'cpu{cpu}' / 'cpufreq' / 'base_frequency').write_text(f'{khz}\n')
         monkeypatch.setattr(physics, 'CPU_ROOT', tmp_path)
         monkeypatch.setattr(physics.os, 'sched_getaffinity', lambda _pid: set(frequencies), raising=False)
-        monkeypatch.delenv('URP_PHYSICS_CPUS', raising=False)
+        monkeypatch.delenv('CERES_PHYSICS_CPUS', raising=False)
     return write
 
 
@@ -484,9 +484,9 @@ def test_a_single_core_is_still_used(cpu_tree):
 
 def test_the_cores_can_be_named_and_only_usable_ones_count(cpu_tree, monkeypatch):
     cpu_tree({0: 3400000, 1: 3000000, 2: 3000000, 3: 3000000})
-    monkeypatch.setenv('URP_PHYSICS_CPUS', '1-2,9')
+    monkeypatch.setenv('CERES_PHYSICS_CPUS', '1-2,9')
     assert batch_cpus() == [1, 2]
-    monkeypatch.setenv('URP_PHYSICS_CPUS', 'many')
+    monkeypatch.setenv('CERES_PHYSICS_CPUS', 'many')
     assert batch_cpus() == [1, 2, 3], 'an unreadable setting falls back to the default'
 
 
@@ -494,7 +494,7 @@ def test_without_affinity_support_a_batch_still_runs(monkeypatch, tmp_path):
     monkeypatch.delattr(physics.os, 'sched_getaffinity', raising=False)
     monkeypatch.setattr(physics, 'CPU_ROOT', tmp_path)
     monkeypatch.setattr(physics.os, 'cpu_count', lambda: 4)
-    monkeypatch.delenv('URP_PHYSICS_CPUS', raising=False)
+    monkeypatch.delenv('CERES_PHYSICS_CPUS', raising=False)
     assert batch_cpus() == [0, 1, 2]
 
 

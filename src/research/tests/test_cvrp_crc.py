@@ -1,5 +1,5 @@
 import unittest, copy, math
-from urp_research.cvrp_selection.experiment import crc, route, fit, predict, features, aggregate, fit_calibrate, ALGOS
+from ceres_research.cvrp_selection.experiment import crc, route, fit, predict, features, aggregate, fit_calibrate, ALGOS
 class MechanismTests(unittest.TestCase):
     def record(self,score,harm=True):return {'score':score,'harm':harm,'chosen':'a','sbs':'b'}
     def test_sample_floor_forces_safety(self):

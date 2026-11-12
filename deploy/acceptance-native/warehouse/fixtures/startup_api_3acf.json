@@ -2,7 +2,7 @@
   "application_source": "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35",
   "sources": [
     {
-      "path": "src/lab/urp_lab/simclient.py",
+      "path": "src/lab/ceres_lab/simclient.py",
       "blob": "307d174951a4d64b0f6f4bc66d21fb2f90898c6f",
       "sha256": "04989f0dab9c11fb71d3c389107294326b7a9b46a6deb6f06dadc2ff36746fcd",
       "functions": {
@@ -13,7 +13,7 @@
       }
     },
     {
-      "path": "src/lab/ros/urp_sim_session.py",
+      "path": "src/lab/ros/ceres_sim_session.py",
       "blob": "0e92e23fa08b6c4334fec02dd03aa0c7da7215b0",
       "sha256": "b6e990e0412520fc01c5466091bce9ffa5170df22ea11a0ecffe0779505d5535",
       "functions": {

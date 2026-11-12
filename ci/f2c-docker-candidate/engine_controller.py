@@ -47,7 +47,7 @@ def verify_inputs(root,expected):
         return out
     index=json.loads(raw,object_pairs_hook=unique)
     require(index['protocol']==PROTOCOL and index['application_commit']=='3acf840d1a0c16ab1cfcca15744e4ea6609ddb35','wrong input protocol/source')
-    require(index['python']=='/opt/urp-python/bin/python3.12','wrong selected interpreter')
+    require(index['python']=='/opt/ceres-python/bin/python3.12','wrong selected interpreter')
     require(isinstance(index['files'],dict) and 'engine_gate.py' in index['files'],'incomplete input manifest')
     root_mode=root.lstat().st_mode
     require(stat.S_ISDIR(root_mode) and not root_mode & 0o022,'unsafe input root')
@@ -91,7 +91,7 @@ def create_argv(image,inputs,control,uid,gid,out_bytes,memory_bytes):
         '--mount',f'type=bind,src={inputs},dst=/inputs,readonly',
         '--mount',f'type=bind,src={control},dst=/control,readonly',
         '--workdir','/tmp','--entrypoint','/usr/bin/env',image,'-i','PATH=/usr/bin:/bin',
-        'LANG=C.UTF-8','LC_ALL=C.UTF-8','/opt/urp-python/bin/python3.12','-I','-B','/inputs/engine_gate.py','--hold']
+        'LANG=C.UTF-8','LC_ALL=C.UTF-8','/opt/ceres-python/bin/python3.12','-I','-B','/inputs/engine_gate.py','--hold']
 
 def check_inspect(info,launch,inputs,control):
     h=info['HostConfig'];c=info['Config']
@@ -104,7 +104,7 @@ def check_inspect(info,launch,inputs,control):
     require(h['PidMode']=='' and h['IpcMode']=='private' and h['UTSMode']=='' and h['CgroupnsMode']=='private','host namespace sharing')
     require(not h.get('Devices') and not h.get('DeviceRequests') and not h.get('PortBindings') and not h.get('VolumesFrom') and not h.get('Links') and not h.get('Sysctls'),'extra host access')
     require(h['Memory']==launch['memory_bytes'] and h['MemorySwap']==launch['memory_bytes'] and h['PidsLimit']==512 and h['NanoCpus']==2_000_000_000,'resource limits')
-    expected_cmd=['-i','PATH=/usr/bin:/bin','LANG=C.UTF-8','LC_ALL=C.UTF-8','/opt/urp-python/bin/python3.12','-I','-B','/inputs/engine_gate.py','--hold']
+    expected_cmd=['-i','PATH=/usr/bin:/bin','LANG=C.UTF-8','LC_ALL=C.UTF-8','/opt/ceres-python/bin/python3.12','-I','-B','/inputs/engine_gate.py','--hold']
     require(c['Cmd']==expected_cmd and c['WorkingDir']=='/tmp','entry command changed')
     require(c['User']==f"{launch['uid']}:{launch['gid']}" and c['Entrypoint']==['/usr/bin/env'],'entrypoint/user mismatch')
     require(h['Tmpfs']=={'/out':f"rw,nosuid,nodev,size={launch['out_bytes']},uid={launch['uid']},gid={launch['gid']},mode=0700",'/tmp':'rw,nosuid,nodev,size=268435456,mode=1777'},'output tmpfs bounds')

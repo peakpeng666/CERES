@@ -33,9 +33,9 @@ def main():
     if not selected or any(c not in CASES for c in selected): p.error('unknown --cases')
     out = args.out
     out.mkdir(parents=True, exist_ok=False)
-    os.environ['URP_LAB_RUNTIME'], os.environ['URP_ROS_DOMAIN_ID'] = str(out/'runtime'), '145'
+    os.environ['CERES_LAB_RUNTIME'], os.environ['CERES_ROS_DOMAIN_ID'] = str(out/'runtime'), '145'
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import Config, create_app
+    from ceres_lab.gateway import Config, create_app
 
     def save(name, value):
         (out/name).write_text(json.dumps(value, ensure_ascii=False, indent=2, allow_nan=False)+'\n')

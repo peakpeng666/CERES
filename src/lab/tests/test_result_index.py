@@ -4,7 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab.fieldsim import FieldSimManager
+from ceres_lab.fieldsim import FieldSimManager
 
 
 def test_index_caches_compact_data_and_invalidates_replacements_and_deletions(tmp_path, monkeypatch):
@@ -30,7 +30,7 @@ def test_index_caches_compact_data_and_invalidates_replacements_and_deletions(tm
 
 def test_live_evidence_omits_traces_but_full_export_preserves_them(tmp_path):
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import Config, create_app
+    from ceres_lab.gateway import Config, create_app
     p = tmp_path / 'fieldsim' / 'large' / 'result.json'
     p.parent.mkdir(parents=True)
     original = {'session_id': 'large', 'run_id': 'r', 'state': 'failed', 'check': {'valid': False},
@@ -58,8 +58,8 @@ def test_large_history_encoding_does_not_block_health_or_drop_evidence(tmp_path,
     from concurrent.futures import ThreadPoolExecutor
     from fastapi.testclient import TestClient
     from starlette.responses import JSONResponse
-    from urp_lab.assets.bindings import digest
-    from urp_lab.gateway import Config, create_app
+    from ceres_lab.assets.bindings import digest
+    from ceres_lab.gateway import Config, create_app
 
     app = create_app(Config(runtime=tmp_path, background=False, archive_autostart=False,
                             extra_hosts={'testserver'}))

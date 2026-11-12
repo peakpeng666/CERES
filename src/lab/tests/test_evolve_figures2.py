@@ -1,6 +1,6 @@
 """Round-2 figure builders consume the recorded schemas without touching solver code."""
-from urp_lab.figures.style import Style
-from urp_lab.evolve import figures2 as F
+from ceres_lab.figures.style import Style
+from ceres_lab.evolve import figures2 as F
 
 
 def _vc():

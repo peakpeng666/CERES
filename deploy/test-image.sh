@@ -10,7 +10,7 @@ output="${4:?new evidence directory}"
 mkdir -p "$(dirname "$output")"
 mkdir "$output"
 output="$(cd "$output" && pwd)"
-container="urp-image-check-${kind}-$$"
+container="ceres-image-check-${kind}-$$"
 cleanup() {
   local status=$?
   trap - EXIT
@@ -71,24 +71,24 @@ code="$(curl --silent --show-error --max-time 10 -o "$output/shutdown.json" -w '
   -X POST -H 'Content-Type: application/json' -d '{}' "$base/lab/api/shutdown")"
 [[ "$code" == 403 ]]
 grep -q shutdown_forbidden "$output/shutdown.json"
-docker exec "$container" sh -c 'test "$(cat /opt/urp/REVISION)" = "$URP_REVISION"'
+docker exec "$container" sh -c 'test "$(cat /opt/urp/REVISION)" = "$CERES_REVISION"'
 actual="$(docker exec "$container" cat /opt/urp/REVISION)"
 [[ "$actual" == "$revision" ]]
-docker exec --user urp "$container" /opt/urp/.venv/bin/python \
+docker exec --user ceres "$container" /opt/urp/.venv/bin/python \
   -c 'from pyvrp import Model; from ortools.constraint_solver import pywrapcp; Model(); pywrapcp.Solver("image-check")' \
   >"$output/root-native-solvers.log" 2>&1
-docker exec --user urp "$container" /opt/urp/src/lab/.venv/bin/python \
+docker exec --user ceres "$container" /opt/urp/src/lab/.venv/bin/python \
   -c 'from ompl import base as ob, geometric as og; space=ob.RealVectorStateSpace(2); planner=og.SimpleSetup(space)' \
   >"$output/motion-planning.log" 2>&1
-docker exec --user urp "$container" /opt/urp/.venv/bin/python \
+docker exec --user ceres "$container" /opt/urp/.venv/bin/python \
   /opt/urp/deploy/check-cohort.py --output /tmp/urp-cohort-smoke >"$output/cohort.log" 2>&1
 docker cp "$container:/tmp/urp-cohort-smoke" "$output/cohort"
 test -s "$output/cohort/summary.json"
 if [[ "$kind" == sim ]]; then
   # Loadability only. Real Gazebo/ROS session acceptance remains a separate gate.
-  docker exec --user urp "$container" /opt/urp/src/lab/.venv/bin/python \
+  docker exec --user ceres "$container" /opt/urp/src/lab/.venv/bin/python \
     /opt/urp/deploy/check-fields2cover.py >"$output/fields2cover.log" 2>&1
-  docker exec --user urp "$container" bash -c \
+  docker exec --user ceres "$container" bash -c \
     'source /opt/ros/humble/setup.bash && ros2 pkg prefix ros_gz_bridge && ign gazebo --versions' \
     >"$output/simulation-tools.log" 2>&1
 fi
@@ -105,7 +105,7 @@ for path in sys.argv[1:]:
 PY
 curl --fail --silent --show-error --max-time 10 "$base/" >"$output/index-after-restart.html"
 test -s "$output/index-after-restart.html"
-# A desktop binds files owned by its actual host UID, which need not be the image's urp user (1000).
+# A desktop binds files owned by its actual host UID, which need not be the image's ceres user (1000).
 # Run the real entrypoint without root; no chown or writable system home may be assumed.
 docker run --rm --user 2001:2001 --tmpfs /data:rw,uid=2001,gid=2001,mode=0700 "$image" \
   /opt/urp/src/lab/.venv/bin/python -c '

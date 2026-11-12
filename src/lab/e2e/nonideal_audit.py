@@ -50,11 +50,11 @@ def main():
         if spec.get('execution',{}).get('localization_preset'):
             spec['execution']['seed']=args.seed
     args.out.mkdir(parents=True,exist_ok=False)
-    os.environ['URP_LAB_RUNTIME']=str(args.out/'runtime')
-    os.environ['URP_ROS_DOMAIN_ID']='143'
+    os.environ['CERES_LAB_RUNTIME']=str(args.out/'runtime')
+    os.environ['CERES_ROS_DOMAIN_ID']='143'
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import Config, create_app
-    from urp_lab.scenarios.validate import validate_instance
+    from ceres_lab.gateway import Config, create_app
+    from ceres_lab.scenarios.validate import validate_instance
 
     def save(name,data):
         (args.out/name).write_text(json.dumps(data,ensure_ascii=False,indent=2,allow_nan=False)+'\n')

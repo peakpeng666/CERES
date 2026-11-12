@@ -5,21 +5,29 @@ name: urp-lab
 
 services:
   lab:
-    image: ghcr.io/peakpeng666/urp-bench:${URP_IMAGE_TAG:-main}
+    image: ghcr.io/peakpeng666/urp-bench:${CERES_IMAGE_TAG:-${URP_IMAGE_TAG:-main}}
     pull_policy: missing
     restart: unless-stopped
     ports:
-      - "${URP_PUBLISH_HOST:-127.0.0.1}:${URP_PORT:-4100}:4100"
+      - "${CERES_PUBLISH_HOST:-${URP_PUBLISH_HOST:-127.0.0.1}}:${CERES_PORT:-${URP_PORT:-4100}}:4100"
     environment:
+      CERES_BIND_HOST: "0.0.0.0"
       URP_BIND_HOST: "0.0.0.0"
-      # URP_PORT configures the host port above; the container always serves 4100.
+      # CERES_PORT configures the host port above; the container always serves 4100.
+      CERES_PORT: "4100"
       URP_PORT: "4100"
+      CERES_LAB_RUNTIME: /data/lab
       URP_LAB_RUNTIME: /data/lab
+      CERES_API_DB: /data/archive/research.sqlite3
       URP_API_DB: /data/archive/research.sqlite3
+      CERES_FOXGLOVE_BIND: "0.0.0.0"
       URP_FOXGLOVE_BIND: "0.0.0.0"
+      CERES_BROWSER_HOST: "127.0.0.1"
       URP_BROWSER_HOST: "127.0.0.1"
-      URP_EXTRA_HOSTS: "${URP_EXTRA_HOSTS:-}"
-      URP_ADMIN_TOKEN: "${URP_ADMIN_TOKEN:-}"
+      CERES_EXTRA_HOSTS: "${CERES_EXTRA_HOSTS:-${URP_EXTRA_HOSTS:-}}"
+      URP_EXTRA_HOSTS: "${CERES_EXTRA_HOSTS:-${URP_EXTRA_HOSTS:-}}"
+      CERES_ADMIN_TOKEN: "${CERES_ADMIN_TOKEN:-${URP_ADMIN_TOKEN:-}}"
+      URP_ADMIN_TOKEN: "${CERES_ADMIN_TOKEN:-${URP_ADMIN_TOKEN:-}}"
       LIBGL_ALWAYS_SOFTWARE: "${LIBGL_ALWAYS_SOFTWARE:-1}"
     volumes:
       - lab-runtime:/data/lab

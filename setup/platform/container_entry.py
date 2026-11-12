@@ -47,7 +47,7 @@ def main():
     # security settings are never changed. Drop to the application UID afterward.
     if os.geteuid() != 0:
         raise SystemExit('Container entry requires its default root initialization user')
-    host_netns = os.environ.get('URP_HOST_NETNS')
+    host_netns = os.environ.get('CERES_HOST_NETNS')
     if not host_netns or host_netns == os.readlink('/proc/self/ns/net'):
         raise SystemExit('Use setup/run.sh reproduce with a private network namespace; refusing host changes')
     subprocess.run(['ip', 'link', 'set', 'lo', 'multicast', 'on'], check=True)
@@ -56,10 +56,10 @@ def main():
     address = next((a['local'] for link in links for a in link['addr_info'] if a['family'] == 'inet'), None)
     if not address:
         raise SystemExit('Use a private Docker bridge network; host/none networking is unsupported')
-    authority = os.environ.get('URP_XAUTHORITY_INPUT')
+    authority = os.environ.get('CERES_XAUTHORITY_INPUT')
     if authority:
         from pathlib import Path
-        target = Path('/tmp/urp-xauthority')
+        target = Path('/tmp/ceres-xauthority')
         target.write_bytes(Path(authority).read_bytes())
         target.chmod(0o600)
         os.chown(target, 1000, 1000)

@@ -10,9 +10,9 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import datapacks
-from urp_lab.datapacks import PackError, PackManager
-from urp_lab.gateway import Config, create_app
+from ceres_lab import datapacks
+from ceres_lab.datapacks import PackError, PackManager
+from ceres_lab.gateway import Config, create_app
 
 
 def make_zip(path, files):
@@ -57,7 +57,7 @@ def host(tmp_path, monkeypatch):
     folder = tmp_path / 'host'
     folder.mkdir()
     h = Host(folder)
-    monkeypatch.setenv('URP_PACKS_BASE_URL', h.url)
+    monkeypatch.setenv('CERES_PACKS_BASE_URL', h.url)
     yield h
     h.server.shutdown()
 
@@ -197,7 +197,7 @@ def test_the_gateway_serves_and_removes_a_pack(tmp_path, monkeypatch, host):
 
 
 def test_an_installed_app_explains_the_archive_row(tmp_path, monkeypatch, host):
-    monkeypatch.setenv('URP_DESKTOP', '1')
+    monkeypatch.setenv('CERES_DESKTOP', '1')
     app = create_app(Config(runtime=tmp_path / 'runtime', background=False, archive_autostart=False))
     with TestClient(app, base_url='http://127.0.0.1:4100') as client:
         lab = app.state.lab
@@ -215,7 +215,7 @@ def test_an_installed_app_explains_the_archive_row(tmp_path, monkeypatch, host):
 
 
 def test_the_engine_list_says_why_gazebo_is_missing(tmp_path, monkeypatch):
-    from urp_lab import paths
+    from ceres_lab import paths
     monkeypatch.setattr(paths, 'gazebo_gap', lambda: '这台电脑没有 ROS 2 和 Gazebo')
     with TestClient(create_app(Config(runtime=tmp_path / 'runtime', background=False)), base_url='http://127.0.0.1:4100') as client:
         assert client.get('/lab/api/physics/engines').json()['gazebo_gap'] == '这台电脑没有 ROS 2 和 Gazebo'

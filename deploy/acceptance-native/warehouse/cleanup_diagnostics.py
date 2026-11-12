@@ -3,7 +3,7 @@
 Input is the already-read session report, only after the harness verifies its
 session_id. No report read, process inspection, timing, control or cleanup action
 is added. Source: 3acf840d1a0c16ab1cfcca15744e4ea6609ddb35,
-src/lab/ros/urp_sim_session.py:590-663 and src/lab/ros/processes.py:51-88.
+src/lab/ros/ceres_sim_session.py:590-663 and src/lab/ros/processes.py:51-88.
 The six predicates mirror warehouse_lifecycle.physical_evidence exactly for
 JSON values. They are observations only; physical_evidence remains authoritative.
 Missing/falsy errors can pass a predicate while their list count is unavailable.

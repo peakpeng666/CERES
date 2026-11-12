@@ -58,7 +58,7 @@ class ExtendedTests(unittest.TestCase):
   obj=lock();obj['tools']['node']={'version':'24.0.0'}
   with self.assertRaises(RuntimeError):b.validate_lock(obj)
  def test_no_node_assets_in_compiler(self):
-  self.assertNotIn('/opt/urp-node',(ROOT/'Dockerfile').read_text())
+  self.assertNotIn('/opt/ceres-node',(ROOT/'Dockerfile').read_text())
   self.assertNotIn('node-prefix',(ROOT/'prepare_image.py').read_text())
  def test_tampered_action_and_unknown_fields(self):
   for key,value in [('action','astral-sh/setup-uv@main'),('token','PRIVATE_TOKEN')]:

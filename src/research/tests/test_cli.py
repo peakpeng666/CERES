@@ -7,8 +7,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from urp_research.cli import main, PROJECT_ROOT
-from urp_research.smoke import run
+from ceres_research.cli import main, PROJECT_ROOT
+from ceres_research.smoke import run
 
 
 class EntryPoints(unittest.TestCase):
@@ -29,7 +29,7 @@ class EntryPoints(unittest.TestCase):
             self.assertFalse((Path(folder) / "out").exists())
 
     def test_optimized_python_rejected(self):
-        result = subprocess.run([sys.executable, "-O", str(PROJECT_ROOT / "scripts/urp.py"), "smoke"],
+        result = subprocess.run([sys.executable, "-O", str(PROJECT_ROOT / "scripts/ceres.py"), "smoke"],
                                 capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("-O/-OO is unsupported", result.stderr)
@@ -37,8 +37,8 @@ class EntryPoints(unittest.TestCase):
     def test_output_name_reserved_and_cannot_be_reused(self):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "out"
-            with patch("urp_research.cli.verify_bundle", return_value={}), \
-                 patch("urp_research.parent_selection.run") as run, \
+            with patch("ceres_research.cli.verify_bundle", return_value={}), \
+                 patch("ceres_research.parent_selection.run") as run, \
                  contextlib.redirect_stderr(io.StringIO()):
                 command = ["replay", "parent-selection", "--data-root", str(Path(folder) / "data"),
                            "--output", str(output)]
@@ -51,7 +51,7 @@ class EntryPoints(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "link"
             output.symlink_to(Path(folder) / "missing")
-            with patch("urp_research.cli.verify_bundle", return_value={}), \
+            with patch("ceres_research.cli.verify_bundle", return_value={}), \
                  contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(main(["replay", "parent-selection", "--data-root", str(Path(folder) / "data"),
                                        "--output", str(output)]), 2)

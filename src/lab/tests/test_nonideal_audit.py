@@ -3,9 +3,9 @@ import math
 from xml.etree import ElementTree as ET
 import numpy as np
 import pytest
-from urp_lab import field_nonideal as ni, fieldworld
-from urp_lab.field_localization import Estimator
-from urp_lab.field_observation_check import verify
+from ceres_lab import field_nonideal as ni, fieldworld
+from ceres_lab.field_localization import Estimator
+from ceres_lab.field_observation_check import verify
 from test_backend_integrity import instance, solution
 
 
@@ -165,7 +165,7 @@ def task_fixture():
 
 @pytest.mark.parametrize('defect',[None,'outside_radius','moving_during_service','spinning_during_service','short_dwell','body_not_stopped','body_still_spinning'])
 def test_task_success_requires_truth_occupancy_and_stationary_dwell(defect):
-    from urp_lab.fieldcheck import verify_task_truth
+    from ceres_lab.fieldcheck import verify_task_truth
     plan,result=task_fixture()
     if defect=='outside_radius':
         for r in result['trails']['v']: r[1]+=.21
@@ -187,7 +187,7 @@ def test_task_success_requires_truth_occupancy_and_stationary_dwell(defect):
 
 
 def test_truth_stationary_gate_handles_yaw_wrap():
-    from urp_lab.fieldcheck import verify_task_truth
+    from ceres_lab.fieldcheck import verify_task_truth
     plan,result=task_fixture()
     for row in result['trails']['v']:
         row[3]=(math.pi-.005+.005*row[0]+math.pi)%(2*math.pi)-math.pi
@@ -195,7 +195,7 @@ def test_truth_stationary_gate_handles_yaw_wrap():
 
 
 def test_stationary_service_clock_excludes_braking():
-    from urp_lab.field_tracking import Driver
+    from ceres_lab.field_tracking import Driver
     plan,_=task_fixture()
     d=Driver(plan['vehicles'][0],.7)
     d.state='driving'
@@ -215,7 +215,7 @@ def test_stationary_service_clock_excludes_braking():
 
 
 def test_moving_outcome_is_failure_but_recorded_distance_can_remain_valid():
-    from urp_lab.fieldcheck import verify_motion_metrics
+    from ceres_lab.fieldcheck import verify_motion_metrics
     result={'vehicles':[{'name':'v','distance_m':1,'speed':.1}],
             'trails':{'v':[[0,0,0,0],[10,1,0,0]]},'metrics':{'total_distance_m':1}}
     report=verify_motion_metrics(result)
@@ -225,7 +225,7 @@ def test_moving_outcome_is_failure_but_recorded_distance_can_remain_valid():
 
 
 def test_result_flag_cannot_select_acceptance_regime():
-    from urp_lab.fieldcheck import verify as check_result
+    from ceres_lab.fieldcheck import verify as check_result
     plan={'instance':instance(),'vehicles':[],'travel':'free','robot_radius_m':.5}
     result={'trails':{},'execution':{'mode':'nonideal'}}
     report=check_result(plan,result)

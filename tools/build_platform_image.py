@@ -18,7 +18,7 @@ import posixpath
 import subprocess
 import tarfile
 
-ROOT = '/home/peakpeng/Desktop/URP'
+ROOT = '/home/peakpeng/Desktop/CERES'
 USER_HOME = '/home/peakpeng'
 ETC_ALLOWED = ('/etc/fonts/', '/etc/ssl/certs/', '/etc/alternatives/', '/etc/python3',
                '/etc/ld.so.conf', '/etc/ImageMagick-6/')
@@ -85,13 +85,13 @@ def main():
                 files[str(path)] = path
     mappings = [(restored / 'project', ROOT), (restored / 'host', ''),
                 (restored / 'python', USER_HOME + '/.local/share/uv/python'),
-                (metadata, '/usr/share/urp-snapshot')]
+                (metadata, '/usr/share/ceres-snapshot')]
     for source, prefix in mappings:
         for path in walk(source):
             files[canonical(prefix + '/' + path.relative_to(source).as_posix())] = path
     node = Path(output('which', 'node')).resolve().parent.parent
     for path in walk(node):
-        files['/opt/urp-node/' + path.relative_to(node).as_posix()] = path
+        files['/opt/ceres-node/' + path.relative_to(node).as_posix()] = path
     files['/usr/local/bin/uv'] = Path(output('which', 'uv')).resolve()
     # update-alternatives / ldconfig create links not owned by a .deb, e.g.
     # libblas.so.3. Include only links resolving to an already selected file.
@@ -170,11 +170,11 @@ def main():
                     add(ROOT + '/' + item.name, link=item.linkname)
         if proc.wait() != 0:
             raise RuntimeError('git archive failed')
-        add('/etc/passwd', data=b'root:x:0:0:root:/root:/bin/bash\npeakpeng:x:1000:1000:URP:/home/peakpeng:/bin/bash\n')
+        add('/etc/passwd', data=b'root:x:0:0:root:/root:/bin/bash\npeakpeng:x:1000:1000:CERES:/home/peakpeng:/bin/bash\n')
         add('/etc/group', data=b'root:x:0:\npeakpeng:x:1000:\n')
         add('/etc/os-release', data=(metadata / 'os-release').read_bytes())
-        add('/usr/share/urp-snapshot/image-packages.json', data=json.dumps(list(packages.values()), indent=2).encode())
-        add(ROOT + '/URP_SOURCE.json', data=json.dumps({'commit': args.commit, 'snapshot': 'published, authentication scrubbed'}).encode())
+        add('/usr/share/ceres-snapshot/image-packages.json', data=json.dumps(list(packages.values()), indent=2).encode())
+        add(ROOT + '/CERES_SOURCE.json', data=json.dumps({'commit': args.commit, 'snapshot': 'published, authentication scrubbed'}).encode())
         # /tmp must remain usable by the unprivileged application account.
         info = tarfile.TarInfo('tmp'); info.type = tarfile.DIRTYPE; info.mode = 0o1777; tar.addfile(info)
     report = {'source_commit': args.commit, 'packages': len(packages), 'files': len(manifest), 'files_manifest': manifest}

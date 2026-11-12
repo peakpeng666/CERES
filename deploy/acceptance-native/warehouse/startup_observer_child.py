@@ -137,7 +137,7 @@ def main(argv=None):
             from rclpy.signals import SignalHandlerOptions
             from rosgraph_msgs.msg import Clock
             ros.init(args=[], signal_handler_options=SignalHandlerOptions.NO)
-            node = ros.create_node('urp_readonly_clock_observer', enable_rosout=False, start_parameter_services=False)
+            node = ros.create_node('ceres_readonly_clock_observer', enable_rosout=False, start_parameter_services=False)
             node.create_subscription(Clock, '/clock', lambda msg: measure.ros(msg.clock.sec, msg.clock.nanosec), qos_profile_sensor_data)
         except Exception:
             measure.raw['ros_clock']['availability'] = 'import_error'

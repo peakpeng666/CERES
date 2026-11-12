@@ -1,7 +1,7 @@
 {
   "status": "PASS",
   "checked_at_utc": "2026-10-10T09:31:31.952059+00:00",
-  "root": "/home/peakpeng/Desktop/URP",
+  "root": "/home/peakpeng/Desktop/CERES",
   "environment": {
     "python": "3.10.12",
     "node": "v24.14.0",

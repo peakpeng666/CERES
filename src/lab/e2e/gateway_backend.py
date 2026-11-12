@@ -21,8 +21,8 @@ for i in range(3):
     stream = None
     runtime = out / f'run-{i}'
     with (out / f'gateway-{i}.log').open('w') as log:
-        proc = subprocess.Popen([sys.executable, '-m', 'urp_lab', 'serve', '--port', '4141', '--no-archive'],
-                                env={**os.environ, 'URP_LAB_RUNTIME': str(runtime)},
+        proc = subprocess.Popen([sys.executable, '-m', 'ceres_lab', 'serve', '--port', '4141', '--no-archive'],
+                                env={**os.environ, 'CERES_LAB_RUNTIME': str(runtime)},
                                 stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         try:
             end = time.monotonic() + 30

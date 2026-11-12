@@ -3,8 +3,8 @@ import sys
 
 import pytest
 
-from urp_lab.agent.evals import execution
-from urp_lab.agent import contract as tc
+from ceres_lab.agent.evals import execution
+from ceres_lab.agent import contract as tc
 
 
 @pytest.mark.parametrize(('passed', 'scenarios', 'expected'), [(5, 5, 0), (4, 5, 1), (0, 0, 1)])

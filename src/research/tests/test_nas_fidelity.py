@@ -8,8 +8,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 import zipfile
-from urp_research.archive import ArchiveError
-from urp_research.nas_fidelity import control, worker
+from ceres_research.archive import ArchiveError
+from ceres_research.nas_fidelity import control, worker
 
 
 class NASContract(unittest.TestCase):
@@ -135,21 +135,21 @@ class NASContract(unittest.TestCase):
         self.assertEqual(worker.training_steps()[6][1], ["source/run_fidelity.py", "--phase", "all"])
 
     def test_imports_without_optional_packages(self):
-        code = ("import sys; from urp_research.nas_fidelity import control,worker,cli; "
+        code = ("import sys; from ceres_research.nas_fidelity import control,worker,cli; "
                 "assert 'torch' not in sys.modules and 'numpy' not in sys.modules; control.verify_sources()")
         r = subprocess.run([sys.executable, "-S", "-c", code], cwd=control.PROJECT_ROOT,
                            env={"PYTHONPATH": str(control.PROJECT_ROOT / "src")}, capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stderr)
 
     def test_cli_training_without_flag(self):
-        r = subprocess.run([sys.executable, "-S", str(control.PROJECT_ROOT / "scripts/urp.py"), "nas", "train",
+        r = subprocess.run([sys.executable, "-S", str(control.PROJECT_ROOT / "scripts/ceres.py"), "nas", "train",
                             "--root", "absent", "--archive", "absent", "--output", str(self.dest)], capture_output=True, text=True)
         self.assertEqual(r.returncode, 2)
         self.assertIn("--execute-training", r.stderr)
         self.assertFalse(self.dest.exists())
 
     def test_optimized_python_refused(self):
-        r = subprocess.run([sys.executable, "-O", str(control.PROJECT_ROOT / "scripts/urp.py"), "nas", "sources"],
+        r = subprocess.run([sys.executable, "-O", str(control.PROJECT_ROOT / "scripts/ceres.py"), "nas", "sources"],
                            capture_output=True, text=True)
         self.assertEqual(r.returncode, 2)
         self.assertIn("unsupported", r.stderr)

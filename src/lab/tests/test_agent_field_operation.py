@@ -4,12 +4,12 @@ import threading
 
 import pytest
 
-from urp_lab.agent import contract as tc, diagnose, tools
-from urp_lab.agent.runner import AgentRunner, RunnerError
-from urp_lab.agent.session import new_session
-from urp_lab.agri import api as agri_api
-from urp_lab.scenarios import save_user_scenario
-from urp_lab.solvers import run_algorithm
+from ceres_lab.agent import contract as tc, diagnose, tools
+from ceres_lab.agent.runner import AgentRunner, RunnerError
+from ceres_lab.agent.session import new_session
+from ceres_lab.agri import api as agri_api
+from ceres_lab.scenarios import save_user_scenario
+from ceres_lab.solvers import run_algorithm
 from test_agent_runner_guards import lab, Scripted, PROVIDERS, wait
 from test_field_operation import ROBOT
 

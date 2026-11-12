@@ -467,7 +467,7 @@ class FailureIntegrationTests(unittest.TestCase):
     def test_frozen_source_copy_preserves_docker_control_helper_layout(self):
         freezer = load('package_reference_fixture_freezer', ROOT / 'freeze_source_index.py')
         image = load('package_reference_fixture_image', ROOT / 'preparation' / 'prepare_image.py')
-        self.assertIn('COPY control/ /opt/urp-control/',
+        self.assertIn('COPY control/ /opt/ceres-control/',
                       (ROOT / 'preparation' / 'Dockerfile').read_text())
         with tempfile.TemporaryDirectory() as temporary:
             source = Path(temporary) / 'source'
@@ -478,7 +478,7 @@ class FailureIntegrationTests(unittest.TestCase):
             digest = freezer.freeze(source)
             indexed = json.loads((source / 'source-index.json').read_text())
             self.assertEqual(set(indexed['files']), set(names))
-            target = Path(temporary) / 'opt' / 'urp-control'
+            target = Path(temporary) / 'opt' / 'ceres-control'
             image.anchor_copy(source, target, digest)
             for name in names:
                 self.assertEqual((target / name).read_bytes(), (ROOT / name).read_bytes())

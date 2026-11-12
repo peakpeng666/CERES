@@ -29,7 +29,7 @@
 配置SOURCE、MAPS和HISTORY目录后，从本目录运行：
 
 ```sh
-PYTHONPATH="$SOURCE/src/lab:$SOURCE/src/research/src" URP_ROS_MAPS="$MAPS" URP_HISTORICAL_JSON="$HISTORY" "$SOURCE/src/lab/.venv/bin/python" -m unittest -v test_recheck test_lifecycle
+PYTHONPATH="$SOURCE/src/lab:$SOURCE/src/research/src" CERES_ROS_MAPS="$MAPS" CERES_HISTORICAL_JSON="$HISTORY" "$SOURCE/src/lab/.venv/bin/python" -m unittest -v test_recheck test_lifecycle
 ```
 
 上述测试检查数据、独立校验及模拟的接口生命周期；实际仿真由工作流执行。
@@ -39,7 +39,7 @@ PYTHONPATH="$SOURCE/src/lab:$SOURCE/src/research/src" URP_ROS_MAPS="$MAPS" URP_H
 CPU 累计值统计当前存活进程，进程退出后可下降。UTC 相对时间保持原记录顺序，
 时间回退单独标记；超过 128 条时等距选取，并保留首尾记录。
 
-`URP_WAREHOUSE_STARTUP_OBSERVER_DELAY_S=30` 将独立观测推迟至会话绑定后约 30 秒；
+`CERES_WAREHOUSE_STARTUP_OBSERVER_DELAY_S=30` 将独立观测推迟至会话绑定后约 30 秒；
 默认仍为 5 秒。两种设置均使用既有 8 秒观测窗口、阶段检查、身份检查和看门狗。
 非法延迟配置仅关闭该项诊断，启动、超时、路线及验收条件保持原样。
 

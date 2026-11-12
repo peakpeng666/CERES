@@ -10,10 +10,10 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from urp_lab.agent import llm
-from urp_lab.agent.runner import AgentRunner, _close_open_calls
-from urp_lab.agent.session import claims_check, new_session
-from urp_lab.agent.research_llm import OpenAICompatibleModel
+from ceres_lab.agent import llm
+from ceres_lab.agent.runner import AgentRunner, _close_open_calls
+from ceres_lab.agent.session import claims_check, new_session
+from ceres_lab.agent.research_llm import OpenAICompatibleModel
 
 
 def wait_for(predicate, timeout=8):
@@ -30,9 +30,9 @@ def test_killed_tool_is_closed_on_restart_and_history_can_resume(tmp_path):
 import json, sys, time
 from pathlib import Path
 from types import SimpleNamespace
-from urp_lab.agent.runner import AgentRunner
-from urp_lab.agent.tools import Tool
-from urp_lab.agent import contract as tc
+from ceres_lab.agent.runner import AgentRunner
+from ceres_lab.agent.tools import Tool
+from ceres_lab.agent import contract as tc
 root = Path(sys.argv[1])
 r = AgentRunner(SimpleNamespace(runtime=root), providers=[])
 def slow(ctx, args):
@@ -141,7 +141,7 @@ def test_numeric_claims_cannot_round_the_claim_down_to_hide_wrong_precision():
 
 
 def test_static_prefix_full_tools_and_history_are_stable(tmp_path):
-    from urp_lab.agent import contract as tc
+    from ceres_lab.agent import contract as tc
     sent = []
     provider = llm.Provider('test', 'openai', 'script', 'http://127.0.0.1:9')
     def chat(_p, messages, specs, **kwargs):
@@ -204,7 +204,7 @@ def test_context_archives_at_boundary_without_sliding_or_changing_history(tmp_pa
 
 
 def test_large_results_are_complete_readable_and_scoped_to_session(tmp_path):
-    from urp_lab.agent.artifacts import ArtifactStore, LIMIT_BYTES
+    from ceres_lab.agent.artifacts import ArtifactStore, LIMIT_BYTES
     store = ArtifactStore(tmp_path, 'session-a')
     value = {'status': 'ok', 'result': {'runs': [{'run_id': f'r{i}', 'metrics': {'cost': i + .25}, 'log': '田块' * 3000} for i in range(9)]}}
     payload = store.payload(value)
@@ -278,8 +278,8 @@ def test_late_model_reply_after_shutdown_cannot_execute_or_write(tmp_path, monke
 
 
 def test_research_large_tool_reply_uses_the_same_readable_artifact(tmp_path):
-    from urp_lab.agent.manager import AgentManager
-    from urp_lab.agent.artifacts import ArtifactStore
+    from ceres_lab.agent.manager import AgentManager
+    from ceres_lab.agent.artifacts import ArtifactStore
     manager = object.__new__(AgentManager)
     manager.lab = SimpleNamespace(runtime=tmp_path)
     s = {'session_id': 'research-test', 'messages': []}
@@ -292,7 +292,7 @@ def test_research_large_tool_reply_uses_the_same_readable_artifact(tmp_path):
 
 def test_research_status_does_not_occupy_task_agent_root():
     from fastapi import FastAPI
-    from urp_lab.agent.routes import install
+    from ceres_lab.agent.routes import install
     app = FastAPI()
     install(app, SimpleNamespace(research_agent=SimpleNamespace(status=lambda: {})))
     paths = {route.path for route in app.routes}
@@ -327,7 +327,7 @@ def test_recovery_rebuilds_shifted_archive_boundary():
 
 
 def test_artifact_preview_budget_also_bounds_very_long_keys(tmp_path):
-    from urp_lab.agent.artifacts import ArtifactStore, LIMIT_BYTES
+    from ceres_lab.agent.artifacts import ArtifactStore, LIMIT_BYTES
     store = ArtifactStore(tmp_path, 'long-keys')
     value = {'田' * 2000: 'payload'}
     payload = store.payload(value)

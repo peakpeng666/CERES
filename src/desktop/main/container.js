@@ -8,6 +8,8 @@ const path = require('node:path');
 const { healthy, request } = require('./backend');
 const { dataLocations, prepareDataHome } = require('./data-home');
 
+const { normalizeEnvironment, configDirectory } = require('./env-compat');
+
 const REGISTRY = 'ghcr.io/peakpeng666/urp-sim';
 const HOST_PORT = 4100;
 const START_TIMEOUT_MS = 5 * 60_000;
@@ -18,7 +20,7 @@ function run(command, args, { timeoutMs = 10_000, env, cwd, onLine } = {}) {
     let out = '';
     let child;
     try {
-      // `cwd` matters for `python -m urp_lab`: the installed app ships urp_lab beside the runtime, not in site-packages.
+      // `cwd` matters for `python -m ceres_lab`: the installed app ships ceres_lab beside the runtime, not in site-packages.
       child = spawn(command, args, { cwd, env: env ?? process.env, windowsHide: true });
     } catch (error) {
       resolve({ code: -1, out: error.message });
@@ -51,16 +53,17 @@ class Container {
   env() {
     const data = dataLocations(this.app, this.settings);
     const user = os.userInfo();
-    return { ...process.env, URP_IMAGE_TAG: process.env.URP_IMAGE_TAG || this.tag, URP_PORT: String(this.port),
-      URP_HOST_CONFIG: path.join(os.homedir(), '.config', 'urp-workbench'),
-      URP_HOST_RUNTIME: data.runtime, URP_HOST_ARCHIVE: data.archive,
-      URP_HOST_DATASET: path.join(data.root, 'dataset.json'),
-      URP_HOST_UID: String(user.uid >= 0 ? user.uid : 1000), URP_HOST_GID: String(user.gid >= 0 ? user.gid : 1000) };
+    const env = normalizeEnvironment();
+    return { ...env, CERES_IMAGE_TAG: env.CERES_IMAGE_TAG || this.tag, CERES_PORT: String(this.port),
+      CERES_HOST_CONFIG: configDirectory(env),
+      CERES_HOST_RUNTIME: data.runtime, CERES_HOST_ARCHIVE: data.archive,
+      CERES_HOST_DATASET: path.join(data.root, 'dataset.json'),
+      CERES_HOST_UID: String(user.uid >= 0 ? user.uid : 1000), CERES_HOST_GID: String(user.gid >= 0 ? user.gid : 1000) };
   }
 
   /** What this machine has, so the page can say exactly what is missing. */
   async status() {
-    const image = `${REGISTRY}:${this.env().URP_IMAGE_TAG}`;
+    const image = `${REGISTRY}:${this.env().CERES_IMAGE_TAG}`;
     const server = await run('docker', ['version', '--format', '{{.Server.Version}}']);
     const dockerReady = server.code === 0;
     const compose = dockerReady ? await run('docker', ['compose', 'version', '--short']) : { code: 1, out: '' };
@@ -79,7 +82,7 @@ class Container {
   async start(onLine = () => {}) {
     const data = prepareDataHome(this.app, this.settings);
     // Docker would create a missing mount point itself, owned by root, and the app could no longer save keys there.
-    fs.mkdirSync(this.env().URP_HOST_CONFIG, { recursive: true });
+    fs.mkdirSync(this.env().CERES_HOST_CONFIG, { recursive: true });
     const up = await run('docker', ['compose', ...this.files, 'up', '-d'], { timeoutMs: 0, env: this.env(), onLine });
     if (up.code !== 0) throw new Error(up.out.split('\n').slice(-4).join('\n') || 'docker compose 启动失败');
     const deadline = Date.now() + START_TIMEOUT_MS;

@@ -3,8 +3,8 @@ import math
 
 import pytest
 
-from urp_lab.evolve import fillet as FL
-from urp_lab.evolve.reverify import strict_curvature
+from ceres_lab.evolve import fillet as FL
+from ceres_lab.evolve.reverify import strict_curvature
 
 
 def test_long_leg_corner_is_rounded_with_analytic_deviation():
@@ -68,10 +68,10 @@ def test_rounding_that_hits_an_obstacle_fails_the_official_recheck():
 
 def test_real_field_long_chord_corners_are_classified_reproducibly():
     pytest.importorskip('fields2cover')
-    from urp_lab.library import fields
+    from ceres_lab.library import fields
     if not fields.status()['downloaded']:
         pytest.skip('Fields2Benchmark not cached')
-    from urp_lab.evolve import instances as I, repair
+    from ceres_lab.evolve import instances as I, repair
     _sc, inst = I.coverage_instance('nl_field_1', 'robot_s')
     params = dict(decomposition='none', swath_objective='n_swath', turn_model='dubins')
     pts, kinds, _robot, _cells = repair._native(inst, params)

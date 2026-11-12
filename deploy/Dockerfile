@@ -12,7 +12,7 @@ FROM debian:bookworm-slim AS runtime
 ARG NODE_VERSION=24.22.0
 ARG NODE_SHA256=28ea0a438de9a13bd7891fd758eee6c7819ee8af5442dfd8d45bd65e56d4228c
 ARG PYTHON_VERSION=3.12.13
-ARG URP_REVISION=unknown
+ARG CERES_REVISION=unknown
 
 RUN test "$(dpkg --print-architecture)" = amd64 \
     && apt-get update && apt-get install -y --no-install-recommends \
@@ -28,17 +28,17 @@ RUN test "$(dpkg --print-architecture)" = amd64 \
 COPY --from=ghcr.io/astral-sh/uv:0.12.23 /uv /usr/local/bin/uv
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 \
-    URP_REVISION=${URP_REVISION} \
+    CERES_REVISION=${CERES_REVISION} \
     UV_PYTHON_INSTALL_DIR=/opt/uv-python \
     UV_LINK_MODE=copy \
     UV_PYTHON=3.12.13 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    URP_BIND_HOST=0.0.0.0 \
-    URP_LAB_RUNTIME=/data/lab \
-    URP_API_DB=/data/archive/research.sqlite3 \
-    URP_FOXGLOVE_BIND=0.0.0.0 \
-    URP_BROWSER_HOST=127.0.0.1 \
+    CERES_BIND_HOST=0.0.0.0 \
+    CERES_LAB_RUNTIME=/data/lab \
+    CERES_API_DB=/data/archive/research.sqlite3 \
+    CERES_FOXGLOVE_BIND=0.0.0.0 \
+    CERES_BROWSER_HOST=127.0.0.1 \
     LIBGL_ALWAYS_SOFTWARE=1
 
 WORKDIR /opt/urp
@@ -58,7 +58,7 @@ COPY cohort_b/run_vendor.py ./cohort_b/run_vendor.py
 COPY deploy/build-cohort.sh deploy/check-cohort.py deploy/image-healthcheck.py ./deploy/
 COPY deploy/check-runtime.py deploy/check-fields2cover.py ./deploy/
 RUN bash deploy/build-cohort.sh \
-    && printf '%s\n' "${URP_REVISION}" > /opt/urp/REVISION
+    && printf '%s\n' "${CERES_REVISION}" > /opt/urp/REVISION
 
 COPY src/backend ./src/backend
 COPY src/research ./src/research
@@ -78,13 +78,13 @@ RUN chmod 755 deploy/entrypoint.sh src/start.sh setup/profile.sh \
     && mkdir -p /data/lab /data/archive \
     && chown -R urp:urp /opt/urp /opt/uv-python /data
 
-LABEL org.opencontainers.image.revision="${URP_REVISION}" \
+LABEL org.opencontainers.image.revision="${CERES_REVISION}" \
       org.opencontainers.image.source="https://github.com/peakpeng666/URP" \
       org.opencontainers.image.title="urp-bench" \
-      org.opencontainers.image.description="URP workbench without ROS"
+      org.opencontainers.image.description="CERES workbench without ROS"
 EXPOSE 4100
 HEALTHCHECK --interval=15s --timeout=5s --start-period=40s --retries=8 \
     CMD ["/opt/urp/src/lab/.venv/bin/python", "/opt/urp/deploy/image-healthcheck.py"]
 ENTRYPOINT ["/usr/bin/tini", "--", "/opt/urp/deploy/entrypoint.sh"]
-CMD ["/opt/urp/src/lab/.venv/bin/python", "-m", "urp_lab", "serve"]
+CMD ["/opt/urp/src/lab/.venv/bin/python", "-m", "ceres_lab", "serve"]
 

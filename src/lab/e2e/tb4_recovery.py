@@ -50,7 +50,7 @@ def bridges(sid):
             if 'parameter_bridge' not in exe:
                 continue
             env = (proc / 'environ').read_bytes().split(b'\0')
-            if f'URP_SIM_SESSION={sid}'.encode() not in env:
+            if f'CERES_SIM_SESSION={sid}'.encode() not in env:
                 continue
             out.append({'pid': int(proc.name), 'exe': exe,
                         'sha256': hashlib.sha256((proc / 'exe').read_bytes()).hexdigest(),
@@ -93,7 +93,7 @@ try:
             leaf = bridges(current)[0]
             fd = os.pidfd_open(leaf['pid'])
             try:
-                assert f'URP_SIM_SESSION={current}'.encode() in (Path('/proc') / str(leaf['pid']) / 'environ').read_bytes().split(b'\0')
+                assert f'CERES_SIM_SESSION={current}'.encode() in (Path('/proc') / str(leaf['pid']) / 'environ').read_bytes().split(b'\0')
                 signal.pidfd_send_signal(fd, signal.SIGTERM)
             finally:
                 os.close(fd)

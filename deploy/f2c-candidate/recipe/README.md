@@ -109,7 +109,7 @@ The only approved same-SONAME alternative is `libz.so.1`: `runtime-interface.jso
 
 ## Restricted first-publication trigger and diagnostics
 
-The workflow template additionally permits a push only to `fix/agriculture-compatibility-20261022`, with a path filter of `.github/workflows/f2c-candidate.yml`. The job independently requires repository `peakpeng666/URP`, that exact full branch ref, and a push or manual-dispatch event. This supports one atomic helper/workflow publication without changing the default branch; it does not run for pull requests or main. Later workflow changes on that same branch can also trigger the bounded candidate job.
+The workflow template additionally permits a push only to `fix/agriculture-compatibility-20261022`, with a path filter of `.github/workflows/f2c-candidate.yml`. The job independently requires repository `peakpeng666/CERES`, that exact full branch ref, and a push or manual-dispatch event. This supports one atomic helper/workflow publication without changing the default branch; it does not run for pull requests or main. Later workflow changes on that same branch can also trigger the bounded candidate job.
 
 Failure reporting re-verifies the source-index and projector hashes before inspecting only fixed private stage logs. A bounded, no-follow reader projects recognized static errors into a closed diagnostic-code enumeration. Stdout and the job summary receive only the fixed stage/code and candidate status; unknown, unsafe or unrecognized evidence becomes `UNKNOWN`. Raw exception messages, paths, URLs and logs are never projected or uploaded. This is diagnostic classification, not a replacement for native acceptance evidence.
 

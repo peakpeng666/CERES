@@ -1,5 +1,5 @@
 """Ledger lineage and rendering (pure functions; the build itself is exercised on real runs)."""
-from urp_lab.evolve import ledger
+from ceres_lab.evolve import ledger
 
 
 def test_lineage_chains_back_to_registered_configurations():

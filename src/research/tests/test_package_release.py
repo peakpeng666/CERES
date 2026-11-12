@@ -132,4 +132,4 @@ class PackageReleaseContract(unittest.TestCase):
         self.assertEqual(result["sha256"], hashlib.sha256(self.archive.read_bytes()).hexdigest())
         with zipfile.ZipFile(self.archive) as bundle:
             self.assertIsNone(bundle.testzip())
-            self.assertEqual(bundle.read("urp-research/README.md"), (self.root / "README.md").read_bytes())
+            self.assertEqual(bundle.read("ceres-research/README.md"), (self.root / "README.md").read_bytes())

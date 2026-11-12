@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from urp_lab.evolve import repair as R
+from ceres_lab.evolve import repair as R
 
 
 def test_curvature_defects_detect_a_kink_but_not_a_feasible_arc():
@@ -24,11 +24,11 @@ def test_window_never_enters_a_swath():
 
 def test_real_field_curvature_failure_is_repaired_and_passes_official_check():
     pytest.importorskip('fields2cover')
-    from urp_lab.evolve import instances as I
-    from urp_lab.library import fields
+    from ceres_lab.evolve import instances as I
+    from ceres_lab.library import fields
     if not fields.status()['downloaded']:
         pytest.skip('Fields2Benchmark not cached')
-    from urp_lab.solvers import f2c_coverage as C
+    from ceres_lab.solvers import f2c_coverage as C
     _sc, inst = I.coverage_instance('nl_field_2', 'tractor_m')
     params = dict(decomposition='none', swath_objective='n_swath', turn_model='dubins')
     _r0, official, _m0, _raw0 = C.solve_full(inst, params)

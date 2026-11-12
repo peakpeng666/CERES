@@ -3,7 +3,7 @@
   "source_commit": "ddb5113e641ba63846431d4e3114efaf85f2fc89",
   "release_tag": "platform-snapshot-20261018-ddb5113e",
   "image_id": "sha256:560989d78e37b2fcbde64561be343975779a29798037c202519c5157187e27ad",
-  "image_tag": "urp-platform:20261018-ddb5113e",
+  "image_tag": "ceres-platform:20261018-ddb5113e",
   "architecture": "linux/amd64",
   "assets": [
     {

@@ -65,7 +65,7 @@ class Updater {
 
   disabledReason() {
     if (!this.app.isPackaged) return '开发版本不检查更新。';
-    if (this.env.URP_NO_UPDATE === '1') return '更新已由 URP_NO_UPDATE 禁用。';
+    if (this.env.CERES_NO_UPDATE === '1') return '更新已由 CERES_NO_UPDATE 禁用。';
     if (!['linux', 'win32'].includes(this.platform)) return '此平台尚未提供桌面自动更新。';
     return null;
   }
@@ -121,7 +121,7 @@ class Updater {
   async performCheck() {
     this.set({ status: 'checking', version: null, percent: null, detail: null });
     try {
-      let url = this.env.URP_UPDATE_URL; // Explicit local feed for installer QA.
+      let url = this.env.CERES_UPDATE_URL; // Explicit local feed for installer QA.
       if (!url) {
         const fetch = this.options.fetch ?? ((...args) => require('electron').net.fetch(...args));
         const release = await findDesktopRelease(fetch, this.platform, this.arch);

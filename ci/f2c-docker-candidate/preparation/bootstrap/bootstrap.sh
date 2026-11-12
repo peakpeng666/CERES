@@ -11,9 +11,9 @@ fi
     printf '%s\n' 'SAFE_BOOTSTRAP_DIAGNOSTIC:EXPLICIT_CONTAINER_INSTALL_MODE_REQUIRED' >&2; exit 64;
 }
 umask 022
-OUT=/opt/urp-bootstrap-evidence
-HELPERS=/usr/local/lib/urp-bootstrap
-SEED=/opt/urp-bootstrap-seed
+OUT=/opt/ceres-bootstrap-evidence
+HELPERS=/usr/local/lib/ceres-bootstrap
+SEED=/opt/ceres-bootstrap-seed
 ORIGIN=https://snapshot.ubuntu.com/ubuntu/20261021T000000Z
 SIGNER=F6ECB3762474EDA9D21B7022871920D1991BC93C
 phase=prerequisites
@@ -116,20 +116,20 @@ run base-dpkg-query /usr/bin/dpkg-query -W
 substep=apt_configuration
 /usr/bin/cat > "$OUT/apt.conf" <<'EOF'
 Dir::Etc::main "/dev/null";
-Dir::Etc::parts "/opt/urp-bootstrap-evidence/empty-conf";
-Dir::Etc::sourcelist "/opt/urp-bootstrap-evidence/sources.list";
-Dir::Etc::sourceparts "/opt/urp-bootstrap-evidence/empty-sources";
+Dir::Etc::parts "/opt/ceres-bootstrap-evidence/empty-conf";
+Dir::Etc::sourcelist "/opt/ceres-bootstrap-evidence/sources.list";
+Dir::Etc::sourceparts "/opt/ceres-bootstrap-evidence/empty-sources";
 Dir::Etc::preferences "/dev/null";
-Dir::Etc::preferencesparts "/opt/urp-bootstrap-evidence/empty-prefs";
+Dir::Etc::preferencesparts "/opt/ceres-bootstrap-evidence/empty-prefs";
 Dir::Etc::trusted "/dev/null";
-Dir::Etc::trustedparts "/opt/urp-bootstrap-evidence/empty-trusted";
-Dir::State::lists "/opt/urp-bootstrap-evidence/lists";
+Dir::Etc::trustedparts "/opt/ceres-bootstrap-evidence/empty-trusted";
+Dir::State::lists "/opt/ceres-bootstrap-evidence/lists";
 Dir::State::status "/var/lib/dpkg/status";
-Dir::State::extended_states "/opt/urp-bootstrap-evidence/extended_states";
-Dir::Cache::archives "/opt/urp-bootstrap-evidence/archives";
-Dir::Cache::pkgcache "/opt/urp-bootstrap-evidence/pkgcache.bin";
-Dir::Cache::srcpkgcache "/opt/urp-bootstrap-evidence/srcpkgcache.bin";
-Dir::Log "/opt/urp-bootstrap-evidence/logs";
+Dir::State::extended_states "/opt/ceres-bootstrap-evidence/extended_states";
+Dir::Cache::archives "/opt/ceres-bootstrap-evidence/archives";
+Dir::Cache::pkgcache "/opt/ceres-bootstrap-evidence/pkgcache.bin";
+Dir::Cache::srcpkgcache "/opt/ceres-bootstrap-evidence/srcpkgcache.bin";
+Dir::Log "/opt/ceres-bootstrap-evidence/logs";
 APT::Architecture "amd64";
 APT::Install-Recommends "false";
 APT::Install-Suggests "false";
@@ -150,7 +150,7 @@ Acquire::http::AllowRedirect "false";
 Acquire::https::AllowRedirect "false";
 Acquire::https::Verify-Peer "true";
 Acquire::https::Verify-Host "true";
-Acquire::https::CaInfo "/opt/urp-bootstrap-evidence/bootstrap-ca.pem";
+Acquire::https::CaInfo "/opt/ceres-bootstrap-evidence/bootstrap-ca.pem";
 Acquire::Languages "none";
 Acquire::Retries "0";
 Acquire::http::Timeout "60";

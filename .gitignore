@@ -97,7 +97,7 @@ setup/2026-10-17/critique/mu2-study/*/
 /cohort_b/ails/build/
 /cohort_b/sisr/build/
 
-/deploy/urp-sim-assets.tar.gz
+/deploy/ceres-sim-assets.tar.gz
 /deploy/release-assets/
 # 非理想执行验收：大体积会话 runtime 与完整逐点结果留本地；摘要与日志入库
 /setup/2026-10-18/nonideal-execution/matrix/runtime/

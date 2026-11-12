@@ -109,19 +109,19 @@ test('a native child remains supervised when shutdown and forced termination bot
 
 test('only source Electron opts into local ROS, even if a packaged app inherits the source flag', () => {
   const { childEnv } = require('../main/backend');
-  const previous = process.env.URP_DESKTOP_SOURCE;
-  process.env.URP_DESKTOP_SOURCE = '1';
+  const previous = process.env.CERES_DESKTOP_SOURCE;
+  process.env.CERES_DESKTOP_SOURCE = '1';
   try {
     const app = { getPath: () => '/test', getVersion: () => '0.2.0' };
     const source = childEnv({ ...app, isPackaged: false }, 4100);
     const packaged = childEnv({ ...app, isPackaged: true }, 4100);
-    assert.equal(source.URP_DESKTOP, '1');
-    assert.equal(source.URP_DESKTOP_SOURCE, '1');
-    assert.equal(packaged.URP_DESKTOP, '1');
-    assert.equal(packaged.URP_DESKTOP_SOURCE, '0');
+    assert.equal(source.CERES_DESKTOP, '1');
+    assert.equal(source.CERES_DESKTOP_SOURCE, '1');
+    assert.equal(packaged.CERES_DESKTOP, '1');
+    assert.equal(packaged.CERES_DESKTOP_SOURCE, '0');
   } finally {
-    if (previous === undefined) delete process.env.URP_DESKTOP_SOURCE;
-    else process.env.URP_DESKTOP_SOURCE = previous;
+    if (previous === undefined) delete process.env.CERES_DESKTOP_SOURCE;
+    else process.env.CERES_DESKTOP_SOURCE = previous;
   }
 });
 
@@ -193,6 +193,7 @@ function timedOutBackend({ exitsOnClose }) {
       if (name === 'node:fs') return { existsSync: () => true, mkdirSync: () => {}, openSync: () => 1,
         writeSync: () => {}, closeSync: () => {}, readFileSync: () => '', appendFileSync: () => {} };
       if (name === './data-home') return { prepareDataHome: () => {} };
+      if (name === './env-compat') return require('../main/env-compat');
       return require(name);
     },
     process: { platform: 'linux' }, module: { exports: {} },

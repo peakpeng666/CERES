@@ -15,7 +15,7 @@ from pathlib import Path
 import re
 
 
-REPOSITORY = "peakpeng666/URP"
+REPOSITORY = "peakpeng666/CERES"
 APPLICATION_COMMIT = "3acf840d1a0c16ab1cfcca15744e4ea6609ddb35"
 CANDIDATE_INPUT = "${{ inputs.candidate_revision }}"
 SOURCE_INDEX_INPUT = "${{ inputs.source_index_sha256 }}"
@@ -109,7 +109,7 @@ def render(template, *, candidate_revision, source_index_sha256, branch, workflo
         "permissions:\n"
         "  contents: read\n"
         "concurrency:\n"
-        "  group: 'urp-f2c-compiler:" + branch + ":" + workflow_path + "'\n"
+        "  group: 'ceres-f2c-compiler:" + branch + ":" + workflow_path + "'\n"
         "  cancel-in-progress: false\n"
         "jobs:\n"
         "  compiler-build-only:\n"

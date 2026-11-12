@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Inventory URP and optionally clear only reproducible backend Python caches.
+"""Inventory CERES and optionally clear only reproducible backend Python caches.
 
 Default is read-only. Never follows symlinks, opens credentials, prunes Git,
 deletes environments, or removes research inputs / outputs / runtime sessions.
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PRIVATE = {'.aws', '.agents', '.codex', '.v2c', '.video_agent'}
 DEPENDENCIES = {'.git', '.venv', 'venv', 'node_modules'}
 CACHES = {'__pycache__', '.pytest_cache', '.ruff_cache', '.mypy_cache'}
-BACKENDS = ('src/lab/urp_lab', 'src/lab/ros', 'src/lab/tests', 'src/lab/e2e',
+BACKENDS = ('src/lab/ceres_lab', 'src/lab/ros', 'src/lab/tests', 'src/lab/e2e',
             'src/backend/app', 'src/backend/tests', 'tools')
 
 

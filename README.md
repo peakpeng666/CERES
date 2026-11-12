@@ -1,7 +1,7 @@
 # CERES（灵畴）：农业机器人可验证规划调度与自主智能体工作台
 
 > **CERES** (*Composable Evolutionary Routing & Execution Sandbox* / 可组合演化路由与执行沙盒) 
-> 面向农业机器人自主作业的神经符号任务规划、多机协同调度与独立物理验证闭环系统。（学术工程兼容标识：*URP-Harness*）
+> 面向农业机器人自主作业的神经符号任务规划、多机协同调度与独立物理验证闭环系统。（学术工程兼容标识：*CERES-Harness*）
 
 CERES 将自然语言农艺任务建模、算法组合推荐、多机运筹求解、独立几何/物理验算及跨引擎仿真无缝集成于同一工作台。
 本地 Web 交互入口：`http://127.0.0.1:4100/`
@@ -22,8 +22,8 @@ CERES 将自然语言农艺任务建模、算法组合推荐、多机运筹求�
 |---|---|---|
 | [`src/frontend/`](src/frontend/) | **交互控制台 (CERES Workbench)** | 任务编辑、田间模板、Agent 对话流、方案对比、图表呈现与历史回放 |
 | [`src/lab/`](src/lab/CONTRACT.md) | **网关与调度大脑 (CERES Core)** | HTTP/SSE 网关、Agent 决策循环、求解器适配、独立检查器与仿真会话管理 |
-| [`src/lab/urp_lab/agri/`](src/lab/urp_lab/agri/) | **农机与农艺模型 (Agri Engine)** | 环境-作物-机具三元组建模、ASAE D497 牵引核验、Bochtis 掉头与田间行规划 |
-| [`src/lab/urp_lab/evolve/`](src/lab/urp_lab/evolve/) | **演化求解内核 (Evolve Sandbox)** | 互补算子挖掘、圆角检查 (fillet)、边界内缩修复 (repair) 与停-转-行工期模型 |
+| [`src/lab/ceres_lab/agri/`](src/lab/ceres_lab/agri/) | **农机与农艺模型 (Agri Engine)** | 环境-作物-机具三元组建模、ASAE D497 牵引核验、Bochtis 掉头与田间行规划 |
+| [`src/lab/ceres_lab/evolve/`](src/lab/ceres_lab/evolve/) | **演化求解内核 (Evolve Sandbox)** | 互补算子挖掘、圆角检查 (fillet)、边界内缩修复 (repair) 与停-转-行工期模型 |
 | [`src/backend/`](src/backend/README.md) | **历史实验档案 (Archive Server)** | 离线实验包归档、SQLite 记录与有界 CVRP 数值计算（`127.0.0.1:4180`） |
 | [`src/research/`](src/research/README.md) | **算法研究库 (Research Lib)** | 纯欧氏 CVRP 推荐、装箱优化、转弯模式与基准 CLI |
 | [`src/robotics/`](src/robotics/README.md) | **跨引擎物理仿真 (Robotics Sim)** | ROS 2 (Humble) / Gazebo Fortress / MuJoCo 动力学验证与时序遥测 |

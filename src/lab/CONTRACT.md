@@ -1,4 +1,4 @@
-# URP Lab 集成契约（开发者用）
+# CERES Lab 集成契约（开发者用）
 
 本文件固定科研面板各进程之间的数据结构与接口。实现必须遵守；如需改动，同步修改本文件、`src/frontend/src/lab/types.ts` 与测试。
 
@@ -6,10 +6,10 @@
 
 | 进程 | 解释器 / 环境 | 端口 | 说明 |
 |---|---|---|---|
-| 网关 `urp_lab` | `src/lab/.venv`（uv，CPython 3.12） | 127.0.0.1:4100 | 托管面板（`src/frontend/dist`）、`/lab/api/*`、反向代理 `/api/*` → 4180、SSE |
+| 网关 `ceres_lab` | `src/lab/.venv`（uv，CPython 3.12） | 127.0.0.1:4100 | 托管面板（`src/frontend/dist`）、`/lab/api/*`、反向代理 `/api/*` → 4180、SSE |
 | 档案与数值任务后端 | 根目录 `.venv`（uv，CPython 3.12） | 127.0.0.1:4180 | 档案查询与有界 CVRP Jobs；应用数据库为 `.local-state/research.sqlite3`，保留冻结原库；由网关启动/停止 |
 | 求解工作进程 | `src/lab/.venv` 子进程 | — | 每次求解独立子进程，带墙钟预算；项目模块通过 `sys.path` 引入 `src/research/src`，不修改研究源码 |
-| 仿真会话 `urp_sim_session.py` | 系统 `/usr/bin/python3`（3.10）+ ROS 2 Humble rclpy | 127.0.0.1:4191 | 官方 TB4 + Gazebo Fortress + Nav2 + 可选 GUI/RViz；复用 `setup/2026-10-15/deployment` 的 TF 修补、GUI 插件保护、有序桥接关闭 |
+| 仿真会话 `ceres_sim_session.py` | 系统 `/usr/bin/python3`（3.10）+ ROS 2 Humble rclpy | 127.0.0.1:4191 | 官方 TB4 + Gazebo Fortress + Nav2 + 可选 GUI/RViz；复用 `setup/2026-10-15/deployment` 的 TF 修补、GUI 插件保护、有序桥接关闭 |
 
 ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDDS、`ROS_DOMAIN_ID=139`、`ROS_LOCALHOST_ONLY=1`）。科研 Python 与 ROS Python 不互相导入。
 
@@ -19,7 +19,7 @@ ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDD
 
 - `frame.kind = "benchmark"`：基准算例坐标，**无物理单位**（`units: "unitless"`），成本单位按算例声明（如 `synthetic_integer_cost`）。不能直接送入仿真。
 - `frame.kind = "map"`：ROS `map` 坐标，单位米（`units: "m"`），附官方地图（`world`、`map_yaml`）。转弯路网成本为整数厘米当量（`cost_unit: "cm_equivalent"`：路段长度 cm + 转弯惩罚 cm 当量）。
-- 来源标签 `source`：`"project"`（URP 项目算法/检查器，给出文件路径）、`"third_party"`（PyVRP、OR-Tools、Fields2Cover，给出版本）、`"panel_baseline"`（面板内置的简单基线，非项目研究成果）、`"nav2"`（Nav2 自身规划/控制）。
+- 来源标签 `source`：`"project"`（CERES 项目算法/检查器，给出文件路径）、`"third_party"`（PyVRP、OR-Tools、Fields2Cover，给出版本）、`"panel_baseline"`（面板内置的简单基线，非项目研究成果）、`"nav2"`（Nav2 自身规划/控制）。
 - 仿真执行区分：`follow_path`（Nav2 控制器跟踪 **求解器几何路径**，不调用 Nav2 全局规划器）与 `nav2_waypoints`（只给出任务顺序，**路径由 Nav2 NavFn 规划**）。机器人从当前位置到路线起点的"接驳段"总是 Nav2 规划，单独记录。
 - 实际轨迹：`ground_truth`（Gazebo 真值，world 坐标；官方地图与 world 对齐）与 `amcl`（定位估计，map 坐标）分开记录。
 
@@ -36,7 +36,7 @@ ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDD
   "frame": {"kind": "map", "units": "m", "world": "warehouse", "map": {"yaml": "/opt/…/warehouse.yaml", "resolution": 0.03, "origin": [-15.1,-25.0,0], "width": 1006, "height": 1674, "image": "/lab/api/maps/warehouse.png"}}
          | {"kind": "benchmark", "units": "unitless"},
   "cost_unit": "cm_equivalent" | "synthetic_integer_cost" | "euclidean" | "m",
-  "provenance": {"generator": "urp_lab.scenarios.field:warehouse_rows", "params": {...}, "seed": null, "note": "…"},
+  "provenance": {"generator": "ceres_lab.scenarios.field:warehouse_rows", "params": {...}, "seed": null, "note": "…"},
   "sim": {"supported": true, "world": "warehouse", "spawn": {"x":0,"y":0,"yaw":0}, "reason": null},
   "instance": { /* problem-class payload, §2.2 */ },
   "editable": {"tasks": true, "depot": true, "capacity": true, "demands": true},
@@ -48,7 +48,7 @@ ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDD
 
 ### 2.2 Instance payloads
 
-**turn_routing**（与 `src/research/src/urp_research/turn_modes` 输入格式一致，另加几何）：
+**turn_routing**（与 `src/research/src/ceres_research/turn_modes` 输入格式一致，另加几何）：
 ```jsonc
 {"depot": 0, "capacity": 6,
  "customers": [{"id": 0, "node": 12, "demand": 1, "label": "A3"}],
@@ -76,7 +76,7 @@ ROS 环境变量通过 `bash setup/profile.sh simulation …` 设定（CycloneDD
 ```jsonc
 {"id": "urp.turn_mode_dp", "name": "转弯模式分层 DP（精确）", "problem_classes": ["turn_routing"],
  "family": "exact"|"metaheuristic"|"heuristic"|"baseline"|"coverage"|"relaxation",
- "source": "project"|"third_party"|"panel_baseline", "origin": "src/research/src/urp_research/turn_modes/solver.py" | "PyVRP 0.14.0",
+ "source": "project"|"third_party"|"panel_baseline", "origin": "src/research/src/ceres_research/turn_modes/solver.py" | "PyVRP 0.14.0",
  "turn_aware": true, "guarantee": "optimal"|"optimal_for_relaxation"|"none",
  "limits": {"max_tasks": 12}, "available": true, "unavailable_reason": null,
  "params": [{"name": "time_limit_s", "type": "number", "default": 5, "min": 0.5, "max": 120, "label": "时间预算 (s)"}],
@@ -104,7 +104,7 @@ Solution（`GET /lab/api/runs/{run_id}`）：
  "objective": {"value": 1234, "unit": "cm_equivalent", "lower_bound": null},
  "routes": [{"vehicle": 0, "nodes": [0, 3, …] | null, "sequence": [task ids], "services": [{"task": 0, "position": 3}],
              "polyline": [[x,y], …], "cost": 512, "load": 4, "mode_chain": […]|null}],
- "check": {"checker": "src/research/src/urp_research/turn_modes/checker.py", "source": "project",
+ "check": {"checker": "src/research/src/ceres_research/turn_modes/checker.py", "source": "project",
            "valid": true, "errors": [], "computed_cost": 1234, "details": {…}},
  "map_check": null | {"checked": true, "collision_free": true, "min_clearance_m": 0.71, "robot_radius_m": 0.175,
                       "violations": [{"route": 0, "segment": 5, "point": [x,y], "clearance_m": 0.1}]},
@@ -157,7 +157,7 @@ Solution（`GET /lab/api/runs/{run_id}`）：
  "state": "queued"|"approach"|"executing"|"succeeded"|"failed"|"canceled",
  "localization": "amcl"|"ground_truth", "navigation_profile": {…参数文件、来源 SHA256、覆盖值与实测参数…},
  "controller": "FollowPath"|"FollowCoverage", "progress": {"leg":1,"legs_total":5},
- "sources": {"route_plan": "URP · 转弯模式分层 DP (src/research/…)", "approach": "Nav2 NavigateToPose (NavFn+RPP)", "tracking": "Nav2 FollowPath (RPP 控制器)"},
+ "sources": {"route_plan": "CERES · 转弯模式分层 DP (src/research/…)", "approach": "Nav2 NavigateToPose (NavFn+RPP)", "tracking": "Nav2 FollowPath (RPP 控制器)"},
  "planned": {"path": [[x,y],…], "length_m": 52.1},
  "tasks": [{"task": 0, "label": "A3", "xy": [x,y], "state": "pending"|"reached"|"missed", "t_sim": null, "distance_m": null}],
  "actual": {"ground_truth": [[t_sim,x,y,yaw],…], "amcl": [[t_sim,x,y,yaw],…]},
@@ -193,38 +193,38 @@ Solution（`GET /lab/api/runs/{run_id}`）：
 ## 3. Python 模块接口（网关 ↔ 核心）
 
 ```python
-# urp_lab.paths
+# ceres_lab.paths
 REPO, LAB, RUNTIME, RESEARCH_SRC, FRONTEND_DIST, DEPLOYMENT  # pathlib.Path
-# urp_lab.scenarios
+# ceres_lab.scenarios
 list_scenarios() -> list[dict]           # 摘要
 get_scenario(scenario_id: str) -> dict   # 完整 Scenario；KeyError 若不存在
 validate_instance(problem_class: str, instance: dict) -> dict   # 返回规范化 instance；ValueError(中文) 若非法
 world_map(world: str) -> dict            # §2.9 元数据；map_png(world) -> bytes
-# urp_lab.solvers
+# ceres_lab.solvers
 catalog() -> list[dict]                  # §2.3
 run_algorithm(scenario: dict, instance: dict, algorithm_id: str, params: dict) -> dict
     # 在当前进程内求解+检查+地图检查，返回 Solution 中的 status/objective/routes/check/map_check/metrics/algorithm 字段
-# urp_lab.worker  (python -m urp_lab.worker < request.json > result.json)，网关用子进程+墙钟预算调用 run_algorithm
-# urp_lab.recommend
+# ceres_lab.worker  (python -m ceres_lab.worker < request.json > result.json)，网关用子进程+墙钟预算调用 run_algorithm
+# ceres_lab.recommend
 recommend(scenario: dict, instance: dict) -> dict   # §2.5
-# urp_lab.export
+# ceres_lab.export
 export_run(solution: dict, fmt: str) -> tuple[bytes, str, str]  # (data, media_type, filename)
 export_sim_run(sim_run: dict, fmt: str) -> tuple[bytes, str, str]
 export_compare(solutions: list[dict], fmt: str) -> tuple[bytes, str, str]
-# urp_lab.simplan
+# ceres_lab.simplan
 to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
     # 生成会话 /execute 负载（§4），不适用时 raise NotSimulatable(中文原因)
 ```
 
 ## 4. 仿真会话控制接口（网关 ↔ ROS，127.0.0.1:4191，仅本机）
 
-启动：`bash setup/profile.sh simulation /usr/bin/python3 src/lab/ros/urp_sim_session.py --session-id ID --world warehouse --spawn X,Y,YAW --runtime DIR --port 4191 [--gui] [--rviz]`（先 `source /opt/ros/humble/setup.bash`）。默认启用 TF、GUI 兼容覆盖与桥接源码修复，按依赖顺序关闭；`URP_TF_FIX=0`、`URP_GUI_FIX=0`、`URP_BRIDGE_FIX=0` 分别选择对应的原系统实现，最后一项不关闭有序回收。
+启动：`bash setup/profile.sh simulation /usr/bin/python3 src/lab/ros/ceres_sim_session.py --session-id ID --world warehouse --spawn X,Y,YAW --runtime DIR --port 4191 [--gui] [--rviz]`（先 `source /opt/ros/humble/setup.bash`）。默认启用 TF、GUI 兼容覆盖与桥接源码修复，按依赖顺序关闭；`CERES_TF_FIX=0`、`CERES_GUI_FIX=0`、`CERES_BRIDGE_FIX=0` 分别选择对应的原系统实现，最后一项不关闭有序回收。
 
 - `GET /state` → SimState（§2.7，`execution` 为当前/最近一次运行）。
 - `POST /execute`：
 ```jsonc
 {"sim_run_id": "…", "run_id": "…", "mode": "follow_path"|"nav2_waypoints",
- "path": [[x,y],…],                      // follow_path：URP 规划折线（map 米）；网关已按 0.05 m 加密并去重
+ "path": [[x,y],…],                      // follow_path：CERES 规划折线（map 米）；网关已按 0.05 m 加密并去重
  "waypoints": [{"task": 0, "label": "A3", "x": 1.0, "y": 2.0, "yaw": null}],  // 有序任务点
  "tasks": [{"task":0,"label":"A3","xy":[x,y]}], "task_radius_m": 0.35,
  "sources": {…同 SimRun.sources…}, "planned_length_m": 52.1, "budget_s": 900}
@@ -263,7 +263,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
   实例可含 `corridors[{id,name,polygon}]`（2026-10-17 第五轮，第 8 项）：GeoJSON 里 role/type/name 含 road/track/headland/道路/机耕道/地头 等词的面要素成为通行走廊，线要素按 `width_m`（1–8 m，默认 2.5）缓冲成面；行间通行（`rows`）下走廊不种植、自动并入开阔区（地头 / 机耕路的通行网络直接吃这些要素），`free` 通行下它们不构成约束。导出 GeoJSON 原样保留走廊要素（role=corridor）。
   `vehicles.travel` 决定距离模型（生成的农田地图默认 `rows`，导入 / 旧场景缺省为 `free`）：
   - `free`：机器人半径膨胀障碍上的可视图最短路，地块可任意穿行。
-  - `rows`：田间通行图（`urp_lab/lanes.py`）。每个地块按 `rows_deg` 与作物行距（作物表 `lanes.CROPS`，未知作物用默认行距；单块超过 160 行时等比放宽）种植作物行，地块边缘留 0.8 m、地块内障碍周围留 `2r + 1` m 不种；行间净宽 ≥ 2(r + 0.1) m 时每两行之间是一条通道，否则每两行留出一条作业道（空出 1 个或多个行位）。通道中线向外延伸到开阔区（地头、机耕路、障碍周围的空地）处为出入口；开阔区内是可视图，通道内只能沿中线行驶，不得穿过作物行。每个任务在离它最近的通道点或开阔区点作业（超过 `max(3 m, 最大通道间隔)` 报错），车库须在开阔区。
+  - `rows`：田间通行图（`ceres_lab/lanes.py`）。每个地块按 `rows_deg` 与作物行距（作物表 `lanes.CROPS`，未知作物用默认行距；单块超过 160 行时等比放宽）种植作物行，地块边缘留 0.8 m、地块内障碍周围留 `2r + 1` m 不种；行间净宽 ≥ 2(r + 0.1) m 时每两行之间是一条通道，否则每两行留出一条作业道（空出 1 个或多个行位）。通道中线向外延伸到开阔区（地头、机耕路、障碍周围的空地）处为出入口；开阔区内是可视图，通道内只能沿中线行驶，不得穿过作物行。每个任务在离它最近的通道点或开阔区点作业（超过 `max(3 m, 最大通道间隔)` 报错），车库须在开阔区。
   结果 route 额外字段：`vehicle_name, color, trips[[task ids]], duration_s`，`services[i].position` 为有序 polyline 的顶点下标（旧记录可为空），`services[i].stop` 为作业位置（`free` 时即任务点）；metrics：`total_distance_m, makespan_s, longest_route_m, vehicles_used, fleet_size, trips, balance_cv, capacity_utilization, detour_ratio, travel, per_vehicle[]`，`rows` 时另有 `lanes, service_offset_mean_m, service_offset_max_m`；`raw_result.travel_network` 给出通道数、出入口、开阔区拐点、各地块行距与通道宽。目标为 makespan 时 `objective.unit = 's'`。当前 `raw_result.model_contract.schema = urp.fleet-model/2`；图节点统一为车库、任务、补给点。补给副本可选，模型时间按 0.1 s 离散，提取后用米制几何重新计时（允许边权取整误差）。旧模型补给记录必须重求解，执行入口返回 422 `obsolete_resupply_model`，不能仅靠旧 `check.valid` 放行。
   验算（`fleet.check`）另核对：每个任务的作业位置在路线上，且是离任务最近的可达处（`free` 时必须是任务点本身）；`rows` 时由地块重新生成作物行与通道，每段路线都须落在开阔区或通道中线上，否则报“离开行间通道和地头，斜穿了作物”。
 - `point_to_point`：`{start:[x,y,yaw], goal:[x,y,yaw], motion_model:'holonomic'|'dubins'|'reeds_shepp', turning_radius, robot_radius, clearance_margin, goal_tolerance}`，地图坐标，可仿真（单条路线，终点为唯一任务点）。
@@ -304,7 +304,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 | GET | `ros/package/{package}/{path}` | `turtlebot4_description`、`irobot_create_description` 包内的网格文件，供 URDF 的 `package://` 引用 |
 
 ### 6.2 会话与世界
-- 世界生成：`urp_lab/fieldworld.py`。世界坐标 = 任务地图坐标（米）。田块、地块、作物行（与规划同一套 `lanes` 行布局）、障碍为二进制 STL 网格（Gazebo 与 gzweb 都能读；障碍碰撞用 SDF `polyline`），车库、任务标记、每车一台差速机器人（官方 `DiffDrive` 系统，车体 0.8 × 0.56 m、含球面轮总宽 0.96 m，驱动轮在车体中线上、前后各一个万向轮，可绕中心原地转向；各车碰撞掩码均为 0xffff，车间碰撞开启；每车独立停车位和交通预约见 6.5）。方案为 `travel = rows` 时作物行带碰撞（静态模型 `crop_rows`：矩形行用 box，被裁过的行用 `polyline`，高度至少 0.5 m），停车位避开作物行；`free` 时作物行只做显示。
+- 世界生成：`ceres_lab/fieldworld.py`。世界坐标 = 任务地图坐标（米）。田块、地块、作物行（与规划同一套 `lanes` 行布局）、障碍为二进制 STL 网格（Gazebo 与 gzweb 都能读；障碍碰撞用 SDF `polyline`），车库、任务标记、每车一台差速机器人（官方 `DiffDrive` 系统，车体 0.8 × 0.56 m、含球面轮总宽 0.96 m，驱动轮在车体中线上、前后各一个万向轮，可绕中心原地转向；各车碰撞掩码均为 0xffff，车间碰撞开启；每车独立停车位和交通预约见 6.5）。方案为 `travel = rows` 时作物行带碰撞（静态模型 `crop_rows`：矩形行用 box，被裁过的行用 `polyline`，高度至少 0.5 m），停车位避开作物行；`free` 时作物行只做显示。
 - 会话进程：`src/lab/ros/field_sim_session.py`（系统 Python 3.10，控制端口 127.0.0.1:4192）。组件：`ign gazebo -s`、一个 `ros_gz_bridge parameter_bridge`（`/clock`、`/model/vehicle_i/pose → /ground_truth/poses`（各车 PosePublisher）、每车 `/vehicle_i/cmd_vel`、`/vehicle_i/odom`、`/model/vehicle_i/contacts`）、Foxglove Bridge（127.0.0.1:8765）、Gazebo WebSocket 服务（9002，每会话随机授权密钥，资源路径限定为会话目录与 ROS share）、可选 Gazebo GUI 与 RViz2。
 - 控制：每车纯追踪，前视 1.4 m，不越过下一个未到达任务的作业位置（`services[i].stop`，旧记录用任务点）与下一个急弯（转角 > 0.6 rad：通道出入口、行内掉头）；到急弯处先原地转到对准下一段再走；进度只沿路线向前投影，路线原路折返时按返程计。进入作业位置 0.45 m（路线在此急转时 0.2 m）记为到达，有 `service_s` 时原地停留；60 s 无进展记为受阻；总时限按全部车辆的规划时长之和计算，见 6.5。结果另记 `travel`、`row_collision_shapes`（世界几何数量）、`row_collisions`（观测接触计数，未知为 null）与每个任务的 `stop`。
 - ROS 话题（`map` 坐标系）：`/workbench/field`、`/workbench/routes`、`/workbench/tasks`（transient local）、`/workbench/trails`、`/workbench/vehicles`（MarkerArray）、`/workbench/fleet_status`（std_msgs/String JSON，约 5 Hz）、TF `map → vehicle_i/base_link`。
@@ -314,11 +314,11 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 - 准入：`state=done`、`status=feasible|optimal`、`check.valid=true` 只是前置条件；启动必须用保存的 instance/routes 重新调用 `fleet.check`。`real_time_factor` 为有限数字 0.5–20，`traffic` 只接受 `serial`（默认）或 `coordinated`，非法值返回 400；未检查/重验失败返回 422。`web:false` 可关闭可选网页桥，默认开启。两类会话共用生命周期互斥锁。
 - `fleet.check` 核对 sequence、trips、services 一致且覆盖所有任务；按有序折线查验任务与趟间返库，比较里程/载重/用时，按原始多边形距离复算连续圆足迹。候选未通过时 `status=no_solution, routes=[]`，候选保留在 `raw_result.rejected_routes`。距离是构造出的候选图上的最短路，不保证连续空间全局最短。
 - 当前田间执行模型外接圆半径 `hypot(0.4, 0.28)` m、至多 15 辆，树木碰撞与地图多边形一致，接驳段验证净空。通用规划器的半径/车辆数范围不因此缩小。
-- 控制器的纯 Python 实现在 `urp_lab.field_tracking`；任务携带执行路径弧长 `path_s` 和完成停留的仿真时刻 `serviced_at`。重合位置/重复经过不能提前服务；服务停留期间不启动下一任务、不累积卡住时限。
-- `result.state = succeeded|failed|canceled`。成功必须通过 `urp_lab.fieldcheck` 对实测轨迹的独立检查（圆足迹、双向路径偏差及终点、停留时间）。偏差按 0.1 m 采样并加入 0.05 m 保守误差界；圆足迹检查每条实测线段。任务带时间窗时，以车队共同放行时刻为零点等待最早作业时间，并用实测记录核对到达截止与提前作业；迟到、提前作业、缺失任务或检查器失败不能产生 succeeded。取消/异常也保存结果。状态与结果给出 `traffic_mode`，结果和摘要给出 `time_windows`，摘要保留 `check.valid/errors`。
+- 控制器的纯 Python 实现在 `ceres_lab.field_tracking`；任务携带执行路径弧长 `path_s` 和完成停留的仿真时刻 `serviced_at`。重合位置/重复经过不能提前服务；服务停留期间不启动下一任务、不累积卡住时限。
+- `result.state = succeeded|failed|canceled`。成功必须通过 `ceres_lab.fieldcheck` 对实测轨迹的独立检查（圆足迹、双向路径偏差及终点、停留时间）。偏差按 0.1 m 采样并加入 0.05 m 保守误差界；圆足迹检查每条实测线段。任务带时间窗时，以车队共同放行时刻为零点等待最早作业时间，并用实测记录核对到达截止与提前作业；迟到、提前作业、缺失任务或检查器失败不能产生 succeeded。取消/异常也保存结果。状态与结果给出 `traffic_mode`，结果和摘要给出 `time_windows`，摘要保留 `check.valid/errors`。
 - 时钟进展、每车真值、里程计与接触消息有 3 s 墙钟看门狗；必需进程提前退出即会话故障，不以子进程 rc=0 当成功。`state.json` 保存最终状态，GET fieldsim 在进程退出后补读它并返回真实 `returncode`。非零码不会因用户请求停止而被隐藏。
 - `session-report.json` 的 `execution_state` 为任务结果，`cleanup_status` 为进程回收结果，`status` 为会话整体结果；执行失败或关闭异常返回非零退出码。正常取消可以 rc=0，但结果保持 canceled。
-- 导出额外包含 `planning_solution`、`execution_plan`、`execution_provenance`（执行源码与世界 SHA256、坐标/定位/控制/比较口径）、`session_report`（未关闭时为 null）。田间使用 URP 跟踪器，不使用 Nav2 重规划；参考模式用 Gazebo 真值，非理想定位模式用轮式输入与合成位置观测的估计（见 §7）。actual 含往返停车接驳、转向和排队，planned 从车库算起。
+- 导出额外包含 `planning_solution`、`execution_plan`、`execution_provenance`（执行源码与世界 SHA256、坐标/定位/控制/比较口径）、`session_report`（未关闭时为 null）。田间使用 CERES 跟踪器，不使用 Nav2 重规划；参考模式用 Gazebo 真值，非理想定位模式用轮式输入与合成位置观测的估计（见 §7）。actual 含往返停车接驳、转向和排队，planned 从车库算起。
 - 网页桥只在端口可连接后发布地址；可选服务失败告警。窗口开关在执行中处理，关闭异步回收窗口进程，不暂停跟踪；每次启动使用独立日志名。
 
 ### 6.4 前端
@@ -338,7 +338,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 
 
 - `GET fieldsim/results/{session_id}?evidence=true` 仅返回实时面板所需的物理判据/能耗/关闭报告，省去原始采样数组；默认完整结果及回放、导出不变，均不缓存旧关闭报告。
-- 田间、TB4 与物理探针在 ROS 初始化前共同持有每用户 `~/.cache/urp/physical-session.lock` 的非阻塞内核锁；并发者返回 2，不终止持有者。锁文件不删除，进程退出自动释放。
+- 田间、TB4 与物理探针在 ROS 初始化前共同持有每用户 `~/.cache/ceres/physical-session.lock` 的非阻塞内核锁；并发者返回 2，不终止持有者。锁文件不删除，进程退出自动释放。
 - gzweb 3.0.2 使用带双重 SHA256 检查的安装补丁：同步 ArrayBuffer 解码、连接代际回调隔离、取消旧场景资源请求、完整释放控制器/画布；按 UTF-8 字节定位帧头，支持中文资源名。绝对 STL 路径走 Gazebo 资源通道，缺资源或 15 s 未返回明确显示失败/超时，可重新连接；该超时从资源请求发出时计算。
 
 ### 6.6 模型契约与物理验证（2026-10-18；无滑移参考一致性门槛）
@@ -353,7 +353,7 @@ to_sim_plan(solution: dict, scenario: dict, mode: str) -> dict
 
 ### 桥接关闭生命周期（2026-10-16）
 
-`bridge_runtime.py` 通过会话子进程的 ament 前缀选择经指纹校验的 `parameter_bridge`。主函数退出前完成 `rclcpp::shutdown()` 并 join 异步信号线程，保留标准退出析构；旧 `_exit` 垫片已退役。`URP_BRIDGE_FIX=0` 使用原系统桥接，仅用于对照。`session-report.json.bridge_runtime` 记录可执行文件、SHA-256、源码清单及 `exit_guard:false`。运行管理由 `ros/processes.py` 提供，不依赖历史验收脚本；必需桥接即使以 0 提前退出，也判会话失败。
+`bridge_runtime.py` 通过会话子进程的 ament 前缀选择经指纹校验的 `parameter_bridge`。主函数退出前完成 `rclcpp::shutdown()` 并 join 异步信号线程，保留标准退出析构；旧 `_exit` 垫片已退役。`CERES_BRIDGE_FIX=0` 使用原系统桥接，仅用于对照。`session-report.json.bridge_runtime` 记录可执行文件、SHA-256、源码清单及 `exit_guard:false`。运行管理由 `ros/processes.py` 提供，不依赖历史验收脚本；必需桥接即使以 0 提前退出，也判会话失败。
 
 网关启动会话后的响应必须携带新 `session_id`，未就绪时为 `starting`；旧会话的缓存、迟到响应和退出通知不能覆盖新会话。崩溃恢复时只接管同一运行目录、环境会话标识、PID 与启动时间均匹配的监督进程；接管进程消失时进入失败状态，原始退出码未知须明确记录，不能永远显示启动中。
 
@@ -380,14 +380,14 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 - **支持范围**：`risk_adjust` 只支持自由通行＋total_distance＋无曲率约束的候选图；行间、makespan、曲率约束明确拒绝。不是连续空间全局最优，不是不确定性规划。每条路线携带策略、权重、地图 SHA256、参考 μ、知识标签；独立检查复算成本、暴露及限速，缺字段也无效。执行前额外用原求解 params 绑定策略与权重，不能把 coherent 的 ignore 元数据替换成原 risk_adjust 请求。
 - **限速与世界**：当前工程规则 μ<0.5 → min(基准速度,0.35 m/s)，任何触及外扩分区的完整折线段都限速（保守，会受路径分段影响；不是最短时间参数化）。执行世界按含双向停车接驳的完整路径重算弧长区间，控制器前视 0.8 m 减速；独立门禁用 ≤0.25 s 源时间间隔的实际刚体线段检查低附着足迹区域，线段平均速度须 ≤上限+0.06 m/s，不能证明采样间瞬时峰值。只调整定位继承 instance.ground；显式 ground_preset/ground_zones 覆盖世界图，不修改规划图或冻结限速。`ground_knowledge` 保存两图、哈希、origin、maps_match；有意未知/错配世界不得称已知地图一致试验。
 - **有界力矩**：物理版本 `urp.field-diffdrive.rigid/6`；`actuator_mode=velocity_servo` 为默认，`torque_limited` 为可选合成模型。`wheel_torque_limit_nm` 0.1–40（默认 8），`wheel_torque_kp` 0.1–40（默认 4）。力矩模式禁止 DiffDrive 共存，左右轮各一 force JointController，明确每车 `/model/{name}/joint/{joint}/cmd_vel` 话题；PID `cmd_min/max` 和 SDF joint effort 同时限幅，启动审计核对所有上限、增益、话题、双轮状态发布配置。无电机效率/电流/转速—力矩曲线标定；`limits_scope` 明确 force 模式不施加理想加速度限幅，解析工期参考不能充当其动力学预测。
-- **关节反馈**：关节发布器使用重复 joint_name 标签，经 gz Model→ROS JointState；本机官方 6.18 不支持 update_rate，采用 `ros/native/joint_state` 固定上游源码的项目内限频回补（唯一插件别名 `urp::systems::JointStatePublisher`、50 Hz 源仿真时间发布，原关节测量逻辑保留）。按需构建于 runtime，记录来源、补丁、源码与实际加载库 SHA256；ROS 最新样本队列与 ≤50 Hz 派生里程计发布避免积压，源时间缺口门槛不变。连续轮角按源时间差分并作 SE(2) 积分，不包装角增量至 ±π，不用目标轮速补数据。双轮缺失、重复、非有限、零/倒退时间不刷新就绪，源间隔>0.25 s 失效；反馈过期或 Twist 过期 0.25 s 时发布零目标（有界主动制动，并不保证立即静止）。结果 `wheel_feedback` 记录有效/拒收计数；发布 `/{vehicle}/odom`。`torque_traces` 记录目标与实际轮速，未观测指令或实际作用力矩，饱和影响由运动响应对照支持。
+- **关节反馈**：关节发布器使用重复 joint_name 标签，经 gz Model→ROS JointState；本机官方 6.18 不支持 update_rate，采用 `ros/native/joint_state` 固定上游源码的项目内限频回补（唯一插件别名 `ceres::systems::JointStatePublisher`、50 Hz 源仿真时间发布，原关节测量逻辑保留）。按需构建于 runtime，记录来源、补丁、源码与实际加载库 SHA256；ROS 最新样本队列与 ≤50 Hz 派生里程计发布避免积压，源时间缺口门槛不变。连续轮角按源时间差分并作 SE(2) 积分，不包装角增量至 ±π，不用目标轮速补数据。双轮缺失、重复、非有限、零/倒退时间不刷新就绪，源间隔>0.25 s 失效；反馈过期或 Twist 过期 0.25 s 时发布零目标（有界主动制动，并不保证立即静止）。结果 `wheel_feedback` 记录有效/拒收计数；发布 `/{vehicle}/odom`。`torque_traces` 记录目标与实际轮速，未观测指令或实际作用力矩，饱和影响由运动响应对照支持。
 - **统一验收**：力矩模式保持无滑移参考门禁（除显式摩擦/接触扰动）、足迹、完整路径、同步交通、真值停留及静止门禁；压力场景失败保留真实原因与退出码。`ground_speed` 进入正式 fieldcheck，测试脚本不能另行扩大范围。执行源码、模型、SDF、算法输入/参数/seed 随记录导出。有限工程重复不能推出真实土壤/轮胎可信度或算法学术优越性。
 
 ## 9. 任务智能体（2026-10-30）
 
 接口前缀 `/lab/api/agent`：`GET /providers`、`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages`、`POST /sessions/{id}/control`（`pause|resume|cancel|retry|confirm|approve|reject|takeover`）、`PATCH /sessions/{id}/contract`。SSE 事件 `agent_session` 携带 `session_id、state、phase、updated_utc`。会话存于 `runtime/agent.sqlite3`，与科研对话的 `lab.sqlite3/agent_sessions` 分开保存。
 
-- 任务合同 `urp.task-contract/1` 与会话 `urp.agent-session/1` 的字段、来源标签和状态机见 [agent/README](urp_lab/agent/README.md)。
+- 任务合同 `urp.task-contract/1` 与会话 `urp.agent-session/1` 的字段、来源标签和状态机见 [agent/README](ceres_lab/agent/README.md)。
 - 工具只调用本契约已有接口的同一实现（`compose`、`recommend`、`JobManager.submit`、`solvers.fleet.check`、`FieldSimManager.start`）；Gazebo 会话与改变任务本身的修复须经用户批准。
 - 报告前对本会话所有报告可行的当前运行重新执行 `fleet.check` 或 `agri.check`，并与存档判定和数值比对；不一致归类为软件实现错误。田间输入保存在须确认的 `field_mission`，正式运行也进入物理预演与既有执行适配门禁。
 - 模型密钥只在服务端配置中；接口与导出不返回密钥。没有可用模型时 `mode=auto` 使用规则流程并在会话中注明，`mode=llm|hybrid` 返回 409 `llm_unavailable`。
@@ -413,23 +413,23 @@ POST `fieldsim.execution` 采用 `urp.field-execution/2`：`ground_preset`（non
 
 ## 11. 模型服务与桌面应用（2026-11-05）
 
-- **模型**：`/lab/api/agent/providers`（目录、已连接服务、当前模型）、`/providers/{id}/models`、`/providers/{id}/connect {api_key}`、`/providers/{id}/disconnect`、`/providers/custom {name, base_url, api_key, models?}`、`/providers/refresh`、`/model {model}`。模型地址是 `服务商/模型`，会话的 `provider.id` 记这个值，旧会话记录的裸 id 解析到该服务的第一个模型。任何响应都不含 Key，写接口受现有的同源检查保护。设计见 [agent/README](urp_lab/agent/README.md) §4。不再有本地模型接口；历史评测记录保留。
-- **数据包**：`GET /lab/api/packs`、`POST /packs/{id}/install|cancel|remove`，SSE 事件 `pack`。清单 `urp_lab/data/packs.json` 写明 SHA256 和解压大小；下载支持续传，校验通过后解压到新目录再移入 `runtime/packs/<id>-<version>/`，路径越界、符号链接和超出声明大小的包一律拒绝。`/data/*` 优先读构建产物，其次读 `history` 包；`URP_PACKS_BASE_URL` 可替换下载地址。
-- **桌面进程**：`python -m urp_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `URP_DESKTOP=1`、`URP_NODE`（JS 基线使用的运行时）、`URP_MODELS_REFRESH=1`。`URP_DESKTOP=1` 且 `URP_DESKTOP_SOURCE!=1`（安装包）时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；安装包的 Gazebo 由容器后端提供；源码 Electron 由主进程按 `app.isPackaged` 设置 `URP_DESKTOP_SOURCE=1`，可使用本机 ROS，仍执行桥接与物理实现检查。安装包会强制覆盖该变量为 `0`，不继承外部开发标志。
-- **Windows**：`urp_lab/compat.py` 在 Windows 上提供 `signal.SIGKILL` 和基于 `taskkill` 的 `os.killpg`，因此 `services.py` 等进程代码不需要分支。`worker.py` 没有 `SIGALRM` 时用看门狗线程上报同样的超时结果。
+- **模型**：`/lab/api/agent/providers`（目录、已连接服务、当前模型）、`/providers/{id}/models`、`/providers/{id}/connect {api_key}`、`/providers/{id}/disconnect`、`/providers/custom {name, base_url, api_key, models?}`、`/providers/refresh`、`/model {model}`。模型地址是 `服务商/模型`，会话的 `provider.id` 记这个值，旧会话记录的裸 id 解析到该服务的第一个模型。任何响应都不含 Key，写接口受现有的同源检查保护。设计见 [agent/README](ceres_lab/agent/README.md) §4。不再有本地模型接口；历史评测记录保留。
+- **数据包**：`GET /lab/api/packs`、`POST /packs/{id}/install|cancel|remove`，SSE 事件 `pack`。清单 `ceres_lab/data/packs.json` 写明 SHA256 和解压大小；下载支持续传，校验通过后解压到新目录再移入 `runtime/packs/<id>-<version>/`，路径越界、符号链接和超出声明大小的包一律拒绝。`/data/*` 优先读构建产物，其次读 `history` 包；`CERES_PACKS_BASE_URL` 可替换下载地址。
+- **桌面进程**：`python -m ceres_lab serve --exit-with-stdin` 在标准输入关闭时有序退出。桌面应用设置 `CERES_DESKTOP=1`、`CERES_NODE`（JS 基线使用的运行时）、`CERES_MODELS_REFRESH=1`。`CERES_DESKTOP=1` 且 `CERES_DESKTOP_SOURCE!=1`（安装包）时 `POST /fieldsim` 和 `POST /sim/session` 返回 503 `simulator_unavailable`，智能体不会发起仿真批准，报告写明原因；安装包的 Gazebo 由容器后端提供；源码 Electron 由主进程按 `app.isPackaged` 设置 `CERES_DESKTOP_SOURCE=1`，可使用本机 ROS，仍执行桥接与物理实现检查。安装包会强制覆盖该变量为 `0`，不继承外部开发标志。
+- **Windows**：`ceres_lab/compat.py` 在 Windows 上提供 `signal.SIGKILL` 和基于 `taskkill` 的 `os.killpg`，因此 `services.py` 等进程代码不需要分支。`worker.py` 没有 `SIGALRM` 时用看门狗线程上报同样的超时结果。
 
 
 ## 12. 主线科研对话与数据互通（2026-11-06）
 
 主线科研对话保留 `AgentManager`、原工具及批准/取消/预算/接地检查，统一接口为 `/lab/api/research/agent`：根 `GET` 状态，`GET|POST /sessions`、`GET /sessions/{id}`、`POST /sessions/{id}/messages|cancel|approval`（具体请求结构见 `agent/routes.py`）。UI 入口为算法实验中的「科研对话」。任务流程仍使用第 9 节 `/agent` 与独立的 `agent.sqlite3`；两类会话 schema 不互相冒充。科研对话复用已选择的模型服务配置，兼容旧环境变量；每轮固定模型，读取配置、启动与状态查询不调用模型。
 
-`python -m urp_lab data` 提供离线 `export|verify|restore|recover`；`urp.runtime-bundle/1` 清单含数据集 ID、来源版本、相对路径、逐文件大小和 SHA256、SQLite schema 指纹及表行数。完整备份保留状态、上下文与原文件；仅 JSON 导出恢复的会话带 `restoration.read_only=true`、缺失项与原件 SHA256，任务消息/控制/合同编辑返回 409 `recovered_read_only`。恢复仅写全新绝对目录，拒绝覆盖、未来 schema、路径和校验错误。操作与目录参数见唯一[使用入口](../../setup/README.md#本地与-github-的保存分工数据与恢复2026-11-06)。
+`python -m ceres_lab data` 提供离线 `export|verify|restore|recover`；`ceres.runtime-bundle/1` 清单含数据集 ID、来源版本、相对路径、逐文件大小和 SHA256、SQLite schema 指纹及表行数。完整备份保留状态、上下文与原文件；仅 JSON 导出恢复的会话带 `restoration.read_only=true`、缺失项与原件 SHA256，任务消息/控制/合同编辑返回 409 `recovered_read_only`。恢复仅写全新绝对目录，拒绝覆盖、未来 schema、路径和校验错误。操作与目录参数见唯一[使用入口](../../setup/README.md#本地与-github-的保存分工数据与恢复2026-11-06)。
 
-桌面 IPC `data:info|export|restore` 受同源限制，选择备份/恢复位置使用系统文件对话框。导入成功后才更新数据位置；失败保留原配置。`URP_DATA_HOME`、`URP_LAB_RUNTIME`、`URP_API_DB` 对应共享持久根、Lab 库和档案库，桌面 Compose 绑定同一目录并匹配宿主 UID/GID。
+桌面 IPC `data:info|export|restore` 受同源限制，选择备份/恢复位置使用系统文件对话框。导入成功后才更新数据位置；失败保留原配置。`CERES_DATA_HOME`、`CERES_LAB_RUNTIME`、`CERES_API_DB` 对应共享持久根、Lab 库和档案库，桌面 Compose 绑定同一目录并匹配宿主 UID/GID。
 ## 13. 并行执行与工期预测（2026-11-06）
 
 - **交通方式**：`POST /lab/api/physics/runs {run_id, traffic}` 与 `POST /lab/api/fieldsim {run_id, traffic}`，`traffic` 为 `serial`（默认，整段任务依次执行）或 `coordinated`（全部车辆同时运行，在路线相遇处依次通行）。记录带 `traffic_mode` 和 `traffic`（`policy`、`meetings`、`holds`、`held_s`、`predicted_makespan_s`、`min_gap_m`）。对比 Gazebo 记录时按原记录重放，传 `coordinated` 返回 422 `frozen_traffic`。找不到无环次序时返回 422 `no_safe_order`，方案仍可逐车执行。
-- **计划字段**：`plan.traffic.policy = coordinated_passage_v1` 时，`plan.traffic.gates` 是 `{车辆: [{s, after: [[另一车, 该车里程], ...]}]}`：车辆的路径进度到 `s` 时，必须等 `after` 里每辆车走过对应里程或已完成才能继续。`urp_lab/field_coordination.py` 在求解侧生成这些门，`field_traffic.PassageQueue` 运行时只读数字，不含几何，ROS 控制器按冻结策略选用同一队列。路径本身不变。
+- **计划字段**：`plan.traffic.policy = coordinated_passage_v1` 时，`plan.traffic.gates` 是 `{车辆: [{s, after: [[另一车, 该车里程], ...]}]}`：车辆的路径进度到 `s` 时，必须等 `after` 里每辆车走过对应里程或已完成才能继续。`ceres_lab/field_coordination.py` 在求解侧生成这些门，`field_traffic.PassageQueue` 运行时只读数字，不含几何，ROS 控制器按冻结策略选用同一队列。路径本身不变。
 - **预计工期**：只对内置同构差速仿真模型做有界可选估计；显式异构 `vehicles.fleet`、非理想地面和超出已验证范围的车辆参数不套用该预测。`metrics.execution_estimate` 保存模型版本、状态和不能估计的原因；成功时才增加 `predicted_makespan_s`、`route_meetings`。估计超时或失败不使已有求解结果失效。`makespan_s` 仍是恒速估计。只有同一比较集合全部有相同模型、有效预计工期时，时间目标才按预测排序；否则集合整体回退原目标值，`best_verified.ranking_basis` 明确该口径。
 - **`pyvrp.balanced`**：车辆在路线中途回库重载，由同一搜索决定各趟归属，用跟踪器实际行驶用时二分收紧班次上限。
 - **智能体**：`physics_check` 的多车结果增加 `coordinated`，与逐车结果并列。`start_simulation` 与手工 `simulate` 支持 `traffic`，默认串行；批准提示和方案选择按所选交通方式查预演，执行记录保存真实交通方式与时间窗核验。

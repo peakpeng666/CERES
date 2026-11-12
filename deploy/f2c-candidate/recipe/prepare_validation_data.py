@@ -50,7 +50,7 @@ def check_tree(root):
 def fetch(url, destination, expected, size=None):
     require(url.startswith('https://'),'HTTPS input required')
     require(not destination.exists() and not destination.is_symlink(),'Refuse existing download')
-    request = urllib.request.Request(url,headers={'User-Agent':'URP-candidate-input-verification/1'})
+    request = urllib.request.Request(url,headers={'User-Agent':'CERES-candidate-input-verification/1'})
     with urllib.request.urlopen(request,timeout=180) as response:
         require(response.url.startswith('https://'),'Non-HTTPS redirect')
         data = response.read(128 * 1024 * 1024 + 1)

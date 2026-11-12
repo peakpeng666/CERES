@@ -41,7 +41,7 @@ function storage(kind: 'local' | 'session'): Storage | null {
   try {
     const s = kind === 'local' ? globalThis.localStorage : globalThis.sessionStorage;
     if (!s) return null;
-    const probe = '__urp_probe__';
+    const probe = '__ceres_probe__';
     s.setItem(probe, '1'); s.removeItem(probe);
     return s;
   } catch { return null; }
@@ -168,7 +168,7 @@ export function debouncedDraftWriter(write: () => void, delayMs: number) {
 }
 
 const FOCUS_KEY = 'urp.agri.focus.v1';
-export const FOCUS_EVENT = 'urp-agri-focus';
+export const FOCUS_EVENT = 'ceres-agri-focus';
 /** Ask the catalog to open one pattern card (used when the plan page sends the user back to edit parameters). */
 export function requestCatalogFocus(patternId: string) {
   storage('session')?.setItem(FOCUS_KEY, patternId);

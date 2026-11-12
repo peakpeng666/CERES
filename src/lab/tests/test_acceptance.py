@@ -8,13 +8,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 from fastapi.testclient import TestClient
-from urp_lab.gateway import create_app, Config
-from urp_lab.jobs import JobManager, skeleton, resolve_params
-from urp_lab.store import Store
-from urp_lab.solvers import catalog, run_algorithm
-from urp_lab.simplan import to_sim_plan, NotSimulatable
-from urp_lab.scenarios import get_scenario, validate_instance
-from urp_lab.scenarios.maps import MapGrid, segment_clearance
+from ceres_lab.gateway import create_app, Config
+from ceres_lab.jobs import JobManager, skeleton, resolve_params
+from ceres_lab.store import Store
+from ceres_lab.solvers import catalog, run_algorithm
+from ceres_lab.simplan import to_sim_plan, NotSimulatable
+from ceres_lab.scenarios import get_scenario, validate_instance
+from ceres_lab.scenarios.maps import MapGrid, segment_clearance
 
 @pytest.mark.parametrize('sid,aid',[
  pytest.param('maze-inspection','urp.turn_mode_dp', marks=pytest.mark.requires_maps('maze')),
@@ -109,7 +109,7 @@ def test_gateway_validation_and_snapshot(tmp_path):
         assert experiment['planning_solution']['raw_result']==r['raw_result']
 
 def test_required_node_clean_exit_is_a_session_failure():
-    from urp_lab.process_health import unexpected_launch_exit
+    from ceres_lab.process_health import unexpected_launch_exit
     assert unexpected_launch_exit('nav','[INFO] [planner_server-3]: process has finished cleanly [pid 123]')
     assert unexpected_launch_exit('nav','CRITICAL FAILURE: SERVER planner_server IS DOWN')
     assert unexpected_launch_exit('sim','[INFO] [parameter_bridge-2]: process has finished cleanly [pid 124]')
@@ -118,24 +118,24 @@ def test_required_node_clean_exit_is_a_session_failure():
     assert unexpected_launch_exit('sim','[INFO] [spawner-32]: process has finished cleanly [pid 126]') is None
 
 def test_final_sim_record_waits_for_completed_metrics(tmp_path, monkeypatch):
-    from urp_lab.simclient import SimClient
-    from urp_lab.services import ServiceManager
+    from ceres_lab.simclient import SimClient
+    from ceres_lab.services import ServiceManager
     db=Store(tmp_path/'test.sqlite')
     manager=ServiceManager(runtime=tmp_path)
     sim=SimClient(db,None,manager)
     base={'sim_run_id':'sim_test','run_id':'run_test','state':'executing','created_utc':'2026-10-15T00:00:00Z','finished_utc':None,'metrics':{}}
     db.put_sim_run(base)
-    monkeypatch.setattr('urp_lab.simclient.http_json',lambda *a,**kw:(404,{}))
+    monkeypatch.setattr('ceres_lab.simclient.http_json',lambda *a,**kw:(404,{}))
     sim._handle_execution({**base,'state':'canceled'})
     assert db.get_sim_run('sim_test')['state']=='executing'
     full={**base,'state':'canceled','finished_utc':'2026-10-15T00:00:00Z','metrics':{'duration_wall_s':2}}
-    monkeypatch.setattr('urp_lab.simclient.http_json',lambda *a,**kw:(200,full))
+    monkeypatch.setattr('ceres_lab.simclient.http_json',lambda *a,**kw:(200,full))
     sim._handle_execution(full)
     assert db.get_sim_run('sim_test')['metrics']['duration_wall_s']==2
     db.close()
 
 def test_fuel_model_identity_and_required_texture(tmp_path, monkeypatch):
-    from urp_lab import worlds
+    from ceres_lab import worlds
     share=tmp_path/'share';cache=tmp_path/'cache'
     monkeypatch.setattr(worlds,'SHARE',share);monkeypatch.setattr(worlds,'CACHE',cache)
     sdf=share/'turtlebot4_ignition_bringup/worlds/warehouse.sdf';sdf.parent.mkdir(parents=True)

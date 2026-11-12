@@ -2,42 +2,52 @@
 #   irm https://raw.githubusercontent.com/peakpeng666/URP/main/install.ps1 | iex
 # Docker Desktop pulls ghcr.io/peakpeng666/urp-sim and does not clone the repository.
 # Without Docker, the same bash installer runs inside WSL2 Ubuntu 22.04 x86_64.
-# For another source, set $env:URP_REF before irm|iex, or use -Ref with a file.
+# For another source, set $env:CERES_REF before irm|iex, or use -Ref with a file.
 # The download URL alone is not inherited by scripts invoked through iex.
 [CmdletBinding()]
 param(
     [Parameter(Position = 0)]
     [ValidateSet('up', 'down', 'update', 'status', 'fuel')]
     [string]$Command = 'up',
-    [string]$Ref = $env:URP_REF
+    [string]$Ref = $env:CERES_REF
 )
 
 $ErrorActionPreference = 'Stop'
+# Preserve existing environments; explicit CERES settings win.
+Get-ChildItem Env:URP_* | ForEach-Object {
+    $name = 'CERES_' + $_.Name.Substring(4)
+    if (-not (Test-Path "Env:$name")) { [Environment]::SetEnvironmentVariable($name, $_.Value, 'Process') }
+}
+if (-not $Ref) { $Ref = $env:CERES_REF }
+
 $RawRoot = 'https://raw.githubusercontent.com/peakpeng666/URP'
-$State = if ($env:URP_HOME) { $env:URP_HOME } else { Join-Path $env:LOCALAPPDATA 'urp' }
+$defaultState = Join-Path $env:LOCALAPPDATA 'ceres'
+$legacyState = Join-Path $env:LOCALAPPDATA 'urp'
+if (-not (Test-Path $defaultState) -and (Test-Path $legacyState)) { $defaultState = $legacyState }
+$State = if ($env:CERES_HOME) { $env:CERES_HOME } else { $defaultState }
 $saved = $null
 $selectionPath = Join-Path $State 'install.selection.json'
 if (Test-Path -LiteralPath $selectionPath) { $saved = Get-Content -Raw -LiteralPath $selectionPath -Encoding UTF8 | ConvertFrom-Json }
 $explicitRef = $Ref
 if (-not $Ref) { $Ref = if ($saved -and $saved.ref) { $saved.ref } else { 'main' } }
-if ($env:URP_RAW -and $env:URP_RAW.StartsWith("$RawRoot/")) {
-    $rawRef = $env:URP_RAW.Substring($RawRoot.Length + 1).TrimEnd('/')
-    if ($explicitRef -and $explicitRef -ne $rawRef) { throw 'URP_RAW 与 URP_REF/-Ref 不一致。' }
+if ($env:CERES_RAW -and $env:CERES_RAW.StartsWith("$RawRoot/")) {
+    $rawRef = $env:CERES_RAW.Substring($RawRoot.Length + 1).TrimEnd('/')
+    if ($explicitRef -and $explicitRef -ne $rawRef) { throw 'CERES_RAW 与 CERES_REF/-Ref 不一致。' }
     $Ref = $rawRef
-} elseif ($env:URP_RAW -and -not $explicitRef) {
-    throw '自定义 URP_RAW 必须同时明确设置 URP_REF/-Ref。'
+} elseif ($env:CERES_RAW -and -not $explicitRef) {
+    throw '自定义 CERES_RAW 必须同时明确设置 CERES_REF/-Ref。'
 }
 if ($Ref -notmatch '^[A-Za-z0-9][A-Za-z0-9._/-]*$' -or $Ref.Contains('..') -or $Ref.Contains('//') -or $Ref.EndsWith('/') -or $Ref.EndsWith('.')) { throw "无效的 ref：$Ref" }
-$Raw = if ($env:URP_RAW) { $env:URP_RAW.TrimEnd('/') } elseif ($saved -and $saved.ref -ceq $Ref -and $saved.raw) { $saved.raw } else { "$RawRoot/$Ref" }
-if (-not $Raw.StartsWith('https://') -or $Raw -match '[\r\n]') { throw 'URP_RAW 必须为单行 HTTPS URL。' }
-$Tag = $env:URP_IMAGE_TAG
+$Raw = if ($env:CERES_RAW) { $env:CERES_RAW.TrimEnd('/') } elseif ($saved -and $saved.ref -ceq $Ref -and $saved.raw) { $saved.raw } else { "$RawRoot/$Ref" }
+if (-not $Raw.StartsWith('https://') -or $Raw -match '[\r\n]') { throw 'CERES_RAW 必须为单行 HTTPS URL。' }
+$Tag = $env:CERES_IMAGE_TAG
 if (-not $Tag -and $saved -and $saved.ref -ceq $Ref) { $Tag = $saved.tag }
 if (-not $Tag -and ($Ref -eq 'main' -or $Ref -match '^v[A-Za-z0-9_.-]*$' -or $Ref -cmatch '^[0-9a-f]{40}$')) { $Tag = $Ref }
 if ($Tag -and $Tag -notmatch '^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$') { throw "无效的镜像标签：$Tag" }
-$Components = if ($env:URP_COMPONENTS) { $env:URP_COMPONENTS } elseif ($saved -and $saved.components) { $saved.components } else { 'full' }
-if ($Components -notin @('workbench', 'research', 'full')) { throw 'URP_COMPONENTS 只能是 workbench、research 或 full。' }
-$Port = if ($env:URP_PORT) { $env:URP_PORT } elseif ($saved -and $saved.port) { $saved.port } else { '4100' }
-if ($Port -notmatch '^[0-9]{1,5}$' -or [int]$Port -lt 1 -or [int]$Port -gt 65535) { throw 'URP_PORT 必须为 1–65535。' }
+$Components = if ($env:CERES_COMPONENTS) { $env:CERES_COMPONENTS } elseif ($saved -and $saved.components) { $saved.components } else { 'full' }
+if ($Components -notin @('workbench', 'research', 'full')) { throw 'CERES_COMPONENTS 只能是 workbench、research 或 full。' }
+$Port = if ($env:CERES_PORT) { $env:CERES_PORT } elseif ($saved -and $saved.port) { $saved.port } else { '4100' }
+if ($Port -notmatch '^[0-9]{1,5}$' -or [int]$Port -lt 1 -or [int]$Port -gt 65535) { throw 'CERES_PORT 必须为 1–65535。' }
 $Image = "ghcr.io/peakpeng666/urp-sim:$Tag"
 $Health = "http://127.0.0.1:$Port/lab/api/health"
 $Page = "http://localhost:$Port/"
@@ -111,25 +121,31 @@ function Wait-Health {
 function Invoke-Compose {
     param([string[]]$ComposeArgs)
     $files = @('-f', (Join-Path $State 'deploy\docker-compose.sim.yml'))
-    if ($env:URP_GPU -eq '1') { $files += @('-f', (Join-Path $State 'deploy\docker-compose.gpu.yml')) }
-    if ($env:URP_DISPLAY -eq '1') { $files += @('-f', (Join-Path $State 'deploy\docker-compose.display.yml')) }
-    $fuel = if ($env:URP_FUEL_DIR) { $env:URP_FUEL_DIR } else { Join-Path $State 'fuel' }
+    if ($env:CERES_GPU -eq '1') { $files += @('-f', (Join-Path $State 'deploy\docker-compose.gpu.yml')) }
+    if ($env:CERES_DISPLAY -eq '1') { $files += @('-f', (Join-Path $State 'deploy\docker-compose.display.yml')) }
+    $fuel = if ($env:CERES_FUEL_DIR) { $env:CERES_FUEL_DIR } else { Join-Path $State 'fuel' }
     if (Test-Path (Join-Path $fuel 'fuel.gazebosim.org')) {
-        $env:URP_FUEL_DIR = $fuel
+        $env:CERES_FUEL_DIR = $fuel
         $files += @('-f', (Join-Path $State 'deploy\docker-compose.fuel.yml'))
     }
     # Set only around Compose so another invocation in the same PowerShell
     # session does not mistake our old selection for a user's new override.
-    $oldTag = $env:URP_IMAGE_TAG
-    $oldPort = $env:URP_PORT
+    $oldTag = $env:CERES_IMAGE_TAG
+    $oldPort = $env:CERES_PORT
+    $oldLegacyTag = $env:URP_IMAGE_TAG
+    $oldLegacyPort = $env:URP_PORT
     try {
+        $env:CERES_IMAGE_TAG = $Tag
+        $env:CERES_PORT = $Port
         $env:URP_IMAGE_TAG = $Tag
         $env:URP_PORT = $Port
         & docker compose @files @ComposeArgs
         if ($LASTEXITCODE -ne 0) { throw "docker compose 失败：$LASTEXITCODE" }
     } finally {
-        $env:URP_IMAGE_TAG = $oldTag
-        $env:URP_PORT = $oldPort
+        $env:CERES_IMAGE_TAG = $oldTag
+        $env:CERES_PORT = $oldPort
+        $env:URP_IMAGE_TAG = $oldLegacyTag
+        $env:URP_PORT = $oldLegacyPort
     }
 }
 
@@ -147,7 +163,7 @@ function Invoke-DockerPath {
         return
     }
     if ($Action -eq 'up' -or $Action -eq 'update' -or $Action -eq 'fuel') {
-        if (-not $Tag) { throw "ref=$Ref 没有默认发布镜像。请设置已发布的 v* 版本/完整提交号，或明确匹配源码的 URP_IMAGE_TAG；不会回落到其他通道。" }
+        if (-not $Tag) { throw "ref=$Ref 没有默认发布镜像。请设置已发布的 v* 版本/完整提交号，或明确匹配源码的 CERES_IMAGE_TAG；不会回落到其他通道。" }
         $platform = (& docker info --format '{{.OSType}}/{{.Architecture}}' | Out-String).Trim()
         if ($LASTEXITCODE -ne 0 -or $platform -notin @('linux/x86_64', 'linux/amd64')) { throw "需要 Linux x86_64 Docker Engine，当前：$platform" }
         Write-Host "安装来源：$Ref；镜像：$Image"
@@ -168,7 +184,7 @@ function Invoke-DockerPath {
         Write-Host "镜像源码：$revision；部署文件：$AssetRaw"
         Get-ComposeFile | Out-Null
         if ($Action -eq 'fuel') {
-            $dest = if ($env:URP_FUEL_DIR) { $env:URP_FUEL_DIR } else { Join-Path $State 'fuel' }
+            $dest = if ($env:CERES_FUEL_DIR) { $env:CERES_FUEL_DIR } else { Join-Path $State 'fuel' }
             New-Item -ItemType Directory -Force -Path $dest | Out-Null
             $dest = (Resolve-Path -LiteralPath $dest).Path
             $deployDir = (Resolve-Path -LiteralPath (Join-Path $State 'deploy')).Path
@@ -179,11 +195,11 @@ function Invoke-DockerPath {
             $downloadArgs = @('run', '--rm', '--pull', 'never', '--entrypoint', 'bash',
                 '--mount', "type=bind,source=$deployDir,target=/installer,readonly",
                 '--mount', "type=bind,source=$dest,target=/fuel")
-            if ($env:URP_FUEL_ONLY) { $downloadArgs += @('-e', "URP_FUEL_ONLY=$($env:URP_FUEL_ONLY)") }
+            if ($env:CERES_FUEL_ONLY) { $downloadArgs += @('-e', "CERES_FUEL_ONLY=$($env:CERES_FUEL_ONLY)", '-e', "URP_FUEL_ONLY=$($env:CERES_FUEL_ONLY)") }
             $downloadArgs += @($Image, '/installer/fetch-fuel.sh', '/fuel')
             & docker @downloadArgs
             if ($LASTEXITCODE -ne 0) { throw "Fuel 下载失败，退出码：$LASTEXITCODE" }
-            $env:URP_FUEL_DIR = $dest
+            $env:CERES_FUEL_DIR = $dest
         }
         Invoke-Compose -ComposeArgs @('up', '-d', '--no-build', '--pull', 'never', '--remove-orphans')
         if (Wait-Health) { Start-Process $Page }
@@ -227,11 +243,11 @@ function Invoke-WslPath {
         throw '请打开 Ubuntu-22.04 完成初始化，然后重试。安装器将在运行前核对 WSL2、Ubuntu22.04 和 x86_64。'
     }
     $environment = @{
-        URP_REF = $Ref; URP_RAW = $Raw; URP_IMAGE_TAG = $Tag
-        URP_COMPONENTS = $Components; URP_PORT = $Port
+        CERES_REF = $Ref; CERES_RAW = $Raw; CERES_IMAGE_TAG = $Tag
+        CERES_COMPONENTS = $Components; CERES_PORT = $Port
     }
-    # Windows URP_HOME/FUEL_DIR paths are not Linux paths and are not forwarded.
-    foreach ($name in @('URP_GPU', 'URP_DISPLAY')) {
+    # Windows CERES_HOME/FUEL_DIR paths are not Linux paths and are not forwarded.
+    foreach ($name in @('CERES_GPU', 'CERES_DISPLAY')) {
         $value = [Environment]::GetEnvironmentVariable($name)
         if ($value) { $environment[$name] = $value }
     }
@@ -253,7 +269,7 @@ if ! command -v curl >/dev/null 2>&1; then
 fi
 script="$(mktemp)"
 trap 'rm -f "$script"' EXIT
-curl -fsSL "$URP_RAW/install.sh" -o "$script"
+curl -fsSL "$CERES_RAW/install.sh" -o "$script"
 bash "$script" __ACTION__
 '@
     $bootstrap = $bootstrap.Replace('__ACTION__', (ConvertTo-BashLiteral $Command))

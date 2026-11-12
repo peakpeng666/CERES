@@ -8,7 +8,7 @@
 
 ## 显式导入与身份
 
-从URP实验目录中的两份48实例归档解压后，在`src/backend`执行：
+从CERES实验目录中的两份48实例归档解压后，在`src/backend`执行：
 
 ```sh
 python3 -m backend --db backend_data/shared.sqlite3 import-routes \

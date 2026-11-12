@@ -4,11 +4,11 @@ import random
 
 import pytest
 
-from urp_lab import field_coordination as fc
-from urp_lab import mujoco_field
-from urp_lab.field_traffic import PASSAGE_POLICY, PassageQueue, separation
-from urp_lab.gateway import Config, Lab
-from urp_lab.physics import PhysicsError
+from ceres_lab import field_coordination as fc
+from ceres_lab import mujoco_field
+from ceres_lab.field_traffic import PASSAGE_POLICY, PassageQueue, separation
+from ceres_lab.gateway import Config, Lab
+from ceres_lab.physics import PhysicsError
 
 from test_physics import plan_of
 

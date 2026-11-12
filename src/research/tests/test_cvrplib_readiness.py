@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
-from urp_research.cvrplib.cli import reserve_run_key
+from ceres_research.cvrplib.cli import reserve_run_key
 from test_cvrplib import PAYLOAD, RealProcesses
 
 class ExtraWorkerFailures(RealProcesses):

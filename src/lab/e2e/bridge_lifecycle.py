@@ -32,7 +32,7 @@ def main():
     a.output = a.output.resolve()
     a.output.mkdir(parents=True, exist_ok=False)
     env = dict(os.environ, ROS_DOMAIN_ID='178', ROS_LOCALHOST_ONLY='1',
-               IGN_PARTITION=f'urp_bridge_lifecycle_{os.getpid()}',
+               IGN_PARTITION=f'ceres_bridge_lifecycle_{os.getpid()}',
                ROS_LOG_DIR=str(a.output / 'ros-log'), IGN_HOMEDIR=str(a.output / 'ignition'))
     env.pop('LD_PRELOAD', None)
     Path(env['IGN_HOMEDIR']).mkdir()
@@ -55,9 +55,9 @@ def main():
                   '--track-origins=yes', '--num-callers=35', '--error-exitcode=97',
                   '--log-file=' + str(a.output / 'memcheck-%p.log')]
     topics = ['/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
-              '/world/urp_setup_smoke/stats@ros_gz_interfaces/msg/WorldStatistics[ignition.msgs.WorldStatistics',
-              '/world/urp_setup_smoke/pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V',
-              '/urp_repro_cmd@geometry_msgs/msg/Twist]ignition.msgs.Twist']
+              '/world/ceres_setup_smoke/stats@ros_gz_interfaces/msg/WorldStatistics[ignition.msgs.WorldStatistics',
+              '/world/ceres_setup_smoke/pose/info@tf2_msgs/msg/TFMessage[ignition.msgs.Pose_V',
+              '/ceres_repro_cmd@geometry_msgs/msg/Twist]ignition.msgs.Twist']
     children = []
     with (a.output / 'server.log').open('w') as log:
         server = subprocess.Popen(['ign', 'gazebo', '-s', '-r', '-v', '1',

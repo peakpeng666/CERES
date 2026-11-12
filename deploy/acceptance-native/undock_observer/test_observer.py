@@ -57,7 +57,7 @@ class RosLifecycleTests(unittest.TestCase):
    opener=Mock();opener.open.side_effect=lambda *a,**k:io.BytesIO(json.dumps({'session_id':sid,'phase':('undocking' if expect_deadline or opener.open.call_count==1 else 'failed')}).encode())
    ticks={'n':0}
    def clock():ticks['n']+=1;return ticks['n']
-   env={'ROS_DOMAIN_ID':'146','ROS_LOCALHOST_ONLY':'1','RMW_IMPLEMENTATION':'rmw_cyclonedds_cpp','URP_ACCEPTANCE_OWNER':'a'*48,'URP_LAB_RUNTIME':str(runtime)}
+   env={'ROS_DOMAIN_ID':'146','ROS_LOCALHOST_ONLY':'1','RMW_IMPLEMENTATION':'rmw_cyclonedds_cpp','CERES_ACCEPTANCE_OWNER':'a'*48,'CERES_LAB_RUNTIME':str(runtime)}
    with patch.dict(os.environ,env),patch.object(observer,'ros_dependencies',side_effect=ImportError('PRIVATE_IMPORT') if import_error else None,return_value=dependencies),patch.object(observer.urllib.request,'build_opener',return_value=opener),patch.object(observer.signal,'signal'):
     if expect_deadline:
      with patch.object(observer.time,'monotonic',side_effect=clock):code=observer.main(['--port','12345','--output',str(output)])

@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process';
 import ts from 'typescript';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
 const source = path.join(root, 'src/frontend/src/studio/agri');
-const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'urp-agri-contract-'));
+const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'ceres-agri-contract-'));
 try {
   fs.writeFileSync(path.join(temp, 'package.json'), '{"type":"module"}');
   for (const rel of ['geometry.ts', 'patterns/runnable.ts', 'patterns/approx.ts', 'patterns/proposals.ts', 'patterns/rowWeeding.ts', 'patterns/index.ts']) {

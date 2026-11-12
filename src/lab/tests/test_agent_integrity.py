@@ -5,12 +5,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab import paths
-from urp_lab.agent import contract as tc
-from urp_lab.agent import tools
-from urp_lab.agent.session import AgentStore, new_session
-from urp_lab.scenarios import get_scenario, save_user_scenario
-from urp_lab.solvers import run_algorithm
+from ceres_lab import paths
+from ceres_lab.agent import contract as tc
+from ceres_lab.agent import tools
+from ceres_lab.agent.session import AgentStore, new_session
+from ceres_lab.scenarios import get_scenario, save_user_scenario
+from ceres_lab.solvers import run_algorithm
 
 
 @pytest.fixture

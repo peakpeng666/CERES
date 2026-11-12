@@ -10,7 +10,7 @@ Ubuntu需预装Python、venv支持和Node/npm；中文字体可安装`fonts-noto
 
 ## 从当前项目启动
 
-取得URP后进入`src/frontend`。Drive下载需先按根目录说明还原四个相对目录链接。
+取得CERES后进入`src/frontend`。Drive下载需先按根目录说明还原四个相对目录链接。
 
 ```bash
 cd src/frontend
@@ -26,7 +26,7 @@ bash scripts/console.sh serve
 
 ## 数据与校验
 
-`inputs/`、`research/`和`public/data/`分别链接至URP的`data/bpp/inputs`、`data/bpp/records`和`data/bpp/exports`。当前项目同时保存原始输入、实验记录和派生展示数据。
+`inputs/`、`research/`和`public/data/`分别链接至CERES的`data/bpp/inputs`、`data/bpp/records`和`data/bpp/exports`。当前项目同时保存原始输入、实验记录和派生展示数据。
 
 原始实验ZIP的SHA256为`5f47d49fade8f926bb5751818b038288a772b711d4249d70a7a392eeb9719350`。`data-convert`先校验整个ZIP、MANIFEST成员、大小和哈希，再导入记录并生成静态接口；原始输入或现有记录字节不符时停止。导入与科学核验记录见[import_report.json](../artifacts/import_report.json)和[validation_report.json](../artifacts/validation_report.json)。
 
@@ -45,4 +45,4 @@ fc-match 'Noto Sans CJK SC'
 
 `python3 scripts/clean_rebuild.py --parent /tmp`从源码、锁文件和原始ZIP建立独立目录，依次执行安装、转换、核验、测试与构建。`--plan`查看计划，`--stage-only`只复制文件。实际命令、环境、退出码和日志写入`artifacts/clean_rebuild.json`及`artifacts/clean_rebuild_logs/`。
 
-`bash scripts/console.sh package`生成独立前端ZIP及`.sha256`，包含源码、锁文件、说明、测试、原始输入和已有验收附件；派生数据、构建输出与依赖缓存在使用时重建。URP完整项目仍保留本节列出的数据目录。
+`bash scripts/console.sh package`生成独立前端ZIP及`.sha256`，包含源码、锁文件、说明、测试、原始输入和已有验收附件；派生数据、构建输出与依赖缓存在使用时重建。CERES完整项目仍保留本节列出的数据目录。

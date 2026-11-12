@@ -1,7 +1,7 @@
 """Admission-rule pairwise comparison: family sizes, Holm monotonicity and selection overlap."""
 import numpy as np
 
-from urp_lab.evolve import admission_rules as A
+from ceres_lab.evolve import admission_rules as A
 
 
 def _result():

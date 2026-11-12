@@ -7,11 +7,11 @@ from types import SimpleNamespace
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import fieldworld
-from urp_lab.field_tracking import Driver
-from urp_lab.gateway import Config, create_app
-from urp_lab.scenarios import validate_instance
-from urp_lab.solvers import fleet
+from ceres_lab import fieldworld
+from ceres_lab.field_tracking import Driver
+from ceres_lab.gateway import Config, create_app
+from ceres_lab.scenarios import validate_instance
+from ceres_lab.solvers import fleet
 
 
 def instance():
@@ -251,7 +251,7 @@ def test_legacy_multitrip_plan_preserves_reload_before_repeated_stop():
 
 @pytest.mark.parametrize('failure', [None, 'footprint', 'skipped_path', 'short_service', 'no_telemetry'])
 def test_actual_trajectory_is_independently_verified(failure):
-    from urp_lab.fieldcheck import verify
+    from ceres_lab.fieldcheck import verify
     inst = instance()
     v = {'name': 'v', 'label': '车', 'path': [[5, 5], [15, 5], [15, 15], [5, 5]],
          'tasks': [{'id': 1, 'service_s': 10}]}
@@ -273,8 +273,8 @@ def test_actual_trajectory_is_independently_verified(failure):
 def field_traffic_manager(tmp_path, monkeypatch):
     """Real plan generation with process and host probes replaced before start."""
     import threading
-    from urp_lab import fieldsim
-    from urp_lab.assets import bindings
+    from ceres_lab import fieldsim
+    from ceres_lab.assets import bindings
 
     run = solution()
     starts = []
@@ -308,7 +308,7 @@ def field_traffic_manager(tmp_path, monkeypatch):
 
 @pytest.mark.parametrize('traffic', [None, True, 1, [], {}, '', 'parallel'])
 def test_field_traffic_rejects_invalid_modes_before_process_start(field_traffic_manager, traffic):
-    from urp_lab.services import ServiceError
+    from ceres_lab.services import ServiceError
     manager, run, starts = field_traffic_manager
     with pytest.raises(ServiceError) as raised:
         manager.start({'run_id': run['run_id'], 'traffic': traffic})
@@ -320,8 +320,8 @@ def test_field_traffic_rejects_invalid_modes_before_process_start(field_traffic_
 @pytest.mark.parametrize('requested, expected', [(None, 'serial'), ('serial', 'serial'), ('coordinated', 'coordinated')])
 def test_field_traffic_start_freezes_requested_mode_and_task_windows(field_traffic_manager, monkeypatch, requested, expected):
     from pathlib import Path
-    from urp_lab import field_coordination
-    from urp_lab.field_traffic import POLICY
+    from ceres_lab import field_coordination
+    from ceres_lab.field_traffic import POLICY
 
     manager, run, starts = field_traffic_manager
     run['instance']['tasks'][0]['time_window'] = [20.0, 1000.0]
@@ -348,8 +348,8 @@ def test_field_traffic_start_freezes_requested_mode_and_task_windows(field_traff
 
 
 def test_field_traffic_refused_coordination_never_starts_serial_fallback(field_traffic_manager, monkeypatch):
-    from urp_lab import field_coordination
-    from urp_lab.services import ServiceError
+    from ceres_lab import field_coordination
+    from ceres_lab.services import ServiceError
     manager, run, starts = field_traffic_manager
     monkeypatch.setattr(field_coordination, 'apply',
                         lambda plan: {**plan, 'traffic': {**plan['traffic'], 'coordination_refused': 'no acyclic passage order'}})
@@ -361,7 +361,7 @@ def test_field_traffic_refused_coordination_never_starts_serial_fallback(field_t
 
 
 def test_field_traffic_result_and_history_keep_window_verdict(field_traffic_manager):
-    from urp_lab import time_windows
+    from ceres_lab import time_windows
     manager, run, _ = field_traffic_manager
     out = manager.runtime / 'fieldsim' / 'field_windows'
     out.mkdir(parents=True)

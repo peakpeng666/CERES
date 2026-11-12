@@ -226,7 +226,7 @@ class RuntimeIdentityIntegrationTests(unittest.TestCase):
         text=Path(acceptance.__file__).read_text()
         self.assertLess(text.index('identity_capture.begin(private)'),text.index('gateway=subprocess.Popen'))
         self.assertIn('identity_capture.original_error=exc',text)
-        self.assertIn("env.get('URP_WAREHOUSE_STARTUP_OBSERVER_DELAY_S')=='30'",text)
+        self.assertIn("env.get('CERES_WAREHOUSE_STARTUP_OBSERVER_DELAY_S')=='30'",text)
         frozen_hashes={'startup_observer.py': '078d89effd31c07e95089ebb124a5934c2854b5e7d1f8d8ba65df82589dcf831', 'process_observer.py': 'bda5a909febcc8de160b16832c877552e03dd238e95c3cebe59e0e6f5ad4e66f', 'thread_observer.py': '802f37293d54dbc0555a997ccc0f8fa5210142b6ffbf831ed20238380730d691', 'warehouse_lifecycle.py': 'd86fbf03014b61195263c2d505240611b0c77c17d94abff59fceba06c3adaba6'}
         for name, expected in frozen_hashes.items():
             self.assertEqual(hashlib.sha256(Path(acceptance.__file__).with_name(name).read_bytes()).hexdigest(),expected)

@@ -6,14 +6,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab.algorithm_ids import canonical_algorithm_id, canonical_algorithm_values
-from urp_lab import learned
-from urp_lab.solvers import catalog, run_algorithm
-from urp_lab.solve_request import resolve_algorithms, SolveRequestError
-from urp_lab.scenarios import get_scenario
-from urp_lab.studies import StudyManager
-from urp_lab.store import Store
-from urp_lab.figures.names import alg_name, alg_label, alg_index
+from ceres_lab.algorithm_ids import canonical_algorithm_id, canonical_algorithm_values
+from ceres_lab import learned
+from ceres_lab.solvers import catalog, run_algorithm
+from ceres_lab.solve_request import resolve_algorithms, SolveRequestError
+from ceres_lab.scenarios import get_scenario
+from ceres_lab.studies import StudyManager
+from ceres_lab.store import Store
+from ceres_lab.figures.names import alg_name, alg_label, alg_index
 
 
 @pytest.mark.parametrize('old,new,pc', [
@@ -116,8 +116,8 @@ def test_prediction_rejects_conflicting_means():
 
 def test_api_and_agent_submit_canonical_ids(tmp_path):
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import create_app, Config
-    from urp_lab.agent import research_tools as tools
+    from ceres_lab.gateway import create_app, Config
+    from ceres_lab.agent import research_tools as tools
     app = create_app(Config(runtime=tmp_path, background=False, extra_hosts={'testserver'}))
     with TestClient(app) as client:
         response = client.post('/lab/api/solve', json={

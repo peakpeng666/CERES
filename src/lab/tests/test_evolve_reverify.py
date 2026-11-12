@@ -3,7 +3,7 @@ import math
 
 import pytest
 
-from urp_lab.evolve import reverify as RV
+from ceres_lab.evolve import reverify as RV
 
 
 def test_strict_curvature_flags_a_long_chord_corner():

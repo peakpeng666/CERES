@@ -13,7 +13,7 @@ import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-MANIFEST = ROOT / 'src/lab/urp_lab/data/packs.json'
+MANIFEST = ROOT / 'src/lab/ceres_lab/data/packs.json'
 EPOCH = (2026, 1, 1, 0, 0, 0)
 SOURCES = [(ROOT / 'src/frontend/dist/data', 'web/data'), (ROOT / 'data/packages', 'archive/packages'), (ROOT / 'data/backend/research.sqlite3', 'archive/research.sqlite3')]
 

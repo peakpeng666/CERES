@@ -42,7 +42,7 @@ def owned(token):
     for p in Path('/proc').iterdir():
         if not p.name.isdigit() or int(p.name) == os.getpid(): continue
         try:
-            if ('URP_ACCEPTANCE_OWNER=' + token).encode() in p.joinpath('environ').read_bytes().split(b'\0'):
+            if ('CERES_ACCEPTANCE_OWNER=' + token).encode() in p.joinpath('environ').read_bytes().split(b'\0'):
                 # Zombies cannot act; Popen children are reaped separately.
                 stat = p.joinpath('stat').read_text().rsplit(')', 1)[1].split()
                 if stat[0] != 'Z': found.append((int(p.name), stat[19]))
@@ -125,17 +125,17 @@ def execute(args):
         if args.stage != 'maze': raise RuntimeError('warehouse_replay_not_implemented')
         source = args.source.resolve(); verify_source(source)
         python = source / 'src/lab/.venv/bin/python'
-        env = dict(os.environ, URP_LAB_RUNTIME=str(runtime), URP_ACCEPTANCE_OWNER=token,
-                   ROS_LOCALHOST_ONLY='1', URP_ROS_DOMAIN_ID='146', ROS_DOMAIN_ID='146',
-                   URP_BIND_HOST='127.0.0.1', PYTHONPATH=str(source / 'src/lab'))
+        env = dict(os.environ, CERES_LAB_RUNTIME=str(runtime), CERES_ACCEPTANCE_OWNER=token,
+                   ROS_LOCALHOST_ONLY='1', CERES_ROS_DOMAIN_ID='146', ROS_DOMAIN_ID='146',
+                   CERES_BIND_HOST='127.0.0.1', PYTHONPATH=str(source / 'src/lab'))
         # Explicit opt-out flags would bypass the validated execution stack.
-        for key in ('URP_TF_FIX', 'URP_GUI_FIX', 'URP_BRIDGE_FIX'):
+        for key in ('CERES_TF_FIX', 'CERES_GUI_FIX', 'CERES_BRIDGE_FIX'):
             if key in env: raise RuntimeError('override_forbidden')
         with socket.socket() as sock:
             sock.bind(('127.0.0.1', 0)); port = sock.getsockname()[1]
         base = f'http://127.0.0.1:{port}'
         with (private / 'gateway.log').open('w') as log:
-            gateway = subprocess.Popen([str(python), '-m', 'urp_lab', 'serve', '--host', '127.0.0.1', '--port', str(port), '--no-archive'],
+            gateway = subprocess.Popen([str(python), '-m', 'ceres_lab', 'serve', '--host', '127.0.0.1', '--port', str(port), '--no-archive'],
                 cwd=source / 'src/lab', env=env, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
         end = time.monotonic() + 120
         while True:
@@ -236,7 +236,7 @@ def main():
     p = argparse.ArgumentParser(); p.add_argument('--source', type=Path, required=True)
     p.add_argument('--private-dir', type=Path, required=True); p.add_argument('--summary', type=Path, required=True)
     p.add_argument('--stage', choices=['maze', 'warehouse'], default='maze')
-    p.add_argument('--harness-sha', default=os.environ.get('URP_HARNESS_SHA'))
+    p.add_argument('--harness-sha', default=os.environ.get('CERES_HARNESS_SHA'))
     args = p.parse_args()
     def stop(signum, frame): raise RuntimeError('interrupted')
     signal.signal(signal.SIGTERM, stop)

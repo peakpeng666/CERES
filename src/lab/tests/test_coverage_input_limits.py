@@ -7,10 +7,10 @@ from types import SimpleNamespace
 import pytest
 from shapely.geometry import LineString, Polygon
 
-from urp_lab import coverage_limits
-from urp_lab.gateway import ApiError, instance_for
-from urp_lab.scenarios import validate_instance
-from urp_lab.solvers import coverage, coverage_baseline, f2c_coverage, run_algorithm
+from ceres_lab import coverage_limits
+from ceres_lab.gateway import ApiError, instance_for
+from ceres_lab.scenarios import validate_instance
+from ceres_lab.solvers import coverage, coverage_baseline, f2c_coverage, run_algorithm
 
 
 def rect(x0, y0, x1, y1):
@@ -196,7 +196,7 @@ def test_f2c_checker_checks_budget_before_geometry_processing(monkeypatch):
 
 def test_f2c_straight_sampling_budget_precedes_densify(monkeypatch):
     # Adapter-only mock: this verifies allocation order, not native F2C behavior.
-    from urp_lab.scenarios import maps
+    from ceres_lab.scenarios import maps
     point = lambda x, y: SimpleNamespace(getX=lambda: x, getY=lambda: y)
     swath = SimpleNamespace(startPoint=lambda: point(1, 1), endPoint=lambda: point(30_001, 1))
     swaths = SimpleNamespace(size=lambda: 1, at=lambda i: swath)
@@ -215,7 +215,7 @@ def test_f2c_straight_sampling_budget_precedes_densify(monkeypatch):
 
 
 def test_connector_graph_budget_precedes_any_dense_matrix_build(monkeypatch):
-    from urp_lab.solvers import fleet
+    from ceres_lab.solvers import fleet
     monkeypatch.setattr(coverage_baseline, 'MAX_CONNECTOR_GRAPH_NODES', 2)
     def unexpected(*args, **kwargs):
         pytest.fail('over-budget connectors must not construct the graph')

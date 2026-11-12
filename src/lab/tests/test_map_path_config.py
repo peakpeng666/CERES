@@ -6,25 +6,25 @@ import sys
 
 import pytest
 
-from urp_lab import paths
-from urp_lab.scenarios import maps
+from ceres_lab import paths
+from ceres_lab.scenarios import maps
 
 
 def read_map_path(env):
     return subprocess.check_output(
-        [sys.executable, '-c', 'from urp_lab.paths import ROS_MAPS; print(ROS_MAPS)'],
+        [sys.executable, '-c', 'from ceres_lab.paths import ROS_MAPS; print(ROS_MAPS)'],
         cwd=Path(__file__).resolve().parents[1], env=env, text=True,
     ).strip()
 
 
 def test_default_official_map_location():
     env = dict(os.environ)
-    env.pop('URP_ROS_MAPS', None)
+    env.pop('CERES_ROS_MAPS', None)
     assert read_map_path(env) == str(paths.ROS_INSTALL_MAPS.resolve() if paths.ROS_INSTALL_MAPS.is_dir() else paths.BUNDLED_MAPS)
 
 
 def test_machine_without_ros_uses_the_bundled_copies(tmp_path, monkeypatch):
-    monkeypatch.delenv('URP_ROS_MAPS', raising=False)
+    monkeypatch.delenv('CERES_ROS_MAPS', raising=False)
     assert paths.official_maps(tmp_path / 'no-ros') == paths.BUNDLED_MAPS
     for world in maps.WORLDS:
         assert (paths.BUNDLED_MAPS / f'{world}.yaml').exists()
@@ -48,5 +48,5 @@ def test_bundled_copies_match_the_installed_maps():
 
 
 def test_explicit_map_copy_is_resolved(tmp_path):
-    env = dict(os.environ, URP_ROS_MAPS=str(tmp_path / 'maps'))
+    env = dict(os.environ, CERES_ROS_MAPS=str(tmp_path / 'maps'))
     assert read_map_path(env) == str((tmp_path / 'maps').resolve())

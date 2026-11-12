@@ -11,9 +11,9 @@ import os
 
 
 def foxglove_address() -> str:
-    return os.environ.get('URP_FOXGLOVE_BIND', '127.0.0.1') or '127.0.0.1'
+    return os.environ.get('CERES_FOXGLOVE_BIND', '127.0.0.1') or '127.0.0.1'
 
 
 def browser_ws(port: int) -> str:
-    host = os.environ.get('URP_BROWSER_HOST', '127.0.0.1') or '127.0.0.1'
+    host = os.environ.get('CERES_BROWSER_HOST', '127.0.0.1') or '127.0.0.1'
     return f'ws://{host}:{port}'

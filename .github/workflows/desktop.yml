@@ -73,7 +73,7 @@ jobs:
         timeout-minutes: 12
         env:
           # Only this isolated hosted-runner smoke disables the Chromium sandbox.
-          URP_TEST_NO_SANDBOX: '1'
+          CERES_TEST_NO_SANDBOX: '1'
         run: |
           export PLAYWRIGHT_CORE="$GITHUB_WORKSPACE/src/frontend/tools/browser/node_modules/playwright-core"
           xvfb-run -a node src/desktop/test/packaged_smoke.mjs --exe "$GITHUB_WORKSPACE/src/desktop/dist/linux-unpacked/agri-route-workbench" --out "$RUNNER_TEMP/desktop-window-smoke"

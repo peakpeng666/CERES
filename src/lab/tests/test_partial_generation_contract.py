@@ -4,9 +4,9 @@ from unittest.mock import Mock
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import gateway, lanes
-from urp_lab.compose import EXAMPLES, compose
-from urp_lab.compose.geo import export_geojson, import_geojson
+from ceres_lab import gateway, lanes
+from ceres_lab.compose import EXAMPLES, compose
+from ceres_lab.compose.geo import export_geojson, import_geojson
 
 
 def test_partial_generation_reports_actual_counts_in_cards_and_summary():
@@ -22,7 +22,7 @@ def test_partial_generation_reports_actual_counts_in_cards_and_summary():
 
 
 def test_task_placement_shortfall_is_explicit(monkeypatch):
-    from urp_lab.compose import generate
+    from ceres_lab.compose import generate
     original = generate._tasks
     monkeypatch.setattr(generate, '_tasks', lambda *args: original(*args)[:1])
     scenario = compose(EXAMPLES[0], seed=7)
@@ -60,7 +60,7 @@ def test_lane_preview_distinguishes_input_and_internal_errors(tmp_path, monkeypa
 
 
 def test_unreadable_makespan_trace_keeps_valid_incumbent(monkeypatch, caplog):
-    from urp_lab.solvers import fleet_engines, run_algorithm
+    from ceres_lab.solvers import fleet_engines, run_algorithm
     from test_integration_regressions import SC, instance
     monkeypatch.setattr(fleet_engines, '_makespan_sample', Mock(side_effect=RuntimeError('unreadable cumul')))
     result = run_algorithm(SC, instance(supply=False), 'ortools.fleet', {'time_limit_s': .1})

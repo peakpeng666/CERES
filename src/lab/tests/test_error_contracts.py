@@ -5,11 +5,11 @@ from types import SimpleNamespace
 import httpx
 import pytest
 
-from urp_lab.agent.llm import ModelError, OpenAICompatibleModel
-from urp_lab.compose import compose
-from urp_lab.jobs import resolve_params
-from urp_lab.recommend import recommend
-from urp_lab.solvers import GRID_PARAMS, OMPL_PARAMS, PARAMS
+from ceres_lab.agent.llm import ModelError, OpenAICompatibleModel
+from ceres_lab.compose import compose
+from ceres_lab.jobs import resolve_params
+from ceres_lab.recommend import recommend
+from ceres_lab.solvers import GRID_PARAMS, OMPL_PARAMS, PARAMS
 
 
 @pytest.mark.parametrize('params', [PARAMS, GRID_PARAMS, OMPL_PARAMS])
@@ -42,8 +42,8 @@ def test_recommendation_does_not_invent_convexity_on_geometry_failure(monkeypatc
 
 @pytest.mark.parametrize('planner', ['motion', 'fleet'])
 def test_seed_failure_aborts_before_planning(monkeypatch, planner):
-    from urp_lab.solvers.motion import plan_ompl
-    from urp_lab.solvers.fleet_curvature import ompl_dubins_fallback
+    from ceres_lab.solvers.motion import plan_ompl
+    from ceres_lab.solvers.fleet_curvature import ompl_dubins_fallback
 
     def failed_seed(seed):
         raise RuntimeError('cannot set seed')
@@ -85,7 +85,7 @@ def test_model_keeps_invalid_json_arguments_for_explicit_tool_error():
 def test_worker_json_requires_a_terminal_solver_status(payload):
     import json
     import threading
-    from urp_lab.jobs import JobManager
+    from ceres_lab.jobs import JobManager
     manager = JobManager.__new__(JobManager)
     manager._lock, manager._canceled = threading.Lock(), set()
     sol = {'run_id': 'test', 'metrics': {}, 'routes': [], 'algorithm': {}}
@@ -99,10 +99,10 @@ def test_watchdog_timeout_without_interval_timer_reaches_the_gateway_as_timeout(
     import json
     import subprocess
     import threading
-    from urp_lab.jobs import JobManager
+    from ceres_lab.jobs import JobManager
     code = ('import signal, sys, time\n'
             'del signal.SIGALRM\n'
-            'from urp_lab import worker\n'
+            'from ceres_lab import worker\n'
             "worker.run_algorithm = lambda *a: (print('native solver chatter'), time.sleep(30))\n"
             'sys.exit(worker.main())\n')
     request = {'algorithm_id': 'urp.watchdog_probe', 'params': {'time_limit_s': 0.2}, 'scenario': {}, 'instance': {}}
@@ -120,7 +120,7 @@ def test_watchdog_timeout_without_interval_timer_reaches_the_gateway_as_timeout(
 @pytest.mark.parametrize('error', [PermissionError(1, 'permission denied'), RuntimeError('lock API bug'), KeyboardInterrupt()])
 def test_store_does_not_misreport_all_lock_errors_as_existing_owner(tmp_path, monkeypatch, error):
     import fcntl
-    from urp_lab.store import Store
+    from ceres_lab.store import Store
 
     def fail(*args):
         raise error

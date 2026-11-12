@@ -7,18 +7,18 @@ import numpy as np
 import pytest
 from scipy import ndimage
 
-from urp_lab import field_coordination as fc
-from urp_lab import fieldworld, mujoco_field, paths, time_windows, worker
-from urp_lab.agent import contract as tc
-from urp_lab.agent import diagnose, llm
-from urp_lab.agent.runner import AgentRunner, _executed, _execution_fault
-from urp_lab.compose import compose
-from urp_lab.compose.nl import clock_value, duration_value, parse
-from urp_lab.field_tracking import Driver
-from urp_lab.gateway import Config, Lab
-from urp_lab.recommend import recommend
-from urp_lab.scenarios import validate_instance
-from urp_lab.solvers import catalog, fleet
+from ceres_lab import field_coordination as fc
+from ceres_lab import fieldworld, mujoco_field, paths, time_windows, worker
+from ceres_lab.agent import contract as tc
+from ceres_lab.agent import diagnose, llm
+from ceres_lab.agent.runner import AgentRunner, _executed, _execution_fault
+from ceres_lab.compose import compose
+from ceres_lab.compose.nl import clock_value, duration_value, parse
+from ceres_lab.field_tracking import Driver
+from ceres_lab.gateway import Config, Lab
+from ceres_lab.recommend import recommend
+from ceres_lab.scenarios import validate_instance
+from ceres_lab.solvers import catalog, fleet
 
 WINDOWED = ('pyvrp.balanced', 'ortools.fleet')
 NOT_WINDOWED = ('pyvrp.fleet', 'panel.sweep', 'panel.savings_fleet', 'panel.cluster_first')
@@ -577,7 +577,7 @@ def test_time_of_day_follows_the_departure():
 
 
 def physics_plan(window, tmp_path):
-    from urp_lab import physics
+    from ceres_lab import physics
     inst = validate_instance('fleet_routing', {
         'boundary': [[0, 0], [40, 0], [40, 30], [0, 30]], 'depot': [5, 5],
         'tasks': [{'id': 1, 'xy': [20, 8], 'label': 'T1', 'time_window': window}, {'id': 2, 'xy': [30, 20], 'label': 'T2', 'time_window': window}],
@@ -728,7 +728,7 @@ def test_per_task_windows_are_reported_not_solved(lab):
 
 
 def test_a_changed_deadline_rebuilds_the_task_and_a_cleared_one_removes_it(lab):
-    from urp_lab.scenarios import get_scenario
+    from ceres_lab.scenarios import get_scenario
     runner = AgentRunner(lab)
     sid, s = ask(runner, BASE + '，每个点要在出发后 30 分钟内送达')
     assert s['state'] == 'done', s.get('error')

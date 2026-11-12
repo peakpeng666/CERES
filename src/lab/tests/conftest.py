@@ -4,7 +4,7 @@ from functools import lru_cache
 
 import pytest
 
-from urp_lab import paths
+from ceres_lab import paths
 
 
 def pytest_addoption(parser):
@@ -22,7 +22,7 @@ def pytest_runtest_setup(item):
     missing = [world for world in marker.args if not (paths.ROS_MAPS / f'{world}.yaml').is_file()]
     if missing:
         reason = f"Missing official maps {', '.join(missing)} in {paths.ROS_MAPS}; run tools/fetch_ros_maps.py"
-        if item.config.getoption('--require-maps') or os.environ.get('URP_ROS_MAPS'):
+        if item.config.getoption('--require-maps') or os.environ.get('CERES_ROS_MAPS'):
             pytest.fail(reason, pytrace=False)
         pytest.skip(reason)
 
@@ -30,7 +30,7 @@ def pytest_runtest_setup(item):
 @pytest.fixture(autouse=True)
 def no_robustness_batches_unless_asked(monkeypatch):
     """An agent session would run two batches before every report; the tests of that step switch it back on."""
-    from urp_lab.agent import tools
+    from ceres_lab.agent import tools
     monkeypatch.setattr(tools, 'ROBUSTNESS_RUNS', 0)
 
 
@@ -38,7 +38,7 @@ def no_robustness_batches_unless_asked(monkeypatch):
 def isolated_evolve_field_cache(request, tmp_path, monkeypatch):
     if not request.node.path.name.startswith('test_evolve_'):
         return
-    from urp_lab.library import fields
+    from ceres_lab.library import fields
 
     isolated = tmp_path / 'isolated-fields2benchmark'
     isolated.mkdir()
@@ -60,5 +60,5 @@ REAL_GAZEBO_GAP = paths.gazebo_gap
 @pytest.fixture(autouse=True)
 def simulator_present(monkeypatch):
     """Tests replace the simulator with fakes, so whether this machine has ROS must not change their outcome."""
-    monkeypatch.setattr('urp_lab.paths.gazebo_gap', lambda: None)
-    monkeypatch.setattr('urp_lab.agent.tools.gazebo_gap', lambda: None)
+    monkeypatch.setattr('ceres_lab.paths.gazebo_gap', lambda: None)
+    monkeypatch.setattr('ceres_lab.agent.tools.gazebo_gap', lambda: None)

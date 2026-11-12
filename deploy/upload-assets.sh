@@ -43,15 +43,15 @@ fi
 
 stage="$(mktemp -d)"
 trap 'rm -rf "$stage"' EXIT
-mkdir -p "$stage/urp-fields2cover"
-cp "$wheel" deploy/THIRD_PARTY.md "$stage/urp-fields2cover/"
+mkdir -p "$stage/ceres-fields2cover"
+cp "$wheel" deploy/THIRD_PARTY.md "$stage/ceres-fields2cover/"
 (
-  cd "$stage/urp-fields2cover"
+  cd "$stage/ceres-fields2cover"
   sha256sum fields2cover-2.1.0-cp312-cp312-linux_x86_64.whl THIRD_PARTY.md > SHA256SUMS
 )
-archive="$root/deploy/release-assets/urp-fields2cover.tar.gz"
+archive="$root/deploy/release-assets/ceres-fields2cover.tar.gz"
 mkdir -p "$(dirname "$archive")"
-tar -C "$stage" -czf "$archive" urp-fields2cover
+tar -C "$stage" -czf "$archive" ceres-fields2cover
 sha256sum "$archive" | tee "$archive.sha256"
 printf '%s\n' "已写出 $archive。许可是 BSD-3-Clause，声明在包内的 THIRD_PARTY.md。"
 

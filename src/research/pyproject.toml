@@ -1,11 +1,11 @@
 [project]
-name = "urp-research"
+name = "ceres-research"
 # NAS integration release candidate; publication and final metadata-diff review pending.
 version = "0.2.0rc1"
-description = "Three frozen URP modules plus an unpublished optional NAS integration candidate"
+description = "Three frozen CERES modules plus an unpublished optional NAS integration candidate"
 requires-python = ">=3.10"
 dependencies = []
 readme = "README.md"
 
 # Project metadata only, not a supported pip/wheel build contract.
-# Run this source candidate with scripts/urp.py and scripts/test.py.
+# Run this source candidate with scripts/ceres.py and scripts/test.py.

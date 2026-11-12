@@ -5,18 +5,18 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from urp_lab.field_energy import account
-from urp_lab.field_physics import profile
-from urp_lab.recommend import recommend
-from urp_lab.scenarios.validate import validate_instance
-from urp_lab.solvers import run_algorithm
-from urp_lab.solvers.fleet import min_curvature_radius, travel_graph
+from ceres_lab.field_energy import account
+from ceres_lab.field_physics import profile
+from ceres_lab.recommend import recommend
+from ceres_lab.scenarios.validate import validate_instance
+from ceres_lab.solvers import run_algorithm
+from ceres_lab.solvers.fleet import min_curvature_radius, travel_graph
 
 
 @pytest.mark.parametrize('schema', [None, 'urp.fleet-model/1'])
 def test_legacy_resupply_plan_cannot_bypass_ui_gate(schema):
-    from urp_lab.fieldsim import FieldSimManager
-    from urp_lab.services import ServiceError
+    from ceres_lab.fieldsim import FieldSimManager
+    from ceres_lab.services import ServiceError
     run = {'problem_class': 'fleet_routing', 'state': 'done', 'routes': [{}],
            'status': 'feasible', 'check': {'valid': True},
            'instance': {'unload_points': [[38, 15]]},
@@ -64,7 +64,7 @@ def test_graph_identity_and_decoded_routes(travel, multidepot, supply):
     # Decisecond rounding can accumulate at most 0.05 s per model arc.
     assert abs(result['metrics']['makespan_s'] - result['trace'][-1][1]) < 1
     if not multidepot:
-        from urp_lab.fieldworld import plan_vehicles
+        from ceres_lab.fieldworld import plan_vehicles
         vehicles = plan_vehicles(inst, result['routes'])
         assert len(vehicles[0].tasks) == len(inst['tasks'])
         stops = [t['path_s'] for t in vehicles[0].tasks]

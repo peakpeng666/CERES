@@ -129,7 +129,7 @@ class StartupPathTests(unittest.TestCase):
             executable.write_text(f'#!{sys.executable}\nimport json,os,sys\n'
                                   'print(json.dumps({"cwd":os.getcwd(),"args":sys.argv[1:]}))\n')
             executable.chmod(0o700)
-            env = dict(os.environ, URP_PYTHON='bin/capture-python', URP_API_DB='state/custom.sqlite3')
+            env = dict(os.environ, CERES_PYTHON='bin/capture-python', CERES_API_DB='state/custom.sqlite3')
             result = subprocess.run(['bash', str(ROOT / 'src/start.sh'), 'backend'], cwd=caller,
                                     env=env, text=True, capture_output=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)
@@ -165,8 +165,8 @@ class StartupPathTests(unittest.TestCase):
             executable = checkout / 'capture-python'
             executable.write_text(f'#!{sys.executable}\nimport json,sys\nprint(json.dumps(sys.argv[1:]))\n')
             executable.chmod(0o700)
-            env = dict(os.environ, URP_PYTHON='./capture-python')
-            env.pop('URP_API_DB', None)
+            env = dict(os.environ, CERES_PYTHON='./capture-python')
+            env.pop('CERES_API_DB', None)
             result = subprocess.run(['bash', str(checkout / 'src/start.sh'), 'backend'],
                                     cwd=checkout, env=env, text=True, capture_output=True, timeout=10)
             self.assertEqual(result.returncode, 0, result.stderr)

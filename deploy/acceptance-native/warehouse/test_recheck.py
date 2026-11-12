@@ -10,17 +10,17 @@ from unittest.mock import patch
 from historical_input import from_directory, from_archive, canonical_sha, checked_json, SELECTED
 from recheck import build_record, historical_pair, public_receipt, EXPECTED
 from resource_identity import compare
-from urp_research.turn_modes.checker import check
-from urp_lab.solvers import map_check
-from urp_lab.simplan import to_sim_plan
-from urp_lab.scenarios import maps
-from urp_lab.store import Store
+from ceres_research.turn_modes.checker import check
+from ceres_lab.solvers import map_check
+from ceres_lab.simplan import to_sim_plan
+from ceres_lab.scenarios import maps
+from ceres_lab.store import Store
 
-FIXTURES = Path(os.environ['URP_HISTORICAL_JSON']) if os.environ.get('URP_HISTORICAL_JSON') else None
+FIXTURES = Path(os.environ['CERES_HISTORICAL_JSON']) if os.environ.get('CERES_HISTORICAL_JSON') else None
 
 class ReplayTests(unittest.TestCase):
     def setUp(self):
-        if FIXTURES is None:self.skipTest('URP_HISTORICAL_JSON is required for data-backed tests')
+        if FIXTURES is None:self.skipTest('CERES_HISTORICAL_JSON is required for data-backed tests')
         self.inputs = from_directory(FIXTURES)
     def build(self, **kw):
         args = dict(inputs=self.inputs, route_check=check, map_check=map_check, plan_fn=to_sim_plan,
@@ -28,8 +28,8 @@ class ReplayTests(unittest.TestCase):
         args.update(kw); return build_record(**args)
 
     def test_real_checker_and_real_map_preserve_exact_historical_geometry_without_solver(self):
-        with patch('urp_research.turn_modes.solver.solve', side_effect=AssertionError('optimizer called')), \
-             patch('urp_research.turn_modes.oracle.solve', side_effect=AssertionError('optimizer called')):
+        with patch('ceres_research.turn_modes.solver.solve', side_effect=AssertionError('optimizer called')), \
+             patch('ceres_research.turn_modes.oracle.solve', side_effect=AssertionError('optimizer called')):
             record, plan = self.build()
         old, oldsim = historical_pair(self.inputs)
         self.assertEqual(record['routes'], old['routes']); self.assertEqual(plan['path'], oldsim['planned']['path'])

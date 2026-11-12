@@ -41,8 +41,8 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
-      - run: docker build -f deploy/Dockerfile -t urp-lab:ci .
-      - run: docker run -d --name urp-lab -p 127.0.0.1:4100:4100 urp-lab:ci
+      - run: docker build -f deploy/Dockerfile -t ceres-lab:ci .
+      - run: docker run -d --name ceres-lab -p 127.0.0.1:4100:4100 ceres-lab:ci
       - name: Bench responds and remote shutdown does not
         run: |
           set -euo pipefail
@@ -65,7 +65,7 @@ jobs:
         run: python3 tools/smoke_archive.py --url http://127.0.0.1:4100 --output .local-state/archive-smoke
       - name: Container diagnostics
         if: always()
-        run: docker logs urp-lab
+        run: docker logs ceres-lab
       - name: Retain archive smoke evidence
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7

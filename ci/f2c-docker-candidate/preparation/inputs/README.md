@@ -26,8 +26,8 @@ The lock declares `preparation.scope: compiler-build-only` and
 - `/inputs`: final materialization path, later exported and mounted read-only.
 - `/control`: outside-controller handshake, mounted read-only during workloads.
 - `/out/build`: fresh writable compiler outputs; never beneath `/inputs`.
-- `/opt/urp-python/bin/python3.12`: image-resident CPython **3.12.13**.
-- `/opt/urp-uv/uv`: image-resident **0.12.23** bootstrap.
+- `/opt/ceres-python/bin/python3.12`: image-resident CPython **3.12.13**.
+- `/opt/ceres-uv/uv`: image-resident **0.12.23** bootstrap.
 
 Use the selected host caller's numeric UID/GID as explicit image build inputs.
 The trusted root package/bootstrap stage assigns `/inputs` to those values;
@@ -51,9 +51,9 @@ package/bootstrap stage, stage the two selected application files, and invoke
 inside the selected final image environment:
 
 ```sh
-/opt/urp-python/bin/python3.12 -I -B /inputs/recipe/prepare_inputs.py \
+/opt/ceres-python/bin/python3.12 -I -B /inputs/recipe/prepare_inputs.py \
   --root /inputs \
-  --python /opt/urp-python/bin/python3.12 \
+  --python /opt/ceres-python/bin/python3.12 \
   --package-lock /inputs/package-preparation.json \
   --expected-source-index-sha256 "$EXTERNALLY_REVIEWED_SOURCE_INDEX_SHA256"
 ```
@@ -90,8 +90,8 @@ control mounts, fresh output, network absence and kernel/engine policy.
 ## Read-only preflight
 
 ```sh
-/opt/urp-python/bin/python3.12 -I -B /inputs/recipe/verify_prepared_inputs.py \
-  --root /inputs --python /opt/urp-python/bin/python3.12 \
+/opt/ceres-python/bin/python3.12 -I -B /inputs/recipe/verify_prepared_inputs.py \
+  --root /inputs --python /opt/ceres-python/bin/python3.12 \
   --expected-index-sha256 "$MEASURED_ARTIFACT_INDEX_SHA256"
 ```
 

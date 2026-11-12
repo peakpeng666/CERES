@@ -10,7 +10,7 @@ from tf2_ros import Buffer,TransformListener
 from pathlib import Path
 
 p=argparse.ArgumentParser();p.add_argument('--out',required=True);a=p.parse_args()
-rclpy.init();n=rclpy.create_node('urp_scan_map_audit',parameter_overrides=[Parameter('use_sim_time',value=True)])
+rclpy.init();n=rclpy.create_node('ceres_scan_map_audit',parameter_overrides=[Parameter('use_sim_time',value=True)])
 b=Buffer(node=n);listener=TransformListener(b,n);latest={}
 def truth(msg):
  for t in msg.transforms:

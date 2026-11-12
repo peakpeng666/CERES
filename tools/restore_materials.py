@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Restore untracked materials from the historical complete URP.zip, after verification.
+"""Restore untracked materials from the historical complete CERES.zip, after verification.
 
 This is separate from the platform Release restore and the Drive copy registry.
 The default manifest preserves the fingerprint recorded in the 2026-10-13 history;
@@ -68,13 +68,13 @@ def plan_materials(archive, includes, tracked):
         original = PurePosixPath(member.filename)
         if '..' in original.parts or original.is_absolute() or '\\' in member.filename:
             raise SystemExit('Unsafe archive member')
-        if not original.parts or original.parts[0] != 'URP':
+        if not original.parts or original.parts[0] != 'CERES':
             continue
         if len(original.parts) == 1:
             mode = member.external_attr >> 16
             if (stat.S_IFMT(mode) not in (0, stat.S_IFDIR)
                     or not (member.is_dir() or stat.S_ISDIR(mode))):
-                raise SystemExit('URP archive root is not a directory')
+                raise SystemExit('CERES archive root is not a directory')
             root_seen = True
             continue
         root_seen = True
@@ -108,7 +108,7 @@ def plan_materials(archive, includes, tracked):
         else:
             plan.append((member, relative))
     if not root_seen:
-        raise SystemExit('Archive has no URP/ root directory')
+        raise SystemExit('Archive has no CERES/ root directory')
     for name in seen:
         if any(str(parent) in file_paths for parent in PurePosixPath(name).parents):
             raise SystemExit(f'Archive file conflicts with a child path: {name}')

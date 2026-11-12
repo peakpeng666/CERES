@@ -18,9 +18,9 @@ import time
 
 root = Path(__file__).resolve().parents[1]
 sys.path.insert(0,str(root/'src'))
-from urp_research.cvrplib.audit import load_frozen, validator
-from urp_research.cvrplib.io import contract_for, digest, parse_vrp, sha
-from urp_research.cvrplib.runner import run_payload, summarize
+from ceres_research.cvrplib.audit import load_frozen, validator
+from ceres_research.cvrplib.io import contract_for, digest, parse_vrp, sha
+from ceres_research.cvrplib.runner import run_payload, summarize
 
 parser=argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--output',type=Path,required=True)
@@ -40,7 +40,7 @@ env={'python':sys.version,'executable':sys.executable,'platform':platform.platfo
                        if s.startswith('model name')),None),
      'dependencies':{d.metadata['Name']:d.version for d in importlib.metadata.distributions()},
      'git_base':'f110f039854f7314e36632ce7d3ee977cd0de0fc',
-     'source_files':{str(p.relative_to(repo)):sha(p) for p in sorted((root/'src/urp_research/cvrplib').rglob('*.py'))}}
+     'source_files':{str(p.relative_to(repo)):sha(p) for p in sorted((root/'src/ceres_research/cvrplib').rglob('*.py'))}}
 save('environment.json',env)
 if importlib.metadata.version('pyvrp')!='0.14.0':raise RuntimeError('wrong PyVRP version')
 
@@ -91,13 +91,13 @@ save('invented-summary.json',summarize(rows,len(schedule)))
 commands=[]
 for algorithm in ('savings','T','TRS','TSR','pyvrp'):
     dest=args.output/('P-n19-k2-'+algorithm)
-    command=[sys.executable,str(root/'scripts/urp.py'),'cvrplib','run-one',
+    command=[sys.executable,str(root/'scripts/ceres.py'),'cvrplib','run-one',
              '--instance',str(repo/'data/benchmarks/CVRPLIB/instances/P-n19-k2.vrp'),
              '--algorithm',algorithm,'--seed','0','--budget','1','--output',str(dest)]
     completed=subprocess.run(command,text=True,capture_output=True)
     commands.append({'command':command,'exitcode':completed.returncode,'stdout':completed.stdout,'stderr':completed.stderr})
     if completed.returncode:raise RuntimeError('official small-case acceptance failed '+algorithm)
-    command=[sys.executable,str(root/'scripts/urp.py'),'cvrplib','score','--result',str(dest/'result.json'),
+    command=[sys.executable,str(root/'scripts/ceres.py'),'cvrplib','score','--result',str(dest/'result.json'),
              '--output',str(dest/'evaluation.json')]
     completed=subprocess.run(command,text=True,capture_output=True)
     commands.append({'command':command,'exitcode':completed.returncode,'stdout':completed.stdout,'stderr':completed.stderr})

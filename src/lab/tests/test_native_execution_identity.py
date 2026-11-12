@@ -10,7 +10,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab import jobs
+from ceres_lab import jobs
 
 
 @pytest.fixture
@@ -198,7 +198,7 @@ def test_missing_native_artifacts_are_not_reported_present(native_tree):
 
 
 def test_native_hash_cache_reuses_only_unchanged_stat_identity(native_tree):
-    from urp_lab import native_identity
+    from ceres_lab import native_identity
     native_identity._hash_version.cache_clear()
     before = jobs.execution_manifest()
     initial = native_identity._hash_version.cache_info()
@@ -229,7 +229,7 @@ def test_symlinked_native_subdirectory_is_fingerprinted_without_recursion(native
 
 
 def test_native_read_error_fails_closed(native_tree, monkeypatch):
-    from urp_lab import native_identity
+    from ceres_lab import native_identity
 
     def denied(*args):
         raise PermissionError('injected unreadable native dependency')
@@ -240,7 +240,7 @@ def test_native_read_error_fails_closed(native_tree, monkeypatch):
 
 
 def test_native_mutation_during_hash_fails_closed(native_tree, monkeypatch):
-    from urp_lab import native_identity
+    from ceres_lab import native_identity
     native_identity._hash_version.cache_clear()
     original_hash = native_identity.hashlib.file_digest
 
@@ -258,7 +258,7 @@ def test_native_mutation_during_hash_fails_closed(native_tree, monkeypatch):
 
 @pytest.mark.parametrize('target', ['ompl', 'fields2cover', 'manifest'])
 def test_gateway_rejects_native_replacement_before_worker_start(native_tree, tmp_path, monkeypatch, target):
-    from urp_lab.store import Store
+    from ceres_lab.store import Store
     monkeypatch.setattr(jobs, '_GATEWAY_IMPORT_MANIFEST', jobs.execution_manifest())
     db = Store(tmp_path / 'lab.sqlite3')
     manager = jobs.JobManager(db, command=[str(tmp_path / 'must-not-start')], concurrency=1)
@@ -276,7 +276,7 @@ def test_gateway_rejects_native_replacement_before_worker_start(native_tree, tmp
 
 
 def test_custom_worker_does_not_claim_gateway_native_identity(native_tree, tmp_path, monkeypatch):
-    from urp_lab.store import Store
+    from ceres_lab.store import Store
     source = jobs.execution_manifest()
     monkeypatch.setattr(jobs, '_GATEWAY_IMPORT_MANIFEST', source)
     db = Store(tmp_path / 'lab.sqlite3')
@@ -292,8 +292,8 @@ def test_custom_worker_does_not_claim_gateway_native_identity(native_tree, tmp_p
 
 
 def test_submission_snapshot_retains_native_artifact_evidence(native_tree, monkeypatch):
-    from urp_lab import recommend
-    from urp_lab.scenarios.benchmark import cvrp_scenarios
+    from ceres_lab import recommend
+    from ceres_lab.scenarios.benchmark import cvrp_scenarios
     monkeypatch.setattr(recommend, 'recommend', lambda *args, **kwargs: {})
     source = jobs.execution_manifest()
     scenario = cvrp_scenarios()[0]

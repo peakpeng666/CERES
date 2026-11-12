@@ -1,12 +1,18 @@
 #!/usr/bin/env bash
-# Public one-command install for the URP workbench and Gazebo stack.
+# Public one-command install for the CERES workbench and Gazebo stack.
 #   curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh | bash
 # No GitHub login and no docker login. Docker pulls ghcr.io/peakpeng666/urp-sim
 # and does not clone the repository. Ubuntu 22.04 without Docker uses a shallow
 # sparse clone. See DEPLOY.md.
-# Select a release/commit: URP_REF=v20261019 bash install.sh
+# Select a release/commit: CERES_REF=v20261019 bash install.sh
 # Or: bash install.sh --ref main up (native); Docker requires a published tag.
 set -euo pipefail
+# Accept existing installations' environment names; CERES values take precedence.
+for _legacy_name in ${!URP_@}; do
+  _ceres_name="CERES_${_legacy_name#URP_}"
+  if [[ ! -v $_ceres_name ]]; then export "$_ceres_name=${!_legacy_name}"; fi
+done
+unset _legacy_name _ceres_name
 
 REPO=https://github.com/peakpeng666/URP.git
 RAW_ROOT=https://raw.githubusercontent.com/peakpeng666/URP
@@ -17,9 +23,11 @@ say() { printf '%s\n' "$*"; }
 die() { printf '%s\n' "$*" >&2; exit 1; }
 
 configure() {
-  STATE="${URP_HOME:-${HOME}/.local/share/urp}"
-  BIN="${HOME}/.local/bin/urp"
-  local saved_ref= saved_raw= saved_tag= saved_components= saved_port= explicit_ref="${URP_REF:-}"
+  local default_state="${HOME}/.local/share/ceres"
+  if [[ ! -e "$default_state" && -d "${HOME}/.local/share/urp" ]]; then default_state="${HOME}/.local/share/urp"; fi
+  STATE="${CERES_HOME:-$default_state}"
+  BIN="${HOME}/.local/bin/ceres"
+  local saved_ref= saved_raw= saved_tag= saved_components= saved_port= explicit_ref="${CERES_REF:-}"
   if [[ -f "$STATE/install.selection" ]]; then
     { IFS= read -r saved_ref || true; IFS= read -r saved_raw || true
       IFS= read -r saved_tag || true; IFS= read -r saved_components || true
@@ -31,38 +39,40 @@ configure() {
     case "$1" in
       --ref) [[ $# -ge 2 ]] || die '--ref 需要版本、分支或完整提交号'; explicit_ref="$2"; shift 2 ;;
       up|down|update|status|fuel) cmd="$1"; shift ;;
-      *) die '用法：urp [--ref main|v版本|提交号|分支] up|down|update|status|fuel' ;;
+      *) die '用法：ceres [--ref main|v版本|提交号|分支] up|down|update|status|fuel' ;;
     esac
   done
   REF="${explicit_ref:-${saved_ref:-main}}"
   # A raw override on the official host also identifies the source ref.
   # A script piped from a URL cannot discover its download URL: select --ref
-  # (or URP_REF) when using a non-default installer, including a release tag.
-  if [[ -n "${URP_RAW:-}" && "$URP_RAW" == "$RAW_ROOT/"* ]]; then
-    local raw_ref="${URP_RAW#"$RAW_ROOT/"}"
+  # (or CERES_REF) when using a non-default installer, including a release tag.
+  if [[ -n "${CERES_RAW:-}" && "$CERES_RAW" == "$RAW_ROOT/"* ]]; then
+    local raw_ref="${CERES_RAW#"$RAW_ROOT/"}"
     raw_ref="${raw_ref%/}"
-    [[ -z "$explicit_ref" || "$explicit_ref" == "$raw_ref" ]] || die 'URP_RAW 与 URP_REF/--ref 不一致。'
+    [[ -z "$explicit_ref" || "$explicit_ref" == "$raw_ref" ]] || die 'CERES_RAW 与 CERES_REF/--ref 不一致。'
     REF="$raw_ref"
-  elif [[ -n "${URP_RAW:-}" && -z "$explicit_ref" ]]; then
-    die '自定义 URP_RAW 必须同时明确设置 URP_REF。'
+  elif [[ -n "${CERES_RAW:-}" && -z "$explicit_ref" ]]; then
+    die '自定义 CERES_RAW 必须同时明确设置 CERES_REF。'
   fi
   [[ "$REF" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ && "$REF" != *..* && "$REF" != *//* && "$REF" != */ && "$REF" != *. ]] || die "无效的 ref：$REF"
-  RAW="${URP_RAW:-$RAW_ROOT/$REF}"
-  if [[ -z "${URP_RAW:-}" && "$REF" == "$saved_ref" && -n "$saved_raw" ]]; then RAW="$saved_raw"; fi
-  [[ "$RAW" == https://* && "$RAW" != *$'\n'* && "$RAW" != *$'\r'* ]] || die 'URP_RAW 必须为单行 HTTPS URL。'
+  RAW="${CERES_RAW:-$RAW_ROOT/$REF}"
+  if [[ -z "${CERES_RAW:-}" && "$REF" == "$saved_ref" && -n "$saved_raw" ]]; then RAW="$saved_raw"; fi
+  [[ "$RAW" == https://* && "$RAW" != *$'\n'* && "$RAW" != *$'\r'* ]] || die 'CERES_RAW 必须为单行 HTTPS URL。'
   RAW="${RAW%/}"
   ASSET_RAW="$RAW"
-  TAG="${URP_IMAGE_TAG:-}"
+  TAG="${CERES_IMAGE_TAG:-}"
   if [[ -z "$TAG" && "$REF" == "$saved_ref" ]]; then TAG="$saved_tag"; fi
   if [[ -z "$TAG" && ( "$REF" == main || "$REF" == v* || "$REF" =~ ^[0-9a-f]{40}$ ) && "$REF" != */* ]]; then TAG="$REF"; fi
   [[ -z "$TAG" || "$TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]] || die "无效的镜像标签：$TAG"
-  COMPONENTS="${URP_COMPONENTS:-${saved_components:-full}}"
-  case "$COMPONENTS" in workbench|research|full) ;; *) die 'URP_COMPONENTS 只能是 workbench、research 或 full。' ;; esac
-  PORT="${URP_PORT:-${saved_port:-4100}}"
-  [[ "$PORT" =~ ^[0-9]{1,5}$ ]] && (( 10#$PORT >= 1 && 10#$PORT <= 65535 )) || die 'URP_PORT 必须为 1–65535。'
+  COMPONENTS="${CERES_COMPONENTS:-${saved_components:-full}}"
+  case "$COMPONENTS" in workbench|research|full) ;; *) die 'CERES_COMPONENTS 只能是 workbench、research 或 full。' ;; esac
+  PORT="${CERES_PORT:-${saved_port:-4100}}"
+  [[ "$PORT" =~ ^[0-9]{1,5}$ ]] && (( 10#$PORT >= 1 && 10#$PORT <= 65535 )) || die 'CERES_PORT 必须为 1–65535。'
   HEALTH="http://127.0.0.1:${PORT}/lab/api/health"
   PAGE="http://localhost:${PORT}/"
   SIM_IMAGE="ghcr.io/peakpeng666/urp-sim:${TAG}"
+  export CERES_REF="$REF" CERES_IMAGE_TAG="$TAG" CERES_COMPONENTS="$COMPONENTS" CERES_PORT="$PORT"
+  # Published older revisions still consume the original installer contract.
   export URP_REF="$REF" URP_IMAGE_TAG="$TAG" URP_COMPONENTS="$COMPONENTS" URP_PORT="$PORT"
 }
 
@@ -103,7 +113,7 @@ require_native_platform() {
 }
 
 require_image_tag() {
-  [[ -n "$TAG" ]] || die "ref=$REF 没有默认发布镜像。请将 URP_REF 设为已发布的 v* 版本或完整提交号，或明确设置与该源码匹配的 URP_IMAGE_TAG；不会回落到其他通道。"
+  [[ -n "$TAG" ]] || die "ref=$REF 没有默认发布镜像。请将 CERES_REF 设为已发布的 v* 版本或完整提交号，或明确设置与该源码匹配的 CERES_IMAGE_TAG；不会回落到其他通道。"
 }
 
 visibility_help() {
@@ -163,16 +173,16 @@ compose() {
 
 compose_files() {
   local -a files=(-f "$STATE/deploy/docker-compose.sim.yml")
-  if [[ "${URP_GPU:-0}" == "1" && -f "$STATE/deploy/docker-compose.gpu.yml" ]]; then
+  if [[ "${CERES_GPU:-0}" == "1" && -f "$STATE/deploy/docker-compose.gpu.yml" ]]; then
     files+=(-f "$STATE/deploy/docker-compose.gpu.yml")
   fi
-  if [[ "${URP_DISPLAY:-0}" == "1" && -f "$STATE/deploy/docker-compose.display.yml" ]]; then
+  if [[ "${CERES_DISPLAY:-0}" == "1" && -f "$STATE/deploy/docker-compose.display.yml" ]]; then
     files+=(-f "$STATE/deploy/docker-compose.display.yml")
     export DISPLAY="${DISPLAY:-:0}"
   fi
-  if [[ -d "${URP_FUEL_DIR:-$STATE/fuel}/fuel.gazebosim.org" ]]; then
+  if [[ -d "${CERES_FUEL_DIR:-$STATE/fuel}/fuel.gazebosim.org" ]]; then
     files+=(-f "$STATE/deploy/docker-compose.fuel.yml")
-    export URP_FUEL_DIR="${URP_FUEL_DIR:-$STATE/fuel}"
+    export CERES_FUEL_DIR="${CERES_FUEL_DIR:-$STATE/fuel}"
   fi
   docker compose "${files[@]}" "$@"
 }
@@ -244,8 +254,8 @@ docker_up() {
   install_cli
   save_selection
   open_page
-  say "已在后台运行。停止：urp down    状态：urp status    更新：urp update"
-  say "若 shell 找不到 urp，把 ~/.local/bin 加入 PATH。"
+  say "已在后台运行。停止：ceres down    状态：ceres status    更新：ceres update"
+  say "若 shell 找不到 ceres，把 ~/.local/bin 加入 PATH。"
 }
 
 clone_src() {
@@ -267,9 +277,9 @@ clone_src() {
       '!/literature/' \
       '!/materials/' >&2 || return $?
   fi
-  [[ "$(git -C "$src" remote get-url origin)" == "$REPO" ]] || die '现有检出的 origin 与 URP 仓库不一致；不会改写。'
+  [[ "$(git -C "$src" remote get-url origin)" == "$REPO" ]] || die '现有检出的 origin 与 CERES 仓库不一致；不会改写。'
   [[ ! -f "$STATE/source.ref" ]] || IFS= read -r existing_ref < "$STATE/source.ref"
-  if [[ "$existing_ref" != "$REF" || "${URP_UPDATE:-0}" == 1 ]] || ! git -C "$src" rev-parse --verify HEAD >/dev/null 2>&1; then
+  if [[ "$existing_ref" != "$REF" || "${CERES_UPDATE:-0}" == 1 ]] || ! git -C "$src" rev-parse --verify HEAD >/dev/null 2>&1; then
     update_src "$src" || return $?
   fi
   printf '%s\n' "$src"
@@ -296,7 +306,7 @@ native_up() {
   if [[ "$RAW" == "$RAW_ROOT/$REF" ]]; then ASSET_RAW="$RAW_ROOT/$revision"; fi
   [[ ! -f "$STATE/source.setup" ]] || IFS= read -r ready < "$STATE/source.setup"
   say "安装来源：$REF ($revision)；组件：$COMPONENTS"
-  if [[ "$ready" != "$revision $COMPONENTS" || "${URP_UPDATE:-0}" == 1 ]]; then
+  if [[ "$ready" != "$revision $COMPONENTS" || "${CERES_UPDATE:-0}" == 1 ]]; then
     bash "$src/setup/ubuntu/setup.sh" --components "$COMPONENTS"
     printf '%s\n' "$revision $COMPONENTS" > "$STATE/source.setup"
   fi
@@ -318,7 +328,7 @@ route() {
   fi
   case "$cmd" in
     up|update)
-      [[ "$cmd" == update ]] && export URP_UPDATE=1
+      [[ "$cmd" == update ]] && export CERES_UPDATE=1
       if have_docker; then
         docker_up
       elif ubuntu_2204; then
@@ -334,7 +344,7 @@ route() {
       elif ubuntu_2204 && [[ -d "$STATE/src" ]]; then
         bash "$STATE/src/setup/run.sh" lab-stop
       else
-        die "没有找到这一台机器上由 urp 启动的工作台。"
+        die "没有找到这一台机器上由 ceres 启动的工作台。"
       fi
       ;;
     status)
@@ -355,9 +365,9 @@ route() {
         resolve_image_source
         install_cli
         fetch_compose
-        dest="${URP_FUEL_DIR:-$STATE/fuel}"
+        dest="${CERES_FUEL_DIR:-$STATE/fuel}"
         bash "$STATE/deploy/fetch-fuel.sh" "$dest"
-        export URP_FUEL_DIR="$dest"
+        export CERES_FUEL_DIR="$dest"
         if docker image inspect "$SIM_IMAGE" >/dev/null 2>&1 || pull_sim; then
           compose_files up -d --no-build --pull never --remove-orphans
           save_selection
@@ -381,7 +391,7 @@ route() {
       fi
       ;;
     *)
-      die "用法：urp up | down | update | status | fuel"
+      die "用法：ceres up | down | update | status | fuel"
       ;;
   esac
 }

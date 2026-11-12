@@ -8,8 +8,8 @@ import httpx
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab.agent import catalog, llm, providers
-from urp_lab.gateway import Config, create_app
+from ceres_lab.agent import catalog, llm, providers
+from ceres_lab.gateway import Config, create_app
 
 GOOD = 'good-test-key-123456'
 
@@ -75,7 +75,7 @@ def home(tmp_path, monkeypatch, service):
     monkeypatch.setattr(llm, 'CREDENTIALS_PATH', tmp_path / 'credentials.json')
     monkeypatch.setattr(catalog, 'CACHE', tmp_path / 'model-catalog.json')
     monkeypatch.setattr(catalog, '_loaded', None)
-    monkeypatch.delenv('URP_LLM_PROVIDER', raising=False)
+    monkeypatch.delenv('CERES_LLM_PROVIDER', raising=False)
     monkeypatch.delenv('STAND_IN_KEY', raising=False)
     services = {'stand-in': {'id': 'stand-in', 'name': '测试服务', 'kind': 'openai', 'base_url': f'{service.url}/v1', 'env': ['STAND_IN_KEY'], 'doc': None, 'key_page': None,
                              'models': [model('stand-mini', released='2026-03-01'), model('stand-large', released='2026-02-01'),
@@ -287,7 +287,7 @@ def test_refreshing_replaces_the_catalog_and_a_failure_keeps_it(home, service, m
 
 
 def test_no_network_is_touched_unless_the_app_asks_for_it(home, monkeypatch):
-    monkeypatch.delenv('URP_MODELS_REFRESH', raising=False)
+    monkeypatch.delenv('CERES_MODELS_REFRESH', raising=False)
     monkeypatch.setattr(catalog, 'refresh', lambda: pytest.fail('should not fetch'))
     catalog.refresh_in_background()
 
@@ -298,7 +298,7 @@ def test_a_mounted_credentials_file_can_be_read_despite_its_mode(home, monkeypat
     creds.chmod(0o777)
     with pytest.raises(llm.LLMError):
         llm._credentials()
-    monkeypatch.setenv('URP_CREDENTIALS_MOUNTED', '1')
+    monkeypatch.setenv('CERES_CREDENTIALS_MOUNTED', '1')
     assert llm._credentials()['k']['api_key'] == 'abcdefghijkl'
 
 

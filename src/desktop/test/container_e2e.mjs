@@ -1,7 +1,7 @@
 // The container backend with real Docker: the app finds Docker, moves the window into the simulation image, a task runs in
 // Gazebo there with the two-engine comparison at the end, and the app moves back. The model key is a throwaway test value.
-// Usage: PLAYWRIGHT_CORE=<playwright-core> URP_IMAGE_TAG=<tag on this machine> node container_e2e.mjs --exe <app binary> --out /new/absolute/dir
-// Removes nothing: `docker compose -p urp-lab down -v` afterwards clears the test volumes.
+// Usage: PLAYWRIGHT_CORE=<playwright-core> CERES_IMAGE_TAG=<tag on this machine> node container_e2e.mjs --exe <app binary> --out /new/absolute/dir
+// Removes nothing: `docker compose -p ceres-lab down -v` afterwards clears the test volumes.
 import assert from 'node:assert/strict';
 import { execSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, rmSync, statSync, writeFileSync } from 'node:fs';
@@ -15,7 +15,7 @@ const { _electron: electron } = require(process.env.PLAYWRIGHT_CORE || 'playwrig
 const arg = (name) => { const i = process.argv.indexOf(name); return i > 0 ? process.argv[i + 1] : undefined; };
 const exe = arg('--exe');
 const out = arg('--out');
-if (!exe || !out || !out.startsWith('/') || existsSync(out) || !process.env.URP_IMAGE_TAG) throw new Error('需要 --exe、尚不存在的绝对路径 --out 和 URP_IMAGE_TAG');
+if (!exe || !out || !out.startsWith('/') || existsSync(out) || !process.env.CERES_IMAGE_TAG) throw new Error('需要 --exe、尚不存在的绝对路径 --out 和 CERES_IMAGE_TAG');
 mkdirSync(out, { recursive: true });
 
 const KEY = 'stand-in-test-key-0123456789';
@@ -26,9 +26,9 @@ const standIn = createServer((req, res) => {
 await new Promise((ok) => standIn.listen(0, '127.0.0.1', ok));
 
 const home = mkdtempSync(join(tmpdir(), 'desktop-container-'));
-const env = { ...process.env, HOME: home, XDG_CONFIG_HOME: join(home, '.config'), URP_NO_UPDATE: '1', APPIMAGE_EXTRACT_AND_RUN: '1' };
+const env = { ...process.env, HOME: home, XDG_CONFIG_HOME: join(home, '.config'), CERES_NO_UPDATE: '1', APPIMAGE_EXTRACT_AND_RUN: '1' };
 delete env.ELECTRON_RUN_AS_NODE;
-const log = { exe, image: process.env.URP_IMAGE_TAG, started: new Date().toISOString(), steps: [], errors: [] };
+const log = { exe, image: process.env.CERES_IMAGE_TAG, started: new Date().toISOString(), steps: [], errors: [] };
 const step = (name, extra = {}) => { log.steps.push({ name, at: new Date().toISOString(), ...extra }); console.log('✓', name, Object.keys(extra).length ? JSON.stringify(extra) : ''); };
 
 const app = await electron.launch({ executablePath: exe, env, timeout: 90_000 });
@@ -80,7 +80,7 @@ try {
   assert.equal(sims['gazebo.field'], 'ready', JSON.stringify(sims));
   const seen = await api('GET', '/agent/providers');
   assert.equal(seen.selected, 'custom-stand-in/stand-in-large');
-  assert.equal(statSync(join(home, '.config/urp-workbench/credentials.json')).mode & 0o777, 0o600);
+  assert.equal(statSync(join(home, '.config/ceres-workbench/credentials.json')).mode & 0o777, 0o600);
   await win.screenshot({ path: `${out}/02-container.png` });
   step('窗口切到容器，Gazebo 可用，模型连接带了过去', { seconds: (Date.now() - started) / 1000, simulators: sims, selected: seen.selected });
 
@@ -113,7 +113,7 @@ try {
   await waitForApp('native', 180_000);
   assert.match((await api('GET', '/physics/engines')).gazebo_gap, /容器后端/);
   assert.equal((await api('GET', '/agent/providers')).selected, 'custom-stand-in/stand-in-large');
-  const running = execSync('docker ps --filter label=com.docker.compose.project=urp-lab --format "{{.Names}}"').toString().trim();
+  const running = execSync('docker ps --filter label=com.docker.compose.project=ceres-lab --format "{{.Names}}"').toString().trim();
   assert.equal(running, '');
   step('回到内置后端，容器已停止');
   assert.deepEqual(log.errors, []);

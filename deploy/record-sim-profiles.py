@@ -68,7 +68,7 @@ def run(command: list[str], cwd: Path | None = None):
     subprocess.run(command, cwd=cwd or ROOT, check=True)
 
 
-LAPTOP_ROOT = Path('/home/peakpeng/Desktop/URP')
+LAPTOP_ROOT = Path('/home/peakpeng/Desktop/CERES')
 
 
 def require_audited(label: str, built: Path, expected: str):
@@ -118,7 +118,7 @@ def bridge():
         if not executable.is_file():
             raise SystemExit(f'桥接构建没有产生 {executable}')
         # The binary is not the laptop audit. Record it as an image profile.
-        # Startup accepts it only when URP_SIM_PROFILE=image; the laptop default does not set that.
+        # Startup accepts it only when CERES_SIM_PROFILE=image; the laptop default does not set that.
         profile = {
             'role': 'machine',
             'scope': 'image',
@@ -126,11 +126,11 @@ def bridge():
             'system_files': laptop['system_files'],
             'executable_sha256': sha(executable),
             'laptop_executable_sha256': laptop['executable_sha256'],
-            'note': 'Same system libraries as the laptop audit, different binary. Ignored unless URP_SIM_PROFILE=image.',
+            'note': 'Same system libraries as the laptop audit, different binary. Ignored unless CERES_SIM_PROFILE=image.',
         }
         BRIDGE_BUILD.mkdir(parents=True, exist_ok=True)
         (BRIDGE_BUILD / 'profile.json').write_text(json.dumps(profile, indent=2) + '\n')
-        print(f'桥接：已登记镜像指纹 {BRIDGE_BUILD / "profile.json"}（需要 URP_SIM_PROFILE=image）')
+        print(f'桥接：已登记镜像指纹 {BRIDGE_BUILD / "profile.json"}（需要 CERES_SIM_PROFILE=image）')
         return
     run(['bash', str(BRIDGE / 'build.sh')])
     if not executable.is_file():
@@ -161,7 +161,7 @@ def tf():
         out = DEPLOY / 'runtime/tf-repro'
         run(['bash', '-lc', 'set -euo pipefail; set +u; source /opt/ros/humble/setup.bash; set -u; '
              f'cmake -S "{DEPLOY / "tf-repro"}" -B "{out}" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo && '
-             f'cmake --build "{out}" --target urp_tf_buffer'])
+             f'cmake --build "{out}" --target ceres_tf_buffer'])
         built = out / 'liburp_tf_buffer.so'
         if built.is_file() and sha(built) == manifest['candidate_sha256']:
             print('TF 覆盖：系统库与笔记本验收一致，产物哈希相同。')
@@ -173,18 +173,18 @@ def tf():
             'candidate_library': 'runtime/tf-repro/liburp_tf_buffer.so', 'candidate_sha256': sha(built),
             'system_libraries': manifest['system_libraries'],
             'laptop_candidate_sha256': manifest['candidate_sha256'],
-            'note': 'Ignored unless URP_SIM_PROFILE=image.',
+            'note': 'Ignored unless CERES_SIM_PROFILE=image.',
         }
         PROFILES.mkdir(parents=True, exist_ok=True)
         (PROFILES / 'tf.json').write_text(json.dumps(profile, indent=2) + '\n')
-        print(f'TF 覆盖：已登记镜像指纹（需要 URP_SIM_PROFILE=image），哈希 {profile["candidate_sha256"]}')
+        print(f'TF 覆盖：已登记镜像指纹（需要 CERES_SIM_PROFILE=image），哈希 {profile["candidate_sha256"]}')
         return
     if not source.is_file() or sha(source) != manifest['source_sha256']:
         raise SystemExit('TF 覆盖源码与笔记本验收哈希不同，拒绝编译。')
     out = DEPLOY / 'runtime/tf-repro'
     run(['bash', '-lc', 'set -euo pipefail; set +u; source /opt/ros/humble/setup.bash; set -u; '
          f'cmake -S "{DEPLOY / "tf-repro"}" -B "{out}" -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo && '
-         f'cmake --build "{out}" --target urp_tf_buffer'])
+         f'cmake --build "{out}" --target ceres_tf_buffer'])
     built = out / 'liburp_tf_buffer.so'
     if not built.is_file():
         raise SystemExit(f'TF 构建没有产生 {built}')
@@ -224,11 +224,11 @@ def gui():
             'library': manifest['library'], 'library_sha256': sha(library),
             'system_libraries': {key: manifest['files'][key] for key in system_keys},
             'laptop_library_sha256': expected_library,
-            'note': 'Ignored unless URP_SIM_PROFILE=image.',
+            'note': 'Ignored unless CERES_SIM_PROFILE=image.',
         }
         PROFILES.mkdir(parents=True, exist_ok=True)
         (PROFILES / 'gui.json').write_text(json.dumps(profile, indent=2) + '\n')
-        print(f'GUI 覆盖：已登记镜像指纹（需要 URP_SIM_PROFILE=image），哈希 {profile["library_sha256"]}')
+        print(f'GUI 覆盖：已登记镜像指纹（需要 CERES_SIM_PROFILE=image），哈希 {profile["library_sha256"]}')
         return
     profile = {
         'role': 'machine',

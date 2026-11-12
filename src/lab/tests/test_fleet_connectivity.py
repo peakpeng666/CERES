@@ -4,9 +4,9 @@ from copy import deepcopy
 import numpy as np
 import pytest
 
-from urp_lab.scenarios.validate import validate_instance
-from urp_lab.solvers import fleet
-from urp_lab.solvers.fleet_engines import _forbid_unreachable_arcs, _scaled_costs, metaheuristic, ortools_makespan
+from ceres_lab.scenarios.validate import validate_instance
+from ceres_lab.solvers import fleet
+from ceres_lab.solvers.fleet_engines import _forbid_unreachable_arcs, _scaled_costs, metaheuristic, ortools_makespan
 
 pytestmark = pytest.mark.filterwarnings('error::RuntimeWarning')
 ENGINES = [('pyvrp.fleet', 'total_distance'), ('ortools.fleet', 'total_distance'),
@@ -256,7 +256,7 @@ def test_multiple_unused_depots_leave_real_reload_copies_intact(algorithm, objec
 
 def test_unused_original_depots_are_forced_inactive_not_just_optional():
     from ortools.constraint_solver import pywrapcp
-    from urp_lab.solvers.fleet_engines import _disable_unused_depots
+    from ceres_lab.solvers.fleet_engines import _disable_unused_depots
     # Four original depots, two tasks and two separately modelled reload copies.
     manager = pywrapcp.RoutingIndexManager(8, 2, [0, 0], [0, 0])
     routing = pywrapcp.RoutingModel(manager)

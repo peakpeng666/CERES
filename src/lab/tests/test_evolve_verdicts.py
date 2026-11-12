@@ -1,7 +1,7 @@
 """Strict verdicts derived from the fillet batch for solvers that return the rounded path."""
 import json
 
-from urp_lab.evolve import verdicts as V
+from ceres_lab.evolve import verdicts as V
 
 
 def test_strict_from_fillet(tmp_path):

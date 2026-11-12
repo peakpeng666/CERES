@@ -16,7 +16,7 @@ import { ACTOR_LABEL, SOURCE_LABEL, type AgentSession, type ContractCard, type P
 import { useAgent } from './store';
 import s from './agent.module.css';
 
-/** Editable contract fields: kind, options, unit; mirrors urp_lab.agent.contract.FIELDS. */
+/** Editable contract fields: kind, options, unit; mirrors ceres_lab.agent.contract.FIELDS. */
 export const EDITABLE: Record<string, { kind: 'int' | 'number' | 'enum' | 'bool' | 'size' | 'text'; unit?: string; options?: Record<string, string> }> = {
   task_count: { kind: 'int', unit: '个' },
   vehicle_count: { kind: 'int', unit: '台' },

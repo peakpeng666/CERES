@@ -1,7 +1,7 @@
 """Power simulation: exact McNemar + Holm and the field-level resampling contract."""
 import numpy as np
 
-from urp_lab.evolve import power as P
+from ceres_lab.evolve import power as P
 
 
 def test_mcnemar_direction_and_ties():

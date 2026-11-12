@@ -5,10 +5,10 @@ from xml.etree import ElementTree as ET
 import pytest
 from shapely.geometry import LineString, Point
 
-from urp_lab import fieldworld
-from urp_lab.field_traffic import MissionQueue, PARKING_MARGIN_M, separation
+from ceres_lab import fieldworld
+from ceres_lab.field_traffic import MissionQueue, PARKING_MARGIN_M, separation
 from test_backend_integrity import instance
-from urp_lab.solvers import fleet
+from ceres_lab.solvers import fleet
 
 
 def test_parking_outside_mission_and_other_parking_approaches(tmp_path):
@@ -31,7 +31,7 @@ def test_parking_outside_mission_and_other_parking_approaches(tmp_path):
 def test_later_parking_approach_clears_previously_parked_robots():
     # The third approach used to pass 1.6 m from the second parked robot even
     # though the old one-way candidate-position check passed (required > 1.77 m).
-    from urp_lab.scenarios import validate_instance
+    from ceres_lab.scenarios import validate_instance
     inst = validate_instance('fleet_routing', {
         'boundary': [[0, 0], [90, 0], [90, 60], [0, 60]], 'depot': [2.75, 2.75],
         'tasks': [{'id': i + 1, 'xy': xy} for i, xy in enumerate([[82, 6.6], [64, 13.7], [84, 6.8]])],
@@ -81,7 +81,7 @@ def test_synchronous_checker_rejects_missing_or_reversed_time():
 
 
 def test_reported_speed_updates_after_done_and_rejects_invalid_truth():
-    from urp_lab.field_tracking import truth_time
+    from ceres_lab.field_tracking import truth_time
     from test_backend_integrity import driver
     d = driver([])
     assert truth_time(0, None) is None
@@ -100,7 +100,7 @@ def test_reported_speed_updates_after_done_and_rejects_invalid_truth():
 
 
 def test_saved_trajectory_cannot_certify_zero_distance_or_moving_at_finish():
-    from urp_lab.fieldcheck import verify_motion_metrics
+    from ceres_lab.fieldcheck import verify_motion_metrics
     result = {'vehicles': [{'name': 'v', 'distance_m': 2, 'speed': 0}],
               'trails': {'v': [[0, 0, 0, 0], [1, 1, 0, 0], [2, 2, 0, 0]]},
               'metrics': {'total_distance_m': 2}}

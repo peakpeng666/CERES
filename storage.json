@@ -23,11 +23,11 @@
   "asset_inventory": "docs/assets/inventory.json",
   "copy_registry": "docs/assets/copies.json",
   "runtime_data": {
-    "schema": "urp.runtime-bundle/1",
+    "schema": "ceres.runtime-bundle/1",
     "identity": "dataset.json",
-    "location_environment": "URP_DATA_HOME",
+    "location_environment": "CERES_DATA_HOME",
     "raw_data_policy": "Local/private storage; never automatically uploaded. GitHub keeps source, checks, hashes and recovery receipts.",
-    "transfer_cli": "python -m urp_lab data export|verify|restore|recover",
+    "transfer_cli": "python -m ceres_lab data export|verify|restore|recover",
     "restore_policy": "Verify all hashes and SQLite metadata; restore only into a new directory; preserve the original runtime."
   }
 }

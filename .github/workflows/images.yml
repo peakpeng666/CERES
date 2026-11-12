@@ -62,7 +62,7 @@ jobs:
             !papers/**
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-      - name: Build and push urp-bench
+      - name: Build and push ceres-bench
         id: publish
         run: bash deploy/publish-image.sh bench deploy/Dockerfile
       - name: Retain bench image acceptance evidence
@@ -103,7 +103,7 @@ jobs:
             !papers/**
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
-      - name: Build and push urp-sim
+      - name: Build and push ceres-sim
         id: publish
         run: bash deploy/publish-image.sh sim deploy/Dockerfile.simulation
       - name: Retain sim image acceptance evidence
@@ -142,7 +142,7 @@ jobs:
     if: ${{ always() && needs.bench.result == 'success' && needs.sim.result == 'success' && needs.verify-public-pull.result == 'success' && (inputs.publish_channels || (github.event_name == 'push' && github.ref == 'refs/heads/main')) && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) }}
     # Constant across direct and reusable callers, branches, tags, and reruns.
     concurrency:
-      group: urp-image-channel-promotion
+      group: ceres-image-channel-promotion
       cancel-in-progress: false
     runs-on: ubuntu-22.04
     timeout-minutes: 20

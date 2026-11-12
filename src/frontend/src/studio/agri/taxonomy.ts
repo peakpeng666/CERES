@@ -217,7 +217,7 @@ export interface BuilderParam {
   help?: string;
 }
 
-/** 构建产物：与 urp_lab.compose 的输出契约镜像对齐。 */
+/** 构建产物：与 ceres_lab.compose 的输出契约镜像对齐。 */
 export interface BuiltScenario {
   id: string;
   title: string;

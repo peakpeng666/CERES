@@ -6,8 +6,8 @@ import json
 
 import pytest
 from fastapi.testclient import TestClient
-from urp_lab import gateway
-from urp_lab.export import export_run
+from ceres_lab import gateway
+from ceres_lab.export import export_run
 
 
 def fleet():

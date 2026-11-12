@@ -39,7 +39,7 @@ describe('学术与内部证据来源回归', () => {
       expect(r.repo_note).toBeTruthy();
       expect(r.url).toContain('/blob/85b085fcdd9429deeb8c11708af1851384842893/src/lab/');
     }
-    expect(REF_MAP.get('urp_p510')?.title).toContain('非 P510 实验记录');
+    expect(REF_MAP.get('ceres_p510')?.title).toContain('非 P510 实验记录');
   });
 });
 

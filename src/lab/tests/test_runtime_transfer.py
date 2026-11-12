@@ -8,11 +8,11 @@ import zipfile
 
 import pytest
 
-from urp_lab.runtime_transfer import TransferError, canonical, database_info, export_bundle, restore_bundle, verify_bundle
-from urp_lab.session_recovery import recover_exports
-from urp_lab.store import Store
-from urp_lab.agent.session import AgentStore, new_session
-from urp_lab.agent.runner import AgentRunner, RunnerError
+from ceres_lab.runtime_transfer import TransferError, canonical, database_info, export_bundle, restore_bundle, verify_bundle
+from ceres_lab.session_recovery import recover_exports
+from ceres_lab.store import Store
+from ceres_lab.agent.session import AgentStore, new_session
+from ceres_lab.agent.runner import AgentRunner, RunnerError
 
 
 def test_sqlite_wal_raw_failures_and_context_survive_relocation(tmp_path):
@@ -94,7 +94,7 @@ def test_invalid_bundle_never_creates_restore_destination(tmp_path, change):
             if change == 'corrupt' and item.filename == 'runtime/record.json':
                 raw = b'X' * len(raw)
             if change == 'schema' and item.filename == 'manifest.json':
-                value = json.loads(raw); value['schema'] = 'urp.runtime-bundle/future'; raw = canonical(value)
+                value = json.loads(raw); value['schema'] = 'ceres.runtime-bundle/future'; raw = canonical(value)
             dst.writestr(item, raw)
         if change == 'traversal':
             dst.writestr('runtime/../../escape', b'bad')

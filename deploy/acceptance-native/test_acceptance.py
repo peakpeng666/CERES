@@ -129,7 +129,7 @@ class AcceptanceTests(unittest.TestCase):
 
     def test_real_process_marker_cleanup(self):
         token=secrets.token_hex(24)
-        p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'],env=dict(os.environ,URP_ACCEPTANCE_OWNER=token))
+        p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)'],env=dict(os.environ,CERES_ACCEPTANCE_OWNER=token))
         try:
             self.assertIn(p.pid,[pid for pid,_ in owned(token)])
             self.assertEqual(owned('unrelated-'+token),[])

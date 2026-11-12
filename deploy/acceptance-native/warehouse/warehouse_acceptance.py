@@ -177,11 +177,11 @@ def adapter_identity():
 def download_archive(private):
     # Existing verified public Release asset, not a newly guessed release/tag.
     req=urllib.request.Request('https://api.github.com/repos/peakpeng666/URP/releases/assets/653624946',
-                               headers={'Accept':'application/vnd.github+json','User-Agent':'URP-isolated-acceptance'})
+                               headers={'Accept':'application/vnd.github+json','User-Agent':'CERES-isolated-acceptance'})
     with urllib.request.urlopen(req,timeout=60) as f:meta=json.load(f)
     if meta.get('id')!=653624946 or meta.get('name')!='deployment-acceptance.tar.zst' or meta.get('size')!=ARCHIVE_SIZE:raise ValueError('historical_asset_metadata_mismatch')
     url=meta.get('browser_download_url');parsed=urlsplit(url or '')
-    if parsed.scheme!='https' or parsed.hostname!='github.com' or not parsed.path.startswith('/peakpeng666/URP/releases/download/'):raise ValueError('historical_asset_url_rejected')
+    if parsed.scheme!='https' or parsed.hostname!='github.com' or not parsed.path.startswith('/peakpeng666/CERES/releases/download/'):raise ValueError('historical_asset_url_rejected')
     target=private/'historical.tar.zst';count=0
     with urllib.request.urlopen(url,timeout=120) as response,target.open('xb') as stream:
         while True:
@@ -244,18 +244,18 @@ def execute(a, *, lifecycle_only=False, lifecycle_driver=None, summary_project=N
         mark('source_verification')
         verify_source(source)
         if Path(sys.prefix).resolve()!=(source/'src/lab/.venv').resolve():raise ValueError('wrong_checker_interpreter')
-        env=dict(os.environ,URP_LAB_RUNTIME=str(runtime),URP_ACCEPTANCE_OWNER=token,ROS_LOCALHOST_ONLY='1',
-                 URP_ROS_DOMAIN_ID='147',ROS_DOMAIN_ID='147',URP_BIND_HOST='127.0.0.1',PYTHONPATH=str(source/'src/lab'))
-        if any(key in env for key in ('URP_TF_FIX','URP_GUI_FIX','URP_BRIDGE_FIX','URP_ROS_MAPS')):raise ValueError('runtime_override_forbidden')
-        os.environ['URP_LAB_RUNTIME']=str(runtime)
+        env=dict(os.environ,CERES_LAB_RUNTIME=str(runtime),CERES_ACCEPTANCE_OWNER=token,ROS_LOCALHOST_ONLY='1',
+                 CERES_ROS_DOMAIN_ID='147',ROS_DOMAIN_ID='147',CERES_BIND_HOST='127.0.0.1',PYTHONPATH=str(source/'src/lab'))
+        if any(key in env for key in ('CERES_TF_FIX','CERES_GUI_FIX','CERES_BRIDGE_FIX','CERES_ROS_MAPS')):raise ValueError('runtime_override_forbidden')
+        os.environ['CERES_LAB_RUNTIME']=str(runtime)
         sys.path.insert(0,str(source/'src/lab'));sys.path.insert(0,str(source/'src/research/src'))
-        from urp_lab.jobs import execution_manifest
-        from urp_lab.solvers import map_check
-        from urp_lab.simplan import to_sim_plan
-        from urp_lab.scenarios import maps
-        from urp_lab.worlds import inspect_world
-        from urp_lab.store import Store
-        from urp_research.turn_modes.checker import check
+        from ceres_lab.jobs import execution_manifest
+        from ceres_lab.solvers import map_check
+        from ceres_lab.simplan import to_sim_plan
+        from ceres_lab.scenarios import maps
+        from ceres_lab.worlds import inspect_world
+        from ceres_lab.store import Store
+        from ceres_research.turn_modes.checker import check
         # No directory override in production CLI. Local JSON fixtures are test-only.
         mark('historical_inputs')
         inputs=from_archive(a.archive or download_archive(private))
@@ -323,9 +323,9 @@ def execute(a, *, lifecycle_only=False, lifecycle_driver=None, summary_project=N
         with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
         base=f'http://127.0.0.1:{port}'
         with (private/'gateway.log').open('w') as log:
-            gateway=subprocess.Popen([str(source/'src/lab/.venv/bin/python'),'-m','urp_lab','serve','--host','127.0.0.1','--port',str(port),'--no-archive'],
+            gateway=subprocess.Popen([str(source/'src/lab/.venv/bin/python'),'-m','ceres_lab','serve','--host','127.0.0.1','--port',str(port),'--no-archive'],
                          cwd=source/'src/lab',env=env,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
-        if env.get('URP_WAREHOUSE_STARTUP_OBSERVER')=='1' and env.get('URP_WAREHOUSE_STARTUP_OBSERVER_DELAY_S')=='30':
+        if env.get('CERES_WAREHOUSE_STARTUP_OBSERVER')=='1' and env.get('CERES_WAREHOUSE_STARTUP_OBSERVER_DELAY_S')=='30':
             try:process_observer=ProcessObserver(gateway)
             except BaseException as exc:
                 if is_cancellation(exc):raise
@@ -345,7 +345,7 @@ def execute(a, *, lifecycle_only=False, lifecycle_driver=None, summary_project=N
         diagnostic['harness']['gateway_record_verified']=True
         mark('lifecycle')
         api_call=lambda method,path,data=None,timeout=5:api(base,method,path,data,timeout)
-        if env.get('URP_WAREHOUSE_STARTUP_OBSERVER')=='1':
+        if env.get('CERES_WAREHOUSE_STARTUP_OBSERVER')=='1':
             try:
                 observer=Observer(env,private,source)
                 api_call=observer.wrap(api_call)

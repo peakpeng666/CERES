@@ -2,10 +2,10 @@ import math
 
 import pytest
 
-from urp_lab import analysis
-from urp_lab.planning import requires_coverage_recheck
-from urp_lab.simplan import NotSimulatable, to_sim_plan
-from urp_lab.solvers import coverage, f2c_coverage
+from ceres_lab import analysis
+from ceres_lab.planning import requires_coverage_recheck
+from ceres_lab.simplan import NotSimulatable, to_sim_plan
+from ceres_lab.solvers import coverage, f2c_coverage
 
 
 def instance():

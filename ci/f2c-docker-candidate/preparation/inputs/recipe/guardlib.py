@@ -177,7 +177,7 @@ def verify_trees(root, prefix, scopes, required, candidate):
 PROTOCOL = 'urp.f2c.docker-engine-netnone/1'
 APPLICATION_COMMIT = '3acf840d1a0c16ab1cfcca15744e4ea6609ddb35'
 APPLICATION_FILES = {'application/src/lab/pyproject.toml', 'application/src/lab/uv.lock'}
-PYTHON_PREFIX = pathlib.Path('/opt/urp-python')
+PYTHON_PREFIX = pathlib.Path('/opt/ceres-python')
 PYTHON_EXECUTABLE = PYTHON_PREFIX / 'bin/python3.12'
 LAYOUT = {'inputs': '/inputs', 'control': '/control', 'output': '/out',
           'build': '/out/build', 'python_prefix': str(PYTHON_PREFIX),
@@ -227,7 +227,7 @@ def require_complete(lock):
     require(isinstance(approvals.get('evidence'), list) and approvals['evidence'], 'Missing review evidence')
 
 
-BOOTSTRAP_PATHS = {'python': '/opt/urp-python/bin/python3.12', 'uv': '/opt/urp-uv/uv'}
+BOOTSTRAP_PATHS = {'python': '/opt/ceres-python/bin/python3.12', 'uv': '/opt/ceres-uv/uv'}
 BOOTSTRAP_PROVENANCE = {
     'python': {'kind': 'uv-pinned-download',
                'archive_sha256': '506191be3ee7bd190a8834dcdc1b3bc70aab50608deccc711935aa007239cabd',

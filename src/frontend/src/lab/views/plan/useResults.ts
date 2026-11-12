@@ -19,7 +19,7 @@ type Stored = Pick<ResultEntry, 'runId' | 'algorithmId' | 'key' | 'visible' | 'c
 
 const MAX_ENTRIES = 16;
 const EMPTY: ResultEntry[] = [];
-const storageKey = (scenarioId: string) => `urp-lab:plan:results:${scenarioId}`;
+const storageKey = (scenarioId: string) => `ceres-lab:plan:results:${scenarioId}`;
 
 function load(scenarioId: string): { entries: Stored[]; shas: [string, string][] } {
   try {

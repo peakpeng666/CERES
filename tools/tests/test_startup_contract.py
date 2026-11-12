@@ -21,7 +21,7 @@ class StartupContractTests(unittest.TestCase):
             shutil.copyfile(ROOT / name, dest)
         self.events = self.root / 'events'
         self.env = {**os.environ, 'EVENTS': str(self.events), 'BUILD_EXIT': '0'}
-        self.env.pop('URP_PYTHON', None)
+        self.env.pop('CERES_PYTHON', None)
         self.executable('.venv/bin/python', '#!/bin/sh\nprintf "root-python %s\\n" "$*" >> "$EVENTS"\n')
         self.executable('src/lab/.venv/bin/python', '#!/bin/sh\necho gateway >> "$EVENTS"\n')
         self.executable('bin/node', '#!/bin/sh\nexit 0\n')
@@ -49,20 +49,20 @@ class StartupContractTests(unittest.TestCase):
             result = self.run_command('setup/run.sh', command, '--help')
             self.assertEqual(result.returncode, 0, result.stderr)
         events = self.events.read_text()
-        self.assertIn('root-python src/research/scripts/urp.py --help', events)
+        self.assertIn('root-python src/research/scripts/ceres.py --help', events)
         self.assertIn('root-python setup/2026-10-15/deployment/benchmark.py solver', events)
         self.assertFalse((self.root / 'src/research/.venv').exists())
 
     def test_python_resolver_explicit_relative_and_path_override(self):
         for override in ('./.venv/bin/python', 'node'):
-            self.env['URP_PYTHON'] = override
+            self.env['CERES_PYTHON'] = override
             result = self.run_command('src/start.sh', 'python-path')
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertTrue(Path(result.stdout.strip()).is_absolute())
-        self.env['URP_PYTHON'] = '/urp-nonexistent/python'
+        self.env['CERES_PYTHON'] = '/ceres-nonexistent/python'
         result = self.run_command('src/start.sh', 'python-path')
         self.assertNotEqual(result.returncode, 0)
-        self.assertIn('/urp-nonexistent/python', result.stderr)
+        self.assertIn('/ceres-nonexistent/python', result.stderr)
 
     def test_all_build_inputs_and_source_deletion_rebuild_even_with_old_mtimes(self):
         for name in ('package-lock.json', 'package.json', 'vite.config.ts', 'tsconfig.json',

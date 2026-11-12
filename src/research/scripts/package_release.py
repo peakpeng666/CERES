@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 TOP = {"README.md", ".gitignore", "requirements.txt", "pyproject.toml"}
 DIRECTORIES = {"src", "tests", "scripts", "configs", "docs"}
 ALLOWED_SUFFIXES = {".py", ".md", ".json", ".txt", ".toml"}
-ARCHIVE_NAME = "urp-research-v0.2.0-rc.1-source.zip"
+ARCHIVE_NAME = "ceres-research-v0.2.0-rc.1-source.zip"
 RECEIPT_NAME = "source_package_receipt_v0_2_0_rc1.json"
 
 
@@ -69,8 +69,8 @@ def build_release():
                 identity = os.fstat(receipt_stream.fileno())
                 owned[receipt_path] = (identity.st_dev, identity.st_ino)
                 for name in manifest:
-                    bundle.write(ROOT / name, "urp-research/" + name)
-                bundle.writestr("urp-research/SOURCE_PACKAGE_MANIFEST.json", json.dumps(manifest, indent=2) + "\n")
+                    bundle.write(ROOT / name, "ceres-research/" + name)
+                bundle.writestr("ceres-research/SOURCE_PACKAGE_MANIFEST.json", json.dumps(manifest, indent=2) + "\n")
                 bundle.close()  # Finish the ZIP central directory before hashing.
                 receipt = {"filename": destination.name, "version": "0.2.0rc1",
                            "bytes": destination.stat().st_size,

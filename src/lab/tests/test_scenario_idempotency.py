@@ -2,8 +2,8 @@
 import copy
 import pytest
 from fastapi.testclient import TestClient
-from urp_lab import paths, scenarios
-from urp_lab.gateway import Config, create_app
+from ceres_lab import paths, scenarios
+from ceres_lab.gateway import Config, create_app
 
 
 def payload():

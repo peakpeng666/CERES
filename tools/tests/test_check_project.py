@@ -166,10 +166,10 @@ class GateLifecycleTests(unittest.TestCase):
         old_report.write_text('retain historical integration evidence')
         before = {p.name: p.read_bytes() for p in archive.iterdir()}
         overrides = {name: str(old_report) for name in check_project.REPORT_ENVIRONMENT}
-        overrides['URP_CVRPLIB_TEST_LOG_DIR'] = str(archive)
+        overrides['CERES_CVRPLIB_TEST_LOG_DIR'] = str(archive)
         body = '''import os
 from pathlib import Path
-directory=os.environ.get("URP_CVRPLIB_TEST_LOG_DIR")
+directory=os.environ.get("CERES_CVRPLIB_TEST_LOG_DIR")
 if directory:
  root=Path(directory);root.mkdir(parents=True,exist_ok=True)
  (root/"test_fault.json").write_text("new synthetic research evidence")

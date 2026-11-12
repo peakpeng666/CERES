@@ -7,7 +7,7 @@ cd "$root"
 # shellcheck source=env.sh
 source "$root/setup/ubuntu/env.sh"
 
-components="${URP_COMPONENTS:-full}"
+components="${CERES_COMPONENTS:-full}"
 f2c_mode=""
 usage() {
   cat <<'EOF'
@@ -19,7 +19,7 @@ Usage: bash setup/ubuntu/setup.sh [--components workbench|research|full] [--fiel
   required:  obtain the pinned Release wheel and verify its dynamic load.
   skip:      do not install Fields2Cover; allowed only for non-full components.
 Full means the workbench and CVRP baselines, NOT all historical NAS environments.
-Fuel assets are a separate explicit step (urp fuel); historical snapshots are not installed.
+Fuel assets are a separate explicit step (ceres fuel); historical snapshots are not installed.
 EOF
 }
 while (( $# )); do

@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from urp_lab import time_windows
+from ceres_lab import time_windows
 
 
 @pytest.fixture(scope='module')

@@ -7,11 +7,11 @@ import sys
 
 import pytest
 
-from urp_lab.gateway import Config, create_app
-from urp_lab import jobs
-from urp_lab.scenarios.benchmark import cvrp_scenarios
-from urp_lab.solvers import catalog
-from urp_lab.store import Store
+from ceres_lab.gateway import Config, create_app
+from ceres_lab import jobs
+from ceres_lab.scenarios.benchmark import cvrp_scenarios
+from ceres_lab.solvers import catalog
+from ceres_lab.store import Store
 
 
 def test_second_gateway_cannot_recover_live_run_and_shutdown_releases_lock(tmp_path):
@@ -26,7 +26,7 @@ def test_second_gateway_cannot_recover_live_run_and_shutdown_releases_lock(tmp_p
 
     # The same owner rule must apply across processes, not only in one interpreter.
     probe = subprocess.run(
-        [sys.executable, '-c', 'from urp_lab.store import Store; import sys; '
+        [sys.executable, '-c', 'from ceres_lab.store import Store; import sys; '
          'Store(sys.argv[1]); print("unexpected owner")', str(tmp_path / 'lab.sqlite3')],
         capture_output=True, text=True, check=False)
     assert probe.returncode != 0 and '已有任务执行服务' in probe.stderr
@@ -72,7 +72,7 @@ def test_queue_rejects_dependency_changed_after_submission(tmp_path, monkeypatch
         assert queued['reproducibility']['source_sha256'][str(extra)]
         assert 'src/lab/models/cvrp-knn-v1.json' in queued['reproducibility']['source_sha256']
         assert 'src/frontend/core/routing/cvrp-solver.js' in queued['reproducibility']['source_sha256']
-        assert 'src/research/src/urp_research/cvrp_selection/experiment.py' in queued['reproducibility']['source_sha256']
+        assert 'src/research/src/ceres_research/cvrp_selection/experiment.py' in queued['reproducibility']['source_sha256']
         assert queued['reproducibility']['worker_environment_verified'] is False
         assert queued['reproducibility']['packages'] is None
         extra.write_text('VERSION = 2\n')

@@ -83,16 +83,16 @@ class RunnerTests(unittest.TestCase):
             p=pathlib.Path(tmp)/'log'
             cases={'apt_dependency_conflict':'The following packages have unmet dependencies:', 'apt_libunwind_conflict':'libunwind-14-dev : Conflicts: libunwind-dev but it is to be installed', 'apt_signature':'NO_PUBKEY PRIVATE_KEY_ID','apt_source_conflict':'Conflicting values set for option Signed-By PRIVATE_URL','apt_release':'does not have a Release file','apt_hook':'Problem executing scripts APT::Update::Post-Invoke','apt_lock':'Could not get lock PRIVATE_PATH','apt_package_missing':'E: Unable to locate package PRIVATE_NAME'}
             for expected,text in cases.items():
-                p.write_text('+URP_SETUP sudo apt-get update\n'+text)
+                p.write_text('+CERES_SETUP sudo apt-get update\n'+text)
                 self.assertEqual(classify(p,100),expected)
                 self.assertEqual(installation_step(p),'apt_update')
-            p.write_text('+URP_SETUP sudo apt-get update\n+URP_SETUP sudo DEBIAN_FRONTEND=noninteractive apt-get install -y PRIVATE_PACKAGE\n')
+            p.write_text('+CERES_SETUP sudo apt-get update\n+CERES_SETUP sudo DEBIAN_FRONTEND=noninteractive apt-get install -y PRIVATE_PACKAGE\n')
             self.assertEqual(installation_step(p),'apt_install')
             p.write_text('libunwind-14-dev libunwind-dev\nUnable to correct problems, you have held broken packages.')
             self.assertEqual(classify(p,100),'apt_dependency_conflict')
             p.write_text('Broken libunwind-14-dev:amd64 Conflicts on libunwind-dev:amd64')
             self.assertEqual(classify(p,100),'apt_libunwind_conflict')
-            p.write_text('+URP_SETUP sudo apt-get update\n+URP_SETUP uv sync --locked\n')
+            p.write_text('+CERES_SETUP sudo apt-get update\n+CERES_SETUP uv sync --locked\n')
             self.assertEqual(installation_step(p),'other')
 
 if __name__=='__main__':unittest.main()
@@ -103,11 +103,11 @@ class RuntimeProfileTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=pathlib.Path(tmp);env={}
             select_runtime_profile(root,env)
-            self.assertNotIn('URP_SIM_PROFILE',env)
+            self.assertNotIn('CERES_SIM_PROFILE',env)
             profile=root/'src/lab/runtime/native/bridge/profile.json'
             profile.parent.mkdir(parents=True);profile.write_text('{}')
             select_runtime_profile(root,env)
-            self.assertEqual(env['URP_SIM_PROFILE'],'image')
+            self.assertEqual(env['CERES_SIM_PROFILE'],'image')
 
 class InstallationProgressTests(unittest.TestCase):
     def test_fixed_phase_reducer_and_private_output(self):
@@ -115,30 +115,30 @@ class InstallationProgressTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             p=pathlib.Path(tmp)/'trace'
             cases={
-                'source_identity':'URP_INSTALL_PHASE source_identity',
-                'registry_check':'URP_INSTALL_PHASE registry_check',
-                'setup':'URP_INSTALL_PHASE setup',
-                'apt_update':'+URP_SETUP sudo apt-get update',
-                'apt_install':'+URP_SETUP sudo apt-get install -y PRIVATE_PACKAGE',
-                'uv':'++URP_SETUP uv sync --locked',
-                'node':'+URP_SETUP curl https://nodejs.org/dist/PRIVATE_ARCHIVE',
-                'npm':'+URP_SETUP npm ci',
-                'native':'+URP_SETUP bash src/lab/ros/native/install-ros-extras.sh',
-                'runtime_check':'+URP_SETUP python3 deploy/check-runtime.py --output PRIVATE_PATH',
-                'apt_diagnostic':'URP_INSTALL_PHASE apt_diagnostic',
-                'apt_repair':'URP_INSTALL_PHASE apt_repair',
-                'complete':'URP_INSTALL_PHASE complete',
+                'source_identity':'CERES_INSTALL_PHASE source_identity',
+                'registry_check':'CERES_INSTALL_PHASE registry_check',
+                'setup':'CERES_INSTALL_PHASE setup',
+                'apt_update':'+CERES_SETUP sudo apt-get update',
+                'apt_install':'+CERES_SETUP sudo apt-get install -y PRIVATE_PACKAGE',
+                'uv':'++CERES_SETUP uv sync --locked',
+                'node':'+CERES_SETUP curl https://nodejs.org/dist/PRIVATE_ARCHIVE',
+                'npm':'+CERES_SETUP npm ci',
+                'native':'+CERES_SETUP bash src/lab/ros/native/install-ros-extras.sh',
+                'runtime_check':'+CERES_SETUP python3 deploy/check-runtime.py --output PRIVATE_PATH',
+                'apt_diagnostic':'CERES_INSTALL_PHASE apt_diagnostic',
+                'apt_repair':'CERES_INSTALL_PHASE apt_repair',
+                'complete':'CERES_INSTALL_PHASE complete',
             }
             for phase,line in cases.items():
                 p.write_text(line+'\nPRIVATE_MESSAGE\nURP_INSTALL_PHASE PRIVATE_SECRET\n')
                 self.assertEqual(installation_progress(p),phase)
                 self.assertIn(installation_progress(p),INSTALL_PHASES)
-            p.write_text('URP_INSTALL_PHASE registry_check\n')
+            p.write_text('CERES_INSTALL_PHASE registry_check\n')
             self.assertEqual(installation_step(p),'registry_check')
             link=p.with_name('link');link.symlink_to(p)
             self.assertEqual(installation_progress(link),'unknown')
             self.assertEqual(installation_progress(p.with_name('missing')),'unknown')
-            p.write_text('URP_INSTALL_PHASE complete PRIVATE_SUFFIX\n')
+            p.write_text('CERES_INSTALL_PHASE complete PRIVATE_SUFFIX\n')
             self.assertEqual(installation_progress(p),'unknown')
 
     def test_real_wrapper_separates_trace_from_large_package_output(self):
@@ -153,9 +153,9 @@ class InstallationProgressTests(unittest.TestCase):
             result=subprocess.run(['bash',str(pathlib.Path(__file__).with_name('install.sh').resolve()),str(source),str(private)],env=dict(os.environ,PATH=str(bin_dir)+':'+os.environ['PATH']),capture_output=True,timeout=10)
             self.assertEqual(result.returncode,7)
             self.assertGreater(len(result.stdout),LIMIT)
-            self.assertNotIn(b'URP_SETUP',result.stdout+result.stderr)
+            self.assertNotIn(b'CERES_SETUP',result.stdout+result.stderr)
             trace=private/'installation-trace.log'
-            self.assertIn('URP_INSTALL_PHASE registry_check',trace.read_text())
+            self.assertIn('CERES_INSTALL_PHASE registry_check',trace.read_text())
             self.assertEqual(installation_progress(trace),'uv')
 
     def test_live_progress_reports_phase_without_raw_trace(self):
@@ -163,7 +163,7 @@ class InstallationProgressTests(unittest.TestCase):
             root=pathlib.Path(tmp);script=root/'run.py'
             original=pathlib.Path(__file__).with_name('run.py').read_text()
             script.write_text(original.replace('time.monotonic()+120','time.monotonic()+.1'))
-            (root/'install.sh').write_text('#!/bin/bash\nprintf "URP_INSTALL_PHASE registry_check\\nPRIVATE_MARKER\\n" > "$2/installation-trace.log"\nsleep 1.5\nexit 7\n')
+            (root/'install.sh').write_text('#!/bin/bash\nprintf "CERES_INSTALL_PHASE registry_check\\nPRIVATE_MARKER\\n" > "$2/installation-trace.log"\nsleep 1.5\nexit 7\n')
             result=subprocess.run([sys.executable,str(script),'--source',str(root),'--harness',str(root),'--private-dir',str(root/'private'),'--harness-sha','a'*40],capture_output=True,text=True,timeout=10)
             self.assertEqual(result.returncode,1)
             self.assertNotIn('PRIVATE_MARKER',result.stdout+result.stderr)
@@ -180,9 +180,9 @@ class AptOutputObservationTests(unittest.TestCase):
         from runner.run import installation_progress
         with tempfile.TemporaryDirectory() as tmp:
             p=pathlib.Path(tmp)/'trace'
-            p.write_text('+URP_SETUP sudo apt-get update\n')
+            p.write_text('+CERES_SETUP sudo apt-get update\n')
             self.assertEqual(installation_progress(p),'apt_update')
-            with p.open('a') as stream:stream.write('+URP_SETUP sudo DEBIAN_FRONTEND=noninteractive apt-get install -y PRIVATE\n')
+            with p.open('a') as stream:stream.write('+CERES_SETUP sudo DEBIAN_FRONTEND=noninteractive apt-get install -y PRIVATE\n')
             self.assertEqual(installation_progress(p),'apt_install')
 
     def test_counts_only_new_output_and_never_returns_private_text(self):
@@ -241,7 +241,7 @@ class InstallationBoundaryTests(unittest.TestCase):
         from runner.run import installation_trace_state
         with tempfile.TemporaryDirectory() as tmp:
             p=pathlib.Path(tmp)/'trace'
-            line='+URP_SETUP sudo apt-get update\n'
+            line='+CERES_SETUP sudo apt-get update\n'
             p.write_text(line)
             first=installation_trace_state(p)
             with p.open('a') as stream:stream.write(line)

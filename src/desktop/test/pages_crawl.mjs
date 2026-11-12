@@ -1,7 +1,7 @@
 // Opens primary routes of a running backend and records render failures, script errors and 5xx
 // answers. Run it against a backend on a machine without ROS, where a page that assumes ROS shows up here.
 // Optional --cdp http://127.0.0.1:42873 checks the actual open Electron page; --screenshots failed saves only failures.
-// Usage: PLAYWRIGHT_CORE=<playwright-core> [URP_CHROMIUM=<chrome>] node pages_crawl.mjs --url http://127.0.0.1:4251 --out /new/absolute/dir
+// Usage: PLAYWRIGHT_CORE=<playwright-core> [CERES_CHROMIUM=<chrome>] node pages_crawl.mjs --url http://127.0.0.1:4251 --out /new/absolute/dir
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 
@@ -20,7 +20,7 @@ const PAGES = ['#/agent', '#/field', '#/field/machines', '#/field/coverage', '#/
   '#/library/references', '#/archive', '#/bpp', '#/samples', '#/replay', '#/risk', '#/evidence', '#/system', '#/system/models', '#/system/capabilities', '#/system/data', '#/system/tools', '#/system/evals',
   '#/system/services', '#/system/logs', '#/system/desktop'];
 
-const browser = cdp ? await chromium.connectOverCDP(cdp) : await chromium.launch({ headless: true, executablePath: process.env.URP_CHROMIUM || undefined });
+const browser = cdp ? await chromium.connectOverCDP(cdp) : await chromium.launch({ headless: true, executablePath: process.env.CERES_CHROMIUM || undefined });
 const page = cdp ? browser.contexts()[0].pages().find((p) => p.url().startsWith(base))
   : await (await browser.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
 if (!page) throw new Error('CDP 中没有指定 Lab 页面');

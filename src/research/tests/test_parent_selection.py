@@ -3,7 +3,7 @@ import copy
 from fractions import Fraction
 import unittest
 
-from urp_research import parent_selection as replay
+from ceres_research import parent_selection as replay
 
 
 def candidate(name, bins=(2, 3), fitness=Fraction(3, 4), length=20):

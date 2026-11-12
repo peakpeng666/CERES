@@ -52,7 +52,7 @@ let parseStl: (bytes: ArrayBuffer | Uint8Array) => { isMesh: boolean; geometry: 
 beforeAll(() => {
   // Execute the actual shipped Transport, without loading the WebGL renderer in Node.
   const path = new URL('../../../node_modules/gzweb/dist/gzweb.module.js', import.meta.url);
-  const source = readFileSync(process.env.URP_GZWEB_TEST_DISTRIBUTION ?? path, 'utf8');
+  const source = readFileSync(process.env.CERES_GZWEB_TEST_DISTRIBUTION ?? path, 'utf8');
   const start = source.indexOf('class Transport {');
   const end = source.indexOf('\nclass ', start + 1);
   const requireGz = createRequire(path);

@@ -1,8 +1,8 @@
 """No host dataset reads and no token-prefix bypass in the offline integration."""
 import pytest
 
-from urp_lab.evolve import instances
-from urp_lab.library import fields
+from ceres_lab.evolve import instances
+from ceres_lab.library import fields
 
 
 def test_field_cache_is_fresh_empty_and_does_not_project_geometry(tmp_path, monkeypatch):

@@ -4,7 +4,7 @@ import math
 import numpy as np
 import pytest
 
-from urp_lab.evolve import dynamic as Y
+from ceres_lab.evolve import dynamic as Y
 
 
 def _stream(n=12, K=2, seed=0, horizon=600.0):

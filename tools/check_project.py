@@ -17,7 +17,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 UNITTEST_SUMMARY = re.compile(r'^Ran (\d+) tests? in [^\r\n]+$', re.MULTILINE)
 REPORT_ENVIRONMENT = (
-    'URP_CVRPLIB_TEST_LOG_DIR', 'ROUTE_SCENE_INTEGRATION_REPORT',
+    'CERES_CVRPLIB_TEST_LOG_DIR', 'ROUTE_SCENE_INTEGRATION_REPORT',
     'ROUTE_INTEGRATION_REPORT', 'MATURE_INTEGRATION_REPORT', 'PUBLIC_INTEGRATION_REPORT',
     'ROUTE_INTEGRATION_DB', 'MATURE_INTEGRATION_DB',
 )
@@ -160,13 +160,13 @@ def gate_environment(name, output):
     for variable in REPORT_ENVIRONMENT:
         env.pop(variable, None)
     if name == 'research':
-        env['URP_CVRPLIB_TEST_LOG_DIR'] = str(output / 'research_worker_evidence')
+        env['CERES_CVRPLIB_TEST_LOG_DIR'] = str(output / 'research_worker_evidence')
     if name == 'backend_route_contracts':
         env['ROUTE_SCENE_INTEGRATION_REPORT'] = str(output / 'backend_route_scene.json')
     if name == 'backend_packages':
         env['RESEARCH_CONSOLE_PACKAGE_ROOT'] = str(ROOT / 'data/packages')
     if name == 'robotics_core':
-        env['PYTHONPATH'] = str(ROOT / 'src/robotics/urp_route_sim')
+        env['PYTHONPATH'] = str(ROOT / 'src/robotics/ceres_route_sim')
     return env
 
 
@@ -231,7 +231,7 @@ def gate_commands(py, output, skip_build=False):
         ('baseline_aggregation', '.', [py, '-m', 'unittest', 'discover', '-s', 'protocol', '-p', 'test_*.py', '-v']),
         ('independent_validator', '.', [py, '-m', 'unittest', 'discover', '-s', 'independent', '-p', 'test_*.py', '-v']),
         ('public_cli', '.', [py, '-m', 'unittest', 'discover', '-s', 'tools/tests', '-v']),
-        ('robotics_core', 'src/robotics', [py, '-m', 'unittest', 'discover', '-s', 'urp_route_sim/test', '-v']),
+        ('robotics_core', 'src/robotics', [py, '-m', 'unittest', 'discover', '-s', 'ceres_route_sim/test', '-v']),
         ('frontend_data', 'src/frontend', [py, '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_*.py', '-v']),
         ('frontend_ui', 'src/frontend', ['npm', 'run', 'test:ui']),
         ('desktop_shell', 'src/desktop', ['npm', 'test']),
@@ -273,7 +273,7 @@ def main():
                 break
     finally:
         signal.signal(signal.SIGTERM, previous_term)
-    report = {'schema': 'urp-engineering-checks-v1', 'generated_utc': stamp,
+    report = {'schema': 'ceres-engineering-checks-v1', 'generated_utc': stamp,
               'python': sys.version, 'status': 'passed' if all(r['status'] == 'passed' for r in results) else 'failed',
               'gates': results, 'omitted': omitted,
               'scope': 'Engineering regressions and frozen BPP readback; no formal baseline re-execution, live LLM, ROS or Gazebo physics.'}

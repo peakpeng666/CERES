@@ -33,10 +33,10 @@ class PushRendererTests(unittest.TestCase):
             self.assertNotIn(forbidden, self.output)
 
     def test_fixed_repository_event_ref_and_workflow_identity(self):
-        self.assertIn("github.repository == 'peakpeng666/URP'", self.output)
+        self.assertIn("github.repository == 'peakpeng666/CERES'", self.output)
         self.assertIn("github.event_name == 'push'", self.output)
         self.assertIn("github.ref == 'refs/heads/" + PARAMETERS["branch"] + "'", self.output)
-        self.assertIn("github.workflow_ref == 'peakpeng666/URP/" + PARAMETERS["workflow_path"] +
+        self.assertIn("github.workflow_ref == 'peakpeng666/CERES/" + PARAMETERS["workflow_path"] +
                       "@refs/heads/" + PARAMETERS["branch"] + "'", self.output)
 
     def test_pins_are_literal_and_application_pin_stays_fixed(self):

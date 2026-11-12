@@ -1,6 +1,6 @@
 ﻿# Stop through the same installer, state directory, ref, and port as startup.
 [CmdletBinding()]
-param([string]$Ref = $env:URP_REF)
+param([string]$Ref = $env:CERES_REF)
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)

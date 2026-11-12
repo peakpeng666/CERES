@@ -146,15 +146,15 @@ def main():
     sys.path.insert(0, str(a.harness.resolve()))
     from runner.verify_worktree import verify
     verify(source, SOURCE)
-    os.environ['URP_LAB_RUNTIME'] = str(a.runtime.resolve())
+    os.environ['CERES_LAB_RUNTIME'] = str(a.runtime.resolve())
     sys.path.insert(0, str(source / 'src/lab'))
     sys.path.insert(0, str(source / 'src/research/src'))
-    from urp_lab.jobs import execution_manifest
-    from urp_lab.solvers import map_check
-    from urp_lab.scenarios import maps
-    from urp_lab.simplan import to_sim_plan
-    from urp_lab.store import Store
-    from urp_research.turn_modes.checker import check
+    from ceres_lab.jobs import execution_manifest
+    from ceres_lab.solvers import map_check
+    from ceres_lab.scenarios import maps
+    from ceres_lab.simplan import to_sim_plan
+    from ceres_lab.store import Store
+    from ceres_research.turn_modes.checker import check
     if Path(sys.prefix).resolve() != (source / 'src/lab/.venv').resolve(): raise ValueError('wrong_checker_interpreter')
     inputs = from_directory(a.historical_directory) if a.historical_directory else from_archive(a.archive)
     adapter_sha = canonical_sha({p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(Path(__file__).parent.glob('*.py'))})

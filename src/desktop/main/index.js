@@ -118,7 +118,7 @@ async function transferData(action) {
   const date = new Date().toISOString().replace(/[:.]/g, '-');
   let file, destination;
   if (action === 'export') {
-    const picked = await dialog.showSaveDialog(win, { title: '备份工作台数据', defaultPath: `urp-data-${date}.zip`, filters: [{ name: 'Lab 数据包', extensions: ['zip'] }] });
+    const picked = await dialog.showSaveDialog(win, { title: '备份工作台数据', defaultPath: `ceres-data-${date}.zip`, filters: [{ name: 'Lab 数据包', extensions: ['zip'] }] });
     if (picked.canceled) return { canceled: true };
     file = picked.filePath;
   } else {
@@ -127,7 +127,7 @@ async function transferData(action) {
     file = picked.filePaths[0];
     const folder = await dialog.showOpenDialog(win, { title: '选择恢复位置的上级目录（将在其中新建数据目录）', properties: ['openDirectory', 'createDirectory'] });
     if (folder.canceled) return { canceled: true };
-    destination = path.join(folder.filePaths[0], `urp-data-${date}`);
+    destination = path.join(folder.filePaths[0], `ceres-data-${date}`);
   }
   // Dialogs are asynchronous; recheck before taking ownership of the transition.
   if (transitioning) throw new Error('正在切换或迁移，请稍候');

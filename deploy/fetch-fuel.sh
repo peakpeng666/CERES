@@ -9,10 +9,10 @@
 # maze does not reference Fuel and does not need this script.
 #
 #   bash deploy/fetch-fuel.sh [cache-directory]
-#   URP_FUEL_ONLY=Table bash deploy/fetch-fuel.sh /tmp/fuel
+#   CERES_FUEL_ONLY=Table bash deploy/fetch-fuel.sh /tmp/fuel
 set -euo pipefail
 
-dest="${1:-${URP_FUEL_DIR:-$PWD/setup/2026-10-15/cache/ignition-fuel}}"
+dest="${1:-${CERES_FUEL_DIR:-$PWD/setup/2026-10-15/cache/ignition-fuel}}"
 mkdir -p "$dest"
 
 if ! command -v python3 >/dev/null 2>&1 || ! command -v curl >/dev/null 2>&1; then
@@ -34,7 +34,7 @@ models=(
   "plateau|Casual female|1|CC0 1.0|yes"
 )
 
-only="${URP_FUEL_ONLY:-}"
+only="${CERES_FUEL_ONLY:-}"
 printf '%s\n' "缓存目录：$dest"
 printf '%s\n' "这些文件只留在本机。带 no 的模型不允许放进公开镜像或公开 Release。"
 

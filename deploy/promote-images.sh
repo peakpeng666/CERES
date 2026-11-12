@@ -31,7 +31,7 @@ for name in bench sim; do
   source="ghcr.io/${owner}/urp-${name}@${digest}"
   docker pull "$source"
   actual="$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' "$source")"
-  [[ "$actual" == "$sha" ]] || { echo "Source revision mismatch for urp-${name}" >&2; exit 1; }
+  [[ "$actual" == "$sha" ]] || { echo "Source revision mismatch for ceres-${name}" >&2; exit 1; }
 done
 
 # A rerun of an old main commit must not roll the channel backwards. All managed

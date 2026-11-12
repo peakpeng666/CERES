@@ -169,4 +169,4 @@ ${binary}
 if (createHash('sha256').update(readFileSync(file)).digest('hex') !== 'ccb7a8cbdd06ae0d32e7c76210dde90b770f061f52ef00d2767bc03eb8217d56') {
   throw new Error('Modified gzweb patch output; refuse an unverified dependency');
 }
-console.log('gzweb 3.0.2: verified URP transport lifecycle repair');
+console.log('gzweb 3.0.2: verified CERES transport lifecycle repair');

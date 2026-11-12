@@ -7,9 +7,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from urp_research.cvrplib.audit import base_signature, load_frozen, validator
-from urp_research.cvrplib.io import contract_for, matrix, parse_vrp, parse_sol, validate_payload
-from urp_research.cvrplib.runner import run_payload, summarize
+from ceres_research.cvrplib.audit import base_signature, load_frozen, validator
+from ceres_research.cvrplib.io import contract_for, matrix, parse_vrp, parse_sol, validate_payload
+from ceres_research.cvrplib.runner import run_payload, summarize
 
 RESEARCH = Path(__file__).resolve().parents[1]
 REPO = RESEARCH.parents[1]
@@ -97,7 +97,11 @@ class InputContract(unittest.TestCase):
     def test_source_files_equal_archived_hashes(self):
         manifest = json.loads((RESEARCH/'configs/cvrplib_sources.json').read_text())
         for row in manifest['files']:
-            self.assertEqual(hashlib.sha256((REPO/row['path']).read_bytes()).hexdigest(), row['sha256'])
+            # The archived manifest retains its original paths and hashes.
+            # Only the package prefix moved; frozen source bytes remain identical.
+            path = row['path'].replace('src/research/src/urp_research/',
+                                       'src/research/src/ceres_research/', 1)
+            self.assertEqual(hashlib.sha256((REPO/path).read_bytes()).hexdigest(), row['sha256'])
 
     def test_denominators_include_failures_and_unstarted(self):
         r = summarize([{'status':'OK','feasible':True,'cost':20},
@@ -126,7 +130,7 @@ class RealProcesses(unittest.TestCase):
             # Schema/crash tests must actually reach their injected behavior.
             # A short deadline can expire during interpreter startup under load.
             result = run_payload({**PAYLOAD, "budget_seconds": 5, **fields}, worker_path=path)
-        out = os.environ.get('URP_CVRPLIB_TEST_LOG_DIR')
+        out = os.environ.get('CERES_CVRPLIB_TEST_LOG_DIR')
         if out:
             Path(out).mkdir(parents=True, exist_ok=True)
             (Path(out)/(self._testMethodName+'.json')).write_text(json.dumps(result,indent=2))
@@ -184,7 +188,7 @@ class RealProcesses(unittest.TestCase):
     def test_inherited_low_memory_limit_does_not_attempt_raise(self):
         # The real worker honors a lower inherited hard limit; this regression
         # targets the archived r0 startup failure caused by raising RLIMIT_AS.
-        r = self.fault('import resource,runpy\nresource.setrlimit(resource.RLIMIT_AS,(256*1024**2,256*1024**2))\nrunpy.run_path('+repr(str(RESEARCH/'src/urp_research/cvrplib/worker.py'))+',run_name="__main__")\n',budget_seconds=1)
+        r = self.fault('import resource,runpy\nresource.setrlimit(resource.RLIMIT_AS,(256*1024**2,256*1024**2))\nrunpy.run_path('+repr(str(RESEARCH/'src/ceres_research/cvrplib/worker.py'))+',run_name="__main__")\n',budget_seconds=1)
         self.assertEqual(r['status'],'OK',r)
 
     def test_vnd_moves_equal_archived_engine(self):

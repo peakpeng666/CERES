@@ -10,7 +10,7 @@ from pathlib import Path
 import re
 import stat
 
-_spec = importlib.util.spec_from_file_location('urp_census_buildkit', Path(__file__).resolve().with_name('buildkit_diagnostic.py'))
+_spec = importlib.util.spec_from_file_location('ceres_census_buildkit', Path(__file__).resolve().with_name('buildkit_diagnostic.py'))
 _b = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(_b)
 BUCKETS = ('none', 'one', 'multiple')

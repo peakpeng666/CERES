@@ -58,7 +58,7 @@ class ExtractTests(unittest.TestCase):
         self.assertEqual([p for p in self.destination.rglob('*') if p.is_file()], [self.destination / KEY])
 
     def test_selected_data_never_executed(self):
-        payload = b'#!/bin/sh\ntouch /tmp/URP_TEST_MUST_NOT_EXECUTE\n'
+        payload = b'#!/bin/sh\ntouch /tmp/CERES_TEST_MUST_NOT_EXECUTE\n'
         with mock.patch('subprocess.Popen', side_effect=AssertionError('unexpected process')), mock.patch('os.system', side_effect=AssertionError('unexpected execution')):
             self.extract(archive(regular(data=payload)), manifest(payload))
         self.assertEqual((self.destination / KEY).read_bytes(), payload)
@@ -79,7 +79,7 @@ class ExtractTests(unittest.TestCase):
         self.refused(regular(PREFIX + 'irrelevant', b'x'), regular(PREFIX + 'irrelevant', b'x'), regular())
 
     def test_absolute_paths(self):
-        for name in ('/' + PREFIX + KEY, '/tmp/outside-urp-test'):
+        for name in ('/' + PREFIX + KEY, '/tmp/outside-ceres-test'):
             with self.subTest(name=name):
                 self.refused(regular(name), regular())
 

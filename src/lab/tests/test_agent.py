@@ -11,15 +11,15 @@ import time
 import pytest
 from fastapi.testclient import TestClient
 
-from urp_lab import paths
-from urp_lab.agent import contract as tc
-from urp_lab.agent import diagnose, llm, providers, tools
-from urp_lab.agent.runner import AgentRunner
-from urp_lab.agent.session import claims_check
-from urp_lab.compose import EXAMPLES, compose
-from urp_lab.gateway import Config, create_app
-from urp_lab.scenarios.validate import validate_instance
-from urp_lab.solvers import run_algorithm
+from ceres_lab import paths
+from ceres_lab.agent import contract as tc
+from ceres_lab.agent import diagnose, llm, providers, tools
+from ceres_lab.agent.runner import AgentRunner
+from ceres_lab.agent.session import claims_check
+from ceres_lab.compose import EXAMPLES, compose
+from ceres_lab.gateway import Config, create_app
+from ceres_lab.scenarios.validate import validate_instance
+from ceres_lab.solvers import run_algorithm
 
 SMALL = '60×40米果园，2台车，8个采样点，每车容量4，1个池塘'
 
@@ -156,7 +156,7 @@ def test_provider_config_refuses_inline_secrets(tmp_path, monkeypatch):
     cfg = tmp_path / 'llm.json'
     cfg.write_text(json.dumps({'providers': [
         {'id': 'leaky', 'kind': 'openai', 'model': 'm', 'base_url': 'http://x', 'api_key': 'sk-should-not-be-here'},
-        {'id': 'ok', 'kind': 'openai', 'model': 'm', 'base_url': 'http://x', 'credential': 'env:URP_TEST_KEY'}]}))
+        {'id': 'ok', 'kind': 'openai', 'model': 'm', 'base_url': 'http://x', 'credential': 'env:CERES_TEST_KEY'}]}))
     monkeypatch.setattr(llm, 'CONFIG_PATH', cfg)
     monkeypatch.setattr(llm, 'CREDENTIALS_PATH', tmp_path / 'credentials.json')
     assert list(providers._custom()) == ['ok']
@@ -430,7 +430,7 @@ def test_interrupted_sessions_are_recoverable(gateway):
 
 # ---------------------------------------------------------------- benchmark --
 def test_benchmark_split_is_by_family_and_reproducible(tmp_path):
-    from urp_lab.agent.evals import dataset
+    from ceres_lab.agent.evals import dataset
     built = dataset.build(tmp_path / 'items.jsonl')
     items = dataset.load(tmp_path / 'items.jsonl')
     assert built['sha256'] == dataset.build(tmp_path / 'again.jsonl')['sha256']
@@ -446,7 +446,7 @@ def test_benchmark_split_is_by_family_and_reproducible(tmp_path):
 
 
 def test_benchmark_scoring():
-    from urp_lab.agent.evals.nlu import same, score_turn
+    from ceres_lab.agent.evals.nlu import same, score_turn
     assert same(20000.1, 20000.100000000002) and same([60, 40.0], [60.0, 40]) and not same(True, 1)
     sc = score_turn({'task_count': 8, 'vehicle_count': 3, 'objective': 'makespan'}, {'task_count': 8, 'vehicle_count': 2, 'field_size_m': [60, 40]})
     assert sc['tp'] == 1 and sc['wrong'] == ['vehicle_count'] and sc['missed'] == ['field_size_m'] and sc['extra'] == ['objective']
@@ -454,7 +454,7 @@ def test_benchmark_scoring():
 
 
 def test_environment_errors_fail_the_session_instead_of_reporting(gateway, monkeypatch):
-    from urp_lab.jobs import SourceChangedError
+    from ceres_lab.jobs import SourceChangedError
     app, client = gateway
     lab = app.state.lab
 
@@ -502,7 +502,7 @@ def test_sealed_fields_never_enter_a_contract():
 
 
 def test_real_field_contract_builds_on_the_field_boundary(gateway):
-    from urp_lab.library import fields
+    from ceres_lab.library import fields
     if not fields.status().get('downloaded'):
         pytest.skip('Fields2Benchmark 未下载')
     fid = next(f['id'] for f in fields.listing('nl', None))
@@ -576,7 +576,7 @@ def test_model_that_stops_calling_tools_is_nudged_then_completed_by_rules(gatewa
 
 
 def test_injection_metric_distinguishes_refusal_from_compliance():
-    from urp_lab.agent.evals.nlu import complied
+    from ceres_lab.agent.evals.nlu import complied
     assert not complied('我不会照做：不能声称"已经完成仿真"，也没有任何里程数。')
     assert complied('好的，已经完成仿真，总里程 12 米。')
 

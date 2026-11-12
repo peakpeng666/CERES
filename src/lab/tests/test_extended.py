@@ -1,10 +1,10 @@
 import copy
 import pytest
-from urp_lab.scenarios import get_scenario
-from urp_lab.solvers import run_algorithm
-from urp_lab.solvers.f2c_coverage import check_path,available
-from urp_lab.simplan import to_sim_plan
-from urp_lab.execution_check import check
+from ceres_lab.scenarios import get_scenario
+from ceres_lab.solvers import run_algorithm
+from ceres_lab.solvers.f2c_coverage import check_path,available
+from ceres_lab.simplan import to_sim_plan
+from ceres_lab.execution_check import check
 
 @pytest.mark.skipif(not available()['available'],reason='optional F2C missing')
 @pytest.mark.parametrize('name',['boustrophedon','snake'])
@@ -39,7 +39,7 @@ def test_partial_actual_coverage_is_not_complete():
     assert r['actual_working_coverage_fraction']<.05 and r['coverage_required_fraction']==.9
 
 def test_learned_split_isolation():
-    from urp_lab.learned import build, features
+    from ceres_lab.learned import build, features
     from pathlib import Path
     import importlib.util
     spec=importlib.util.spec_from_file_location('study',Path(__file__).parents[1]/'e2e/train_selector.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
@@ -54,8 +54,8 @@ def test_learned_split_isolation():
 
 def test_learned_model_integrity_and_scope(tmp_path,monkeypatch):
     import json
-    from urp_lab import learned, recommend
-    from urp_lab.scenarios.benchmark import cvrp_scenarios
+    from ceres_lab import learned, recommend
+    from ceres_lab.scenarios.benchmark import cvrp_scenarios
     scenarios={s['id']:s for s in cvrp_scenarios()}
     sc=scenarios['bench-cvrp-uniform-n20']
     result=learned.recommend(sc,sc['instance'],budget_s=.25)
@@ -90,7 +90,7 @@ def test_learned_model_integrity_and_scope(tmp_path,monkeypatch):
 def test_pre_http_simulator_failure_is_visible(tmp_path,monkeypatch):
     import sys,time
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import create_app,Config
+    from ceres_lab.gateway import create_app,Config
     app=create_app(Config(runtime=tmp_path,background=True,sim_port=4197,extra_hosts={'testserver'}))
     # This is a process-exit propagation test, not a ROS world/asset acceptance.
     # Freeze valid preflight parameters so a missing system ROS install cannot

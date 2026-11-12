@@ -1,5 +1,5 @@
 [project]
-name = "urp-workspace"
+name = "ceres-workspace"
 version = "0.1.0"
 description = "CERES (灵畴): 农业机器人规划调度算法库与可复现基准"
 requires-python = ">=3.12,<3.13"

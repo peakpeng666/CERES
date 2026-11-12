@@ -14,11 +14,11 @@ import stat
 
 # Pure, source-indexed schema shared with the diagnostic producer; no path search.
 _reference_spec = importlib.util.spec_from_file_location(
-    'urp_package_reference_projection', Path(__file__).resolve().with_name('package_reference.py'))
+    'ceres_package_reference_projection', Path(__file__).resolve().with_name('package_reference.py'))
 _reference = importlib.util.module_from_spec(_reference_spec)
 _reference_spec.loader.exec_module(_reference)
 _stage_spec = importlib.util.spec_from_file_location(
-    'urp_preparation_stage_projection', Path(__file__).resolve().with_name('preparation_stage_diagnostic.py'))
+    'ceres_preparation_stage_projection', Path(__file__).resolve().with_name('preparation_stage_diagnostic.py'))
 _stage = importlib.util.module_from_spec(_stage_spec)
 _stage_spec.loader.exec_module(_stage)
 
@@ -31,13 +31,13 @@ MAX_VERTICES = 4096
 # Reviewed Dockerfile RUN commands, with continuation whitespace normalized.
 # Do not derive these from log text or load executable preparation code.
 RUN_COMMANDS = {
-    'bootstrap': '/usr/bin/env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C LANG=C HOME=/nonexistent /bin/sh /usr/local/lib/urp-bootstrap/bootstrap.sh --install-bootstrap',
-    'package': '/usr/bin/env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C LANG=C HOME=/nonexistent /usr/bin/python3 -I -B /opt/urp-control/preparation/prepare_packages.py --root /inputs --install',
-    'closure_verify': '/usr/bin/python3 -I -B /opt/urp-control/preparation/verify_bootstrap_closure.py',
-    'python_provision': '/usr/bin/env -i PATH=/usr/bin:/bin LC_ALL=C LANG=C HOME=/root /usr/bin/python3 -I -B /opt/urp-control/preparation/bootstrap_tools.py install --lock /opt/urp-bootstrap-seed/bootstrap-lock.json --expected-sha256 "$BOOTSTRAP_SHA"',
+    'bootstrap': '/usr/bin/env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C LANG=C HOME=/nonexistent /bin/sh /usr/local/lib/ceres-bootstrap/bootstrap.sh --install-bootstrap',
+    'package': '/usr/bin/env -i PATH=/usr/sbin:/usr/bin:/sbin:/bin LC_ALL=C LANG=C HOME=/nonexistent /usr/bin/python3 -I -B /opt/ceres-control/preparation/prepare_packages.py --root /inputs --install',
+    'closure_verify': '/usr/bin/python3 -I -B /opt/ceres-control/preparation/verify_bootstrap_closure.py',
+    'python_provision': '/usr/bin/env -i PATH=/usr/bin:/bin LC_ALL=C LANG=C HOME=/root /usr/bin/python3 -I -B /opt/ceres-control/preparation/bootstrap_tools.py install --lock /opt/ceres-bootstrap-seed/bootstrap-lock.json --expected-sha256 "$BOOTSTRAP_SHA"',
     'input_ownership': '{ test "$WORKLOAD_UID" -gt 0 || { rc=$?; printf \'%s\\n\' \'SAFE_PREPARATION_DIAGNOSTIC:{"schema":1,"stage":"input_ownership","substage":"uid_check","code":"UID_CHECK_FAILED","exception_class":"ShellExit"}\' >&2 || :; exit "$rc"; }; } && { test "$WORKLOAD_GID" -gt 0 || { rc=$?; printf \'%s\\n\' \'SAFE_PREPARATION_DIAGNOSTIC:{"schema":1,"stage":"input_ownership","substage":"gid_check","code":"GID_CHECK_FAILED","exception_class":"ShellExit"}\' >&2 || :; exit "$rc"; }; } && { chown -R --no-dereference "$WORKLOAD_UID:$WORKLOAD_GID" /inputs || { rc=$?; printf \'%s\\n\' \'SAFE_PREPARATION_DIAGNOSTIC:{"schema":1,"stage":"input_ownership","substage":"ownership_change","code":"OWNERSHIP_COMMAND_FAILED","exception_class":"ShellExit"}\' >&2 || :; exit "$rc"; }; }',
-    'inputs_prepare': '/usr/bin/env -i PATH=/usr/bin:/bin LC_ALL=C.UTF-8 LANG=C.UTF-8 HOME=/inputs /opt/urp-python/bin/python3.12 -I -B -S /inputs/recipe/prepare_inputs.py --root /inputs --python /opt/urp-python/bin/python3.12 --package-lock /inputs/package-preparation.json --expected-source-index-sha256 "$INPUT_SOURCE_SHA"',
-    'inputs_freeze': '/opt/urp-python/bin/python3.12 -I -B -S /inputs/freeze_input_index.py --root /inputs --phase build',
+    'inputs_prepare': '/usr/bin/env -i PATH=/usr/bin:/bin LC_ALL=C.UTF-8 LANG=C.UTF-8 HOME=/inputs /opt/ceres-python/bin/python3.12 -I -B -S /inputs/recipe/prepare_inputs.py --root /inputs --python /opt/ceres-python/bin/python3.12 --package-lock /inputs/package-preparation.json --expected-source-index-sha256 "$INPUT_SOURCE_SHA"',
+    'inputs_freeze': '/opt/ceres-python/bin/python3.12 -I -B -S /inputs/freeze_input_index.py --root /inputs --phase build',
 
 }
 BUILD_ARG_KEYS = frozenset({'WORKLOAD_UID', 'WORKLOAD_GID', 'INPUT_SOURCE_SHA', 'BOOTSTRAP_SHA'})

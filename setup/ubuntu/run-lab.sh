@@ -20,7 +20,7 @@ if [[ -n "${WSL_DISTRO_NAME:-}" ]] || grep -qi microsoft /proc/version 2>/dev/nu
   wsl=1
 fi
 if [[ -f src/lab/runtime/native/bridge/profile.json ]]; then
-  export URP_SIM_PROFILE=image
+  export CERES_SIM_PROFILE=image
 fi
 # Gazebo server mode still opens GLX for sensors. A desktop or WSLg display is used
 # as-is. Headless machines get a private Xvfb screen.
@@ -31,14 +31,14 @@ if [[ -z "${DISPLAY:-}" ]] && command -v Xvfb >/dev/null 2>&1; then
   fi
 fi
 if [[ "$wsl" -eq 1 ]]; then
-  export URP_BIND_HOST=0.0.0.0
-  export URP_FOXGLOVE_BIND=0.0.0.0
-  export URP_BROWSER_HOST=127.0.0.1
+  export CERES_BIND_HOST=0.0.0.0
+  export CERES_FOXGLOVE_BIND=0.0.0.0
+  export CERES_BROWSER_HOST=127.0.0.1
   export LIBGL_ALWAYS_SOFTWARE="${LIBGL_ALWAYS_SOFTWARE:-1}"
 else
-  export URP_BIND_HOST="${URP_BIND_HOST:-127.0.0.1}"
-  export URP_FOXGLOVE_BIND="${URP_FOXGLOVE_BIND:-127.0.0.1}"
-  export URP_BROWSER_HOST="${URP_BROWSER_HOST:-127.0.0.1}"
+  export CERES_BIND_HOST="${CERES_BIND_HOST:-127.0.0.1}"
+  export CERES_FOXGLOVE_BIND="${CERES_FOXGLOVE_BIND:-127.0.0.1}"
+  export CERES_BROWSER_HOST="${CERES_BROWSER_HOST:-127.0.0.1}"
 fi
 exec bash setup/run.sh lab "$@"
 

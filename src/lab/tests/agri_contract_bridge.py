@@ -10,7 +10,7 @@ from shapely.geometry import Point, Polygon
 sys.dont_write_bytecode = True
 # Import the real package so validator helpers keep their normal relative imports.
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from urp_lab.scenarios import validate as validator
+from ceres_lab.scenarios import validate as validator
 results = []
 for record in json.loads(Path(sys.argv[1]).read_text()):
     scenario = record['scenario']

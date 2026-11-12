@@ -1,6 +1,6 @@
 # CVRP工程验证任务
 
-此接口把数值输入送入`src/research/src/urp_research/cvrplib/runner.py`的`run_payload`，返回其真实执行状态、路线、用时和独立checker证据。每次请求使用独立子进程；服务按队列串行调用已评审的runner。不会执行上传脚本，也不接受文件路径、Python解释器、worker路径、模型端点、参考最优值或预先生成的候选路线。
+此接口把数值输入送入`src/research/src/ceres_research/cvrplib/runner.py`的`run_payload`，返回其真实执行状态、路线、用时和独立checker证据。每次请求使用独立子进程；服务按队列串行调用已评审的runner。不会执行上传脚本，也不接受文件路径、Python解释器、worker路径、模型端点、参考最优值或预先生成的候选路线。
 
 ## 本期范围
 

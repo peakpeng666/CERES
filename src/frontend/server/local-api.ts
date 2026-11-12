@@ -11,14 +11,14 @@ export function allowedApiRequest(headers: IncomingHttpHeaders, port: number): b
 }
 
 export function localApi(port: number, labPort = 4100): { plugin: Plugin; proxy: Record<string, ProxyOptions> } {
-  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('URP_API_PORT must be a port in 1..65535');
-  if (!Number.isInteger(labPort) || labPort < 1 || labPort > 65535) throw new Error('URP_LAB_PORT must be a port in 1..65535');
+  if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('CERES_API_PORT must be a port in 1..65535');
+  if (!Number.isInteger(labPort) || labPort < 1 || labPort > 65535) throw new Error('CERES_LAB_PORT must be a port in 1..65535');
   const reject = (res: ServerResponse) => {
     res.statusCode = 403; res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify({ error: 'cross_origin', message: '本地 API 仅接受本站请求。' }));
   };
   const plugin: Plugin = {
-    name: 'urp-local-api-boundary',
+    name: 'ceres-local-api-boundary',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (!req.url?.startsWith('/api/') && !req.url?.startsWith('/lab/api/')) return next();

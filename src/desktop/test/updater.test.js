@@ -141,7 +141,7 @@ test('overlapping checks share discovery and keep a download or ready update on 
 });
 
 test('a local QA feed bypasses discovery and reports manifest failures truthfully', async () => {
-  const { updater, native } = fixture({ env: { URP_UPDATE_URL: 'http://127.0.0.1:3210/' }, fetch: async () => { throw new Error('must not use GitHub'); } });
+  const { updater, native } = fixture({ env: { CERES_UPDATE_URL: 'http://127.0.0.1:3210/' }, fetch: async () => { throw new Error('must not use GitHub'); } });
   native.checkForUpdates = async () => { throw new Error('Cannot find channel latest-linux.yml'); };
   assert.equal((await updater.check()).status, 'error');
   assert.match(updater.state.detail, /Cannot find channel/);
@@ -164,7 +164,7 @@ test('a failed automatic download is observed and cannot leave a ready or succes
 });
 
 test('disabled updates, source runs and unsupported installation types never claim current', async () => {
-  for (const options of [{ env: { URP_NO_UPDATE: '1' } }, { platform: 'darwin' }]) {
+  for (const options of [{ env: { CERES_NO_UPDATE: '1' } }, { platform: 'darwin' }]) {
     const { updater, native } = fixture(options);
     assert.equal((await updater.check()).status, 'unavailable');
     assert.equal(native.checks, 0);

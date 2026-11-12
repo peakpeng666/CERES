@@ -52,7 +52,7 @@ def verify_system_ca():
     global _DIAGNOSTIC_CA_FAILURE_TYPE
     # Exact source-indexed sibling; -I remains enabled and no search path changes.
     path=Path(__file__).parent/'bootstrap'/'provision_system_ca.py'
-    spec=importlib.util.spec_from_file_location('urp_verified_system_ca',path)
+    spec=importlib.util.spec_from_file_location('ceres_verified_system_ca',path)
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
     _DIAGNOSTIC_CA_FAILURE_TYPE = module.Failure
     return module.verify()
@@ -99,7 +99,7 @@ def verify(bootstrap,packages):
     return {'schema':1,'status':'bootstrap-transaction-bound-to-full-closure','bootstrap_packages':sorted(selected),'bootstrap_evidence':rows,'derived_system_ca':system_ca,'compiler_build_executed':False}
 
 def main():
-    bootstrap=Path('/opt/urp-bootstrap-evidence');root=Path('/inputs')
+    bootstrap=Path('/opt/ceres-bootstrap-evidence');root=Path('/inputs')
     result=verify(bootstrap,json.loads((root/'package-preparation.json').read_bytes()))
     diagnostic_phase('receipt_write')
     with (root/'bootstrap-closure.json').open('x') as f:json.dump(result,f,sort_keys=True,indent=2);f.write('\n')

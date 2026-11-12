@@ -19,9 +19,9 @@ from pathlib import Path
 
 LAB = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(LAB))
-from urp_lab.execution_timing import (bounded_seconds,
+from ceres_lab.execution_timing import (bounded_seconds,
                                      execution_poll_wall_s, freeze_plan_budget, resolve_budget_policy)
-from urp_lab.simplan import to_sim_plan
+from ceres_lab.simplan import to_sim_plan
 
 MAX_OVERALL_WALL_S = 21600.0
 READY_WALL_S = 1200.0

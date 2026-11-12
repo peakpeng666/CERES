@@ -68,7 +68,7 @@ sys.exit(int(os.environ['BUILD_EXIT']) if sys.argv[1] == 'build' else 0)
         result, events = self.run_publish()
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual([e[0] for e in events], ["build", "smoke", "push"])
-        self.assertIn("URP_REVISION=" + SHA, events[0])
+        self.assertIn("CERES_REVISION=" + SHA, events[0])
         self.assertIn("org.opencontainers.image.revision=" + SHA, events[0])
         self.assertEqual(events[2:], [
             ["push", "ghcr.io/peakpeng666/urp-bench:" + SHA],
@@ -236,7 +236,7 @@ if '-X' in args:
     pathlib.Path(args[args.index('-o') + 1]).write_text('{"code":"shutdown_forbidden"}')
     print('403', end='')
 elif args[-1].endswith('/api/health'): print('{"status":"ok"}')
-else: print('<html>URP</html>')
+else: print('<html>CERES</html>')
 ''')
 
     def command(self, name, contents):
@@ -332,9 +332,9 @@ class ComposeContractTests(unittest.TestCase):
         for name in ('docker-compose.yml', 'docker-compose.sim.yml'):
             with self.subTest(compose=name):
                 source = (ROOT / 'deploy' / name).read_text()
-                self.assertIn('${URP_PORT:-4100}:4100', source)
-                self.assertIn('      URP_PORT: "4100"', source)
-                self.assertNotIn('URP_PORT: "${URP_PORT', source)
+                self.assertIn('${CERES_PORT:-${URP_PORT:-4100}}:4100', source)
+                self.assertIn('      CERES_PORT: "4100"', source)
+                self.assertNotIn('CERES_PORT: "${CERES_PORT', source)
 
 
 class ChannelPromotionTests(unittest.TestCase):

@@ -30,7 +30,7 @@ TARGETS = {'linux': {'python': f'cpython-{PYTHON}-linux-x86_64-gnu', 'platform':
            'win': {'python': f'cpython-{PYTHON}-windows-x86_64-none', 'platform': 'x86_64-pc-windows-msvc', 'site': 'Lib/site-packages'}}
 
 # Application tree: (source, destination relative to app/). Everything is read-only at run time.
-TREE = ['src/lab/urp_lab', 'src/lab/models', 'src/lab/pyproject.toml', 'src/lab/uv.lock', 'src/research/src/urp_research', 'src/frontend/core/routing',
+TREE = ['src/lab/ceres_lab', 'src/lab/models', 'src/lab/pyproject.toml', 'src/lab/uv.lock', 'src/research/src/ceres_research', 'src/frontend/core/routing',
         'src/backend/backend', 'src/backend/config', 'tools/runtime_db.py']
 SKIP_DIRS = {'__pycache__', '.pytest_cache', 'tests', 'test', 'testing', 'idlelib', 'tkinter', 'turtledemo', 'ensurepip', 'lib2to3', 'pydoc_data', 'include', 'tcl9.0', 'tk9.0', 'tcl8.6', 'tk8.6', 'itcl4.3.2', 'share', 'pkgconfig'}
 # Imported or read at run time by the packages themselves. pyproj resolves proj.db from its bundled share/proj, and
@@ -140,7 +140,7 @@ def stage(target: str, out: Path, cache: Path) -> dict:
         copy_tree(dist / name, app / 'src/frontend/dist' / name)   # dist/data is the history pack, downloaded on demand
 
     # Hash-validated bytecode: the install is read-only and mtimes do not survive packaging.
-    for tree in (site, runtime / ('lib/python3.12' if target == 'linux' else 'Lib'), app / 'src/lab/urp_lab', app / 'src/research/src/urp_research', app / 'src/backend/backend'):
+    for tree in (site, runtime / ('lib/python3.12' if target == 'linux' else 'Lib'), app / 'src/lab/ceres_lab', app / 'src/research/src/ceres_research', app / 'src/backend/backend'):
         compileall.compile_dir(tree, quiet=2, invalidation_mode=py_compile.PycInvalidationMode.UNCHECKED_HASH, workers=0, optimize=0)
 
     files = [f for f in home.rglob('*') if f.is_file() and not f.is_symlink()]

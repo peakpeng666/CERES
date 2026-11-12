@@ -2,7 +2,7 @@
   "base_commit": "ddb5113e641ba63846431d4e3114efaf85f2fc89",
   "created_utc": "2026-10-18T12:50:48.957316+00:00",
   "release_tag": "platform-snapshot-20261018-ddb5113e",
-  "repository": "peakpeng666/URP",
+  "repository": "peakpeng666/CERES",
   "repository_visibility": "public",
   "scope": "Project runtime and full numerical evidence, dependencies and native installed artifacts; no host credentials, browser profiles, operating system or drivers.",
   "compatibility": "Ubuntu 22.04 x86_64, ROS 2 Humble, Gazebo Fortress; raw venv/ELF snapshots are path/ABI dependent.",

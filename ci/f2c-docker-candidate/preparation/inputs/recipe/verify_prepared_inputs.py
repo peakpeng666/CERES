@@ -65,7 +65,7 @@ def verify_prepared(root, python, lock, g):
     for name, path in expected.items():
         g.require(resolved_commands[name] == pathlib.Path(path), 'Wrong measured command: ' + name)
     g.verify_trees(root, prefix, host['trees'], g.REQUIRED_HOST_SCOPES, candidate=False)
-    expected_scopes = {'uv-prefix': pathlib.Path('/opt/urp-uv'), 'python-prefix': prefix, 'system-headers': pathlib.Path('/usr/include'),
+    expected_scopes = {'uv-prefix': pathlib.Path('/opt/ceres-uv'), 'python-prefix': prefix, 'system-headers': pathlib.Path('/usr/include'),
                        'compiler-support': pathlib.Path('/usr/lib/gcc'),
                        'system-libraries': pathlib.Path('/usr/lib/x86_64-linux-gnu'),
                        'system-executables': pathlib.Path('/usr/bin'),

@@ -5,7 +5,7 @@ import math
 
 import pytest
 
-from urp_lab import analysis
+from ceres_lab import analysis
 
 
 def run(instance, algorithm, value=10.0, *, state='done', valid=True, bks=None, seed=1):
@@ -207,7 +207,7 @@ def test_duplicate_seeds_do_not_increase_friedman_block_count():
 
 
 def test_matplotlib_catalog_and_renderer_use_same_gate():
-    from urp_lab.figures import catalog, data, study, Style
+    from ceres_lab.figures import catalog, data, study, Style
     for rows in [grid(2, 3), grid(11, 7, tied=True), grid(14, 7, cyclic=True)]:
         ctx = data.Context(study={'study_id': 'synthetic'}, analysis=analysis.analyze(rows))
         item = next(x for x in catalog(ctx) if x['key'] == 'cd_diagram')
@@ -221,7 +221,7 @@ def test_matplotlib_catalog_and_renderer_use_same_gate():
     assert 'nan' not in captions['en'].lower()
     assert len(rows['ranks']) == 8
     figure.clear()
-    from urp_lab.figures import render
+    from ceres_lab.figures import render
     for format in ('svg', 'pdf'):
         content, meta = render('cd_diagram', ctx, Style(lang='en'), format)
         assert content and 'nan' not in meta['caption']['en'].lower()

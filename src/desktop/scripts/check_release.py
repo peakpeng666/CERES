@@ -36,7 +36,7 @@ def verify(artifacts, version):
             actual = hashlib.sha512(p.read_bytes()).digest()
             if base64.b64encode(actual).decode() != expected:
                 raise ValueError(f'Updater hash mismatch: {p.name}')
-    manifest = Path(__file__).resolve().parents[2] / 'lab/urp_lab/data/packs.json'
+    manifest = Path(__file__).resolve().parents[2] / 'lab/ceres_lab/data/packs.json'
     packs = json.loads(manifest.read_text())
     for pack in packs['packs']:
         url = f"{packs['base_url'].rstrip('/')}/{pack['file']}"

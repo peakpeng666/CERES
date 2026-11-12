@@ -22,7 +22,7 @@ MAX_NODES = 300
 MAX_PENDING = 32
 _RUN_LOCK = threading.Lock()
 _RESEARCH_ROOT = Path(__file__).resolve().parents[2] / 'research' / 'src'
-_CVRP_ROOT = _RESEARCH_ROOT / 'urp_research' / 'cvrplib'
+_CVRP_ROOT = _RESEARCH_ROOT / 'ceres_research' / 'cvrplib'
 
 
 def _source_manifest():
@@ -49,10 +49,10 @@ def _load_runner():
     root = str(_RESEARCH_ROOT)
     if root not in sys.path:
         sys.path.insert(0, root)
-    runner = import_module('urp_research.cvrplib.runner')
+    runner = import_module('ceres_research.cvrplib.runner')
     if Path(runner.__file__).resolve() != (_CVRP_ROOT / 'runner.py').resolve():
         raise StoreError('runner_unavailable', '研究模块路径与固定执行源码不一致。', 503)
-    contract = import_module('urp_research.cvrplib.io')
+    contract = import_module('ceres_research.cvrplib.io')
     return runner.run_payload, contract.validate_payload, contract.digest
 
 
@@ -110,7 +110,7 @@ class JobManager:
             except (ImportError, OSError, RuntimeError, StoreError) as exc:
                 self._runner = None
                 self._unavailable_reason = str(exc)
-            self._thread = threading.Thread(target=self._work, name='urp-cvrp-jobs', daemon=True)
+            self._thread = threading.Thread(target=self._work, name='ceres-cvrp-jobs', daemon=True)
             self._thread.start()
         except BaseException:
             if self._lock_file:

@@ -56,7 +56,7 @@ class JobTests(unittest.TestCase):
                 self.assertEqual(job['purpose'], 'engineering_validation')
                 self.assertEqual(job['status'], 'completed', job['error'])
                 result = job['result']
-                self.assertEqual(result['schema'], 'urp-cvrplib-result-v1')
+                self.assertEqual(result['schema'], 'ceres-cvrplib-result-v1')
                 self.assertTrue(result['feasible'], result)
                 self.assertEqual(result['cost'], 4)
                 self.assertEqual(sorted(n for route in result['routes'] for n in route[1:-1]), [1,2])

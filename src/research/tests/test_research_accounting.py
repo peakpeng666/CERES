@@ -10,11 +10,11 @@ import unittest
 from unittest.mock import patch
 
 from test_cvrplib import VRP
-from urp_research.cvrplib import cli
-from urp_research.cvrplib.evaluate import evaluate_saved
-from urp_research.cvrplib.io import sha
-from urp_research.turn_modes import run as turn_run
-from urp_research.turn_modes.generate_data import fixtures
+from ceres_research.cvrplib import cli
+from ceres_research.cvrplib.evaluate import evaluate_saved
+from ceres_research.cvrplib.io import sha
+from ceres_research.turn_modes import run as turn_run
+from ceres_research.turn_modes.generate_data import fixtures
 
 
 class InfrastructureLedger(unittest.TestCase):

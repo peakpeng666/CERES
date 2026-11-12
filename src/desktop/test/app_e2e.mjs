@@ -49,7 +49,7 @@ const packHost = createServer((req, res) => {
 await Promise.all([standIn, packHost].map((s) => new Promise((ok) => s.listen(0, '127.0.0.1', ok))));
 
 const home = mkdtempSync(join(tmpdir(), 'desktop-e2e-'));
-const env = { ...process.env, HOME: home, XDG_CONFIG_HOME: join(home, '.config'), URP_NO_UPDATE: '1', APPIMAGE_EXTRACT_AND_RUN: '1', URP_PACKS_BASE_URL: `http://127.0.0.1:${packHost.address().port}` };
+const env = { ...process.env, HOME: home, XDG_CONFIG_HOME: join(home, '.config'), CERES_NO_UPDATE: '1', APPIMAGE_EXTRACT_AND_RUN: '1', CERES_PACKS_BASE_URL: `http://127.0.0.1:${packHost.address().port}` };
 delete env.ELECTRON_RUN_AS_NODE;
 const log = { exe, started: new Date().toISOString(), steps: [], errors: [] };
 const step = (name, extra = {}) => { log.steps.push({ name, ...extra }); console.log('✓', name, Object.keys(extra).length ? JSON.stringify(extra) : ''); };
@@ -57,7 +57,7 @@ const step = (name, extra = {}) => { log.steps.push({ name, ...extra }); console
 async function launch() {
   const started = Date.now();
   const app = await electron.launch({ executablePath: exe, env, timeout: 90_000,
-    args: process.env.URP_TEST_NO_SANDBOX === '1' ? ['--no-sandbox'] : [] }); // isolated container QA only
+    args: process.env.CERES_TEST_NO_SANDBOX === '1' ? ['--no-sandbox'] : [] }); // isolated container QA only
   const win = await app.firstWindow({ timeout: 60_000 });
   win.setDefaultTimeout(40_000);
   win.on('pageerror', (e) => log.errors.push(String(e.stack || e).slice(0, 300)));
@@ -108,9 +108,9 @@ try {
   await win.getByLabel('API Key').fill(KEY);
   await win.getByRole('button', { name: '添加', exact: true }).click();
   await win.getByText('已验证').first().waitFor();
-  const stored = JSON.parse(readFileSync(join(home, '.config/urp-workbench/credentials.json'), 'utf8'));
+  const stored = JSON.parse(readFileSync(join(home, '.config/ceres-workbench/credentials.json'), 'utf8'));
   assert.equal(stored['custom-stand-in'].api_key, KEY);
-  assert.equal(statSync(join(home, '.config/urp-workbench/credentials.json')).mode & 0o777, 0o600);
+  assert.equal(statSync(join(home, '.config/ceres-workbench/credentials.json')).mode & 0o777, 0o600);
   step('只填 Key 就连上模型', { selected: (await api(win, '/agent/providers')).selected });
 
   await win.evaluate(() => { location.hash = '#/agent'; });
@@ -213,7 +213,7 @@ try {
   if (appimage) {
     await app.close();
     await waitClosed(Number(new URL(base).port), 25_000);
-    Object.assign(env, { URP_NO_UPDATE: '0', APPIMAGE: appimage, URP_UPDATE_URL: `http://127.0.0.1:${packHost.address().port}` });
+    Object.assign(env, { CERES_NO_UPDATE: '0', APPIMAGE: appimage, CERES_UPDATE_URL: `http://127.0.0.1:${packHost.address().port}` });
     run = await launch();
     ({ app, win } = run);
     await win.evaluate(() => { location.hash = '#/system/desktop'; });

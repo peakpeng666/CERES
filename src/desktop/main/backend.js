@@ -8,6 +8,8 @@ const os = require('node:os');
 const path = require('node:path');
 const { dataLocations, prepareDataHome } = require('./data-home');
 
+const { normalizeEnvironment, configDirectory } = require('./env-compat');
+
 const PREFERRED_PORT = 4100;
 const START_TIMEOUT_MS = 120_000;
 const STOP_TIMEOUT_MS = 180_000;
@@ -66,28 +68,28 @@ function layout(app) {
 }
 
 function childEnv(app, port, settings) {
-  const env = { ...process.env };
+  const env = normalizeEnvironment();
   // The AppImage runtime exports its own library path; the bundled Python must not inherit it.
   for (const name of ['LD_LIBRARY_PATH', 'PYTHONHOME', 'PYTHONPATH', 'VIRTUAL_ENV']) delete env[name];
-  const config = path.join(os.homedir(), '.config', 'urp-workbench');
+  const config = configDirectory(env);
   const data = dataLocations(app, settings);
   return {
     ...env,
-    URP_DATA_HOME: data.root,
-    URP_LAB_RUNTIME: data.runtime,
-    URP_API_DB: data.archiveDb,
-    URP_CONFIG_DIR: config,
-    URP_LLM_CONFIG: path.join(config, 'llm.json'),
-    URP_LLM_CREDENTIALS: path.join(config, 'credentials.json'),
-    URP_PORT: String(port),
-    URP_MODELS_REFRESH: '1',
-    URP_DESKTOP: '1',
+    CERES_DATA_HOME: data.root,
+    CERES_LAB_RUNTIME: data.runtime,
+    CERES_API_DB: data.archiveDb,
+    CERES_CONFIG_DIR: config,
+    CERES_LLM_CONFIG: path.join(config, 'llm.json'),
+    CERES_LLM_CREDENTIALS: path.join(config, 'credentials.json'),
+    CERES_PORT: String(port),
+    CERES_MODELS_REFRESH: '1',
+    CERES_DESKTOP: '1',
     // Source Electron uses this checkout's ROS setup; packaged apps must use their accepted simulation image.
     // Derive this here so an inherited development flag cannot enable host ROS in an installed app.
-    URP_DESKTOP_SOURCE: app.isPackaged ? '0' : '1',
-    URP_APP_VERSION: app.getVersion(),
+    CERES_DESKTOP_SOURCE: app.isPackaged ? '0' : '1',
+    CERES_APP_VERSION: app.getVersion(),
     // The JS baselines run on this binary, so the installer does not carry a second Node.
-    URP_NODE: process.execPath,
+    CERES_NODE: process.execPath,
     ELECTRON_RUN_AS_NODE: '1',
     PYTHONDONTWRITEBYTECODE: '1',
     PYTHONUNBUFFERED: '1',
@@ -135,7 +137,7 @@ class Backend {
     fs.writeSync(log, `\n=== ${new Date().toISOString()} 启动后端 ${this.app.getVersion()} 端口 ${port} ===\n`);
     onStatus('正在启动后端');
     // Stdin stays open for the app's lifetime; the gateway leaves by itself if the app dies without saying goodbye.
-    this.child = spawn(python, ['-m', 'urp_lab', 'serve', '--port', String(port), '--no-archive', '--exit-with-stdin'],
+    this.child = spawn(python, ['-m', 'ceres_lab', 'serve', '--port', String(port), '--no-archive', '--exit-with-stdin'],
       { cwd, env: childEnv(this.app, port, this.settings), stdio: ['pipe', log, log], windowsHide: true });
     fs.closeSync(log);
     const child = this.child;

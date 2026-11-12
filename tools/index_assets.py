@@ -106,7 +106,7 @@ def restoration_view(entries, copies, copy_records, restoration_path):
         verified.append({**record, 'provider': 'drive', 'evidence_ref': f'copies.json#/copies/{i}'})
     if restoration_path.is_file():
         restoration = json.loads(restoration_path.read_text())
-        if (restoration.get('schema') != 'urp.asset-restoration/1'
+        if (restoration.get('schema') not in ('urp.asset-restoration/1', 'urp.asset-restoration/1')
                 or restoration.get('source_kind') != 'independent owner-held Space copies'):
             raise ValueError('Unsupported restoration evidence schema')
         for i, record in enumerate(restoration.get('current_report_assets', [])):

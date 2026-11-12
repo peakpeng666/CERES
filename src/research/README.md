@@ -5,7 +5,7 @@
 在本目录执行：
 
 ```sh
-python3 scripts/urp.py --help
+python3 scripts/ceres.py --help
 python3 scripts/test.py
 ```
 
@@ -13,7 +13,7 @@ python3 scripts/test.py
 
 | 入口 | 内容 |
 |---|---|
-| `src/urp_research/` | 研究模块与 CLI |
+| `src/ceres_research/` | 研究模块与 CLI |
 | [数据恢复](docs/DATA_RESTORE.md) | 本地实验包与校验命令 |
 | [NAS](docs/NAS_FIDELITY.md) | 训练保真度、重算与训练接口 |
 | [生成器](generator/README.md) | 装箱输入与模型执行器 |
@@ -25,7 +25,7 @@ python3 scripts/test.py
 
 ## CVRPLIB 实验入口
 
-`src/urp_research/cvrplib/` 包含真实 CVRPLIB 输入、统一端到端预算、恢复的经典基线及 PyVRP 0.14.0 ILS。运行 `python3 scripts/cvrplib.py --help` 查看命令，复现步骤见 [验收和复现说明](docs/CVRPLIB_READINESS.md)。
+`src/ceres_research/cvrplib/` 包含真实 CVRPLIB 输入、统一端到端预算、恢复的经典基线及 PyVRP 0.14.0 ILS。运行 `python3 scripts/cvrplib.py --help` 查看命令，复现步骤见 [验收和复现说明](docs/CVRPLIB_READINESS.md)。
 
 正式主批次已完成 **17 配置 × 53 问题 × 5 种子/重复 = 4505 项**。其中 4316 项独立验算可行，189 项无有效解，详见 [基线报告](../../experiments/baselines/cvrp/README.md)和 [归档重审](../../protocol/audits/20261017/README.md)。
 

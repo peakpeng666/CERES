@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "platform_id": "turtlebot4_humble_reference",
+  "checked_date": "2026-10-17",
+  "repository": "https://github.com/turtlebot/turtlebot4_simulator",
+  "branch_observed": "humble",
+  "commit": "0ea4a60c51e49ed4a9e25b4f9971ff0f0c9a08fe",
+  "package": "turtlebot4_ignition_bringup",
+  "package_version": "1.0.3",
+  "source_license": "Apache-2.0",
+  "ros_distro": "humble",
+  "os": {
+    "id": "ubuntu",
+    "version_id": "22.04"
+  },
+  "gazebo_major": 6,
+  "launch_file": "launch/turtlebot4_ignition.launch.py",
+  "world": "depot",
+  "model": "lite",
+  "namespace": "ceres_tb4_reference",
+  "ros_domain_id": "72",
+  "graphical_session_required": true,
+  "files": [
+    {
+      "path": "launch/turtlebot4_ignition.launch.py",
+      "git_blob_sha1": "107a14e056f4d8d426b82354ad73592df69d5c72"
+    },
+    {
+      "path": "launch/ignition.launch.py",
+      "git_blob_sha1": "32dcc6be3c0f1d4f9a207bc196d10a90ddb24381"
+    },
+    {
+      "path": "launch/turtlebot4_spawn.launch.py",
+      "git_blob_sha1": "de381ea4ec23ce51e34519dc1c1dfded8a2e34a7"
+    },
+    {
+      "path": "launch/ros_ign_bridge.launch.py",
+      "git_blob_sha1": "a8744164f9c8c2a9838871439adfa9bd2e6d0eda"
+    },
+    {
+      "path": "worlds/depot.sdf",
+      "git_blob_sha1": "c7f04c03800ce4dad8052d30ac7ae11c2e704c80"
+    },
+    {
+      "path": "package.xml",
+      "git_blob_sha1": "2909da152c9cd783becfb002c7808f4362c28327"
+    }
+  ],
+  "external_asset_uris": [
+    "https://fuel.gazebosim.org/1.0/OpenRobotics/models/Depot"
+  ],
+  "asset_versions_frozen": false,
+  "full_dependency_lock": false,
+  "scope": "Official robot/world/bridge bringup only; no CERES navigation task or physical acceptance is claimed.",
+  "official_manual": "https://turtlebot.github.io/turtlebot4-user-manual/software/turtlebot4_simulator.html",
+  "required_packages": [
+    "turtlebot4_ignition_bringup",
+    "turtlebot4_description",
+    "turtlebot4_msgs",
+    "turtlebot4_node",
+    "turtlebot4_navigation",
+    "turtlebot4_viz",
+    "turtlebot4_ignition_gui_plugins",
+    "turtlebot4_ignition_toolbox",
+    "irobot_create_description",
+    "irobot_create_common_bringup",
+    "irobot_create_nodes",
+    "irobot_create_ignition_bringup",
+    "irobot_create_ignition_plugins",
+    "irobot_create_ignition_toolbox",
+    "ros_ign_gazebo",
+    "ros_gz_bridge",
+    "tf2_ros"
+  ]
+}

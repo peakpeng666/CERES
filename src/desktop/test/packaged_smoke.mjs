@@ -21,7 +21,7 @@ if (!exe || !isAbsolute(exe) || !existsSync(exe) || !out || !isAbsolute(out) || 
   throw new Error('--exe must be an existing absolute executable; --out must be a new absolute directory');
 }
 mkdirSync(out, { recursive: true });
-const home = mkdtempSync(join(tmpdir(), 'urp-window-ci-'));
+const home = mkdtempSync(join(tmpdir(), 'ceres-window-ci-'));
 const KEY = 'local-smoke-key-0123456789';
 const calls = { models: 0, chats: 0 };
 const host = createServer((req, res) => {
@@ -53,7 +53,7 @@ const modelURL = `http://127.0.0.1:${host.address().port}`;
 const env = Object.fromEntries(['PATH', 'DISPLAY', 'XAUTHORITY', 'XDG_RUNTIME_DIR', 'LANG', 'LC_ALL', 'DBUS_SESSION_BUS_ADDRESS']
   .filter((key) => process.env[key]).map((key) => [key, process.env[key]]));
 Object.assign(env, { HOME: home, XDG_CONFIG_HOME: join(home, '.config'), XDG_DATA_HOME: join(home, '.local/share'),
-  XDG_CACHE_HOME: join(home, '.cache'), URP_DATA_HOME: join(home, 'data'), URP_NO_UPDATE: '1', URP_MODELS_URL: `${modelURL}/catalog` });
+  XDG_CACHE_HOME: join(home, '.cache'), CERES_DATA_HOME: join(home, 'data'), CERES_NO_UPDATE: '1', CERES_MODELS_URL: `${modelURL}/catalog` });
 const report = { executable: resolve(exe), mode: source ? 'source' : 'packaged', source: source || null, started: new Date().toISOString(), steps: [], rendererErrors: [],
   scope: 'Linux window, IPC, local mock model, JS solver, backup/restore, reopen; no physical execution or update installation' };
 const step = (name, extra = {}) => { report.steps.push({ name, ...extra }); console.log('✓', name, JSON.stringify(extra)); };
@@ -92,7 +92,7 @@ let logs;
 const ports = new Set();
 async function launch() {
   app = await electron.launch({ executablePath: exe, env, timeout: 90_000,
-    args: [...(process.env.URP_TEST_NO_SANDBOX === '1' ? ['--no-sandbox'] : []), ...(source ? [source] : [])] });
+    args: [...(process.env.CERES_TEST_NO_SANDBOX === '1' ? ['--no-sandbox'] : []), ...(source ? [source] : [])] });
   logs = join(await app.evaluate(({ app }) => app.getPath('userData')), 'logs');
   win = await app.firstWindow({ timeout: 60_000 });
   win.setDefaultTimeout(30_000);
@@ -130,7 +130,7 @@ try {
   await win.getByLabel('API Key').fill(KEY);
   await win.getByRole('button', { name: '添加', exact: true }).click();
   await win.getByText('已验证').first().waitFor();
-  const credentialFile = join(home, '.config/urp-workbench/credentials.json');
+  const credentialFile = join(home, '.config/ceres-workbench/credentials.json');
   assert.equal(JSON.parse(readFileSync(credentialFile, 'utf8'))['custom-stand-in'].api_key, KEY);
   assert.equal(statSync(credentialFile).mode & 0o777, 0o600);
   assert.ok(calls.models > 0);

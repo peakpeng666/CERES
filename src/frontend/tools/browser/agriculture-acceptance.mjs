@@ -1,13 +1,13 @@
-/** Production UI + actual gateway smoke. Run with disposable URP_LAB_RUNTIME, never a live database. */
+/** Production UI + actual gateway smoke. Run with disposable CERES_LAB_RUNTIME, never a live database. */
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { readJsonResponse, submittedRunId, waitForSuccessfulRun } from './agriculture-acceptance-contract.mjs';
-const base = process.env.URP_BASE_URL ?? 'http://127.0.0.1:4100';
+const base = process.env.CERES_BASE_URL ?? 'http://127.0.0.1:4100';
 assert.ok(['127.0.0.1', 'localhost'].includes(new URL(base).hostname));
-const output = process.env.URP_BROWSER_OUTPUT;
+const output = process.env.CERES_BROWSER_OUTPUT;
 assert.ok(output, 'Set a new output directory'); await fs.mkdir(output, { recursive: false });
-const browser = await chromium.launch({ headless: true, executablePath: process.env.URP_BROWSER_EXECUTABLE || undefined, args: ['--no-sandbox'] });
+const browser = await chromium.launch({ headless: true, executablePath: process.env.CERES_BROWSER_EXECUTABLE || undefined, args: ['--no-sandbox'] });
 const page = await browser.newPage({ viewport: { width: 1500, height: 1100 }, acceptDownloads: true });
 const checks = [], errors = [];
 page.on('pageerror', (e) => errors.push(e.message));

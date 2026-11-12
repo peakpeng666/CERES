@@ -38,7 +38,7 @@ def verify_archive(path):
     if file_sha(path)!=ARCHIVE_SHA256:raise ValueError('fuel_archive_identity_mismatch')
 
 def download_archive(private):
-    req=urllib.request.Request(f'https://api.github.com/repos/peakpeng666/URP/releases/assets/{ASSET_ID}',headers={'Accept':'application/vnd.github+json','User-Agent':'URP-isolated-acceptance'})
+    req=urllib.request.Request(f'https://api.github.com/repos/peakpeng666/URP/releases/assets/{ASSET_ID}',headers={'Accept':'application/vnd.github+json','User-Agent':'CERES-isolated-acceptance'})
     with urllib.request.urlopen(req,timeout=60) as response:data=response.read(1048577)
     if len(data)>1048576:raise ValueError('fuel_asset_metadata_oversized')
     meta=json.loads(data)

@@ -60,7 +60,7 @@ def clean(config):
             'TMPDIR': str(out / 'tmp'), 'XDG_CACHE_HOME': str(out / 'cache'),
             'MPLCONFIGDIR': str(out / 'cache/matplotlib'), 'PYTHONDONTWRITEBYTECODE': '1',
             'PYTHONNOUSERSITE': '1', 'PYTHONPATH': str(out / 'checkout/src/lab'),
-            'URP_LAB_RUNTIME': str(out / 'runtime'), 'URP_ROS_MAPS': str(out / 'maps')}
+            'CERES_LAB_RUNTIME': str(out / 'runtime'), 'CERES_ROS_MAPS': str(out / 'maps')}
 
 def anchored(config_path, expected):
     p = Path(config_path)

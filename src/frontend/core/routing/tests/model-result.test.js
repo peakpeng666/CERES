@@ -23,7 +23,7 @@ function distance(instance, routes) {
 }
 function reference(instance = INSTANCE, routes = SEPARATE) {
   return {
-    schema_version: 'urp-cvrp-solver-result/1', input_profile: 'cvrp-workbench-input-v1',
+    schema_version: 'ceres-cvrp-solver-result/1', input_profile: 'cvrp-workbench-input-v1',
     input: {...clone(instance), units: 'abstract'}, algorithm: 'pyvrp_ils_savings_warm',
     solver_version: '0.14.0', seed: 11,
     config: {cpu_budget_seconds: 1, wall_budget_seconds: 3, pyvrp_iterations: 1000000,

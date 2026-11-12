@@ -47,7 +47,7 @@ jobs:
           [[ "$REVIEWED_SOURCE_INDEX" =~ ^[0-9a-f]{64}$ ]]
           test "$(git -C control-checkout rev-parse HEAD)" = "$REVIEWED_REVISION"
           candidate="$GITHUB_WORKSPACE/control-checkout/ci/f2c-docker-candidate"
-          state="$RUNNER_TEMP/urp-docker-first-stage"
+          state="$RUNNER_TEMP/ceres-docker-first-stage"
           mkdir "$state"
           # Trusted workflow bootstrap verifies and copies held bytes BEFORE any candidate code.
           if python3 -I -B - "$candidate" "$state/control" "$REVIEWED_SOURCE_INDEX" 2> "$state/source-verification-stderr.log" <<'PYVERIFY'

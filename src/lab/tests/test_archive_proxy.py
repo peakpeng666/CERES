@@ -2,7 +2,7 @@
 import httpx
 from fastapi.testclient import TestClient
 
-from urp_lab.gateway import Config, create_app
+from ceres_lab.gateway import Config, create_app
 
 
 def test_proxy_retargets_host_and_validated_origin(tmp_path):

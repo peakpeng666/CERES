@@ -3,10 +3,10 @@ weights, detour representability, exposure accounting and executed speed caps.""
 import math
 import pytest
 
-from urp_lab.ground_risk import (SCHEMA, normalize_ground, exposure_line, risk_factor,
+from ceres_lab.ground_risk import (SCHEMA, normalize_ground, exposure_line, risk_factor,
                                  speed_profile, route_ground_stats)
-from urp_lab.scenarios.validate import validate_instance
-from urp_lab.solvers import fleet
+from ceres_lab.scenarios.validate import validate_instance
+from ceres_lab.solvers import fleet
 from test_backend_integrity import instance
 
 
@@ -126,7 +126,7 @@ def test_route_ground_stats_totals():
 
 
 def test_actuator_profile_and_sdf_audit_branch(tmp_path):
-    from urp_lab import field_physics, fieldworld
+    from ceres_lab import field_physics, fieldworld
     from test_backend_integrity import instance as base_inst, solution
     base = field_physics.profile()
     assert base['actuator_mode'] == 'velocity_servo' and base['wheel_torque_limit_nm'] == 8.0

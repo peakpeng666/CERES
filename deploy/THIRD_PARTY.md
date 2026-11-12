@@ -27,7 +27,7 @@ apply to new collaborator images and asset uploads.
 
 | Piece | Terms seen on 2026-10-19 | Decision |
 |---|---|---|
-| OpenRobotics Warehouse, version 5 | CC BY-NC-ND 4.0 | Do not redistribute. A user may download it from https://fuel.gazebosim.org with `urp fuel`. |
+| OpenRobotics Warehouse, version 5 | CC BY-NC-ND 4.0 | Do not redistribute. A user may download it from https://fuel.gazebosim.org with `ceres fuel`. |
 | MovAi shelf_big, version 2 | CC BY-NC-ND 4.0 | Do not redistribute. |
 | MovAi shelf, version 1 | CC BY-NC 4.0 | Do not put it in an unrestricted public image or Release. |
 | OpenRobotics Depot 6, Chair 3, foldable_chair 3, MaleVisitorOnPhone 2 | CC BY 4.0 | Redistribution would require attribution. They are not baked in. The warehouse world is incomplete without the NC/ND models, so a partial CC BY set is not shipped either. |
@@ -47,6 +47,6 @@ public snapshot listed above remains a separate review item.
 | CPython 3.12 (python-build-standalone) | astral-sh/python-build-standalone release used by uv | PSF licence and bundled-library notices in the runtime's `LICENSE.txt` |
 | Python dependencies | `src/lab/uv.lock` | per package, carried in each `*.dist-info` |
 | Microsoft Visual C++ runtime (Windows) | `msvc-runtime` wheel from PyPI | Microsoft redistributable licence; unmodified DLLs placed next to `python.exe` |
-| Model catalog snapshot | [models.dev](https://models.dev), trimmed by `urp_lab/agent/catalog.py` | MIT |
+| Model catalog snapshot | [models.dev](https://models.dev), trimmed by `ceres_lab/agent/catalog.py` | MIT |
 | MuJoCo | `mujoco` wheel from PyPI | Apache-2.0 |
-| TurtleBot4 official maps (depot, maze, warehouse; see NOTICE.txt beside them) | `turtlebot4_navigation`, unmodified copies in `src/lab/urp_lab/data/maps/` for machines without ROS | Apache-2.0 |
+| TurtleBot4 official maps (depot, maze, warehouse; see NOTICE.txt beside them) | `turtlebot4_navigation`, unmodified copies in `src/lab/ceres_lab/data/maps/` for machines without ROS | Apache-2.0 |

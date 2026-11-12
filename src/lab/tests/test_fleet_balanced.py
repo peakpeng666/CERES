@@ -6,10 +6,10 @@ from pathlib import Path
 
 import pytest
 
-from urp_lab import compose, field_coordination as fc
-from urp_lab.recommend import recommend
-from urp_lab.scenarios import validate_instance
-from urp_lab.solvers import catalog, fleet
+from ceres_lab import compose, field_coordination as fc
+from ceres_lab.recommend import recommend
+from ceres_lab.scenarios import validate_instance
+from ceres_lab.solvers import catalog, fleet
 
 
 def instance(text='在 90×60 米的果园里有一个池塘，3 台车访问 18 个点，单车容量 6', seed=42, objective='makespan'):
@@ -68,7 +68,7 @@ def test_the_estimate_is_the_same_every_time_and_above_the_constant_speed_figure
 def test_the_worker_records_an_optional_estimate_without_losing_the_fleet_run():
     scenario, inst = instance()
     request = {'scenario': {**scenario, 'problem_class': 'fleet_routing'}, 'instance': inst, 'algorithm_id': 'panel.sweep', 'params': {'time_limit_s': 1, 'seed': 1}}
-    done = subprocess.run([sys.executable, '-m', 'urp_lab.worker'], input=json.dumps(request), capture_output=True, text=True, cwd=Path(__file__).resolve().parents[1], timeout=120)
+    done = subprocess.run([sys.executable, '-m', 'ceres_lab.worker'], input=json.dumps(request), capture_output=True, text=True, cwd=Path(__file__).resolve().parents[1], timeout=120)
     result = json.loads(done.stdout)
     assert done.returncode == 0 and result['status'] == 'feasible' and result['routes']
     estimate = result['metrics']['execution_estimate']

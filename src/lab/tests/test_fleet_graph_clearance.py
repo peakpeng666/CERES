@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from shapely.geometry import LineString, Point, Polygon
 
-from urp_lab.solvers.fleet import Graph
+from ceres_lab.solvers.fleet import Graph
 
 
 def instance(a, b, *, obstacles=None, boundary=None, radius=1.):

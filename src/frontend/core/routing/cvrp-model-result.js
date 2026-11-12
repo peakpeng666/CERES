@@ -5,7 +5,7 @@
   } else root.CVRPModelResult = factory(root.CVRPResult, root.CVRPChecker);
 }(typeof globalThis !== 'undefined' ? globalThis : this, function (Reference, Checker) {
   'use strict';
-  const SCHEMA = 'urp-cvrp-model-result/1', MAX_BYTES = 256 * 1024, MAX_CUSTOMERS = 20;
+  const SCHEMA = 'ceres-cvrp-model-result/1', MAX_BYTES = 256 * 1024, MAX_CUSTOMERS = 20;
   const MODEL = Object.freeze({
     repository: 'Qwen/Qwen3-4B-GGUF',
     revision: 'bc640142c66e1fdd12af0bd68f40445458f3869b',

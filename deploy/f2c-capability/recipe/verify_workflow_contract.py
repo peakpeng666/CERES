@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   capability-only:
-    if: github.repository == 'peakpeng666/URP' && github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    if: github.repository == 'peakpeng666/CERES' && github.ref == 'refs/heads/fix/agriculture-compatibility-20261022' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-22.04
     timeout-minutes: 15
     env:

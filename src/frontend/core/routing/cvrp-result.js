@@ -5,7 +5,7 @@
   } else root.CVRPResult = factory(root.CVRPProblem, root.CVRPChecker);
 }(typeof globalThis !== 'undefined' ? globalThis : this, function (Problem, Checker) {
   'use strict';
-  const SCHEMA = 'urp-cvrp-solver-result/1', MAX_BYTES = 256 * 1024;
+  const SCHEMA = 'ceres-cvrp-solver-result/1', MAX_BYTES = 256 * 1024;
   function binding(instance, units) {
     Problem.validate(instance);
     if (instance.objective !== 'sum_unrounded_euclidean_distance') throw Error('不支持的目标函数');

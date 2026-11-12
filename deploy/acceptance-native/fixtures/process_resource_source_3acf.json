@@ -11,7 +11,7 @@
       }
     },
     {
-      "path": "src/lab/ros/urp_sim_session.py",
+      "path": "src/lab/ros/ceres_sim_session.py",
       "git_blob": "0e92e23fa08b6c4334fec02dd03aa0c7da7215b0",
       "sha256": "b6e990e0412520fc01c5466091bce9ffa5170df22ea11a0ecffe0779505d5535",
       "excerpts": {

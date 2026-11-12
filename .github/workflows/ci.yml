@@ -1,4 +1,4 @@
-name: URP engineering checks
+name: CERES engineering checks
 
 on:
   pull_request:
@@ -73,7 +73,7 @@ jobs:
       - name: Run all Lab contracts with required maps
         working-directory: src/lab
         env:
-          URP_ROS_MAPS: ${{ github.workspace }}/.local-state/ros-maps
+          CERES_ROS_MAPS: ${{ github.workspace }}/.local-state/ros-maps
         run: uv run --no-sync python -m pytest -vv --durations=30 --require-maps --junitxml=../../.local-state/agriculture-contracts/lab.xml
       - name: Exercise isolated dual-service HTTP flow and startup failure
         run: python3 tools/smoke_dual_service.py --output .local-state/agriculture-contracts/dual-service --port 4186 --archive-port 4187
@@ -226,7 +226,7 @@ jobs:
       - name: Validate a non-default published Compose port
         run: |
           for file in deploy/docker-compose.yml deploy/docker-compose.sim.yml; do
-            URP_PORT=4200 docker compose -f "$file" config --format json | python3 -c 'import json,sys; lab=json.load(sys.stdin)["services"]["lab"]; assert str(lab["environment"]["URP_PORT"]) == "4100"; assert any(str(p["published"]) == "4200" and p["target"] == 4100 for p in lab["ports"])'
+            CERES_PORT=4200 docker compose -f "$file" config --format json | python3 -c 'import json,sys; lab=json.load(sys.stdin)["services"]["lab"]; assert str(lab["environment"]["CERES_PORT"]) == "4100"; assert any(str(p["published"]) == "4200" and p["target"] == 4100 for p in lab["ports"])'
           done
       - name: Build and minimally execute native CVRP adapters
         run: |
@@ -296,9 +296,9 @@ jobs:
           $env:PATH = "$(Split-Path $gitBash);$env:PATH"
           # Bare process names may search System32 before PATH on Windows.
           # The Python fixture must launch this exact verified executable.
-          $env:URP_TEST_BASH = (Resolve-Path -LiteralPath $gitBash).ProviderPath
-          Write-Host "Quoted-value tests use $env:URP_TEST_BASH"
-          & $env:URP_TEST_BASH --version
+          $env:CERES_TEST_BASH = (Resolve-Path -LiteralPath $gitBash).ProviderPath
+          Write-Host "Quoted-value tests use $env:CERES_TEST_BASH"
+          & $env:CERES_TEST_BASH --version
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           Get-Command pwsh -ErrorAction Stop | Out-Null
           python -m unittest -v test_install_entrypoints.PowerShellStaticContractTests test_install_entrypoints.WindowsLauncherTests

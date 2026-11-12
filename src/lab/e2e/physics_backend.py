@@ -19,10 +19,10 @@ from xml.etree import ElementTree as ET
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from urp_lab import fieldworld, field_physics
-from urp_lab.field_dynamics import verify as verify_dynamics
-from urp_lab.scenarios.validate import fleet_routing
-from urp_lab.solvers import fleet
+from ceres_lab import fieldworld, field_physics
+from ceres_lab.field_dynamics import verify as verify_dynamics
+from ceres_lab.scenarios.validate import fleet_routing
+from ceres_lab.solvers import fleet
 
 
 def analyse(data):
@@ -108,7 +108,7 @@ def main():
             cmd='source /opt/ros/humble/setup.bash && exec bash setup/profile.sh simulation /usr/bin/python3 src/lab/ros/physics_probe.py --runtime '+shlex.quote(str(folder))
             begin=time.monotonic()
             with (folder/'supervisor.log').open('w') as log:
-                proc=subprocess.Popen(['bash','-c',cmd],env={**os.environ,'URP_ROS_DOMAIN_ID':'142'},
+                proc=subprocess.Popen(['bash','-c',cmd],env={**os.environ,'CERES_ROS_DOMAIN_ID':'142'},
                     cwd=root,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
                 try:
                     rc=proc.wait(timeout=150)

@@ -32,4 +32,4 @@ cd src/backend
 RESEARCH_CONSOLE_PACKAGE_ROOT=packages ../../.venv/bin/python -m unittest discover -s tests -p integration_backend.py
 ```
 
-历史记录中的派生数据库位于URP根目录相对路径 `data/backend/research.sqlite3`，来源与原验证记录为同目录 `SOURCE.json`，原声明为9个实验、672条路线。本轮没有将该历史数据库作为可写验收库。2026-10-17 的包集成验证使用独立临时库，覆盖5个通用实验包、690项指标和28个附件，核对导入前后的源文件哈希；记录见[本轮工程验收](../../docs/verification/20261017/engineering/summary.json)。
+历史记录中的派生数据库位于CERES根目录相对路径 `data/backend/research.sqlite3`，来源与原验证记录为同目录 `SOURCE.json`，原声明为9个实验、672条路线。本轮没有将该历史数据库作为可写验收库。2026-10-17 的包集成验证使用独立临时库，覆盖5个通用实验包、690项指标和28个附件，核对导入前后的源文件哈希；记录见[本轮工程验收](../../docs/verification/20261017/engineering/summary.json)。

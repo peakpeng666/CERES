@@ -6,7 +6,7 @@ import urllib.request
 
 
 def check(url=None):
-    port = int(os.environ.get('URP_PORT', '4100'))
+    port = int(os.environ.get('CERES_PORT', '4100'))
     def healthy(target):
         with urllib.request.urlopen(target, timeout=2) as response:
             payload = json.load(response)
@@ -18,7 +18,7 @@ def check(url=None):
     if url:  # Explicit single-endpoint probe retained for callers/tests.
         return
     # Read the effective server configuration, not this process's environment:
-    # --no-archive and URP_ARCHIVE_AUTOSTART=0 both select Lab-only readiness.
+    # --no-archive and CERES_ARCHIVE_AUTOSTART=0 both select Lab-only readiness.
     required = gateway.get('archive_required', True)
     if type(required) is not bool:
         raise RuntimeError('Gateway archive_required must be a boolean')

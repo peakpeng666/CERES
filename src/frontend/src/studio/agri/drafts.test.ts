@@ -9,7 +9,7 @@ import { pointInPolygon as editorPip, distToSegment } from '../editor/geometry';
 class MemStorage {
   m = new Map<string, string>(); quota = Infinity;
   getItem(k: string) { return this.m.has(k) ? this.m.get(k)! : null; }
-  setItem(k: string, v: string) { if (k !== '__urp_probe__' && v.length > this.quota) throw new DOMException('full', 'QuotaExceededError'); this.m.set(k, v); }
+  setItem(k: string, v: string) { if (k !== '__ceres_probe__' && v.length > this.quota) throw new DOMException('full', 'QuotaExceededError'); this.m.set(k, v); }
   removeItem(k: string) { this.m.delete(k); }
 }
 const p = AGRI_PATTERNS.find((x) => x.id === 'field-sampling')!;

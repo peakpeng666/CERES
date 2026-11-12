@@ -7,11 +7,11 @@ from pathlib import Path
 
 import pytest
 
-from urp_lab import recommend
-from urp_lab.agri import api, catalog as cat, check as checker, execution, mission, rig as rigs, solve, turns, worklines
-from urp_lab.scenarios.validate import PROBLEM_CLASSES, validate_instance
-from urp_lab.solvers import catalog as algorithm_catalog
-from urp_lab.solvers.fleet import check as check_fleet
+from ceres_lab import recommend
+from ceres_lab.agri import api, catalog as cat, check as checker, execution, mission, rig as rigs, solve, turns, worklines
+from ceres_lab.scenarios.validate import PROBLEM_CLASSES, validate_instance
+from ceres_lab.solvers import catalog as algorithm_catalog
+from ceres_lab.solvers.fleet import check as check_fleet
 
 BOOM = dict(environment='open_field', crop='wheat', operation='spraying_blanket', platform='row_tractor_120', implement='boom_mounted',
             field={'shape': 'rect', 'width_m': 300, 'height_m': 200}, overrides={'rate_per_ha': 150})
@@ -52,7 +52,7 @@ def test_catalog_ids_match_the_frontend_taxonomy():
 
 
 def test_crop_spacing_is_the_lane_model_not_a_second_copy():
-    from urp_lab import lanes
+    from ceres_lab import lanes
     for crop in cat.load()['crops']:
         if crop['lane']:
             assert crop['row_spacing_m']['v'] == lanes.CROPS[crop['lane']][0]

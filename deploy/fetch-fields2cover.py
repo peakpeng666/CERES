@@ -46,7 +46,7 @@ def manifests(root: Path):
     relative = PurePosixPath(wheel['wheel'])
     if relative.is_absolute() or '..' in relative.parts or relative.parts[:2] != ('vendor', 'wheels'):
         raise ValueError('Unsafe wheel path in manifest')
-    if snapshot['repository'] != 'peakpeng666/URP':
+    if snapshot['repository'] != 'peakpeng666/CERES':
         raise ValueError('Unexpected snapshot repository')
     asset = next(a for a in snapshot['assets'] if a['name'] == ASSET)
     return wheel, snapshot, asset, relative

@@ -1,4 +1,4 @@
-"""Copy URP evidence without caches or credentials; never rewrite original run records."""
+"""Copy CERES evidence without caches or credentials; never rewrite original run records."""
 from pathlib import Path
 import argparse,hashlib,json,shutil,sys,re,importlib.metadata as md
 ROOT=Path(__file__).resolve().parents[3];lab=ROOT/'src/lab'

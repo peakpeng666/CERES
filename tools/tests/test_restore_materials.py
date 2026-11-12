@@ -27,7 +27,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
         (self.root / 'storage.json').write_text('{"source_repository":"fixture"}')
         (self.root / 'setup').mkdir()
         self.manifest = self.root / 'setup/materials-archive.json'
-        self.archive = Path(temporary.name) / 'URP.zip'
+        self.archive = Path(temporary.name) / 'CERES.zip'
 
     def zip(self, files):
         with warnings.catch_warnings():
@@ -53,8 +53,8 @@ class HistoricalMaterialsTests(unittest.TestCase):
         return output.getvalue()
 
     def test_default_manifest_lists_then_restores_without_storage_archive_key(self):
-        self.zip({'URP/data/new.txt': b'material', 'URP/README.md': b'outside scope',
-                  'URP/data/.venv/cache': b'skip'})
+        self.zip({'CERES/data/new.txt': b'material', 'CERES/README.md': b'outside scope',
+                  'CERES/data/.venv/cache': b'skip'})
         summary = json.loads(self.run_restore('--list'))
         self.assertEqual(summary, {'files': 1, 'bytes': 8, 'archive_sha256': 'PASS',
                                    'matched_files': 1, 'existing_files': 0,
@@ -66,13 +66,13 @@ class HistoricalMaterialsTests(unittest.TestCase):
         self.assertEqual(json.loads(self.run_restore('--list'))['files'], 0)
 
     def test_explicit_manifest_can_select_a_separate_historical_fingerprint(self):
-        self.zip({'URP/papers/example.pdf': b'fixture'})
+        self.zip({'CERES/papers/example.pdf': b'fixture'})
         explicit = self.manifest.with_name('explicit.json')
         self.manifest.rename(explicit)
         self.assertEqual(json.loads(self.run_restore('--manifest', explicit, '--list'))['files'], 1)
 
     def test_missing_or_invalid_manifest_fails_before_writing(self):
-        self.zip({'URP/data/new.txt': b'fixture'})
+        self.zip({'CERES/data/new.txt': b'fixture'})
         for document in (None, {}, {'schema': 'urp.materials-archive/1', 'archive': {'bytes': True, 'sha256': '0' * 64}},
                          {'schema': 'urp.materials-archive/1', 'archive': {'bytes': 1, 'sha256': 'bad'}}):
             with self.subTest(document=document):
@@ -86,7 +86,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
                 self.assertFalse((self.root / 'data').exists())
 
     def test_size_and_sha_mismatch_reject_even_list_mode(self):
-        self.zip({'URP/data/new.txt': b'fixture'})
+        self.zip({'CERES/data/new.txt': b'fixture'})
         for field, value in [('bytes', self.record['archive']['bytes'] + 1), ('sha256', '0' * 64)]:
             with self.subTest(field=field):
                 document = {**self.record, 'archive': {**self.record['archive'], field: value}}
@@ -96,7 +96,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
                 self.assertFalse((self.root / 'data').exists())
 
     def test_tracked_and_conflicting_local_materials_are_never_overwritten(self):
-        self.zip({'URP/data/tracked.txt': b'archive', 'URP/data/local.txt': b'archive'})
+        self.zip({'CERES/data/tracked.txt': b'archive', 'CERES/data/local.txt': b'archive'})
         (self.root / 'data').mkdir()
         tracked = self.root / 'data/tracked.txt'
         tracked.write_bytes(b'original tracked evidence')
@@ -109,7 +109,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
         self.assertEqual(local.read_bytes(), b'different local evidence')
 
     def test_unsafe_member_or_include_fails_without_extracting(self):
-        self.zip({'URP/data/new.txt': b'valid', 'URP/data/../../escape': b'unsafe'})
+        self.zip({'CERES/data/new.txt': b'valid', 'CERES/data/../../escape': b'unsafe'})
         with self.assertRaisesRegex(SystemExit, 'Unsafe archive member'):
             self.run_restore()
         self.assertFalse((self.root / 'data').exists())
@@ -119,13 +119,13 @@ class HistoricalMaterialsTests(unittest.TestCase):
 
     def test_missing_root_empty_archive_and_unmatched_selection_are_errors(self):
         for members, args, message in [
-                ({'OTHER/data/material.txt': b'wrong root'}, (), 'no URP/ root'),
-                ({}, (), 'no URP/ root'),
-                ({'URP': b'not a directory', 'URP/data/material.txt': b'data'}, (), 'URP archive root is not a directory'),
-                ({'URP/': b''}, (), 'No material files match'),
-                ({'URP/README.md': b'no material'}, (), 'No material files match'),
-                ({'URP/data': b'not a material directory'}, (), 'Material root must be a directory'),
-                ({'URP/data/material.txt': b'data'}, ('--include', 'papers'), 'No material files match')]:
+                ({'OTHER/data/material.txt': b'wrong root'}, (), 'no CERES/ root'),
+                ({}, (), 'no CERES/ root'),
+                ({'CERES': b'not a directory', 'CERES/data/material.txt': b'data'}, (), 'CERES archive root is not a directory'),
+                ({'CERES/': b''}, (), 'No material files match'),
+                ({'CERES/README.md': b'no material'}, (), 'No material files match'),
+                ({'CERES/data': b'not a material directory'}, (), 'Material root must be a directory'),
+                ({'CERES/data/material.txt': b'data'}, ('--include', 'papers'), 'No material files match')]:
             with self.subTest(members=list(members), args=args):
                 self.zip(members)
                 with self.assertRaisesRegex(SystemExit, message):
@@ -134,7 +134,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
                 self.assertNotIn('Materials restored', self.last_output)
 
     def test_already_present_is_reported_without_claiming_a_restore(self):
-        self.zip({'URP/data/existing.txt': b'identical'})
+        self.zip({'CERES/data/existing.txt': b'identical'})
         destination = self.root / 'data/existing.txt'
         destination.parent.mkdir()
         destination.write_bytes(b'identical')
@@ -145,7 +145,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
         self.assertEqual(destination.read_bytes(), b'identical')
 
     def test_only_tracked_files_are_not_reported_as_present_or_restored(self):
-        self.zip({'URP/data/tracked.txt': b'archive'})
+        self.zip({'CERES/data/tracked.txt': b'archive'})
         path = self.root / 'data/tracked.txt'
         path.parent.mkdir()
         path.write_bytes(b'tracked')
@@ -159,23 +159,23 @@ class HistoricalMaterialsTests(unittest.TestCase):
         self.assertFalse(path.exists())
 
     def test_duplicate_and_normalized_alias_targets_fail_before_any_writes(self):
-        for index, duplicate in enumerate(('URP/data/repeat.txt', 'URP/data/./repeat.txt')):
+        for index, duplicate in enumerate(('CERES/data/repeat.txt', 'CERES/data/./repeat.txt')):
             with self.subTest(duplicate=duplicate):
-                self.zip([(f'URP/data/first-{index}.txt', b'must not be written'),
-                          ('URP/data/repeat.txt', b'first'), (duplicate, b'second')])
+                self.zip([(f'CERES/data/first-{index}.txt', b'must not be written'),
+                          ('CERES/data/repeat.txt', b'first'), (duplicate, b'second')])
                 with self.assertRaisesRegex(SystemExit, 'Duplicate material target'):
                     self.run_restore()
                 self.assertFalse((self.root / 'data').exists())
 
     def test_archive_file_directory_conflict_is_rejected_before_writes(self):
-        self.zip({'URP/data/first.txt': b'must not be written',
-                  'URP/data/parent': b'file', 'URP/data/parent/child.txt': b'child'})
+        self.zip({'CERES/data/first.txt': b'must not be written',
+                  'CERES/data/parent': b'file', 'CERES/data/parent/child.txt': b'child'})
         with self.assertRaisesRegex(SystemExit, 'Archive file conflicts with a child path'):
             self.run_restore()
         self.assertFalse((self.root / 'data').exists())
 
     def test_existing_parent_file_conflict_is_rejected_before_writes(self):
-        self.zip({'URP/data/first.txt': b'must not be written', 'URP/data/parent/child.txt': b'child'})
+        self.zip({'CERES/data/first.txt': b'must not be written', 'CERES/data/parent/child.txt': b'child'})
         parent = self.root / 'data/parent'
         parent.parent.mkdir()
         parent.write_bytes(b'local evidence')
@@ -192,7 +192,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
         evidence = self.root / 'tracked-evidence.txt'
         evidence.write_bytes(b'original evidence')
         subprocess.run(['git', '-C', str(self.root), 'add', evidence.name], check=True)
-        targets = [(self.root / '.git/hooks/urp-restore-fixture', False),
+        targets = [(self.root / '.git/hooks/ceres-restore-fixture', False),
                    (self.root / '.git/hooks', True), (external, True),
                    (evidence, False), (self.root / 'setup', True)]
         for index, (target, directory) in enumerate(targets):
@@ -200,28 +200,28 @@ class HistoricalMaterialsTests(unittest.TestCase):
                 link = data / f'link-{index}'
                 link.symlink_to(target, target_is_directory=directory)
                 relative = f'data/{link.name}/new.txt' if directory else f'data/{link.name}'
-                self.zip({f'URP/data/first-{index}.txt': b'must not be written',
-                          f'URP/{relative}': b'archive content'})
+                self.zip({f'CERES/data/first-{index}.txt': b'must not be written',
+                          f'CERES/{relative}': b'archive content'})
                 with self.assertRaisesRegex(SystemExit, 'Symbolic link in material destination'):
                     self.run_restore()
                 self.assertFalse((data / f'first-{index}.txt').exists())
                 self.assertEqual(evidence.read_bytes(), b'original evidence')
-        self.assertFalse((self.root / '.git/hooks/urp-restore-fixture').exists())
+        self.assertFalse((self.root / '.git/hooks/ceres-restore-fixture').exists())
         self.assertFalse((self.root / '.git/hooks/new.txt').exists())
         self.assertFalse((external / 'new.txt').exists())
         self.assertFalse((self.root / 'setup/new.txt').exists())
 
     def test_archive_symlink_is_rejected_before_writes(self):
-        link = zipfile.ZipInfo('URP/data/link')
+        link = zipfile.ZipInfo('CERES/data/link')
         link.create_system = 3
         link.external_attr = (0o120777 << 16)
-        self.zip([('URP/data/first.txt', b'must not be written'), (link, b'../../.git/hooks/fixture')])
+        self.zip([('CERES/data/first.txt', b'must not be written'), (link, b'../../.git/hooks/fixture')])
         with self.assertRaisesRegex(SystemExit, 'Symbolic link archive material'):
             self.run_restore()
         self.assertFalse((self.root / 'data').exists())
 
     def test_file_created_after_preflight_is_preserved(self):
-        self.zip({'URP/data/new.txt': b'archive'})
+        self.zip({'CERES/data/new.txt': b'archive'})
         destination = self.root / 'data/new.txt'
         original_open = Path.open
         injected = False
@@ -241,7 +241,7 @@ class HistoricalMaterialsTests(unittest.TestCase):
 
     def test_corrupt_payload_reports_partial_failure_without_overwriting_evidence(self):
         payload = b'payload with deliberately invalid CRC'
-        self.zip({'URP/data/first.txt': b'complete', 'URP/data/bad.txt': payload})
+        self.zip({'CERES/data/first.txt': b'complete', 'CERES/data/bad.txt': payload})
         raw = self.archive.read_bytes()
         self.assertEqual(raw.count(payload), 1)
         self.archive.write_bytes(raw.replace(payload, b'X' + payload[1:], 1))
@@ -258,10 +258,10 @@ class HistoricalMaterialsTests(unittest.TestCase):
         self.assertNotIn('PASS', self.last_output)
 
     def test_archive_path_replacement_cannot_change_the_verified_open_file(self):
-        self.zip({'URP/data/verified.txt': b'verified payload'})
+        self.zip({'CERES/data/verified.txt': b'verified payload'})
         replacement = self.archive.with_name('replacement.zip')
         with zipfile.ZipFile(replacement, 'w') as archive:
-            archive.writestr('URP/data/replacement.txt', b'unverified replacement')
+            archive.writestr('CERES/data/replacement.txt', b'unverified replacement')
         original_zip = zipfile.ZipFile
 
         def replace_after_verification(source, *args, **kwargs):

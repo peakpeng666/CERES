@@ -1,7 +1,7 @@
 /** Real loopback gateway smoke. Only minimal acceptance summaries are persisted; raw API records stay in memory. */
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
-const base = process.env.URP_BASE_URL ?? 'http://127.0.0.1:4100';
+const base = process.env.CERES_BASE_URL ?? 'http://127.0.0.1:4100';
 assert.ok(['127.0.0.1', 'localhost'].includes(new URL(base).hostname));
 const [input, output] = process.argv.slice(2); assert.ok(input && output);
 await fs.mkdir(output, { recursive: false });

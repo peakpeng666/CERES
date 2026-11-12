@@ -3,9 +3,9 @@ import re
 
 import pytest
 
-from urp_lab.evolve import dashboard as D
-from urp_lab.evolve import plans
-from urp_lab.evolve import terms as T
+from ceres_lab.evolve import dashboard as D
+from ceres_lab.evolve import plans
+from ceres_lab.evolve import terms as T
 
 
 def test_every_portfolio_configuration_has_a_readable_label_in_both_languages():

@@ -2,8 +2,8 @@
 import shutil
 from pathlib import Path
 import pytest
-from urp_lab import paths, scenarios
-from urp_lab.scenarios import field, maps, motion
+from ceres_lab import paths, scenarios
+from ceres_lab.scenarios import field, maps, motion
 
 @pytest.fixture
 def isolated_maps(tmp_path, monkeypatch):

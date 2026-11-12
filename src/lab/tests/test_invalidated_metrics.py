@@ -8,12 +8,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab import jobs
-from urp_lab.analysis import _value
-from urp_lab.assets.bindings import digest
-from urp_lab.experiment import record as experiment_record
-from urp_lab.export import export_compare, export_run
-from urp_lab.store import Store
+from ceres_lab import jobs
+from ceres_lab.analysis import _value
+from ceres_lab.assets.bindings import digest
+from ceres_lab.experiment import record as experiment_record
+from ceres_lab.export import export_compare, export_run
+from ceres_lab.store import Store
 
 
 RESULT_METRICS = {

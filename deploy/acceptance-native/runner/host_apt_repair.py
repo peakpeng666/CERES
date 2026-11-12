@@ -8,7 +8,7 @@ NEEDED={('pkgconf','pkg-config'),('libunwind-14-dev','libunwind-dev')}
 class Refuse(Exception):pass
 
 def host_gate(env,os_release,machine,architecture,setup_exit):
-    if env.get('URP_HOST_APT_REPAIR')!='1':raise Refuse('opt_in_missing')
+    if env.get('CERES_HOST_APT_REPAIR')!='1':raise Refuse('opt_in_missing')
     if env.get('GITHUB_ACTIONS')!='true' or env.get('RUNNER_ENVIRONMENT')!='github-hosted':raise Refuse('host_not_allowed')
     if os_release.get('ID')!='ubuntu' or os_release.get('VERSION_ID')!='22.04' or machine!='x86_64' or architecture!='amd64':raise Refuse('platform_not_allowed')
     if setup_exit!=100:raise Refuse('setup_exit_not_allowed')

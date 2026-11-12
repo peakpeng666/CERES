@@ -6,7 +6,7 @@ decision, not something that happens one feature at a time.
 import ast
 from pathlib import Path
 
-LAB = Path(__file__).resolve().parents[1] / 'urp_lab'
+LAB = Path(__file__).resolve().parents[1] / 'ceres_lab'
 
 CAPS = {  # module → max lines
     # 2026-10-18: ground-risk edges/detour corners + route ground stats raised this by

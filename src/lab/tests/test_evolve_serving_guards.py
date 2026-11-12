@@ -5,7 +5,7 @@ import os
 
 import pytest
 
-from urp_lab.evolve import features, serve
+from ceres_lab.evolve import features, serve
 
 
 def case():

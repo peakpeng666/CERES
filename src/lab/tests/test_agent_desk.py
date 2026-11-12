@@ -3,11 +3,11 @@ import json
 
 import pytest
 
-from urp_lab.agent import session as agent_session
-from urp_lab.agent import tools
-from urp_lab.agent.runner import AgentRunner, MAX_LLM_CALLS, RUNNER_VERSION, RunnerError
-from urp_lab.agent.session import AgentStore, new_session, public, set_step, short_title
-from urp_lab import paths
+from ceres_lab.agent import session as agent_session
+from ceres_lab.agent import tools
+from ceres_lab.agent.runner import AgentRunner, MAX_LLM_CALLS, RUNNER_VERSION, RunnerError
+from ceres_lab.agent.session import AgentStore, new_session, public, set_step, short_title
+from ceres_lab import paths
 
 
 def contract_session(text, **fields):

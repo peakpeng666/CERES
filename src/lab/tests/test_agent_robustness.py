@@ -6,10 +6,10 @@ import pytest
 
 import test_agent_runner_guards as guards
 from test_agent_runner_guards import FIELDS, PROVIDERS, Scripted, create, lab  # noqa: F401 - the fixture is reused as it stands
-from urp_lab.agent import prompts, tools
-from urp_lab.agent.runner import AgentRunner, _robustness_text, _template_report
-from urp_lab.agent.tools import ToolContext, ToolError
-from urp_lab.physics import PhysicsError
+from ceres_lab.agent import prompts, tools
+from ceres_lab.agent.runner import AgentRunner, _robustness_text, _template_report
+from ceres_lab.agent.tools import ToolContext, ToolError
+from ceres_lab.physics import PhysicsError
 
 
 def wait(runner, sid, limit_s=240):
@@ -190,7 +190,7 @@ def test_nothing_measured_means_nothing_said():
 
 
 def test_the_model_is_told_to_explain_the_difference_within_its_scope():
-    from urp_lab.agent.session import new_session
+    from ceres_lab.agent.session import new_session
     text = prompts.SYSTEM
     assert 'robustness' in text and '不是实车可靠性' in text and '车距保护停车' in text
     assert 'robustness' in prompts.state(new_session('llm', None), 'report', evidence={'robustness': evidence()})

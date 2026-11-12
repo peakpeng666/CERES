@@ -6,11 +6,11 @@ import json
 import numpy as np
 import pytest
 
-from urp_lab import recommend
-from urp_lab.evolve import features as F
-from urp_lab.evolve import instances as I
-from urp_lab.evolve import plans, serve
-from urp_lab.evolve.policy import LOG_FEATURES
+from ceres_lab import recommend
+from ceres_lab.evolve import features as F
+from ceres_lab.evolve import instances as I
+from ceres_lab.evolve import plans, serve
+from ceres_lab.evolve.policy import LOG_FEATURES
 
 FIELD = [[0, 0], [260, 0], [260, 140], [0, 140]]
 

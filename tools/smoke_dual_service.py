@@ -57,16 +57,16 @@ def run(output, port, archive_port):
     output.mkdir(parents=True, exist_ok=False)
     before = frozen_databases()
     url = f'http://127.0.0.1:{port}'
-    env = {**os.environ, 'URP_API_PORT': str(archive_port),
-           'URP_ARCHIVE_URL': f'http://127.0.0.1:{archive_port}', 'URP_ARCHIVE_AUTOSTART': '1',
-           'URP_BIND_HOST': '127.0.0.1', 'URP_ADMIN_TOKEN': ''}
+    env = {**os.environ, 'CERES_API_PORT': str(archive_port),
+           'CERES_ARCHIVE_URL': f'http://127.0.0.1:{archive_port}', 'CERES_ARCHIVE_AUTOSTART': '1',
+           'CERES_BIND_HOST': '127.0.0.1', 'CERES_ADMIN_TOKEN': ''}
     try:
         for phase in ('startup-failure', 'healthy'):
             phase_dir = output / phase
             phase_dir.mkdir()
-            phase_env = {**env, 'URP_API_DB': str(phase_dir / 'archive.sqlite3'),
-                         'URP_LAB_RUNTIME': str(phase_dir / 'lab'),
-                         'URP_PYTHON': '/urp-deliberately-missing/python' if phase == 'startup-failure'
+            phase_env = {**env, 'CERES_API_DB': str(phase_dir / 'archive.sqlite3'),
+                         'CERES_LAB_RUNTIME': str(phase_dir / 'lab'),
+                         'CERES_PYTHON': '/ceres-deliberately-missing/python' if phase == 'startup-failure'
                          else str(ROOT / '.venv/bin/python')}
             require_free_ports(port, archive_port)
             with (phase_dir / 'gateway.log').open('w') as log:

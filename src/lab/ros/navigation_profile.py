@@ -34,7 +34,7 @@ def create_profile(runtime, localization='amcl'):
     # The stock DWB controller repeatedly stalled when a new waypoint was behind
     # the robot after a completed FollowPath goal. Reuse the already validated
     # RPP controller, whose initial rotate-to-heading supports this transition.
-    # Nav2 still replans NavigateToPose; FollowPath still receives the URP path.
+    # Nav2 still replans NavigateToPose; FollowPath still receives the CERES path.
     changes['nav2']['controller_server']['FollowPath'] = dict(changes['nav2']['controller_server']['FollowCoverage'])
     changes['localization']['amcl']['tf_broadcast']=localization=='amcl'
     report = {'id': 'gazebo-precision-rpp-v2', 'scope': '仿真低噪声里程计；不适用于实机',

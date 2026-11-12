@@ -327,7 +327,7 @@ export function AgentPanel() {
         <div className={s.pad}>
           <Notice tone="warn">
             {status.data.reason}
-            <code className={s.setup}>export URP_LLM_API_KEY=… ; export URP_LLM_MODEL=glm-5.3 ; bash setup/run.sh lab</code>
+            <code className={s.setup}>export CERES_LLM_API_KEY=… ; export CERES_LLM_MODEL=glm-5.3 ; bash setup/run.sh lab</code>
           </Notice>
         </div>
       )}

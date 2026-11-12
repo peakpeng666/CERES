@@ -5,7 +5,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from urp_lab import gateway as shipped_gateway
+from ceres_lab import gateway as shipped_gateway
 
 
 @pytest.fixture

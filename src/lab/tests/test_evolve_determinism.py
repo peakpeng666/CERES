@@ -1,7 +1,7 @@
 """Determinism analysis: feasibility flips, hash reproducibility and Wilson intervals on synthetic repeats."""
 import json
 
-from urp_lab.evolve import determinism as D
+from ceres_lab.evolve import determinism as D
 
 
 def _job(src, k, group='feasible', status='feasible', sha='s'):
@@ -72,7 +72,7 @@ def test_route_budget_probe_smoke(tmp_path):
     """The probe replays a recorded task and reports per-setting hash counts (F2C + field cache required)."""
     import pytest
     pytest.importorskip('fields2cover')
-    from urp_lab.library import fields
+    from ceres_lab.library import fields
     if not fields.status()['downloaded']:
         pytest.skip('Fields2Benchmark not cached')
     # Preservation moved the raw records into the checked-in archive. Replay
@@ -93,7 +93,7 @@ def test_route_budget_probe_smoke(tmp_path):
     with zipfile.ZipFile(archive) as z:
         (records / f'{job_id}.json').write_bytes(z.read(f'evolve-audit-20261023/records/{job_id}.json'))
     cores = tuple(sorted(os.sched_getaffinity(0))[:2]) if hasattr(os, 'sched_getaffinity') else ()
-    from urp_lab.evolve import route_determinism as R
+    from ceres_lab.evolve import route_determinism as R
     out = R.probe(str(tmp_path), job_id, repeats=1, workers=2, cores=cores,
                   settings=('default', 'time_limit_10s'), write=False)
     assert set(out) == {'default', 'time_limit_10s'}

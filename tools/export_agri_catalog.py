@@ -8,7 +8,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'src/lab'))
 
-from urp_lab.agri import catalog as cat  # noqa: E402
+from ceres_lab.agri import catalog as cat  # noqa: E402
 
 
 def cell(c: dict, node, unit: str = '') -> str:

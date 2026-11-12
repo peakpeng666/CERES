@@ -13,11 +13,11 @@ import sys
 
 BUNDLE = '/etc/ssl/certs/ca-certificates.crt'
 ALIAS = '/usr/lib/ssl/cert.pem'
-RECEIPT = '/opt/urp-bootstrap-evidence/system-ca-default.json'
+RECEIPT = '/opt/ceres-bootstrap-evidence/system-ca-default.json'
 MAX_BUNDLE = 4 * 1024 * 1024
 MAX_RECEIPT = 16 * 1024
 DIRECTORIES = ('etc', 'etc/ssl', 'etc/ssl/certs', 'usr', 'usr/lib',
-               'usr/lib/ssl', 'opt', 'opt/urp-bootstrap-evidence')
+               'usr/lib/ssl', 'opt', 'opt/ceres-bootstrap-evidence')
 
 
 class Failure(RuntimeError):

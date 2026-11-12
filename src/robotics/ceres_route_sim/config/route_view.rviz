@@ -1,0 +1,29 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Class: ""
+  Global Options:
+    Fixed Frame: benchmark_xy
+    Background Color: 28; 31; 38
+    Frame Rate: 30
+  Displays:
+    - Class: rviz_default_plugins/MarkerArray
+      Name: Visit order ONLY (arbitrary units, not metres)
+      Enabled: true
+      Marker Topic:
+        Value: /ceres_routes/markers
+        Depth: 1
+        Durability Policy: Transient Local
+        Reliability Policy: Reliable
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Name: Current View
+      Scale: 50
+      Target Frame: <Fixed Frame>
+      X: 0
+      Y: 0
+Window Geometry:
+  Width: 1200
+  Height: 800

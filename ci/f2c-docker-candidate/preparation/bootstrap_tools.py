@@ -113,19 +113,19 @@ def install(lock_path,expected):
     diagnostic_phase('lock_schema')
     lock=validate_lock(json.loads(Path(lock_path).read_bytes()))
     diagnostic_phase('uv_measure')
-    for name,path in (('uv',Path('/opt/urp-uv/uv')),):
+    for name,path in (('uv',Path('/opt/ceres-uv/uv')),):
         r=lock['tools'][name]; s=regular(path)
         require(s.st_size==r['bytes'] and sha(path)==r['sha256'],'BOOTSTRAP_BYTES')
         require(version(name,path)==r['version'],'BOOTSTRAP_VERSION')
     diagnostic_phase('python_layout')
-    prefix=Path('/opt/urp-python'); staging=Path('/opt/urp-python-downloads')
+    prefix=Path('/opt/ceres-python'); staging=Path('/opt/ceres-python-downloads')
     require(not prefix.exists() and not staging.exists(),'FRESH_PYTHON_REQUIRED')
     env={**ENV,'HOME':'/root','UV_PYTHON_INSTALL_DIR':str(staging),'UV_NO_CACHE':'1','UV_NO_PROGRESS':'1','UV_NO_ENV_FILE':'1'}
     # Exact baseline selector uses the hash-bound distribution embedded in uv0.12.23.
     # uv verifies its embedded archive SHA; the independently pinned row above binds
     # that distribution. This does not claim an Ubuntu-signed CPython package.
     diagnostic_phase('python_download')
-    subprocess.run(['/opt/urp-uv/uv','python','install',PYTHON_KEY],env=env,stdin=subprocess.DEVNULL,check=True)
+    subprocess.run(['/opt/ceres-uv/uv','python','install',PYTHON_KEY],env=env,stdin=subprocess.DEVNULL,check=True)
     diagnostic_phase('python_layout')
     selected=staging/PYTHON_KEY
     require(selected.is_dir() and not selected.is_symlink(),'PYTHON_INSTALL_LAYOUT')
@@ -136,7 +136,7 @@ def install(lock_path,expected):
     require(actual=='3.12.13','PYTHON_VERSION')
     diagnostic_phase('receipt_measure')
     receipt={'schema':1,'tools':{}}
-    for name,path in (('uv','/opt/urp-uv/uv'),('python',str(python))):
+    for name,path in (('uv','/opt/ceres-uv/uv'),('python',str(python))):
         prov=({'kind':'uv-pinned-download','archive_sha256':PYTHON_SHA,'key':PYTHON_KEY} if name=='python' else {'kind':'pinned-github-action','action':lock['tools'][name]['action']})
         receipt['tools'][name]={'path':path,'version':actual if name=='python' else lock['tools'][name]['version'],'sha256':sha(path),'provenance':prov}
     diagnostic_phase('receipt_write')

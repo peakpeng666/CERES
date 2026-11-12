@@ -25,7 +25,7 @@ class AptDiagnosticTests(unittest.TestCase):
             self.assertIn('stdout',run.call_args_list[0].kwargs)
             self.assertEqual(run.call_args_list[1].args[0][0],'/usr/bin/python3')
             self.assertIn('--output',run.call_args_list[1].args[0])
-            output.assert_any_call('URP_APT_SOLVER_EXIT_100',flush=True)
+            output.assert_any_call('CERES_APT_SOLVER_EXIT_100',flush=True)
 
 
 

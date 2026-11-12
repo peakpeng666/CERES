@@ -139,7 +139,7 @@ function FleetMetrics({ run, sim, simLoading, hasSims, simError }: { run: Run; s
             <Cell label={verified != null ? '任务完成率（真值位置与停留）' : completed != null ? '控制器停留完成率' : '控制器到达率'} value={`${fmt.num((100 * simNumerator) / Math.max(1, m.tasks_total), 1)}%`} note={`${simNumerator} / ${m.tasks_total}；控制器到达 ${m.tasks_reached}${completed != null ? `、停留完成 ${completed}` : '；历史记录未区分完成停留'}；不表示作业质量`} tone={sim.r.state === 'canceled' ? 'warn' : simNumerator === m.tasks_total && sim.r.state === 'succeeded' ? 'good' : 'bad'} />
             <Cell label="仿真总里程" value={`${fmt.num(m.total_distance_m, 1)} m`} note={`规划 ${fmt.num(m.planned_total_distance_m, 1)} m；仿真轨迹独立显示，含接驳与转向`} />
             <Cell label="仿真最晚完成" value={fmt.sec(m.makespan_s)} note={`规划 ${fmt.sec(m.planned_makespan_s)}（匀速代理）；仿真结果含交通等待、接驳与转向`} />
-            <Cell label="路径跟踪误差" value={`${fmt.num(m.cross_track_mean_m, 3)} m`} note={`最大 ${fmt.num(m.cross_track_max_m, 2)} m；真值位置到跟踪路线的横向距离；URP 路径跟踪`} tone={m.cross_track_max_m > 0.5 ? 'warn' : 'good'} />
+            <Cell label="路径跟踪误差" value={`${fmt.num(m.cross_track_mean_m, 3)} m`} note={`最大 ${fmt.num(m.cross_track_max_m, 2)} m；真值位置到跟踪路线的横向距离；CERES 路径跟踪`} tone={m.cross_track_max_m > 0.5 ? 'warn' : 'good'} />
             <Cell label="交通与接触" value={traffic!.value} tone={traffic!.tone} note={`${sep ? `记录轨迹最近车距 ${sep.d.toFixed(2)} m（t=${sep.t.toFixed(0)} s）；` : ''}${traffic!.note}`} />
             <Cell label="异常" value={String(sim.d.anomalies.length)} note={sim.d.anomalies.slice(0, 2).map((x) => x.text).join('；') || '无'} tone={sim.d.anomalies.some((x) => x.tone === 'error') ? 'bad' : sim.d.anomalies.length ? 'warn' : 'good'} />
           </div>

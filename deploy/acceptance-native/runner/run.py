@@ -26,7 +26,7 @@ def classify(path, exit_code):
         return 'unknown'
     # A successfully repaired attempt is historical evidence. Only inspect
     # output after the latest wrapper-owned attempt boundary in this tail.
-    boundaries=list(re.finditer(r'^urp_install_attempt_start [12]\r?$',tail,re.MULTILINE))
+    boundaries=list(re.finditer(r'^ceres_install_attempt_start [12]\r?$',tail,re.MULTILINE))
     if boundaries:tail=tail[boundaries[-1].end():]
     # Require an explicit conflict edge, not mere mention of both packages.
     unwind=r'(?:libunwind-[0-9]{1,2}-dev[^\n]*conflicts(?::| on)[^\n]*libunwind-dev|libunwind-dev[^\n]*conflicts(?::| on)[^\n]*libunwind-[0-9]{1,2}-dev)'
@@ -61,9 +61,9 @@ def installation_step(path):
     except OSError:return 'unknown'
     step='unknown'
     for line in tail.splitlines():
-        if line == 'URP_INSTALL_PHASE registry_check':step='registry_check'
-        elif line.startswith('URP_INSTALL_PHASE '):step='other'
-        if not re.match(r'^\++URP_SETUP ',line):continue
+        if line == 'CERES_INSTALL_PHASE registry_check':step='registry_check'
+        elif line.startswith('CERES_INSTALL_PHASE '):step='other'
+        if not re.match(r'^\++CERES_SETUP ',line):continue
         if re.search(r'\bapt-get update(?:\s|$)',line):step='apt_update'
         elif re.search(r'\bapt-get install(?:\s|$)',line):step='apt_install'
         elif re.search(r'\b(?:uv|npm|cmake|g\+\+|python3|curl)\s',line):step='other'
@@ -88,10 +88,10 @@ def installation_trace_state(path):
         # The bounded tail may start in the middle of an arbitrary trace line.
         if start and line_offset==start:continue
         candidate=None
-        if line.startswith('URP_INSTALL_PHASE '):
-            marker=line.removeprefix('URP_INSTALL_PHASE ')
+        if line.startswith('CERES_INSTALL_PHASE '):
+            marker=line.removeprefix('CERES_INSTALL_PHASE ')
             if marker in INSTALL_PHASES:candidate=marker
-        elif re.match(r'^\++URP_SETUP ',line):
+        elif re.match(r'^\++CERES_SETUP ',line):
             if re.search(r'\bapt-get update(?:\s|$)',line):candidate='apt_update'
             elif re.search(r'\bapt-get install(?:\s|$)',line):candidate='apt_install'
             elif re.search(r'\bapt-get\s',line):candidate='apt'
@@ -252,7 +252,7 @@ def descendants(rows, roots):
 def select_runtime_profile(root, env):
     # Match setup/ubuntu/run-lab.sh without changing runtime fingerprint checks.
     if (pathlib.Path(root)/'src/lab/runtime/native/bridge/profile.json').is_file():
-        env['URP_SIM_PROFILE']='image'
+        env['CERES_SIM_PROFILE']='image'
 
 def simulation_entry(stage):
     """Explicit stage routing; ordinary acceptance budgets are unchanged."""
@@ -283,15 +283,15 @@ def run(args):
             env.pop(name, None)
     (private/'home/.local/bin').mkdir(parents=True)
     env.update(HOME=str(private/'home'), PYTHONDONTWRITEBYTECODE='1', LIBGL_ALWAYS_SOFTWARE='1',
-               URP_BIND_HOST='127.0.0.1', URP_RMW='rmw_cyclonedds_cpp',
+               CERES_BIND_HOST='127.0.0.1', CERES_RMW='rmw_cyclonedds_cpp',
                UV_PYTHON_INSTALL_DIR=str(private/'python'),
                PATH=str(private/'home/.local/bin') + ':' + env.get('PATH', ''))
     # CLI opt-in is required even if the caller exports the environment variable.
     # Temporary child environment only; preserve the source lock and SRI checks.
     env['npm_config_registry']='https://registry.npmjs.org'
     env['npm_config_replace_registry_host']='registry.npmmirror.com'
-    env.pop('URP_HOST_APT_REPAIR',None)
-    if getattr(args,'allow_host_apt_repair',False):env['URP_HOST_APT_REPAIR']='1'
+    env.pop('CERES_HOST_APT_REPAIR',None)
+    if getattr(args,'allow_host_apt_repair',False):env['CERES_HOST_APT_REPAIR']='1'
     stop = False
     def interrupted(signum, frame):
         nonlocal stop

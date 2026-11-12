@@ -71,8 +71,8 @@ def reconstruct(source,sim,solution,planner=None):
         # an installed alternate implementation as the reconstruction authority.
         lab=Path(source).resolve()/'src/lab';old=list(sys.path)
         try:
-            sys.path.insert(0,str(lab));module=importlib.import_module('urp_lab.simplan')
-            if Path(module.__file__).resolve()!=lab/'urp_lab/simplan.py':return None,'source_unavailable'
+            sys.path.insert(0,str(lab));module=importlib.import_module('ceres_lab.simplan')
+            if Path(module.__file__).resolve()!=lab/'ceres_lab/simplan.py':return None,'source_unavailable'
             planner=module.to_sim_plan
         except Exception:return None,'source_unavailable'
         finally:sys.path[:]=old

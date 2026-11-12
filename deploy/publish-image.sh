@@ -23,14 +23,14 @@ for tag in "${tags[@]}"; do
 done
 
 docker build -f "$dockerfile" \
-  --build-arg "URP_REVISION=${sha}" \
+  --build-arg "CERES_REVISION=${sha}" \
   --label "org.opencontainers.image.source=${source_url}" \
   --label "org.opencontainers.image.revision=${sha}" \
   --label "org.opencontainers.image.title=urp-${name}" \
   "${args[@]}" .
 
 bash deploy/test-image.sh "${image}:${sha}" "$sha" "$name" \
-  "${URP_IMAGE_TEST_OUTPUT:-.local-state/image-${name}}"
+  "${CERES_IMAGE_TEST_OUTPUT:-.local-state/image-${name}}"
 
 # The commit-shaped tag can be overwritten. Capture the digest reported by
 # this exact push, not a later resolution of that tag from the registry.

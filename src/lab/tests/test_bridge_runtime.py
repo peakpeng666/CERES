@@ -12,12 +12,12 @@ spec.loader.exec_module(bridge)
 
 def test_explicit_system_bridge_needs_no_local_build(monkeypatch, tmp_path):
     monkeypatch.setattr(bridge, 'SOURCE', tmp_path / 'missing')
-    monkeypatch.setenv('URP_BRIDGE_FIX', '0')
+    monkeypatch.setenv('CERES_BRIDGE_FIX', '0')
     assert bridge.bridge_environment() == {}
 
 
 def test_invalid_bridge_choice_is_not_silently_enabled(monkeypatch):
-    monkeypatch.setenv('URP_BRIDGE_FIX', 'maybe')
+    monkeypatch.setenv('CERES_BRIDGE_FIX', 'maybe')
     with pytest.raises(RuntimeError, match='0 或 1'):
         bridge.bridge_environment()
 
@@ -42,7 +42,7 @@ def _use_tree(monkeypatch, tmp_path, lib_bytes, binary_bytes, laptop_system_hash
     monkeypatch.setattr(bridge, 'SOURCE', source)
     monkeypatch.setattr(bridge, 'BUILD', build)
     monkeypatch.setattr(bridge, 'EXECUTABLE', binary)
-    monkeypatch.setenv('URP_BRIDGE_FIX', '1')
+    monkeypatch.setenv('CERES_BRIDGE_FIX', '1')
     return binary
 
 
@@ -82,7 +82,7 @@ def test_image_profile_is_ignored_unless_explicitly_selected(monkeypatch, tmp_pa
     })
     with pytest.raises(RuntimeError, match='验收指纹不同'):
         bridge.bridge_environment()
-    monkeypatch.setenv('URP_SIM_PROFILE', 'image')
+    monkeypatch.setenv('CERES_SIM_PROFILE', 'image')
     env = bridge.bridge_environment()
     assert str(tmp_path / 'build' / 'overlay') in env['AMENT_PREFIX_PATH']
 
@@ -92,17 +92,17 @@ def test_changed_dependency_cannot_fall_back_to_system_bridge(monkeypatch, tmp_p
     lib.write_bytes(b'changed dependency')
     (tmp_path / 'manifest.json').write_text(json.dumps({'sources': {}, 'system_files': {str(lib): 'unvalidated'}}))
     monkeypatch.setattr(bridge, 'SOURCE', tmp_path)
-    monkeypatch.setenv('URP_BRIDGE_FIX', '1')
+    monkeypatch.setenv('CERES_BRIDGE_FIX', '1')
     with pytest.raises(RuntimeError, match='指纹变化'):
         bridge.bridge_environment()
 
 
 @pytest.mark.parametrize('option,expected_issue', [('1', False), ('0', True), ('invalid', True)])
 def test_gateway_bridge_status_matches_requested_mode(monkeypatch, option, expected_issue):
-    from urp_lab.services import bridge_known_issues, bridge_note
-    from urp_lab.simclient import stopped_state
+    from ceres_lab.services import bridge_known_issues, bridge_note
+    from ceres_lab.simclient import stopped_state
 
-    monkeypatch.setenv('URP_BRIDGE_FIX', option)
+    monkeypatch.setenv('CERES_BRIDGE_FIX', option)
     assert bool(bridge_known_issues()) == expected_issue
     assert stopped_state()['known_issues'] == bridge_known_issues()
     if option == '0':

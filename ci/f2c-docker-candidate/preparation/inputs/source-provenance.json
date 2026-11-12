@@ -70,6 +70,6 @@
   "schema": 1,
   "scope": "compiler-build-only; application declaration/lock data only; no validation/Node/npm provisioning",
   "status": "candidate_code_not_native_executed",
-  "upstream_bundle": "urp_f2c_jammy_candidate_v7",
+  "upstream_bundle": "ceres_f2c_jammy_candidate_v7",
   "upstream_source_index_sha256": "b706328f71ecd03cee3e2fd3ff9f369110a6da94f25fbec2474f27f8b29c3e81"
 }

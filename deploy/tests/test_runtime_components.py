@@ -61,7 +61,7 @@ class WheelRecoveryTests(unittest.TestCase):
                     tar.addfile(entry, io.BytesIO(content))
         archive = self.root / fetch.ASSET
         subprocess.run(['zstd', '-q', '-f', str(raw), '-o', str(archive)], check=True)
-        snapshot = dict(repository='peakpeng666/URP', release_tag='test',
+        snapshot = dict(repository='peakpeng666/CERES', release_tag='test',
                         assets=[dict(name=fetch.ASSET, sha256=fetch.sha256(archive), bytes=archive.stat().st_size)])
         (self.root / 'setup/platform-snapshot.json').write_text(json.dumps(snapshot))
         return archive
@@ -192,7 +192,7 @@ class EntryGuardTests(unittest.TestCase):
         self.assertIn('f2c.Point(1.0, 2.0)', script)
 
     def test_runtime_missing_executable_is_failure(self):
-        result = runtime.command_check('missing', ['/does-not-exist/urp-python'])
+        result = runtime.command_check('missing', ['/does-not-exist/ceres-python'])
         self.assertFalse(result['passed'])
         self.assertIn('FileNotFoundError', result['error'])
 

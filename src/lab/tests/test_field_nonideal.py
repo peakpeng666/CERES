@@ -6,7 +6,7 @@ from xml.etree import ElementTree as ET
 
 import pytest
 
-from urp_lab import field_nonideal as ni, fieldworld
+from ceres_lab import field_nonideal as ni, fieldworld
 from test_backend_integrity import instance, solution
 
 
@@ -130,8 +130,8 @@ def test_estimator_dead_reckoning_fusion_and_smoothing():
 
 
 def test_slip_experiment_predicate_branches_gates():
-    from urp_lab.field_nonideal import slip_experiment
-    from urp_lab.field_dynamics import verify
+    from ceres_lab.field_nonideal import slip_experiment
+    from ceres_lab.field_dynamics import verify
     assert slip_experiment(None, None) is False
     assert slip_experiment({}, {'ground_friction': 1.0, 'wheel_friction': 1.0, 'wheel_contact': 'sphere'}) is False
     assert slip_experiment(None, {'ground_friction': 0.3}) is True
@@ -140,7 +140,7 @@ def test_slip_experiment_predicate_branches_gates():
     assert slip_experiment({'mode': 'nonideal'}, None) is False
     base = {
         'physics': {'schema': 'urp.field-diffdrive.rigid/5',
-                    'odometry_contract': __import__('urp_lab.field_physics', fromlist=['ODOMETRY_CONTRACT']).ODOMETRY_CONTRACT},
+                    'odometry_contract': __import__('ceres_lab.field_physics', fromlist=['ODOMETRY_CONTRACT']).ODOMETRY_CONTRACT},
         'truth_timing': {'latest_clock_samples': 0, 'tf_header_samples': 10},
         'vehicles': [{'name': 'vehicle_1'}],
         'rigid_body_poses': {'vehicle_1': [[i * 0.1, i * 0.01, 0, 0, 0, 0, 0] for i in range(20)]},
@@ -154,10 +154,10 @@ def test_slip_experiment_predicate_branches_gates():
 
 
 def test_dynamics_gate_branches_on_execution_mode():
-    from urp_lab.field_dynamics import verify
+    from ceres_lab.field_dynamics import verify
     base = {
         'physics': {'schema': 'urp.field-diffdrive.rigid/5',
-                    'odometry_contract': __import__('urp_lab.field_physics', fromlist=['ODOMETRY_CONTRACT']).ODOMETRY_CONTRACT},
+                    'odometry_contract': __import__('ceres_lab.field_physics', fromlist=['ODOMETRY_CONTRACT']).ODOMETRY_CONTRACT},
         'truth_timing': {'latest_clock_samples': 0, 'tf_header_samples': 10},
         'vehicles': [{'name': 'vehicle_1'}],
         'rigid_body_poses': {'vehicle_1': [[i * 0.1, i * 0.01, 0, 0, 0, 0, 0] for i in range(20)]},
@@ -179,7 +179,7 @@ def test_dynamics_gate_branches_on_execution_mode():
 
 def test_fieldcheck_nonideal_observation_gates():
     import numpy as np
-    from urp_lab.fieldcheck import verify_nonideal_observations
+    from ceres_lab.fieldcheck import verify_nonideal_observations
     gnss = ni.LOCALIZATION_PRESETS['light']['gnss']
     plan = {'execution': {'mode': 'nonideal', 'localization': {'gnss': gnss}},
             'vehicles': [{'name': 'vehicle_1', 'label': '车1'}]}

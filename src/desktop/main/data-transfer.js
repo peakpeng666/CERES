@@ -12,9 +12,9 @@ class DataTransfer {
 
   async command(args) {
     const { python, cwd } = layout(this.app);
-    const env = { ...childEnv(this.app, 4100, this.settings), URP_MODELS_REFRESH: '0' };
-    // Same working directory as Backend.start(): childEnv() drops PYTHONPATH, so urp_lab resolves only from the Lab folder.
-    const result = await run(python, ['-m', 'urp_lab', 'data', ...args], { cwd, env, timeoutMs: 0 });
+    const env = { ...childEnv(this.app, 4100, this.settings), CERES_MODELS_REFRESH: '0' };
+    // Same working directory as Backend.start(): childEnv() drops PYTHONPATH, so ceres_lab resolves only from the Lab folder.
+    const result = await run(python, ['-m', 'ceres_lab', 'data', ...args], { cwd, env, timeoutMs: 0 });
     if (result.code !== 0) {
       this.settings.set('lastTransfer', { state: 'failed', message: result.out || '数据迁移失败，当前数据未被覆盖' });
       throw new Error(result.out || '数据迁移失败，当前数据未被覆盖');

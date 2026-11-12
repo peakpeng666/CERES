@@ -4,9 +4,9 @@ from pathlib import Path
 import threading
 from types import SimpleNamespace as NS
 import unittest
-from urp_lab.execution_timing import budget_metadata, freeze_plan_budget
+from ceres_lab.execution_timing import budget_metadata, freeze_plan_budget
 
-SOURCE=Path(__file__).parents[1]/'urp_lab/simclient.py'
+SOURCE=Path(__file__).parents[1]/'ceres_lab/simclient.py'
 
 class StartupDispatch(unittest.TestCase):
     def client(self,alive=True,ready_at=1100,cancel_at=None,failed_at=None):

@@ -2,8 +2,8 @@
 import copy
 import json
 
-from urp_lab import analysis
-from urp_lab.planning import fingerprint
+from ceres_lab import analysis
+from ceres_lab.planning import fingerprint
 
 
 def run(i=0, a='a', cost=10, budget=1, *, pc='turn_routing'):
@@ -99,8 +99,8 @@ def test_nonparticipating_unknown_block_does_not_veto_complete_inference():
 
 
 def test_import_declaration_survives_real_submission_snapshot(monkeypatch):
-    from urp_lab import jobs, recommend
-    from urp_lab.scenarios import prepare_import
+    from ceres_lab import jobs, recommend
+    from ceres_lab.scenarios import prepare_import
     monkeypatch.setattr(recommend, 'recommend', lambda *a, **kw: {})
     source = dict(python='synthetic', packages={}, native_dependencies={}, python_executable='synthetic',
                   python_prefix='synthetic', node_executable=None, node_version=None, files={}, sha256='synthetic')
@@ -119,12 +119,12 @@ def test_import_declaration_survives_real_submission_snapshot(monkeypatch):
 def test_generator_protocol_groups_same_seed_variants_and_legacy_hash_aliases():
     rows = [run(i) for i in range(2)]
     for r in rows:
-        r['scenario_snapshot']['provenance'] = {'generator': 'urp_lab.scenarios.benchmark:cvrp_synthetic', 'seed': 3}
+        r['scenario_snapshot']['provenance'] = {'generator': 'ceres_lab.scenarios.benchmark:cvrp_synthetic', 'seed': 3}
     out = analysis.analyze(rows)
     assert out['block_contract']['n_declared_groups'] == 1
     assert out['block_contract']['reason_code'] == 'dependent_variants_require_design'
     a = run()
-    from urp_lab.planning import context
+    from ceres_lab.planning import context
     a['planning'] = context(a['scenario_snapshot'], a['instance'], a, resolve_map=False)
     a.pop('instance')
     b = dict(copy.deepcopy(a), run_id='alias', scenario_id='alias')

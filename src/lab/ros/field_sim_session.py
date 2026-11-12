@@ -35,12 +35,12 @@ ROOT = LAB.parents[1]
 DEPLOY = ROOT / 'setup/2026-10-15/deployment'
 EXTRAS = DEPLOY / 'runtime/ros-extras/root/opt/ros/humble'
 sys.path[:0] = [str(DEPLOY), str(LAB / 'ros'), str(LAB)]
-from urp_lab.field_tracking import Driver, truth_time  # noqa: E402
-from urp_lab.field_traffic import MissionQueue, PASSAGE_POLICY, POLICY, PassageQueue
-from urp_lab import sim2sim, time_windows
-from urp_lab.field_nonideal import (Estimator, LocalizationModel, slip_experiment,
+from ceres_lab.field_tracking import Driver, truth_time  # noqa: E402
+from ceres_lab.field_traffic import MissionQueue, PASSAGE_POLICY, POLICY, PassageQueue
+from ceres_lab import sim2sim, time_windows
+from ceres_lab.field_nonideal import (Estimator, LocalizationModel, slip_experiment,
                                    advance_innovation_guard, reset_guard_evidence)  # noqa: E402
-from urp_lab.field_actuation import WheelOdometry, MAX_FEEDBACK_GAP_S
+from ceres_lab.field_actuation import WheelOdometry, MAX_FEEDBACK_GAP_S
 from bridge_runtime import bridge_environment, bridge_provenance
 from processes import OwnedProcesses  # noqa: E402
 from physics_runtime import audit as audit_physics_runtime, selection as physics_selection
@@ -1111,7 +1111,7 @@ Window Geometry:
         vehicles = [self.vehicle_summary(d) for d in self.drivers]
         durations = [v['duration_s'] for v in vehicles if v['duration_s'] is not None]
         planned = self.plan.get('planned', {})
-        from urp_lab.field_energy import account
+        from ceres_lab.field_energy import account
         corridors = [c.get('polygon') for c in (self.plan.get('instance') or {}).get('corridors') or []]
         energy = {d.name: account(self.rigid_poses.get(d.name) or [], self.plan.get('physics'), corridors)
                   for d in self.drivers}
@@ -1201,7 +1201,7 @@ Window Geometry:
                       execution_started_sim_s=self.traffic.started if self.traffic else None,
                       vehicle_asset=self.plan.get('vehicle_asset'),
                       state='succeeded' if metrics['tasks_reached'] == metrics['tasks_total'] and metrics['vehicles_done'] == len(self.drivers) else 'failed')
-        from urp_lab.field_records import contact_metrics
+        from ceres_lab.field_records import contact_metrics
         result.update(contact_metrics(result, self.plan))
         if outcome is not None:
             result['state'] = outcome
@@ -1209,7 +1209,7 @@ Window Geometry:
         if self.execution_started:
             try:
                 # Geometry libraries stay in the locked Python 3.12 solver environment, outside ROS Python.
-                checked = subprocess.run([str(LAB / '.venv/bin/python'), '-m', 'urp_lab.fieldcheck', str(self.runtime)],
+                checked = subprocess.run([str(LAB / '.venv/bin/python'), '-m', 'ceres_lab.fieldcheck', str(self.runtime)],
                                          cwd=LAB, capture_output=True, text=True, timeout=30)
                 (self.runtime / 'check.stdout').write_text(checked.stdout)
                 (self.runtime / 'check.stderr').write_text(checked.stderr)

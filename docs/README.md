@@ -6,8 +6,8 @@
 
 | 报告 | 适合用途 | 配套源码 |
 |---|---|---|
-| [URP 研究进展简报（26 页 PDF）](reports/URP研究进展简报.pdf) | 快速了解项目、算法库、主要实验、系统集成与研究边界 | [LaTeX 源码](reports/URP研究进展简报_LaTeX源码.zip) |
-| [URP 项目研究进展报告（110 页 PDF）](reports/URP项目研究进展报告.pdf) | 阅读完整方法、结果分析、系统与仿真图、统计口径及证据索引 | [LaTeX 源码](reports/URP项目研究进展报告_LaTeX源码.zip) |
+| [CERES 研究进展简报（26 页 PDF）](reports/CERES研究进展简报.pdf) | 快速了解项目、算法库、主要实验、系统集成与研究边界 | [LaTeX 源码](reports/CERES研究进展简报_LaTeX源码.zip) |
+| [CERES 项目研究进展报告（110 页 PDF）](reports/CERES项目研究进展报告.pdf) | 阅读完整方法、结果分析、系统与仿真图、统计口径及证据索引 | [LaTeX 源码](reports/CERES项目研究进展报告_LaTeX源码.zip) |
 
 报告以冻结提交 `41e6bdc221cb` 标识研究实现；更早实验和镜像按各自原始版本解释。当前交付报告与源码包集中放在 `docs/reports/`；仓库根目录的 `reports/` 以及其他位置的历史报告、原始证据均原样保留，不被本目录替换。
 

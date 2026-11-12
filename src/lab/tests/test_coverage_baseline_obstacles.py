@@ -3,8 +3,8 @@ import copy
 import math
 import pytest
 from shapely.geometry import LineString, Polygon
-from urp_lab.solvers import coverage
-from urp_lab.solvers import coverage_baseline
+from ceres_lab.solvers import coverage
+from ceres_lab.solvers import coverage_baseline
 
 
 def instance(**changes):
@@ -92,7 +92,7 @@ def test_connector_budget_failure_is_explicit_not_a_truncated_success(monkeypatc
 def test_catalog_hash_tracks_actual_coverage_implementation():
     import hashlib
     from pathlib import Path
-    from urp_lab.solvers import catalog
+    from ceres_lab.solvers import catalog
     alg = next(a for a in catalog() if a['id'] == 'panel.boustrophedon')
     assert alg['origin'].endswith('/coverage_baseline.py')
     assert alg['version'] == hashlib.sha256(Path(coverage_baseline.__file__).read_bytes()).hexdigest()

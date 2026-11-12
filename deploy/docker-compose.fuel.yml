@@ -1,8 +1,8 @@
 # Mount a Fuel cache the user downloaded with deploy/fetch-fuel.sh.
 # The image and the public Releases do not contain these models.
-#   URP_FUEL_DIR=$HOME/.local/share/urp/fuel docker compose \
+#   CERES_FUEL_DIR=$HOME/.local/share/ceres/fuel docker compose \
 #     -f deploy/docker-compose.sim.yml -f deploy/docker-compose.fuel.yml up -d
 services:
   lab:
     volumes:
-      - ${URP_FUEL_DIR:?set URP_FUEL_DIR to the cache from deploy/fetch-fuel.sh}:/opt/urp/setup/2026-10-15/cache/ignition-fuel:ro
+      - ${CERES_FUEL_DIR:-${URP_FUEL_DIR:?set CERES_FUEL_DIR to the cache from deploy/fetch-fuel.sh}}:/opt/urp/setup/2026-10-15/cache/ignition-fuel:ro

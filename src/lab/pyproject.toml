@@ -1,7 +1,7 @@
 [project]
-name = "urp-lab"
+name = "ceres-lab"
 version = "0.1.0"
-description = "URP 科研面板：网关、求解适配、路径检查、推荐与仿真编排（不改写 src/research 冻结模块）"
+description = "CERES 科研面板：网关、求解适配、路径检查、推荐与仿真编排（不改写 src/research 冻结模块）"
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "fastapi==0.143.1",

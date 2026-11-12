@@ -1,7 +1,7 @@
 import copy,json,unittest
 from pathlib import Path
-from urp_research.turn_modes import checker,solver,oracle,evaluate_candidate
-from urp_research.turn_modes.generate_data import fixtures,grid
+from ceres_research.turn_modes import checker,solver,oracle,evaluate_candidate
+from ceres_research.turn_modes.generate_data import fixtures,grid
 class Tests(unittest.TestCase):
     def test_exact_solvers_reject_finite_fleet_limit(self):
         inst=fixtures()[1]

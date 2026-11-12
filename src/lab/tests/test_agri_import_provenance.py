@@ -2,8 +2,8 @@
 import copy
 import json
 import pytest
-from urp_lab import paths
-from urp_lab import scenarios
+from ceres_lab import paths
+from ceres_lab import scenarios
 
 
 def payload():
@@ -109,7 +109,7 @@ def test_concurrent_import_creates_once(tmp_path, monkeypatch):
 
 def test_http_duplicate_import_is_idempotent_and_changed_content_conflicts(tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
-    from urp_lab.gateway import Config, create_app
+    from ceres_lab.gateway import Config, create_app
     monkeypatch.setattr(paths, 'USER_SCENARIOS', tmp_path / 'scenarios')
     monkeypatch.setattr(scenarios, '_builtin', lambda: {})
     with TestClient(create_app(Config(runtime=tmp_path, background=False, extra_hosts={'testserver'}))) as client:

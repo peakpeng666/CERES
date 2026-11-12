@@ -1,6 +1,6 @@
 # APT print-uris is used for cache filenames ONLY, never as network authority.
 function reject() { bad=1; exit 44 }
-BEGIN { OFS="\t"; prefix="file:/opt/urp-bootstrap-evidence/repo/" }
+BEGIN { OFS="\t"; prefix="file:/opt/ceres-bootstrap-evidence/repo/" }
 /^\047/ {
     if (NF!=4 || $1 !~ /\047$/) reject()
     u=substr($1,2,length($1)-2)

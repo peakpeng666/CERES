@@ -7,7 +7,7 @@ import { copyPublicAssets } from './tools/optional-public.mjs';
 import { localApi } from './server/local-api.ts';
 
 const root = fileURLToPath(new URL('.', import.meta.url));
-const api = localApi(Number(process.env.URP_API_PORT ?? 4180), Number(process.env.URP_LAB_PORT ?? 4100));
+const api = localApi(Number(process.env.CERES_API_PORT ?? 4180), Number(process.env.CERES_LAB_PORT ?? 4100));
 
 // Files on a WSL-mounted Windows drive (/mnt/<letter>/...) do not raise inotify
 // events when edited from Windows, so the dev server polls there. Override with

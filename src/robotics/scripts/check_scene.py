@@ -4,8 +4,8 @@ import argparse
 import json
 from pathlib import Path
 import sys
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'urp_route_sim'))
-from urp_route_sim.scene_core import prepare_scene,read_json
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'ceres_route_sim'))
+from ceres_route_sim.scene_core import prepare_scene,read_json
 p=argparse.ArgumentParser()
 p.add_argument('scene_file')
 p.add_argument('--calibration-file')

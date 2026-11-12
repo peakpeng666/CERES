@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from urp_lab import jobs
+from ceres_lab import jobs
 
 
 NODE = '/selected/node'
@@ -114,7 +114,7 @@ def test_absent_node_remains_explicit_and_never_starts_a_probe(monkeypatch):
 
 def test_import_time_manifest_survives_only_a_successful_retry(monkeypatch):
     calls = _probe(monkeypatch, [_timeout(), 'v24.19.0\n'])
-    imported = runpy.run_path(str(Path(jobs.__file__)), run_name='urp_lab._node_probe_import')
+    imported = runpy.run_path(str(Path(jobs.__file__)), run_name='ceres_lab._node_probe_import')
     assert imported['_GATEWAY_IMPORT_MANIFEST']['node_version'] == 'v24.19.0'
     assert len(calls) == 2
 
@@ -123,7 +123,7 @@ def test_import_time_manifest_still_rejects_persistent_timeout(monkeypatch):
     calls = _probe(monkeypatch, [_timeout(), _timeout()])
     # run_path defines its own SourceChangedError class, as a fresh import does.
     with pytest.raises(RuntimeError, match='无法核对 Node 执行版本') as caught:
-        runpy.run_path(str(Path(jobs.__file__)), run_name='urp_lab._node_probe_import')
+        runpy.run_path(str(Path(jobs.__file__)), run_name='ceres_lab._node_probe_import')
     assert type(caught.value).__name__ == 'SourceChangedError'
     assert isinstance(caught.value.__cause__, subprocess.TimeoutExpired)
     assert len(calls) == 2

@@ -45,7 +45,7 @@ class StartupDiagnosticsTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             log=pathlib.Path(tmp)/'install'
             for line,expected in [('sudo apt-get install PRIVATE','apt_install'),('uv sync PRIVATE','uv'),('npm ci PRIVATE','npm'),('bash src/lab/ros/native/install-ros-extras.sh PRIVATE','native')]:
-                log.write_text('+URP_SETUP '+line+'\n')
+                log.write_text('+CERES_SETUP '+line+'\n')
                 self.assertEqual(installation_progress(log),expected)
 
 class UndockDiagnosticsTests(unittest.TestCase):

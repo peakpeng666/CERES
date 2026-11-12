@@ -19,7 +19,7 @@ class PhysicsBusy(RuntimeError):
 
 @contextmanager
 def physical_session(path=None):
-    path = Path(path) if path else Path.home() / '.cache' / 'urp' / 'physical-session.lock'
+    path = Path(path) if path else Path.home() / '.cache' / 'ceres' / 'physical-session.lock'
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_CLOEXEC | os.O_NOFOLLOW, 0o600)
     try:
@@ -27,7 +27,7 @@ def physical_session(path=None):
             fcntl.flock(fd, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             owner = os.read(fd, 4096).decode(errors='replace')
-            raise PhysicsBusy(f'已有 URP 物理会话运行，拒绝并发启动；请先关闭该会话。持有者：{owner}') from None
+            raise PhysicsBusy(f'已有 CERES 物理会话运行，拒绝并发启动；请先关闭该会话。持有者：{owner}') from None
         os.ftruncate(fd, 0)
         os.write(fd, json.dumps({'pid': os.getpid(), 'entry': Path(sys.argv[0]).name}).encode())
         yield

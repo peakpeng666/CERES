@@ -2,7 +2,7 @@
 
 源码开发与新安装入口统一为 `main`。Docker 默认使用通过镜像验收后发布的 `:main` 通道；原生安装检出 main 的实际提交。可复现安装优先使用已经发布镜像的完整 40 位 Git SHA，或经过发布验证的 `v*` 标签。`deploy` 与 `redo` 不再作为新安装入口。
 
-迁移补丁基线是 `028bae0e967894c9370460a0301cdf7c27b10965`。第一阶段 `3481c414` 已通过[工程 CI](https://github.com/peakpeng666/URP/actions/runs/42170504143)及[镜像发布流程](https://github.com/peakpeng666/URP/actions/runs/42170504225)，包含两镜像 smoke、匿名 digest 拉取、OCI revision 与 `/opt/urp/REVISION` 检查，两个 main 通道也已独立匿名复核。首次证据见 [当前索引](docs/current-index.md)。本次切换提交的 CI 仍须单独检查，真实 Windows/WSL 首装和旧客户端迁移验收仍待完成。Git SHA 与 registry digest `sha256:…` 是不同身份。旧分支与数据在覆盖及恢复验证完成前继续保留。
+迁移补丁基线是 `028bae0e967894c9370460a0301cdf7c27b10965`。第一阶段 `3481c414` 已通过[工程 CI](https://github.com/peakpeng666/URP/actions/runs/42170504143)及[镜像发布流程](https://github.com/peakpeng666/URP/actions/runs/42170504225)，包含两镜像 smoke、匿名 digest 拉取、OCI revision 与 `/opt/ceres/REVISION` 检查，两个 main 通道也已独立匿名复核。首次证据见 [当前索引](docs/current-index.md)。本次切换提交的 CI 仍须单独检查，真实 Windows/WSL 首装和旧客户端迁移验收仍待完成。Git SHA 与 registry digest `sha256:…` 是不同身份。旧分支与数据在覆盖及恢复验证完成前继续保留。
 
 默认 `full` 安装工作台、ROS 2 Humble / Gazebo Fortress、CVRP 基线和 Fields2Cover。日常使用见 [工作台使用说明](setup/README.md)，具体版本见 [依赖清单](deploy/DEPENDENCIES.md)。
 
@@ -37,21 +37,21 @@ PowerShell 的 WSL 路径与已下载的 Bash 脚本发现缺少基础工具时�
 
 ## 版本与组件
 
-新安装默认跟随 `main` 的已验收镜像通道，可能落后于 main 最新源码提交；不会把最新源码的部署文件与旧镜像混用。固定某次发布时，将 `URP_REF` 设为已发布的 `v*` 标签或完整 40 位提交号；镜像也使用该标签。完整 SHA 会与镜像的 OCI revision 核对，Compose 和 Fuel 脚本从镜像对应的源码提交下载。
+新安装默认跟随 `main` 的已验收镜像通道，可能落后于 main 最新源码提交；不会把最新源码的部署文件与旧镜像混用。固定某次发布时，将 `CERES_REF` 设为已发布的 `v*` 标签或完整 40 位提交号；镜像也使用该标签。完整 SHA 会与镜像的 OCI revision 核对，Compose 和 Fuel 脚本从镜像对应的源码提交下载。
 
 ```sh
 # 将 <完整提交号> 换成已发布镜像的 40 位 SHA
 curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
-  | URP_REF='<完整提交号>' bash
+  | CERES_REF='<完整提交号>' bash
 
 # 无 Docker 的 Ubuntu 源码部署从 main 检出实际提交
 curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
-  | URP_REF=main bash
+  | CERES_REF=main bash
 ```
 
-已安装后可用 `urp --ref <版本> update`。PowerShell 用 `$env:URP_REF = '<版本>'` 后执行安装命令，或给脚本传 `-Ref <版本>`。安装器保存选择，后续启动和更新沿用它；不会在找不到某个版本时切换到其他通道。已保存 `deploy` / `redo` 的安装不会静默切换：先从 main 重新取得安装器，明确选择 `main` 或已验证发布的完整 SHA 后更新。旧入口及旧命令仍可能引用旧分支，不能仅修改文档就删除这些分支。
+已安装后可用 `ceres --ref <版本> update`。PowerShell 用 `$env:CERES_REF = '<版本>'` 后执行安装命令，或给脚本传 `-Ref <版本>`。安装器保存选择，后续启动和更新沿用它；不会在找不到某个版本时切换到其他通道。已保存 `deploy` / `redo` 的安装不会静默切换：先从 main 重新取得安装器，明确选择 `main` 或已验证发布的完整 SHA 后更新。旧入口及旧命令仍可能引用旧分支，不能仅修改文档就删除这些分支。
 
-`--components` 与安装器的 `URP_COMPONENTS` 对应：
+`--components` 与安装器的 `CERES_COMPONENTS` 对应：
 
 | 组件 | 安装内容 |
 |---|---|
@@ -59,41 +59,41 @@ curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
 | `research` | 两套 Python 环境、Node / 前端、JDK 17、AILS 与 SISR；不安装 ROS |
 | `full`（默认） | 合并上面两组，并下载、校验和安装 Fields2Cover 及其系统库 |
 
-`research` 是当前 CVRP 数值基线环境。Docker 的 `urp-sim` 包含完整运行栈，`urp-bench` 包含规划与 CVRP 基线，不含 ROS / Fields2Cover。
+`research` 是当前 CVRP 数值基线环境。Docker 的 `ceres-sim` 包含完整运行栈，`ceres-bench` 包含规划与 CVRP 基线，不含 ROS / Fields2Cover。
 
-源码安装通过 `URP_COMPONENTS` 选择，默认 `full`。Docker 入口使用完整 `urp-sim` 镜像，不按组件裁剪：
+源码安装通过 `CERES_COMPONENTS` 选择，默认 `full`。Docker 入口使用完整 `ceres-sim` 镜像，不按组件裁剪：
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/peakpeng666/URP/main/install.sh \
-  | URP_COMPONENTS=full bash
+  | CERES_COMPONENTS=full bash
 ```
 
-已检出的源码直接运行 `bash setup/ubuntu/setup.sh --components full`。PowerShell 用 `$env:URP_COMPONENTS = 'full'`，该值会传入 WSL 安装器。源码规划与 Agent 开发使用 [lab-code 入口](setup/README.md#启动与停止)，历史 NAS 数据与整机快照见 [数据与恢复](setup/README.md#数据与恢复)。
+已检出的源码直接运行 `bash setup/ubuntu/setup.sh --components full`。PowerShell 用 `$env:CERES_COMPONENTS = 'full'`，该值会传入 WSL 安装器。源码规划与 Agent 开发使用 [lab-code 入口](setup/README.md#启动与停止)，历史 NAS 数据与整机快照见 [数据与恢复](setup/README.md#数据与恢复)。
 
 ## 启动、更新与停止
 
 ```sh
-urp up       # 启动
-urp status   # 健康检查
-urp update   # 更新所选发布；源码方式会重新准备依赖
-urp down     # 停止，保留数据
-urp fuel     # 按需下载 warehouse / depot 的上游模型
+ceres up       # 启动
+ceres status   # 健康检查
+ceres update   # 更新所选发布；源码方式会重新准备依赖
+ceres down     # 停止，保留数据
+ceres fuel     # 按需下载 warehouse / depot 的上游模型
 ```
 
-如果找不到 `urp`，使用 `~/.local/bin/urp`，或将 `~/.local/bin` 加入 PATH。PowerShell 可在当前窗口保存命令入口后调用：
+如果找不到 `ceres`，使用 `~/.local/bin/ceres`，或将 `~/.local/bin` 加入 PATH。PowerShell 可在当前窗口保存命令入口后调用：
 
 ```powershell
-$urp = [scriptblock]::Create((irm https://raw.githubusercontent.com/peakpeng666/URP/main/install.ps1))
-& $urp status
-& $urp down
-& $urp update
+$ceres = [scriptblock]::Create((irm https://raw.githubusercontent.com/peakpeng666/URP/main/install.ps1))
+& $ceres status
+& $ceres down
+& $ceres update
 ```
 
 浏览器打开 http://localhost:4100/ 。http://localhost:4100/lab/api/health 应返回 `"status":"ok"`；仿真运行时，Foxglove 和 Gazebo WebSocket 分别使用 `127.0.0.1:8765` 和 `127.0.0.1:9002`。
 
-Docker 的运行数据保存在 `urp-lab_lab-runtime` 和 `urp-lab_archive-data` 卷里，`urp down` 不删除它们。源码方式的场景和日志在 `src/lab/runtime`，可写档案库在 `.local-state`；`data/backend` 中的原始库保留。
+Docker 的运行数据保存在 `ceres-lab_lab-runtime` 和 `ceres-lab_archive-data` 卷里，`ceres down` 不删除它们。源码方式的场景和日志在 `src/lab/runtime`，可写档案库在 `.local-state`；`data/backend` 中的原始库保留。
 
-无 Docker 时，检出目录默认为 `~/.local/share/urp/src`；稀疏检出保留工作台和所需 CVRP 基线，排除大型原始仓库、训练数据及历史实验目录。Docker 只下载部署文件到 `~/.local/share/urp`，Windows 为 `%LOCALAPPDATA%\urp`。
+无 Docker 时，检出目录默认为 `~/.local/share/ceres/src`；稀疏检出保留工作台和所需 CVRP 基线，排除大型原始仓库、训练数据及历史实验目录。Docker 只下载部署文件到 `~/.local/share/ceres`，Windows 为 `%LOCALAPPDATA%\ceres`。
 
 ## 安装验载
 
@@ -112,10 +112,10 @@ python3 deploy/check-runtime.py --components full \
 
 首次发布后，维护者需检查两个包的可见性与仓库关联：
 
-- [urp-sim 设置](https://github.com/users/peakpeng666/packages/container/urp-sim/settings)
-- [urp-bench 设置](https://github.com/users/peakpeng666/packages/container/urp-bench/settings)
+- [ceres-sim 设置](https://github.com/users/peakpeng666/packages/container/urp-sim/settings)
+- [ceres-bench 设置](https://github.com/users/peakpeng666/packages/container/urp-bench/settings)
 
-在 **Package settings → Change package visibility → Public** 设置公开，并关联 `peakpeng666/URP`。工作流会检查匿名拉取；使用者不需要 GitHub 或 Docker 登录。拉取失败也可能是所选标签尚未发布，先核对标签和构建状态。
+在 **Package settings → Change package visibility → Public** 设置公开，并关联 `peakpeng666/CERES`。工作流会检查匿名拉取；使用者不需要 GitHub 或 Docker 登录。拉取失败也可能是所选标签尚未发布，先核对标签和构建状态。
 
 需要修改镜像时，在完整检出中构建：
 
@@ -123,11 +123,11 @@ python3 deploy/check-runtime.py --components full \
 docker compose -f deploy/docker-compose.sim.yml -f deploy/docker-compose.sim-build.yml build
 ```
 
-只运行规划与数值工作台、不启动 ROS 时，可使用 `deploy/docker-compose.yml` 中的 `urp-bench` 镜像；同样通过 `URP_IMAGE_TAG` 选择已发布标签。
+只运行规划与数值工作台、不启动 ROS 时，可使用 `deploy/docker-compose.yml` 中的 `ceres-bench` 镜像；同样通过 `CERES_IMAGE_TAG` 选择已发布标签。
 
 ## 资源与许可
 
-`maze` 不依赖 Fuel。`warehouse` 和 `depot` 先执行 `urp fuel`，再开启新会话；模型从 https://fuel.gazebosim.org 下载到使用者本机，安装与镜像构建不会自动下载它们。
+`maze` 不依赖 Fuel。`warehouse` 和 `depot` 先执行 `ceres fuel`，再开启新会话；模型从 https://fuel.gazebosim.org 下载到使用者本机，安装与镜像构建不会自动下载它们。
 
 Fields2Cover 从固定 Release 资源获取，校验 SHA256 后安装；原生安装与镜像使用同一份清单。其 BSD 声明随资源保留。Fuel 的非商业和禁止衍生条款、ROS/Foxglove 等依赖的许可见 [第三方说明](deploy/THIRD_PARTY.md)。旧平台快照的模型和运行数据仍按原清单单独管理。
 
@@ -148,20 +148,20 @@ WSL 启动器设置 `0.0.0.0` 监听与软件渲染，供 Windows 的 localhost 
 无界面的 Gazebo 仍会为传感器初始化 GLX。容器入口在没有 `DISPLAY` 时启动 `Xvfb :99`。已有桌面或 WSLg 显示时不替换。镜像默认 `LIBGL_ALWAYS_SOFTWARE=1`。要用 NVIDIA：
 
 ```sh
-URP_GPU=1 urp up
+CERES_GPU=1 ceres up
 ```
 
-Windows 使用支持 CUDA on WSL 的驱动，不要在 WSL 里再装 Linux 驱动。没有 NVIDIA 设备时不要加 `URP_GPU=1`。原生 Ubuntu 不走这个变量。
+Windows 使用支持 CUDA on WSL 的驱动，不要在 WSL 里再装 Linux 驱动。没有 NVIDIA 设备时不要加 `CERES_GPU=1`。原生 Ubuntu 不走这个变量。
 
 ## 指纹
 
-笔记本验收文件不改。系统库与验收记录一致时，只接受原来的二进制。镜像和别的机器在 `URP_SIM_PROFILE=image` 时使用编译出来的 `profile.json`。`URP_BRIDGE_FIX=0`、`URP_TF_FIX=0`、`URP_GUI_FIX=0` 只是对照开关。
+笔记本验收文件不改。系统库与验收记录一致时，只接受原来的二进制。镜像和别的机器在 `CERES_SIM_PROFILE=image` 时使用编译出来的 `profile.json`。`CERES_BRIDGE_FIX=0`、`CERES_TF_FIX=0`、`CERES_GUI_FIX=0` 只是对照开关。
 
-发布出去的 `urp-sim` 在构建时运行 `deploy/record-sim-profiles.py`，所以镜像里的指纹就是那次构建的产物。本地重新编译的二进制使用独立构建指纹。
+发布出去的 `ceres-sim` 在构建时运行 `deploy/record-sim-profiles.py`，所以镜像里的指纹就是那次构建的产物。本地重新编译的二进制使用独立构建指纹。
 
 ## 关闭接口
 
-`POST /lab/api/shutdown` 默认只接受回环地址。从 Windows 经 Docker 转发进来的连接会得到 403。关容器用 `urp down` 或 `docker compose stop`。关 WSL 或本机进程要在那个 Linux 里执行 `urp down`，这样连接才是回环。设置 `URP_ADMIN_TOKEN` 之后，所有关闭请求都要带 `X-URP-Admin-Token` 或 `Authorization: Bearer`。
+`POST /lab/api/shutdown` 默认只接受回环地址。从 Windows 经 Docker 转发进来的连接会得到 403。关容器用 `ceres down` 或 `docker compose stop`。关 WSL 或本机进程要在那个 Linux 里执行 `ceres down`，这样连接才是回环。设置 `CERES_ADMIN_TOKEN` 之后，所有关闭请求都要带 `X-CERES-Admin-Token` 或 `Authorization: Bearer`。
 
 Windows 上也可以双击 `启动实验台.bat`。它只调用 Docker 或 `wsl`，不在 Windows 里安装 Python。
 
@@ -170,11 +170,11 @@ Windows 上也可以双击 `启动实验台.bat`。它只调用 Docker 或 `wsl`
 | 现象 | 处理 |
 |---|---|
 | `docker pull` 要求登录或 403 | 核对标签是否已发布及包是否公开；使用者无需登录 |
-| 浏览器打不开 localhost:4100 | Docker 引擎是否已启动；WSL 里 `urp status` |
+| 浏览器打不开 localhost:4100 | Docker 引擎是否已启动；WSL 里 `ceres status` |
 | 页面 403，提示拒绝的 Host | 用 http://localhost:4100/ |
 | `sh` 脚本报 `$'\r'` | 项目自身的 `*.sh` 在 `.gitattributes` 里是 LF；`src/repos` 第三方快照按采集原字节保存（`-text`），其中个别脚本仍是 CRLF，运行前先转换副本 |
 | WSL 里仿真被杀掉 | 把 `setup/ubuntu/wslconfig.example` 复制为 Windows 用户目录的 `.wslconfig`，然后 `wsl --shutdown` |
-| warehouse 或 depot 报世界资源不完整 | `urp fuel`。maze 不需要 |
+| warehouse 或 depot 报世界资源不完整 | `ceres fuel`。maze 不需要 |
 | 指纹不符 | 核对源码、系统库和构建 profile 是否来自同一版本；重新按所选版本构建 |
 | 平台预检未通过 | 无 Docker 时需要 Ubuntu 22.04 x86_64；Windows 内需 WSL2，不能使用 WSL1 |
 | full 安装停在 Fields2Cover | 查看网络、固定 Release 资源和哈希检查日志；不要跳过后继续当作完整安装 |
@@ -193,7 +193,7 @@ Windows 上也可以双击 `启动实验台.bat`。它只调用 Docker 或 `wsl`
 | 路径 | RViz 会不会出现在你的屏幕上 |
 |---|---|
 | A. Docker，默认 | 不出现。容器用 Xvfb 只给 Gazebo 传感器提供 GL。浏览器看 Foxglove `ws://127.0.0.1:8765` 和 Gazebo `ws://127.0.0.1:9002`。 |
-| A. Docker，要看见窗口 | 在有显示的 Linux 上，或在已经有 WSLg 的 WSL 发行版里执行 Docker：`URP_DISPLAY=1 urp up`。这把 `/tmp/.X11-unix` 挂进容器，并把 `DISPLAY` 传进去。Windows PowerShell 直接调用的 Docker 看不到 WSLg 的套接字，那种情况请在 Ubuntu 22.04 发行版里执行上面的命令。 |
+| A. Docker，要看见窗口 | 在有显示的 Linux 上，或在已经有 WSLg 的 WSL 发行版里执行 Docker：`CERES_DISPLAY=1 ceres up`。这把 `/tmp/.X11-unix` 挂进容器，并把 `DISPLAY` 传进去。Windows PowerShell 直接调用的 Docker 看不到 WSLg 的套接字，那种情况请在 Ubuntu 22.04 发行版里执行上面的命令。 |
 | B. WSL2 + WSLg | 会打开。`setup/ubuntu/run-lab.sh` 发现已有 `DISPLAY` 就用它，不改成 Xvfb。在面板里打开 RViz 后，窗口出现在 Windows 桌面。没有 WSLg、`DISPLAY` 为空时，才用 Xvfb，窗口不可见。 |
 | C. 原生 Ubuntu | 会打开。脚本不设置 `LIBGL_ALWAYS_SOFTWARE`，已安装的 GPU 驱动直接画到本机 `DISPLAY`。 |
 

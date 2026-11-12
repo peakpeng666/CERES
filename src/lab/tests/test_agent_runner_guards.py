@@ -4,10 +4,10 @@ import time
 
 import pytest
 
-from urp_lab import paths
-from urp_lab.agent import llm
-from urp_lab.agent.runner import AgentRunner, RunnerError, _template_report
-from urp_lab.gateway import Config, Lab
+from ceres_lab import paths
+from ceres_lab.agent import llm
+from ceres_lab.agent.runner import AgentRunner, RunnerError, _template_report
+from ceres_lab.gateway import Config, Lab
 
 
 PROVIDERS = [llm.Provider(id='scripted', kind='openai', model='scripted', base_url='http://127.0.0.1:9')]
@@ -220,7 +220,7 @@ def test_nonfinite_model_tool_arguments_are_refused_without_corrupting_session(l
 
 
 def test_verification_step_needs_agreement_with_the_archived_result():
-    from urp_lab.agent.runner import _detail
+    from ceres_lab.agent.runner import _detail
     record = {'name': 'verify_run', 'result': {'recheck': {'valid': True, 'agrees': False}}}
     assert _detail(record) == '复核未通过'
     record['result']['recheck']['agrees'] = True
@@ -333,7 +333,7 @@ def test_describe_algorithm_reports_the_record_on_this_machine(lab):
 
 
 def test_capabilities_state_their_status_and_the_job_list_is_empty_when_idle(lab):
-    from urp_lab.agent.capabilities import capabilities, jobs
+    from ceres_lab.agent.capabilities import capabilities, jobs
     found = capabilities(lab)
     assert {s['id'] for s in found['simulators']} == {'gazebo.field', 'gazebo.tb4', 'mujoco.field'}
     assert next(s for s in found['simulators'] if s['id'] == 'mujoco.field')['status'] == 'ready'
@@ -371,7 +371,7 @@ def test_plans_the_model_already_checked_are_still_shown_once(lab):
 
 def physics_verdicts(monkeypatch, lab, fail_first=True):
     """The first plan the engine sees fails with the protection Gazebo would trigger; the rest pass."""
-    from urp_lab.agent import tools
+    from ceres_lab.agent import tools
     seen = []
     original = tools.registry
 
@@ -463,7 +463,7 @@ def test_a_failed_session_is_read_even_when_its_result_lands_late(lab):
 
 
 def test_without_gazebo_no_approval_is_requested_and_the_report_says_why(lab, monkeypatch):
-    monkeypatch.setattr('urp_lab.agent.tools.gazebo_gap', lambda: '这台电脑没有 ROS 2 和 Gazebo')
+    monkeypatch.setattr('ceres_lab.agent.tools.gazebo_gap', lambda: '这台电脑没有 ROS 2 和 Gazebo')
     runner, script, sid, session = create(lab, [{'content': '规划阶段结束。'}])
     assert session['state'] == 'done', session.get('error')
     assert not session['pending'] and not lab.test_sim_starts
@@ -491,7 +491,7 @@ class Strict(Scripted):
 
 @pytest.mark.parametrize('action', ['pause', 'cancel'])
 def test_stopping_between_tool_calls_answers_the_rest_so_the_session_can_continue(lab, monkeypatch, action):
-    from urp_lab.agent import runner as runner_module
+    from ceres_lab.agent import runner as runner_module
     script = Strict([
         {'calls': [('update_task_contract', {'fields': FIELDS | {'simulate': False}})]},
         {'content': '需求已写入合同。'},
@@ -532,8 +532,8 @@ def traffic_agent(monkeypatch):
     """Exercise production tool/control/watch methods without starting either engine."""
     import threading
     from types import SimpleNamespace
-    from urp_lab.agent import tools
-    from urp_lab.agent.session import new_session
+    from ceres_lab.agent import tools
+    from ceres_lab.agent.session import new_session
 
     session = new_session('rule', None)
     session.update(state='done', scenario_id='scene', run_ids=['run'], active_run_ids=['run'],
@@ -563,7 +563,7 @@ def traffic_agent(monkeypatch):
 
 @pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
 def test_gazebo_traffic_tool_passes_the_requested_mode(traffic_agent, traffic):
-    from urp_lab.agent import tools
+    from ceres_lab.agent import tools
     runner, session, starts = traffic_agent
     rec = tools.execute(runner.tools, tools.ToolContext(runner.lab, session), 'start_simulation',
                         {'run_id': 'run', 'traffic': traffic})
@@ -574,7 +574,7 @@ def test_gazebo_traffic_tool_passes_the_requested_mode(traffic_agent, traffic):
 
 @pytest.mark.parametrize('traffic', [None, True, [], '', 'parallel'])
 def test_gazebo_traffic_tool_rejects_invalid_mode_before_start(traffic_agent, traffic):
-    from urp_lab.agent import tools
+    from ceres_lab.agent import tools
     runner, session, starts = traffic_agent
     rec = tools.execute(runner.tools, tools.ToolContext(runner.lab, session), 'start_simulation',
                         {'run_id': 'run', 'traffic': traffic})
@@ -605,8 +605,8 @@ def test_gazebo_traffic_approval_warns_about_serial_lateness_only(traffic_agent,
 @pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
 def test_gazebo_traffic_watch_retains_result_windows_and_failures(traffic_agent, traffic):
     import threading
-    from urp_lab import time_windows
-    from urp_lab.agent.session import ensure_step
+    from ceres_lab import time_windows
+    from ceres_lab.agent.session import ensure_step
     runner, session, _ = traffic_agent
     plan = {'instance': {'tasks': [{'id': 1, 'label': 'T1', 'time_window': [20, 50]}]},
             'vehicles': [{'name': 'vehicle_1', 'label': '车 1'}],
@@ -629,7 +629,7 @@ def test_gazebo_traffic_watch_retains_result_windows_and_failures(traffic_agent,
 
 
 def test_gazebo_traffic_defaults_remain_serial_for_tools_and_user_control(traffic_agent):
-    from urp_lab.agent import tools
+    from ceres_lab.agent import tools
     runner, session, starts = traffic_agent
     rec = tools.execute(runner.tools, tools.ToolContext(runner.lab, session), 'start_simulation', {'run_id': 'run'})
     assert rec['status'] == 'ok' and starts[-1]['traffic'] == 'serial'
@@ -639,7 +639,7 @@ def test_gazebo_traffic_defaults_remain_serial_for_tools_and_user_control(traffi
 
 
 def test_gazebo_traffic_coordinated_preview_does_not_replace_serial_admission():
-    from urp_lab.agent.runner import _executed
+    from ceres_lab.agent.runner import _executed
     row = {'state': 'succeeded', 'check_valid': True,
            'time_windows': {'all_on_time': False, 'early_starts': 0},
            'coordinated': {'state': 'succeeded', 'check_valid': True,
@@ -652,7 +652,7 @@ def test_gazebo_traffic_coordinated_preview_does_not_replace_serial_admission():
 
 @pytest.mark.parametrize('traffic', ['serial', 'coordinated'])
 def test_gazebo_traffic_early_work_fails_the_selected_preview(traffic):
-    from urp_lab.agent.runner import _executed
+    from ceres_lab.agent.runner import _executed
     early = {'state': 'succeeded', 'check_valid': True, 'time_windows': {'all_on_time': True, 'early_starts': 1}}
     row = {**early, 'coordinated': early}
     assert not _executed(row, traffic)
@@ -660,7 +660,7 @@ def test_gazebo_traffic_early_work_fails_the_selected_preview(traffic):
 
 
 def test_gazebo_traffic_missing_coordinated_preview_is_not_serial_success():
-    from urp_lab.agent.runner import _executed
+    from ceres_lab.agent.runner import _executed
     row = {'state': 'succeeded', 'check_valid': True}
     assert _executed(row, 'serial') and not _executed(row, 'coordinated')
     assert not AgentRunner._physics_failed({'physics': {'run': row}}, 'run', 'coordinated'), 'an absent run is not a measured failure'
@@ -695,7 +695,7 @@ def test_gazebo_traffic_template_report_explains_unavailable_comparison():
 @pytest.mark.parametrize('check', [None, {'valid': False}])
 def test_gazebo_traffic_watch_requires_passed_actual_check(traffic_agent, check):
     import threading
-    from urp_lab.agent.session import ensure_step
+    from ceres_lab.agent.session import ensure_step
     runner, session, _ = traffic_agent
     result = {'state': 'succeeded', 'check': check, 'metrics': {}, 'errors': []}
     runner.lab.fieldsim = FakeField(['finished'], result)
@@ -710,7 +710,7 @@ def test_gazebo_traffic_watch_requires_passed_actual_check(traffic_agent, check)
 @pytest.mark.parametrize('violation', ['late', 'missing_task', 'early_service'])
 def test_gazebo_traffic_watch_rechecks_legacy_windows_before_claiming_success(traffic_agent, violation):
     import threading
-    from urp_lab.agent.session import ensure_step
+    from ceres_lab.agent.session import ensure_step
     runner, session, _ = traffic_agent
     plan = {'instance': {'tasks': [{'id': 1, 'label': 'T1', 'time_window': [20, 50]}]},
             'vehicles': [{'name': 'vehicle_1', 'label': '车 1'}], 'traffic': {'gates': {}}}
@@ -766,8 +766,8 @@ class SessionOwnedField:
 def test_session_ownership_resumed_old_watch_never_stops_or_reports_the_replacement(traffic_agent, saved):
     import threading
     from types import SimpleNamespace
-    from urp_lab.agent.runner import Paused
-    from urp_lab.agent.session import ensure_step
+    from ceres_lab.agent.runner import Paused
+    from ceres_lab.agent.session import ensure_step
 
     runner, session, _ = traffic_agent
     old = None if saved == 'missing' else {
@@ -812,8 +812,8 @@ def test_session_ownership_resumed_old_watch_never_stops_or_reports_the_replacem
 ])
 def test_session_ownership_cancel_stops_only_the_current_owned_session(traffic_agent, current, should_stop):
     import threading
-    from urp_lab.agent.runner import Cancelled
-    from urp_lab.agent.session import ensure_step
+    from ceres_lab.agent.runner import Cancelled
+    from ceres_lab.agent.session import ensure_step
     runner, session, _ = traffic_agent
     field = SessionOwnedField(current)
     runner.lab.fieldsim = field
@@ -855,7 +855,7 @@ def test_session_ownership_release_sends_expected_identity_to_close_the_race(tra
 def test_session_ownership_manager_checks_identity_inside_lifecycle_lock(requested, should_stop):
     import threading
     from types import SimpleNamespace
-    from urp_lab.fieldsim import FieldSimManager
+    from ceres_lab.fieldsim import FieldSimManager
     calls = []
 
     def stop():
@@ -882,7 +882,7 @@ def test_session_ownership_manager_checks_identity_inside_lifecycle_lock(request
 def test_session_ownership_mismatched_saved_result_cannot_enter_old_report(traffic_agent, identity):
     import threading
     from types import SimpleNamespace
-    from urp_lab.agent.session import ensure_step
+    from ceres_lab.agent.session import ensure_step
     runner, session, _ = traffic_agent
     foreign = {**identity, 'state': 'succeeded', 'check': {'valid': True},
                'metrics': {'total_distance_m': 5555.0}, 'errors': ['FOREIGN_RESULT_ERROR']}

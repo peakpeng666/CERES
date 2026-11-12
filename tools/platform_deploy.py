@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Download the pinned URP image, check its bytes, and operate an owned container.
+"""Download the pinned CERES image, check its bytes, and operate an owned container.
 
 Linux x86_64 and a working local Docker Engine are required. No root installation,
 host Python replacement, broad process killing, or automatic data deletion.
@@ -25,9 +25,9 @@ import time
 import urllib.request
 
 REPO = Path(__file__).resolve().parents[1]
-ROOT = '/home/peakpeng/Desktop/URP'
+ROOT = '/home/peakpeng/Desktop/CERES'
 LABEL = 'org.urp.deployment'
-SUPPLEMENT_MARKER = 'URP_ADDITIONAL_SNAPSHOT.json'
+SUPPLEMENT_MARKER = 'CERES_ADDITIONAL_SNAPSHOT.json'
 
 
 def run(*args, **kwargs):
@@ -66,7 +66,7 @@ def download(asset, directory, release):
             break
         if offset > asset['bytes']:
             raise ValueError(f'Partial file exceeds expected size: {partial}')
-        headers = {'User-Agent': 'URP-reproduce/1'}
+        headers = {'User-Agent': 'CERES-reproduce/1'}
         if offset:
             headers['Range'] = f'bytes={offset}-'
         request = urllib.request.Request(url, headers=headers)
@@ -223,7 +223,7 @@ def available(port):
         try:
             s.bind(('127.0.0.1', port))
         except OSError:
-            raise ValueError(f'Port {port} is occupied; stop the existing URP session first') from None
+            raise ValueError(f'Port {port} is occupied; stop the existing CERES session first') from None
 
 
 def main():
@@ -231,7 +231,7 @@ def main():
     p.add_argument('command', nargs='?', default='up', choices=['up', 'download', 'stop', 'status', 'logs', 'acceptance'])
     p.add_argument('--catalog', type=Path, default=REPO / 'setup/platform-image.json')
     p.add_argument('--assets-dir', type=Path, default=REPO / '.local-state/platform-image-download')
-    p.add_argument('--name', default='urp-platform')
+    p.add_argument('--name', default='ceres-platform')
     p.add_argument('--gui', action='store_true', help='Linux X11 native windows; requires an existing Xauthority file')
     p.add_argument('--acceptance', action='store_true', help='After startup run real Gazebo free-path and web checks')
     args = p.parse_args()
@@ -300,7 +300,7 @@ def main():
                            '--tmpfs', '/tmp:rw,nosuid,size=1g,mode=1777',
                            '-p', '127.0.0.1:4100:4100', '-p', '127.0.0.1:8765:8765', '-p', '127.0.0.1:9002:9002',
                            '--label', f'{LABEL}={commit}', '--stop-timeout', '180',
-                           '-e', 'URP_HOST_NETNS=' + os.readlink('/proc/self/ns/net')]
+                           '-e', 'CERES_HOST_NETNS=' + os.readlink('/proc/self/ns/net')]
                 for suffix, target in [('runtime', '/src/lab/runtime'), ('state', '/.local-state')]:
                     name = args.name + '-' + suffix
                     volume(name, commit)
@@ -312,9 +312,9 @@ def main():
                         raise ValueError('--gui requires DISPLAY and an existing XAUTHORITY; no xhost/security changes are made')
                     if not os.access(authority, os.R_OK):
                         raise ValueError('Cannot read XAUTHORITY')
-                    command += ['-e', f'DISPLAY={display}', '-e', 'URP_XAUTHORITY_INPUT=/tmp/urp-xauthority-input',
+                    command += ['-e', f'DISPLAY={display}', '-e', 'CERES_XAUTHORITY_INPUT=/tmp/ceres-xauthority-input',
                                 '--mount', 'type=bind,src=/tmp/.X11-unix,dst=/tmp/.X11-unix,readonly',
-                                '--mount', f'type=bind,src={authority.resolve()},dst=/tmp/urp-xauthority-input,readonly']
+                                '--mount', f'type=bind,src={authority.resolve()},dst=/tmp/ceres-xauthority-input,readonly']
                 run(*command, image)
                 if supplement:
                     install_supplement(args.name, catalog['supplement'], supplement)
@@ -335,7 +335,7 @@ def main():
             time.sleep(1)
         else:
             raise TimeoutError('Gateway health did not become ready; inspect reproduce logs')
-        print('URP 已启动：http://127.0.0.1:4100/；数据库与完整历史已恢复。', flush=True)
+        print('CERES 已启动：http://127.0.0.1:4100/；数据库与完整历史已恢复。', flush=True)
     if args.command == 'acceptance' or args.acceptance:
         item = owned_container(args.name, commit)
         if not item or not item['State']['Running']:

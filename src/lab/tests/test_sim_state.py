@@ -6,14 +6,14 @@ import sys
 import time
 from types import SimpleNamespace
 
-from urp_lab.services import ServiceManager
-from urp_lab.simclient import SimClient, stopped_state
-from urp_lab.store import Store
+from ceres_lab.services import ServiceManager
+from ceres_lab.simclient import SimClient, stopped_state
+from ceres_lab.store import Store
 
 
 @pytest.fixture
 def restarted(tmp_path, monkeypatch):
-    monkeypatch.setattr('urp_lab.simclient.http_json', lambda *a, **kw: (None, 'offline'))
+    monkeypatch.setattr('ceres_lab.simclient.http_json', lambda *a, **kw: (None, 'offline'))
     db = Store(tmp_path / 'test.sqlite')
     services = ServiceManager(runtime=tmp_path)
     client = SimClient(db, None, services)
@@ -32,7 +32,7 @@ def test_restart_response_carries_new_session(restarted):
 
 def test_late_poll_cannot_publish_previous_session(restarted, monkeypatch):
     old = {**restarted.state, 'phase': 'failed', 'errors': ['old error']}
-    monkeypatch.setattr('urp_lab.simclient.http_json', lambda *a, **kw: (200, old))
+    monkeypatch.setattr('ceres_lab.simclient.http_json', lambda *a, **kw: (200, old))
     restarted.poll_once()
     state = restarted.current_state()
     assert state['session_id'] == 'new' and not state['errors']
@@ -53,7 +53,7 @@ def test_adoption_requires_runtime_identity_and_expires_on_exit(tmp_path, monkey
     child = subprocess.Popen([sys.executable, '-c',
                               'import pathlib,sys,time; pathlib.Path(sys.argv[1]).touch(); time.sleep(60)', str(ready),
                               '--runtime', str(tmp_path / 'sim' / sid)],
-                             env={**os.environ, 'URP_SIM_SESSION': sid})
+                             env={**os.environ, 'CERES_SIM_SESSION': sid})
     try:
         deadline = time.monotonic() + 5
         while not ready.exists() and child.poll() is None and time.monotonic() < deadline:
@@ -61,7 +61,7 @@ def test_adoption_requires_runtime_identity_and_expires_on_exit(tmp_path, monkey
         assert ready.exists(), 'child did not finish exec before the ownership check'
         manager = ServiceManager(runtime=tmp_path)
         foreign = ServiceManager(runtime=tmp_path / 'other-runtime')
-        monkeypatch.setattr('urp_lab.services.pid_listening', lambda _: child.pid)
+        monkeypatch.setattr('ceres_lab.services.pid_listening', lambda _: child.pid)
         monkeypatch.setattr(manager, 'changed', lambda: None)
         monkeypatch.setattr(foreign, 'changed', lambda: None)
         state = {'session_id': sid, 'world': 'maze'}

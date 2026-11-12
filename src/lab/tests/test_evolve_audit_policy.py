@@ -5,7 +5,7 @@ import math
 import numpy as np
 import pytest
 
-from urp_lab.evolve import audit, instances, policy
+from ceres_lab.evolve import audit, instances, policy
 
 
 def _matrix(cost, groups=None):
@@ -120,7 +120,7 @@ def test_split_rule():
 
 
 def test_repair_portfolio_and_labels():
-    from urp_lab.evolve import plans
+    from ceres_lab.evolve import plans
     assert len(plans.REPAIR_PORTFOLIO) == 6
     assert all(c.startswith(('repair:none/', 'repair:boustrophedon/')) for c in plans.REPAIR_PORTFOLIO)
     assert all(a == 'evolve.f2c_repair' and p['turn_model'] == 'dubins' for a, p in plans.REPAIR_PORTFOLIO.values())
@@ -129,8 +129,8 @@ def test_repair_portfolio_and_labels():
 
 def test_export_static_model_is_fingerprinted_and_greedy(tmp_path):
     """A static export carries the greedy order, training means and the scope cloud — no learned payload."""
-    from urp_lab.evolve import features as F
-    from urp_lab.evolve import plans
+    from ceres_lab.evolve import features as F
+    from ceres_lab.evolve import plans
     rng = np.random.default_rng(5)
     configs = list(plans.COVERAGE_PORTFOLIO)
     n, k = 30, len(configs)

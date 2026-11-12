@@ -6,7 +6,7 @@ from pathlib import Path
 import unittest
 from test_session_action_cancellation import session, Interrupted
 
-SOURCE=Path(__file__).parents[1]/'ros/urp_sim_session.py'
+SOURCE=Path(__file__).parents[1]/'ros/ceres_sim_session.py'
 tree=ast.parse(SOURCE.read_text())
 ns={'math':math}
 exec(compile(ast.Module(body=[n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='UndockTiming'],type_ignores=[]),str(SOURCE),'exec'),ns)

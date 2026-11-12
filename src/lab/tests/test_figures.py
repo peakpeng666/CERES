@@ -6,10 +6,10 @@ import zipfile
 
 import pytest
 
-from urp_lab import analysis
-from urp_lab.figures import BY_KEY, SPECS, Style, catalog, render
-from urp_lab.figures import data as D
-from urp_lab.figures import registry
+from ceres_lab import analysis
+from ceres_lab.figures import BY_KEY, SPECS, Style, catalog, render
+from ceres_lab.figures import data as D
+from ceres_lab.figures import registry
 
 
 def _inst():
@@ -170,13 +170,13 @@ def test_recommendation_ties_are_not_misses():
         if r['algorithm']['id'] == 'ortools.fleet':
             base = next(x for x in runs if x['scenario_id'] == r['scenario_id'] and x['algorithm']['id'] == 'pyvrp.fleet')
             r['objective']['value'] = base['objective']['value'] * (1 + 1e-7)
-    from urp_lab.figures import study
+    from ceres_lab.figures import study
     t = study.selection_table(runs)
     assert t['n'] == 4 and t['hits'] == 4
 
 
 def test_traces_of_another_objective_are_not_plotted(ctx):
-    from urp_lab.analysis import trace_matches
+    from ceres_lab.analysis import trace_matches
     other = ctx.runs[1]
     other['trace'] = [[0.01, 9999.0], [0.2, 5000.0]]          # e.g. a solver reporting its internal distance on a makespan map
     assert not trace_matches(other) and trace_matches(ctx.runs[0])
@@ -187,8 +187,8 @@ def test_traces_of_another_objective_are_not_plotted(ctx):
 
 def test_figure_history_uses_submitted_snapshot_and_rejects_mixed_sources(monkeypatch):
     from types import SimpleNamespace
-    from urp_lab import scenarios
-    from urp_lab.services import ServiceError
+    from ceres_lab import scenarios
+    from ceres_lab.services import ServiceError
     run = _run('run1', 'pyvrp.fleet')
     lab = SimpleNamespace(store=SimpleNamespace(get_run=lambda _: run, list_runs=lambda **_: []),
                           fieldsim=SimpleNamespace(results=lambda _: [], result=lambda _: {'run_id': 'different'}))
@@ -271,7 +271,7 @@ def test_track_map_does_not_index_pose_array_by_control_cycle_index(ctx):
 
 def test_refresh_anytime_export_denominator_and_malformed_convergence(ctx):
     import copy
-    from urp_lab.figures import study, charts
+    from ceres_lab.figures import study, charts
     good = copy.deepcopy(ctx.runs[0])
     failed = dict(copy.deepcopy(good), run_id='synthetic-error', state='error', trace=[])
     ctx.analysis = analysis.analyze([good, failed])
@@ -289,7 +289,7 @@ def test_refresh_anytime_export_denominator_and_malformed_convergence(ctx):
 
 def test_refresh_space_export_renders_all_legal_panels_and_provenance(ctx):
     import copy
-    from urp_lab.figures import study
+    from ceres_lab.figures import study
     second = copy.deepcopy(ctx.study_runs)
     for r in second:
         r['params']['time_limit_s'] = 10

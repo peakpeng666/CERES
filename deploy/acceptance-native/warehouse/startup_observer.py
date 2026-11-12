@@ -12,8 +12,8 @@ import time
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from startup_observation_schema import sanitize, STATE_PHASES
 
-ENABLE = 'URP_WAREHOUSE_STARTUP_OBSERVER'
-DELAY = 'URP_WAREHOUSE_STARTUP_OBSERVER_DELAY_S'
+ENABLE = 'CERES_WAREHOUSE_STARTUP_OBSERVER'
+DELAY = 'CERES_WAREHOUSE_STARTUP_OBSERVER_DELAY_S'
 TRIGGER_S = 5.0
 HARD_WALL_S = 12.0
 RESULT_BYTES = 16384
@@ -171,18 +171,18 @@ class Observer:
                 self.finish_child()
 
     def start(self):
-        env = dict(self.env, IGN_PARTITION='urp_' + self.sid,
+        env = dict(self.env, IGN_PARTITION='ceres_' + self.sid,
                    ROS_LOG_DIR=str(self.private / 'observer-ros-log'),
                    ROS_HOME=str(self.private / 'observer-ros'),
                    IGN_HOMEDIR=str(self.private / 'observer-ignition'),
                    PYTHONDONTWRITEBYTECODE='1')
         # Separate observer ownership from the application's cleanup accounting.
-        env.pop('URP_ACCEPTANCE_OWNER', None)
+        env.pop('CERES_ACCEPTANCE_OWNER', None)
         # Use exactly the source application's ROS setup and simulation profile.
         # Positional parameters are quoted; no ID/path is interpolated in shell text.
         command = ['/bin/bash', '-c',
                    'source /opt/ros/humble/setup.bash && exec /bin/bash "$1" simulation /usr/bin/python3 "$2" --origin "$3"',
-                   'urp-readonly-observer', str(self.source / 'setup/profile.sh'),
+                   'ceres-readonly-observer', str(self.source / 'setup/profile.sh'),
                    str(Path(__file__).with_name('startup_observer_child.py')), repr(self.origin)]
         self.proc = self.popen(command, env=env, stdin=subprocess.DEVNULL,
                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, start_new_session=True)

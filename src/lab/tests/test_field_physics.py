@@ -3,8 +3,8 @@ from xml.etree import ElementTree as ET
 
 import pytest
 
-from urp_lab import field_physics as p, fieldworld
-from urp_lab.solvers import fleet
+from ceres_lab import field_physics as p, fieldworld
+from ceres_lab.solvers import fleet
 from test_backend_integrity import instance
 
 
@@ -50,7 +50,7 @@ def test_tyre_model_and_legacy_sphere_profile():
 
 def test_energy_accounting_matches_closed_form():
     import numpy as np
-    from urp_lab.field_energy import account
+    from ceres_lab.field_energy import account
     physics = p.profile({'payload_kg': 5})            # 30 kg total
     crr, eta, mass, g = .06, .8, 30, 9.80665
     dt, v_cruise, a = .02, 1.0, .5
@@ -97,7 +97,7 @@ def test_emitted_sdf_audit_and_inertia_tampering(tmp_path):
 
 
 def test_wheel_odom_alignment_preserves_drift_and_checks_physical_domain():
-    from urp_lab.field_dynamics import verify
+    from ceres_lab.field_dynamics import verify
     r = {'vehicles':[{'name':'v'}], 'truth_timing':{'latest_clock_samples':0,'tf_header_samples':3},
          'rigid_body_poses':{'v':[[0,5,3,0,0,0,math.pi/2],[.1,5,4,0,0,0,math.pi/2],[.2,5,5,0,0,0,math.pi/2]]},
          'wheel_odometry':{'v':[[0,0,0,0,1,0],[.1,1,0,0,1,0],[.2,2.2,0,0,1,0]]}}
@@ -141,7 +141,7 @@ def test_frozen_model_rejects_sdf_parameter_drift(tmp_path, selector, value):
 
 def test_no_slip_consistency_is_a_gate_not_a_suppressed_drift_statistic():
     import copy
-    from urp_lab.field_dynamics import verify
+    from ceres_lab.field_dynamics import verify
     r = {'physics':p.profile(), 'vehicles':[{'name':'v'}],
          'truth_timing':{'latest_clock_samples':0,'tf_header_samples':3},
          'rigid_body_poses':{'v':[[0,5,3,0,0,0,0],[.1,5.05,3,0,0,0,0],[.2,5.1,3,0,0,0,0]]},
@@ -193,7 +193,7 @@ def test_runtime_audit_rejects_silent_detector_fallback(tmp_path, monkeypatch):
 
 
 def test_energy_split_by_surface_uses_corridor_coefficient():
-    from urp_lab.field_energy import account
+    from ceres_lab.field_energy import account
     physics = p.profile()
     model = physics['energy_model']
     assert model['rolling_resistance'] == .06 and model['rolling_resistance_corridor'] == .03

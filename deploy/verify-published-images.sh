@@ -17,7 +17,7 @@ for name in bench sim; do
   source="ghcr.io/${owner}/urp-${name}@${digest}"
   docker pull "$source"
   actual="$(docker image inspect --format '{{ index .Config.Labels "org.opencontainers.image.revision" }}' "$source")"
-  [[ "$actual" == "$sha" ]] || { echo "Published revision mismatch for urp-${name}" >&2; exit 1; }
+  [[ "$actual" == "$sha" ]] || { echo "Published revision mismatch for ceres-${name}" >&2; exit 1; }
   if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then printf 'Verified anonymous source: %s\n' "$source" >> "$GITHUB_STEP_SUMMARY"; fi
 done
 # Export only after both exact manifests passed. Never resolve a SHA tag here.

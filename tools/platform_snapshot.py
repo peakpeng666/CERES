@@ -127,7 +127,7 @@ def create(spec_file: Path, output: Path) -> dict:
     mappings.sort(key=lambda m: -len(str(m[0])))
     excluded, assets = [], []
     manifest_path = output / 'files.jsonl'
-    with manifest_path.open('w') as manifest, tempfile.TemporaryDirectory(prefix='urp-snapshot-') as tmp:
+    with manifest_path.open('w') as manifest, tempfile.TemporaryDirectory(prefix='ceres-snapshot-') as tmp:
         for component in spec['components']:
             name = component['name']
             archive = output / f'{name}.tar.zst'
